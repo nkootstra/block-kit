@@ -46,7 +46,10 @@ export function Image({ block }: BlockProps<ImageBlock>) {
           <ExpandCaret />
         </div>
       )}
-      <div className="sbk-image__frame sbk-hover-actions-host">
+      <div
+        className="sbk-image__frame sbk-hover-actions-host"
+        style={imageUrl ? { backgroundImage: `url(${JSON.stringify(imageUrl)})` } : undefined}
+      >
         {imageUrl ? (
           <img className="sbk-image__img" src={imageUrl} alt={block.alt_text} />
         ) : (

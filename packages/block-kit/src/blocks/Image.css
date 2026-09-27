@@ -37,10 +37,17 @@
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  /* Slack paints the photo as this box's background rather than an <img>. Chrome resamples the two
+     differently when downscaling, which on a large photo shifts every high-contrast edge; painting
+     it the same way makes our pixels match. The <img> stays for sizing and alt text. */
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .sbk-image__img {
   display: block;
+  opacity: 0;
   max-width: 100%;
   height: auto;
 }

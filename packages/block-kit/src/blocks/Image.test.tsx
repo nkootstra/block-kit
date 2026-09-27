@@ -17,6 +17,17 @@ describe("<Image>", () => {
     expect(img.alt).toBe("a widget");
   });
 
+  it("paints the image as the frame's background, like Slack, so downscaled photos resample identically", () => {
+    const block = {
+      type: "image",
+      image_url: "https://example.com/a.png",
+      alt_text: "a widget",
+    };
+    const { container } = render(<Image block={block as never} blockId="b1" index={0} />);
+    const frame = container.querySelector(".sbk-image__frame") as HTMLElement;
+    expect(frame.style.backgroundImage).toBe('url("https://example.com/a.png")');
+  });
+
   it("shows the title text plus an always-present expand caret", () => {
     const block = {
       type: "image",
