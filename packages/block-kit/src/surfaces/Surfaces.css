@@ -71,12 +71,34 @@
   background: var(--sbk-icon-button-hover-bg);
 }
 
-/* Slack pads the body 20px on the right plus a 4px custom scrollbar track, so content sits 24px
-   from both edges. */
+/* Slack pads the body 20px on the right, then a transparent 4px border and an 8px scrollbar track
+   whose thumb only shows on hover. The track takes its width whether or not the body overflows. */
 .sbk-modal__body {
   flex: 1 1 auto;
-  padding: 8px 24px 16px;
-  overflow-y: auto;
+  padding: 8px 20px 16px 24px;
+  border-right: 4px solid transparent;
+  overflow: hidden auto;
+}
+
+.sbk-modal__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sbk-modal__body::-webkit-scrollbar-track,
+.sbk-modal__body::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.sbk-modal__body::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: transparent;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 4px;
+}
+
+.sbk-modal__body:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(29, 28, 29, 0.52);
 }
 
 /* Builder's modal blocks are spaced further apart than the flat 4px message gap (measured via
