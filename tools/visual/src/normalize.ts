@@ -14,9 +14,11 @@
  *   Without it the reference falls back to the harness's 15px scrollbar and lays out narrower.
  * - Pseudo-element styles were diffed against a plain span, so an icon glyph's `font-style:normal`
  *   was dropped and it inherits italic from its <i> host, which slants it. Slack's is upright.
+ * - An inherited property reset to its default was dropped too: Slack's gallery scroller is
+ *   `nowrap` and its carousel cards set `wrap` again, so card bodies rendered as one clipped line.
  */
 export function normalize(html: string): string {
-  return uprightPseudos(addModalScrollbar(restoreGlyphs(html)))
+  return uprightPseudos(wrapCarouselCards(addModalScrollbar(restoreGlyphs(html))))
     .replace(/<span\b[^>]*>/g, (tag) =>
       /class="c-timestamp|data-qa="timestamp_label"/.test(tag)
         ? tag.replace(/style="([^"]*)"/, (_, style: string) => {
@@ -113,4 +115,12 @@ function uprightPseudos(html: string): string {
       return `${head}${body};font-style:normal}`;
     },
   );
+}
+
+const GALLERY_CONTENT = "p-gallery_scroller__content";
+
+function wrapCarouselCards(html: string): string {
+  const rule = `.${GALLERY_CONTENT}>*{`;
+  if (!html.includes(`class="${GALLERY_CONTENT}"`) || html.includes(rule)) return html;
+  return html.replace("</style>", `${rule}text-wrap-mode:wrap}\n</style>`);
 }

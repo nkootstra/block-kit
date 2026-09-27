@@ -49,15 +49,23 @@ async (win = window) => {
   // properties only add noise; the physical values are already inlined.
   const SKIP =
     /^(--|transition|animation|will-change|cursor|caret|-webkit-tap|pointer-events|user-select|-webkit-user|block-size|inline-size|min-block|min-inline|max-block|max-inline|border-block|border-inline|margin-block|margin-inline|padding-block|padding-inline|inset-block|inset-inline|border-start|border-end|column-rule-color|outline-color|text-emphasis-color|-webkit-text-fill-color|-webkit-text-stroke-color)/;
+  // Properties an element inherits. One reset to its default (a card's `wrap` inside a `nowrap`
+  // scroller) equals the tag default, but still has to be inlined or the parent's value wins.
+  const INHERITED =
+    /^(color|font|line-height|letter-spacing|word-spacing|text-align|text-indent|text-transform|text-shadow|text-wrap|white-space|word-break|overflow-wrap|hyphens|tab-size|direction|visibility|list-style|quotes|-webkit-text-security)/;
   // A pseudo-element inherits from its host, not from a plain span: pass the host's computed style
   // as `host` so a value that differs from it (an icon's upright glyph in an italic <i>) is kept.
-  const diff = (cs, base, host) => {
+  // For an element, `host` is its parent and only inherited properties are compared.
+  const diff = (cs, base, host, inheritedOnly = false) => {
     const out = [];
     for (let i = 0; i < cs.length; i++) {
       const prop = cs[i];
       if (SKIP.test(prop)) continue;
       const value = cs.getPropertyValue(prop);
-      if (value !== base[prop] || (host && value !== host.getPropertyValue(prop))) {
+      if (
+        value !== base[prop] ||
+        (host && (!inheritedOnly || INHERITED.test(prop)) && value !== host.getPropertyValue(prop))
+      ) {
         out.push(`${prop}:${value}`);
       }
     }
@@ -77,7 +85,7 @@ async (win = window) => {
   let refs = 0;
   const abs = (url) => new URL(url, win.location.href).href;
 
-  const freeze = (src) => {
+  const freeze = (src, parent) => {
     if (src.nodeType === win.Node.TEXT_NODE) return doc.createTextNode(src.data);
     if (src.nodeType !== win.Node.ELEMENT_NODE) return null;
     if (/^(script|style|link|noscript|template)$/i.test(src.localName)) return null;
@@ -99,7 +107,7 @@ async (win = window) => {
     if (el.localName === "a") el.setAttribute("href", abs(src.getAttribute("href") || "#"));
     if (el.localName === "input" || el.localName === "textarea")
       el.setAttribute("value", src.value);
-    el.setAttribute("style", diff(cs, defaultsFor(src)));
+    el.setAttribute("style", diff(cs, defaultsFor(src), parent, true));
 
     for (const pseudo of ["::before", "::after"]) {
       const ps = win.getComputedStyle(src, pseudo);
@@ -118,13 +126,13 @@ async (win = window) => {
     }
 
     for (const child of src.childNodes) {
-      const frozen = freeze(child);
+      const frozen = freeze(child, cs);
       if (frozen) el.appendChild(frozen);
     }
     return el;
   };
 
-  const frozen = freeze(root);
+  const frozen = freeze(root, root.parentElement && win.getComputedStyle(root.parentElement));
   frame.remove();
 
   // Pin the message timestamp so references don't change between captures. Only the timestamp:

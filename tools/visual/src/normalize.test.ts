@@ -91,4 +91,17 @@ describe("normalize", () => {
       '<body><i data-ref="1"></i></body>';
     expect(normalize(html)).toBe(html);
   });
+
+  it("lets carousel cards wrap again inside the nowrap gallery scroller", () => {
+    const html =
+      "<style>\n</style></head>\n" +
+      '<body><div class="p-gallery_scroller__content" style="text-wrap-mode:nowrap"></div></body>';
+    expect(normalize(html)).toContain(".p-gallery_scroller__content>*{text-wrap-mode:wrap}");
+  });
+
+  it("adds the carousel wrap rule only once", () => {
+    const html =
+      "<style>\n</style></head>\n" + '<body><div class="p-gallery_scroller__content"></div></body>';
+    expect(normalize(normalize(html)).split(".p-gallery_scroller__content>*{").length).toBe(2);
+  });
 });
