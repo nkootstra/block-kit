@@ -1,0 +1,136 @@
+---
+title: Emoji
+description: "Standard, custom and skin-toned :shortcode: emoji, and the plain_text emoji flag."
+---
+
+Slack sends emoji as `:shortcode:` text — never images — inside mrkdwn, rich text, and plain text
+objects. `@nkootstra/block-kit` resolves each shortcode to an image the way Slack's client does,
+including workspace custom emoji and skin tone modifiers.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "Nice work! :tada: :+1::skin-tone-4: :100:" },
+      },
+    ],
+  }}
+/>
+
+## Standard emoji
+
+Any shortcode from Slack's standard set renders automatically — nothing to configure. By default,
+images come from the Apple emoji set on jsDelivr, matching what Slack itself uses:
+
+```tsx
+<Message blocks={[{ type: "section", text: { type: "mrkdwn", text: "Ship it :rocket:" } }]} />
+```
+
+Override the image source with `emoji.imageUrl`, given a unified codepoint sequence like
+`1f680` (or `1f44d-1f3fd` for a skin-toned variant):
+
+```tsx
+<BlockKitProvider
+  emoji={{
+    imageUrl: (unified) => `https://your-cdn.example.com/emoji/${unified}.png`,
+  }}
+>
+```
+
+## Custom emoji
+
+Workspace custom emoji have no fixed set — pass them as a name → URL map with `emoji.custom`:
+
+```tsx
+<BlockKitProvider
+  emoji={{
+    custom: {
+      partyparrot: "https://your-cdn.example.com/emoji/partyparrot.gif",
+      // Aliases point at another custom emoji, or at a standard one:
+      dancingparrot: "alias:partyparrot",
+      shipit: "alias:rocket",
+    },
+  }}
+>
+  <Message
+    blocks={[{ type: "section", text: { type: "mrkdwn", text: "Look at it go :partyparrot:" } }]}
+  />
+</BlockKitProvider>
+```
+
+<TypeTable
+  type={{
+    "custom[name]": {
+      type: "string",
+      description:
+        'An image URL, or "alias:<name>" pointing at another custom or standard emoji name.',
+    },
+  }}
+/>
+
+An unrecognized shortcode — not standard, and not in `custom` — falls back to the literal `:name:`
+text, exactly as Slack shows an emoji it can't find.
+
+## Skin tones
+
+`:thumbsup::skin-tone-3:` (Fitzpatrick modifiers 2–6) picks the matching variant of a standard emoji
+that supports one. Modifiers on emoji without skin tone variants, or on custom emoji, are ignored — the
+base emoji renders instead.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: ":wave: :wave::skin-tone-2: :wave::skin-tone-3: :wave::skin-tone-4: :wave::skin-tone-5: :wave::skin-tone-6:",
+        },
+      },
+    ],
+  }}
+/>
+
+## Sizing
+
+Every emoji renders at Slack's inline size (22px, matching 15px body text) by default. Components that
+take an `emojiSize` prop — `<Mrkdwn>`, `<Text>` — pass it straight through, useful for a larger emoji in
+a header or a smaller one in dense UI:
+
+```tsx
+<Mrkdwn text="Big wave :wave:" emojiSize={32} />
+```
+
+## plain_text and the emoji flag
+
+A `plain_text` text object converts `:shortcode:` to emoji images by default, same as `mrkdwn`. Set
+`emoji: false` to show the literal colons-and-name text instead — useful for values that happen to
+contain a colon, like a code or a time range, that shouldn't be treated as emoji:
+
+```tsx
+{ type: "plain_text", text: "Status: :done:", emoji: false }
+```
+
+<Preview
+  payload={{
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "Release notes :rocket:" } },
+      { type: "header", text: { type: "plain_text", text: "Section :not-an-emoji", emoji: false } },
+    ],
+  }}
+/>
+
+`emoji` has no effect on `mrkdwn` text objects — mrkdwn always converts shortcodes; use `verbatim` (see
+[mrkdwn](/guides/mrkdwn)) if you need to suppress other mrkdwn formatting instead.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="mrkdwn" href="/guides/mrkdwn" icon="hash">
+    Where emoji shortcodes fit among mrkdwn's other syntax.
+  </Card>
+  <Card title="Mentions and resolvers" href="/guides/mentions-and-resolvers" icon="at-sign">
+    A user's status emoji on their profile card uses the same emoji options.
+  </Card>
+</CardGroup>

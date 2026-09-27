@@ -1,0 +1,158 @@
+---
+title: Theming
+description: Light and dark mode, the --sbk-* CSS custom properties, fonts, and isolation from your app's global styles.
+---
+
+Every color in the stylesheet is a `--sbk-*` CSS custom property, measured from Slack's own Block Kit
+Builder. Dark mode is a matter of which values are active — you rarely need to override them, but
+they're there when you do.
+
+<Preview
+  payload={{
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: "Matches Slack in *light* and *dark*." } },
+    ],
+  }}
+/>
+
+## Light and dark mode
+
+By default, dark values apply under `prefers-color-scheme: dark` — the page follows the visitor's OS
+setting, same as Slack's own desktop client.
+
+To force a theme regardless of OS preference, set `data-theme` on `<html>` (or any ancestor of your
+Block Kit content):
+
+```html
+<html data-theme="dark"></html>
+```
+
+```html
+<html data-theme="light"></html>
+```
+
+`data-theme="light"` also works as an escape hatch to opt an element back out of dark mode even when
+the OS prefers it.
+
+### The theme prop
+
+`<BlockKitProvider theme="light" | "dark">` sets `data-theme` on a wrapper `<div>` around its children
+— useful for previewing both themes side by side on the same page, independent of the OS setting:
+
+```tsx
+<div style={{ display: "flex", gap: 16 }}>
+  <BlockKitProvider theme="light">
+    <Message blocks={blocks} />
+  </BlockKitProvider>
+  <BlockKitProvider theme="dark">
+    <Message blocks={blocks} />
+  </BlockKitProvider>
+</div>
+```
+
+Leave `theme` unset to follow the page's own `data-theme`/`prefers-color-scheme` instead.
+
+:::note
+A modal opened through `views.open`/`views.push` renders in a nested provider that doesn't inherit
+`theme` — it follows the surrounding page instead, matching how a real Slack modal always uses the
+workspace's theme rather than something set per-message.
+:::
+
+## CSS custom properties
+
+The full set lives in `base.css` and `Message.css` — override any of them after importing the
+stylesheet to restyle without touching the components. The main tokens:
+
+<TypeTable
+  type={{
+    "--sbk-font": {
+      type: "string",
+      default: '"Slack-Lato", Lato, sans-serif',
+      description: "Body font. See Fonts below.",
+    },
+    "--sbk-font-mono": {
+      type: "string",
+      default: '"Slack-Roboto-Mono", "Roboto Mono", monospace',
+      description: "Code font.",
+    },
+    "--sbk-text": { type: "color", description: "Primary text color." },
+    "--sbk-muted": { type: "color", description: "Secondary/muted text, e.g. timestamps." },
+    "--sbk-bg": { type: "color", description: "Surface background (message, modal, Home tab)." },
+    "--sbk-link": { type: "color", description: "Link and mention text color." },
+    "--sbk-mention-bg": { type: "color", description: "Resolved user/channel mention background." },
+    "--sbk-primary": {
+      type: "color",
+      description: "Primary button background (e.g. modal Submit).",
+    },
+    "--sbk-danger": { type: "color", description: "Danger-styled button background." },
+    "--sbk-border": { type: "color", description: "Default hairline border color." },
+    "--sbk-divider": { type: "color", description: "Divider block color." },
+    "--sbk-code-text": { type: "color", description: "Inline code and fenced code block text." },
+    "--sbk-code-bg": {
+      type: "color",
+      description: "Inline code and fenced code block background.",
+    },
+    "--sbk-focus-ring": {
+      type: "color",
+      description: "Keyboard focus ring and focused input border.",
+    },
+    "--sbk-menu-bg": { type: "color", description: "Dropdown/select menu background." },
+    "--sbk-tooltip-bg": { type: "color", description: "Tooltip background." },
+  }}
+/>
+
+```css
+:root {
+  --sbk-primary: #1264a3;
+  --sbk-primary-hover: #0b4c80;
+}
+```
+
+## Fonts
+
+Slack sets body text in Lato and code in Roboto Mono, but Slack's own font files aren't
+redistributable. Install the open-source builds from Fontsource instead:
+
+```package-install
+@fontsource/lato @fontsource/roboto-mono
+```
+
+```tsx main.tsx
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/400-italic.css";
+import "@fontsource/lato/700.css";
+import "@fontsource/lato/900.css";
+import "@fontsource/roboto-mono/400.css";
+```
+
+The stylesheet asks for `Slack-Lato` first, then falls back to plain `Lato` — so if you're already
+serving Lato yourself (a CDN, self-hosted `@font-face`), you can skip installing Fontsource: any
+`font-family: Lato` declaration is picked up.
+
+## Isolation from your app's global CSS
+
+Every component's root carries an `sbk-root` class (portalled dialogs and tooltips get it too), and
+the stylesheet rolls everything under it back to the browser's defaults before applying its own rules:
+
+```css
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :where(:not(svg, svg *, img, video, canvas, iframe, embed, object)) {
+  all: revert;
+}
+```
+
+This means global resets in your app — Tailwind's preflight, a docs theme's heading font, a blanket
+`* { min-width: 0 }` — don't leak into how a block renders, and the reverse: block styles don't leak
+into your app either, since everything is scoped under `.sbk-root`. You don't need to configure
+anything for this; it's automatic once you import `@nkootstra/block-kit/styles.css`.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Installation" href="/installation" icon="download">
+    Import the stylesheet and fonts for the first time.
+  </Card>
+  <Card title="Server rendering" href="/guides/server-rendering" icon="server-cog">
+    Setting data-theme before hydration avoids a light/dark flash.
+  </Card>
+</CardGroup>

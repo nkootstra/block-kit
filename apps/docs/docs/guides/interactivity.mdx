@@ -1,0 +1,252 @@
+---
+title: Handling actions
+description: Respond to clicks, selects and inputs with onAction, read state.values, and update or delete the message they came from.
+---
+
+Every interactive element — a button, a select, a checkbox — reports back through the
+`<BlockKitProvider>` that wraps it. `onAction` is where you react: log the click, look at what else
+is filled in on the surface, open a modal, or change the message.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        block_id: "approval",
+        text: { type: "mrkdwn", text: "*Deploy `checkout-service` to production?*" },
+      },
+      {
+        type: "actions",
+        block_id: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "approve",
+            text: { type: "plain_text", text: "Approve" },
+            style: "primary",
+          },
+          {
+            type: "button",
+            action_id: "deny",
+            text: { type: "plain_text", text: "Deny" },
+            style: "danger",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## onAction
+
+```tsx
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+
+export function ApprovalMessage() {
+  return (
+    <BlockKitProvider
+      onAction={(action, { state, views, message }) => {
+        console.log(action.action_id, action.value);
+      }}
+    >
+      <Message
+        blocks={[
+          {
+            type: "actions",
+            block_id: "actions",
+            elements: [
+              {
+                type: "button",
+                action_id: "approve",
+                text: { type: "plain_text", text: "Approve" },
+                style: "primary",
+              },
+              {
+                type: "button",
+                action_id: "deny",
+                text: { type: "plain_text", text: "Deny" },
+                style: "danger",
+              },
+            ],
+          },
+        ]}
+      />
+    </BlockKitProvider>
+  );
+}
+```
+
+`action` is the same object Slack puts in `block_actions.actions[0]`: `type`, `action_id`,
+`block_id`, `action_ts`, plus fields specific to the element (`value` for a button, `selected_date`
+for a datepicker, `selected_option` for a select, and so on).
+
+The second argument is the `ActionContext`:
+
+<TypeTable
+  type={{
+    state: {
+      type: "StateValues",
+      description:
+        "Every input's current value on the surface, keyed by block_id then action_id — see below.",
+    },
+    views: {
+      type: "ViewsApi",
+      description:
+        "Opens, pushes, updates or closes modals, as an app would with views.*. See the modals guide.",
+    },
+    message: {
+      type: "MessageApi | undefined",
+      description:
+        "Set when the action came from a <Message>: update() or delete() it. Undefined for actions inside a modal or Home tab.",
+    },
+  }}
+/>
+
+## state.values
+
+`state` mirrors Slack's `view.state.values`: an object keyed by `block_id`, then `action_id`, holding
+each element's current value object. A `plain_text_input` reports `{ type: "plain_text_input", value:
+"..." }`; a `datepicker` reports `{ type: "datepicker", selected_date: "2024-06-01" }`; a
+`multi_users_select` reports `{ type: "multi_users_select", selected_users: [...] }`. This is exactly
+what an app reads out of `body.view.state.values` (or `body.state.values` for a message action) in a
+real Slack request.
+
+```tsx
+onAction={(action, { state }) => {
+  const note = state["feedback"]?.["note"]?.value;
+  console.log("note:", note);
+}}
+```
+
+:::note
+Only elements with an `action_id` report into `state`. Elements in `actions` blocks and section
+accessories send an action on every change. Inside an `input` block, an element only does so when
+the block sets `dispatch_action: true`; otherwise its value updates `state` silently until the
+modal is submitted or another element sends an action.
+:::
+
+## onStateChange
+
+To watch every value change as it happens — for a live character count, or to mirror a form's state
+into your own component — pass `onStateChange` to the provider. It's called with the full
+`state.values` object after each change, the same shape `onAction` receives as `state`.
+
+```tsx
+<BlockKitProvider
+  onStateChange={(state) => {
+    console.log("current values:", state);
+  }}
+>
+```
+
+## Updating or deleting the message
+
+`message` is how an app answers an interaction the way it would with a `response_url`
+(`replace_original` / `delete_original`) or `chat.update` / `chat.delete`. It's only present when the
+action came from a `<Message>`.
+
+```tsx
+onAction={(action, { message }) => {
+  if (action.action_id === "approve") {
+    message?.update({
+      blocks: [
+        {
+          type: "section",
+          text: { type: "mrkdwn", text: ":white_check_mark: Approved by <@U0ADA>." },
+        },
+      ],
+    });
+  }
+  if (action.action_id === "deny") {
+    message?.delete();
+  }
+}}
+```
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        block_id: "approval",
+        text: { type: "mrkdwn", text: "*Deploy `checkout-service` to production?*" },
+      },
+      {
+        type: "actions",
+        block_id: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "approve",
+            text: { type: "plain_text", text: "Approve" },
+            style: "primary",
+          },
+          {
+            type: "button",
+            action_id: "deny",
+            text: { type: "plain_text", text: "Deny" },
+            style: "danger",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+`MessageApi.update` replaces the message's `blocks` and fallback `text` in place; `delete` removes it
+from the surface entirely (the `<Message>` renders nothing after that). Both act only on the message
+the action came from, so unrelated messages elsewhere on the page are untouched.
+
+## onPayload: the full Slack payload
+
+`onAction` gives you the one action plus convenient handles. If you'd rather work with the exact JSON
+Slack would POST to your app's request URL — to feed straight into Bolt-style handler code, or to log
+what you'd actually receive in production — use `onPayload` instead (or alongside `onAction`):
+
+```tsx
+<BlockKitProvider
+  onPayload={(payload, { views, message }) => {
+    // payload.type === "block_actions"
+    // payload.actions, payload.team, payload.user, payload.trigger_id, payload.response_url, ...
+    // payload.container / payload.message (for a message) or payload.view (for a modal/Home tab)
+    console.log(JSON.stringify(payload, null, 2));
+  }}
+>
+```
+
+`onPayload` needs the surface it fires from (`<Message>`, `<Modal>`, `<HomeTab>`) to know its
+container, which they register automatically — you don't need to do anything extra to enable it.
+
+## Identity
+
+Slack stamps every payload with a team, user, app id, `trigger_id` and `response_url`. By default the
+provider fills these with harmless placeholders so a payload always looks realistic; pass `identity`
+to control them (useful when testing against a real app that checks `team.id` or a specific user):
+
+```tsx
+<BlockKitProvider
+  identity={{
+    team: { id: "T0123ABC", domain: "acme" },
+    user: { id: "U0ADA", username: "ada" },
+    responseUrl: "https://hooks.slack.com/actions/T0123ABC/000/xyz",
+  }}
+>
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Modals" href="/guides/modals" icon="app-window">
+    Open, push and update modals in response to an action.
+  </Card>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="server">
+    Send these payloads to a real Slack app instead of handling them locally.
+  </Card>
+  <Card title="Validation" href="/guides/validation" icon="check-circle">
+    How input blocks are checked before an action or submission fires.
+  </Card>
+  <Card title="Mentions and resolvers" href="/guides/mentions-and-resolvers" icon="at-sign">
+    Resolve the ids you'll see in state.values and payloads to names.
+  </Card>
+</CardGroup>

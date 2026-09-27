@@ -1,0 +1,207 @@
+---
+title: mrkdwn
+description: Slack's mrkdwn syntax, the parser and formatting helpers in @nkootstra/block-kit/mrkdwn, and the <Mrkdwn>/<Text> components.
+---
+
+Mrkdwn is Slack's own text format — not quite Markdown — used in `mrkdwn` text objects throughout
+Block Kit. `@nkootstra/block-kit` ships a parser for it, usable on its own (no React, no DOM) through
+`@nkootstra/block-kit/mrkdwn`, and the `<Mrkdwn>`/`<Text>` components that render its output.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*Bold*, _italic_, ~strike~, `code`, and a <https://example.com|link>.\n> A quoted line.\n<@U0ADA> mentioned <#C0GENERAL> and <!subteam^S0ENG|@engineering>.",
+        },
+      },
+    ],
+  }}
+/>
+
+## \<Mrkdwn> and \<Text>
+
+`<Mrkdwn>` renders a raw mrkdwn string directly:
+
+```tsx
+import { Mrkdwn } from "@nkootstra/block-kit";
+
+<Mrkdwn text="*Hello* <@U0ADA>, check out <https://example.com|this>." />;
+```
+
+<TypeTable
+  type={{
+    text: { type: "string", required: true },
+    verbatim: {
+      type: "boolean",
+      default: "false",
+      description:
+        "Slack's verbatim flag. When false, bare URLs (https://... or www...) are auto-linked.",
+    },
+    emojiSize: { type: "number", default: "22", description: "Pixel size for :emoji: images." },
+  }}
+/>
+
+`<Text>` renders a full Block Kit text object — either kind — and is what block/element components use
+internally:
+
+```tsx
+import { Text } from "@nkootstra/block-kit";
+
+<Text text={{ type: "mrkdwn", text: "*Hello*" }} />;
+<Text text={{ type: "plain_text", text: "Hello :wave:" }} />;
+```
+
+A `plain_text` object has no formatting beyond emoji shortcodes — no bold, links or mentions — since
+that's what Slack itself restricts it to.
+
+## Supported syntax
+
+<TypeTable
+  type={{
+    "*bold*": { type: "Bold", description: "*text* → <b>text</b>" },
+    _italic_: { type: "Italic", description: "_text_ → <i>text</i>" },
+    "~strike~": { type: "Strike", description: "~text~ → <s>text</s>" },
+    "`code`": { type: "Inline code", description: "Monospace, no other formatting parsed inside." },
+    "```pre```": {
+      type: "Preformatted block",
+      description:
+        "Fenced block, shown verbatim; a single newline right after the opening fence or before the closing one is dropped, matching Slack.",
+    },
+    "> quote": { type: "Quote", description: "One or more consecutive lines starting with >." },
+    ">>> quote": {
+      type: "Block quote",
+      description: "Everything after >>> is quoted, including following lines.",
+    },
+    "<url|label>": {
+      type: "Link",
+      description: "Renders as label; falls back to showing the raw url with no |label part.",
+    },
+    "bare url": { type: "Auto-link", description: "Linked automatically unless verbatim is true." },
+    "<@U123>": { type: "User mention" },
+    "<#C123>": {
+      type: "Channel mention",
+      description: "<#C123|name> supplies a fallback label for when the channel can't be resolved.",
+    },
+    "<!subteam^S123>": { type: "Usergroup mention" },
+    "<!here> / <!channel> / <!everyone>": {
+      type: "Special mention",
+      description: "Broadcasts to online members, the channel, or everyone.",
+    },
+    "<!date^ts^fmt^url|fallback>": { type: "Date", description: "See below." },
+    ":shortcode:": { type: "Emoji", description: "See the emoji guide." },
+  }}
+/>
+
+## Special mentions
+
+`<!here>`, `<!channel>` and `<!everyone>` render as Slack's bold, highlighted broadcast pills rather
+than a user/channel mention:
+
+<Preview
+  payload={{
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: "<!channel> heads up, deploying now." } },
+    ],
+  }}
+/>
+
+## Dates
+
+`<!date^1392734382^{date_short} at {time}^https://example.com|Feb 18, 2014>` formats a Unix timestamp
+in the viewer's own locale and time zone, with an optional link and a `|fallback` shown only when the
+format can't be rendered:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Deployed <!date^1392734382^{date_short_pretty} at {time}|Feb 18, 2014 at 6:39 AM>.",
+        },
+      },
+    ],
+  }}
+/>
+
+`{token}` placeholders inside the format string: `{date}`, `{date_short}`, `{date_long}`,
+`{date_long_full}`, `{date_num}`, `{date_slash}`, `{date_pretty}`, `{date_short_pretty}`,
+`{date_long_pretty}` (the `_pretty` variants show "Today"/"Yesterday"/"Tomorrow" when applicable),
+`{time}`, `{time_secs}`, and `{ago}` (a relative time like "in 3 hours"). Unknown tokens are left as-is.
+
+`formatSlackDate` does the same formatting outside of parsed mrkdwn — useful when you have a raw
+timestamp and format string from elsewhere:
+
+```ts
+import { formatSlackDate } from "@nkootstra/block-kit/mrkdwn";
+
+formatSlackDate(1392734382, "{date_short} at {time}");
+// → "Feb 18, 2014 at 6:39 AM"
+
+formatSlackDate(1392734382, "{date_long_pretty}", {
+  timeZone: "America/New_York",
+  locale: "en-US",
+});
+```
+
+<TypeTable
+  type={{
+    locale: { type: "string", default: '"en-US"', description: "BCP 47 locale." },
+    timeZone: { type: "string", description: "IANA zone. Defaults to the runtime's zone." },
+    now: {
+      type: "number",
+      description:
+        "Reference time (ms) for {ago} and the _pretty variants. Defaults to Date.now().",
+    },
+  }}
+/>
+
+`<BlockKitProvider timeZone="...">` sets the zone used for dates parsed inline within `<Mrkdwn>` — pass
+`timeZone` to `formatSlackDate` directly when formatting outside of that context.
+
+## Other exports
+
+```ts
+import { parse, decodeEntities, parsePlainTextEmoji } from "@nkootstra/block-kit/mrkdwn";
+```
+
+<TypeTable
+  type={{
+    parse: {
+      type: "(input: string, options?: { verbatim?: boolean }) => Root",
+      description:
+        "Parses a mrkdwn string into an AST (MrkdwnNode[]). Never throws — malformed markup is kept as plain text.",
+    },
+    decodeEntities: {
+      type: "(text: string) => string",
+      description: "Decodes &amp; &lt; &gt; the way Slack encodes them in mrkdwn.",
+    },
+    parsePlainTextEmoji: {
+      type: "(input: string) => Array<Text | Emoji>",
+      description:
+        "Splits a plain_text string into text and emoji nodes, with no other mrkdwn parsing — what <Text> uses for plain_text objects.",
+    },
+  }}
+/>
+
+`parse` is what powers `<Mrkdwn>`; reach for it directly when you want the structured AST instead of
+React output — for example to render mrkdwn somewhere other than the DOM, or to extract just the plain
+text.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Emoji" href="/guides/emoji" icon="smile">
+    Shortcodes, custom emoji, and skin tones.
+  </Card>
+  <Card title="Mentions and resolvers" href="/guides/mentions-and-resolvers" icon="at-sign">
+    Turning `<@U0ADA>` and `<#C0GENERAL>` into names.
+  </Card>
+  <Card title="Blocks: Markdown" href="/blocks/markdown" icon="file-text">
+    A block for standard Markdown, such as an LLM's output.
+  </Card>
+</CardGroup>

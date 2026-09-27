@@ -1,0 +1,278 @@
+---
+title: Modals
+description: Open, push and update modals from an action, validate and submit them, and react to response_action.
+---
+
+A modal is a `<Modal>` rendering a `view`: a title, a scrollable body of blocks, and an optional
+close/submit footer. You rarely render one directly — instead a button's `onAction` opens it through
+`views`, the same `views.open` / `views.push` / `views.update` an app would call.
+
+<Preview
+  actions
+  opens={{
+    type: "modal",
+    title: { type: "plain_text", text: "Report an issue" },
+    submit: { type: "plain_text", text: "Submit" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "summary",
+        label: { type: "plain_text", text: "Summary" },
+        element: {
+          type: "plain_text_input",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "What went wrong?" },
+        },
+      },
+    ],
+  }}
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "open",
+            text: { type: "plain_text", text: "Report an issue" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Opening a modal from a button
+
+`views` is on every `ActionContext` (see [Handling actions](/guides/interactivity)). Call `views.open`
+with a view object — no `id`, `hash` or `root_view_id`, the provider assigns those the way Slack does:
+
+```tsx
+import { BlockKitProvider, Message, type ViewsApi } from "@nkootstra/block-kit";
+
+function openIssueModal(views: ViewsApi) {
+  views.open({
+    type: "modal",
+    callback_id: "report_issue",
+    title: { type: "plain_text", text: "Report an issue" },
+    submit: { type: "plain_text", text: "Submit" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "summary",
+        label: { type: "plain_text", text: "Summary" },
+        element: { type: "plain_text_input", action_id: "value" },
+      },
+    ],
+  });
+}
+
+export function App() {
+  return (
+    <BlockKitProvider
+      onAction={(action, { views }) => {
+        if (action.action_id === "open") openIssueModal(views);
+      }}
+    >
+      <Message
+        blocks={[
+          {
+            type: "actions",
+            block_id: "actions",
+            elements: [
+              {
+                type: "button",
+                action_id: "open",
+                text: { type: "plain_text", text: "Report an issue" },
+              },
+            ],
+          },
+        ]}
+      />
+    </BlockKitProvider>
+  );
+}
+```
+
+The provider renders any opened modal on top of your page automatically — you don't add `<Modal>`
+yourself for this flow.
+
+## views.open / push / update / close / clear
+
+<TypeTable
+  type={{
+    open: {
+      type: "(view) => string",
+      description: "Replaces any open modals with this one. Returns the new view's id.",
+    },
+    push: {
+      type: "(view) => string",
+      description:
+        "Stacks a modal on top of the current one, keeping the one below. Slack allows at most 3 views in a stack.",
+    },
+    update: {
+      type: "(view, target?) => void",
+      description:
+        "Swaps a modal's content in place, keeping its id and matching state. target is { viewId } or { externalId }; defaults to the top modal.",
+    },
+    close: {
+      type: "() => void",
+      description: "Closes the top modal, returning to the one below it.",
+    },
+    clear: { type: "() => void", description: "Closes every open modal." },
+    publish: {
+      type: "(view) => void",
+      description:
+        "views.publish: replaces the content of the <HomeTab> rendered under this provider.",
+    },
+  }}
+/>
+
+Pushing past the 3-view limit is a no-op (with a console warning), matching what Slack's API would
+reject.
+
+## onSubmit and response_action
+
+A modal with `submit` calls `onSubmit` when its Submit button is pressed, with the same
+`view_submission` payload Slack sends. Return a `response_action` to react like an app would; return
+nothing to just close the modal.
+
+```tsx
+<BlockKitProvider
+  onSubmit={(payload, { views }) => {
+    const summary = payload.view.state.values.summary?.value?.value;
+    if (!summary) {
+      return { response_action: "errors", errors: { summary: "Tell us what happened." } };
+    }
+    // Persist it, then just close the modal (return nothing), or:
+    return {
+      response_action: "update",
+      view: {
+        type: "modal",
+        title: { type: "plain_text", text: "Report an issue" },
+        close: { type: "plain_text", text: "Done" },
+        blocks: [{ type: "section", text: { type: "mrkdwn", text: "Thanks, we'll take a look." } }],
+      },
+    };
+  }}
+>
+```
+
+<TypeTable
+  type={{
+    'response_action: "errors"': {
+      type: "{ errors: Record<string, string> }",
+      description: "Shows a message under each named block_id and keeps the modal open.",
+    },
+    'response_action: "update"': {
+      type: "{ view: ViewLike }",
+      description: "Replaces the current view's content, keeping its id in the stack.",
+    },
+    'response_action: "push"': {
+      type: "{ view: ViewLike }",
+      description: "Pushes a new view on top, like views.push.",
+    },
+    'response_action: "clear"': { type: "{}", description: "Closes the entire modal stack." },
+  }}
+/>
+
+If `onSubmit` throws or its promise rejects — the same as an app's request timing out or answering
+with an error — the modal stays open, matching Slack's behavior when it can't reach your app.
+
+## Validation errors
+
+Before `onSubmit` is even called, Slack's own client-side checks run: required inputs, min/max text
+length, number format, and email/URL format. A failing field shows its message right under the input
+and the submission never fires. See [Validation](/guides/validation) for the exact rules and messages.
+
+Errors your `onSubmit` returns via `response_action: "errors"` layer on top of those and clear once
+the field's value changes, exactly as Slack's client behaves.
+
+You can also seed a modal with errors up front — useful for a standalone `<Modal>` you're previewing
+outside the `views` flow — with the `errors` prop on `<BlockKitProvider>`:
+
+```tsx
+<BlockKitProvider errors={{ summary: "This field is required." }}>
+```
+
+## onClose
+
+Fires with a `view_closed` payload when the modal's close (X) button, or its `close` footer button on
+the root view, is pressed.
+
+```tsx
+<BlockKitProvider
+  onClose={(payload) => {
+    console.log("closed", payload.view.callback_id, "cleared:", payload.is_cleared);
+  }}
+>
+```
+
+Like Slack, a pushed view only reports `view_closed` for its own dismissal when its `notify_on_close`
+field is `true` — a root view (or a standalone `<Modal>`) always reports it, since something needs to
+know to stop showing it.
+
+## The 3-view stack limit
+
+Slack caps a modal stack at 3 views. `views.push` beyond that returns `""` and does nothing (with a
+console warning) instead of stacking a 4th view — build your flow assuming callers check the id, or
+just keep flows to 2-3 steps as Slack recommends.
+
+## Rendering a modal directly
+
+For a modal that isn't opened from a button — a docs example, a settings panel embedded in your own
+page — render `<Modal>` (or the surface-agnostic `<View>`) yourself:
+
+```tsx
+import { BlockKitProvider, Modal } from "@nkootstra/block-kit";
+
+<BlockKitProvider surface="modal">
+  <Modal
+    view={{
+      type: "modal",
+      title: { type: "plain_text", text: "New ticket" },
+      submit: { type: "plain_text", text: "Create" },
+      close: { type: "plain_text", text: "Cancel" },
+      blocks: [{ type: "section", text: { type: "plain_text", text: "Body" } }],
+    }}
+  />
+</BlockKitProvider>;
+```
+
+## useLiveView
+
+A standalone `<Modal>`/`<HomeTab>` you render this way can still be updated by `views.update` /
+`views.publish` from elsewhere in the tree — `<Modal>` and `<HomeTab>` use `useLiveView` internally to
+track that. If you're building a custom surface and want the same "the app's last update wins, until
+the `view` prop changes by content" behavior, use it directly:
+
+```tsx
+import { useLiveView } from "@nkootstra/block-kit";
+
+function CustomSurface({ view: viewProp }: { view: ModalView }) {
+  const { view, update } = useLiveView(viewProp);
+  // `view` reflects the latest views.update()/views.publish() call for this surface,
+  // or `viewProp` again once its content changes.
+  return <Modal view={view} />;
+}
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Handling actions" href="/guides/interactivity" icon="mouse-pointer-click">
+    Where views comes from, and what an ActionContext gives you.
+  </Card>
+  <Card title="Validation" href="/guides/validation" icon="check-circle">
+    The exact checks Slack runs before a submission reaches onSubmit.
+  </Card>
+  <Card title="External data" href="/guides/external-data" icon="search">
+    Fill a select inside a modal from your own data.
+  </Card>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="server">
+    Send view_submission to a real Bolt app instead of handling it locally.
+  </Card>
+</CardGroup>

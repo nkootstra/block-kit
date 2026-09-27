@@ -1,0 +1,178 @@
+---
+title: Mentions and resolvers
+description: Resolve user, channel and usergroup ids to names, show unresolved mentions like Slack, and back it with the real Slack Web API.
+---
+
+Slack's mrkdwn and rich text only ever carry ids — `<@U0123ABC>`, `<#C0123ABC>`, `<!subteam^S0123>` —
+never names. `@nkootstra/block-kit` never fetches on your behalf; you supply `resolvers` and it renders
+whatever they return, the same way Slack's own client resolves ids against its cache.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "<@U0ADA> assigned this to <!subteam^S0ENG|@engineering> in <#C0RELEASES>.",
+        },
+      },
+    ],
+  }}
+/>
+
+## The Resolvers shape
+
+Pass `resolvers` to `<BlockKitProvider>`. Each function is synchronous — return a name if you have it,
+or `undefined` if you don't (yet):
+
+```tsx
+import { BlockKitProvider, Message, type Resolvers } from "@nkootstra/block-kit";
+
+const resolvers: Resolvers = {
+  user: (id) => ({ U0ADA: "Ada Lovelace" })[id],
+  channel: (id) => ({ C0RELEASES: "releases" })[id],
+  usergroup: (id) => ({ S0ENG: "engineering" })[id],
+  userProfile: (id) =>
+    id === "U0ADA"
+      ? {
+          name: "Ada Lovelace",
+          title: "Staff Engineer",
+          pronouns: "she/her",
+          avatarUrl: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          status: { emoji: "palm_tree", text: "On vacation" },
+          timeZone: "Europe/Amsterdam",
+        }
+      : undefined,
+};
+
+<BlockKitProvider resolvers={resolvers}>
+  <Message blocks={[{ type: "section", text: { type: "mrkdwn", text: "<@U0ADA>" } }]} />
+</BlockKitProvider>;
+```
+
+<TypeTable
+  type={{
+    user: {
+      type: "(id: string) => string | undefined",
+      description: 'Display name for a user mention, e.g. <@U0ADA> → "Ada Lovelace".',
+    },
+    userProfile: {
+      type: "(id: string) => UserProfile | undefined",
+      description:
+        "Details for the profile card that opens when a user mention is clicked. Falls back to the name from user when omitted.",
+    },
+    channel: {
+      type: "(id: string) => string | undefined",
+      description: 'Name for a channel mention, e.g. <#C0RELEASES> → "releases".',
+    },
+    usergroup: {
+      type: "(id: string) => string | undefined",
+      description: 'Name for a usergroup (subteam) mention, e.g. <!subteam^S0ENG> → "engineering".',
+    },
+  }}
+/>
+
+`UserProfile` fields: `name` (required), `realName`, `title`, `pronouns`, `avatarUrl`, `status: {
+emoji?, text? }`, and `timeZone` (an IANA zone, used for the card's "local time" row).
+
+## What unresolved ids look like
+
+An id a resolver returns `undefined` for renders exactly like Slack's client does when it hasn't
+cached that id yet — not an error, not the raw id:
+
+- **A user mention in mrkdwn or a Home tab/modal's plain mrkdwn text** (`<@U0123>` with no
+  resolver hit) falls back to plain `@U0123` text — Slack doesn't show a loading pill for it either.
+- **A user or usergroup mention in a `rich_text` block** shows an empty loading pill (a small pulsing
+  bar), matching Slack's Builder while it's still resolving a mention it hasn't seen before.
+- **A channel mention with no `channel` resolver hit and no inline label** (`<#C0123>` without
+  `|name`) renders as a locked "Private channel" pill, since Slack can't show a name for a channel the
+  viewer isn't in either.
+- **A usergroup mention** always shows the loading state until resolved — there's no unresolved
+  fallback text for subteams, matching Slack.
+
+<Preview
+  payload={{
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: "Unresolved user: <@U0UNKNOWN>" } },
+      { type: "section", text: { type: "mrkdwn", text: "Unresolved channel: <#C0UNKNOWN>" } },
+    ],
+  }}
+/>
+
+## The profile card
+
+Clicking a resolved user mention opens a popover — Slack's `p-member_profile_card` — built from
+`resolvers.userProfile`. It shows the avatar (or an initial), name and pronouns, real name and title if
+they differ from the display name, a custom status with its emoji, and local time when `timeZone` is
+set. Without a `userProfile` resolver it still opens, showing just the name from `user`.
+
+## createWebApiResolvers
+
+`@nkootstra/block-kit/web-api` builds `Resolvers` backed by a real `@slack/web-api` `WebClient` (or an
+emulator that implements the same methods): `users.info` and `conversations.info` per id, and
+`usergroups.list` once for every usergroup id (the Web API has no per-id usergroup lookup).
+
+```tsx
+import { WebClient } from "@slack/web-api";
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import { createWebApiResolvers } from "@nkootstra/block-kit/web-api";
+
+const client = new WebClient(process.env.SLACK_BOT_TOKEN);
+const resolvers = createWebApiResolvers(client, { batchWindowMs: 20 });
+
+<BlockKitProvider resolvers={resolvers}>
+  <Message blocks={[{ type: "section", text: { type: "mrkdwn", text: "<@U0ADA>" } }]} />
+</BlockKitProvider>;
+```
+
+Because the resolver functions must stay synchronous, a lookup that hasn't finished yet returns
+`undefined` immediately and schedules a background fetch. Calls for the same kind (`user` or
+`channel`) made within `batchWindowMs` (default 20ms) — e.g. every mention in a long message — are
+coalesced into one batch of concurrent requests rather than firing one at a time.
+
+## useWebApiResolvers
+
+In a component, `useWebApiResolvers` wraps `createWebApiResolvers` and re-renders you automatically
+whenever a lookup completes, so a mention that started unresolved shows its name once it arrives:
+
+```tsx
+import { WebClient } from "@slack/web-api";
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import { useWebApiResolvers } from "@nkootstra/block-kit/web-api";
+
+const client = new WebClient(process.env.SLACK_BOT_TOKEN);
+
+export function Channel({ blocks }: { blocks: AnyBlock[] }) {
+  const resolvers = useWebApiResolvers(client);
+  return (
+    <BlockKitProvider resolvers={resolvers}>
+      <Message blocks={blocks} />
+    </BlockKitProvider>
+  );
+}
+```
+
+`client` is captured once (like `createWebApiResolvers`, `opts` is only read on first render for that
+client) — construct the `WebClient` outside the component, or memoize it, so it has a stable identity
+across renders.
+
+:::note
+`createWebApiResolvers`/`useWebApiResolvers` implement `user`, `channel` and `usergroup` — not
+`userProfile`. Supply `userProfile` yourself (e.g. from `users.info`'s `profile` fields) if you want
+the profile card to show more than a name.
+:::
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="mrkdwn" href="/guides/mrkdwn" icon="hash">
+    Every mention syntax the parser understands.
+  </Card>
+  <Card title="Handling actions" href="/guides/interactivity" icon="mouse-pointer-click">
+    The ids you'll see in state.values and payloads are the same ones resolvers work from.
+  </Card>
+  <Card title="Installation" href="/installation" icon="download">
+    @slack/web-api is an optional peer dependency, only needed for createWebApiResolvers.
+  </Card>
+</CardGroup>
