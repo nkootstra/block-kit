@@ -12,7 +12,8 @@ import { Emoji } from "../emoji";
 import { LockIcon } from "../Mrkdwn";
 import type { BlockProps } from "../types";
 import { UserMention } from "../UserMention";
-import { CodeBlock, CopyIcon } from "./CodeBlock";
+import { CopyIcon } from "../icons";
+import { CodeBlock } from "./CodeBlock";
 
 // Builder-only/undocumented extensions to `@slack/types`' definitions.
 type RichTextListExt = RichTextList & { offset?: number };
@@ -83,7 +84,7 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
             <pre key={key++} className="sbk-rich-text__pre">
               {renderPreformattedLines(el.elements)}
               <span className="sbk-rich-text__pre-copy" aria-label="Copy code">
-                <CopyIcon />
+                <CopyIcon width={16} height={16} />
               </span>
             </pre>,
           );

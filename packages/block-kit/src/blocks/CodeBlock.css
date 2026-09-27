@@ -35,7 +35,7 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  color: var(--sbk-muted);
+  color: rgb(69, 68, 71);
   background: none;
   border: none;
   border-radius: 8px;
@@ -46,6 +46,14 @@
   display: flex;
   padding: 0 12px 8px 0;
   overflow: auto;
+}
+
+.sbk-code-block__code,
+.sbk-code-block__code code {
+  /* The UA stylesheet gives <pre> and <code> the generic `monospace`, which beats inheriting the
+     box's Slack-Roboto-Mono. Slack also turns ligatures off for code. */
+  font-family: inherit;
+  font-variant-ligatures: none;
 }
 
 .sbk-code-block__code {
