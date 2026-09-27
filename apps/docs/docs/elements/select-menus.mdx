@@ -1,0 +1,655 @@
+---
+title: Select menus
+description: Dropdowns for a fixed list, an external data source, or Slack's own directory of users, conversations, and channels.
+---
+
+A select menu is a dropdown that reports one chosen value (`*_select`) or several
+(`multi_*_select`). Slack has five data sources — `static`, `external`, `users`, `conversations`,
+`channels` — each with its own single- and multi-select type, and its own field name in
+`state.values`. Use it wherever a button's fixed set of choices isn't enough: picking a user to
+assign, a channel to post to, or an option from a list you don't want to spell out as buttons.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "assign",
+        elements: [
+          {
+            type: "static_select",
+            action_id: "priority",
+            placeholder: { type: "plain_text", text: "Priority" },
+            options: [
+              { text: { type: "plain_text", text: "Low" }, value: "low" },
+              { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+              { text: { type: "plain_text", text: "High" }, value: "high" },
+            ],
+          },
+          {
+            type: "external_select",
+            action_id: "fruit",
+            placeholder: { type: "plain_text", text: "Favorite fruit" },
+            min_query_length: 2,
+          },
+          {
+            type: "users_select",
+            action_id: "assignee",
+            placeholder: { type: "plain_text", text: "Assign to" },
+          },
+          {
+            type: "conversations_select",
+            action_id: "notify",
+            placeholder: { type: "plain_text", text: "Notify" },
+          },
+          {
+            type: "channels_select",
+            action_id: "post_to",
+            placeholder: { type: "plain_text", text: "Post to" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+Every select shares these:
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description:
+        "One of `static_select`, `external_select`, `users_select`, `conversations_select`, `channels_select`, or the `multi_` prefixed variant of each.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description: "Identifies this element in `block_actions` and `state.values`.",
+      required: true,
+    },
+    placeholder: {
+      type: "PlainTextElement",
+      description: "Shown in the closed control when nothing is selected.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description: "Shows a confirm dialog before the selection is committed.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses this element when the surface loads. Only one element per view should set it.",
+      default: "false",
+    },
+  }}
+/>
+
+A `multi_*_select` additionally accepts:
+
+<TypeTable
+  type={{
+    max_selected_items: {
+      type: "number",
+      description:
+        'Caps how many items can be picked at once. Renders as Slack\'s "You can select up to N items." hint in an `input` block.',
+    },
+  }}
+/>
+
+Each data source adds its own fields, covered in its section below.
+
+## Examples
+
+### Static select
+
+Options come from a fixed list you provide: `options`, or `option_groups` to label clusters of
+them. Slack caps `options` and `option_groups` at 100 entries each, and a select can carry one or
+the other, never both.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*New issue*" },
+        accessory: {
+          type: "static_select",
+          action_id: "label",
+          placeholder: { type: "plain_text", text: "Add a label" },
+          option_groups: [
+            {
+              label: { type: "plain_text", text: "Priority" },
+              options: [
+                { text: { type: "plain_text", text: "Low" }, value: "low" },
+                { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+                { text: { type: "plain_text", text: "High" }, value: "high" },
+              ],
+            },
+            {
+              label: { type: "plain_text", text: "Type" },
+              options: [
+                { text: { type: "plain_text", text: "Bug" }, value: "bug" },
+                { text: { type: "plain_text", text: "Feature" }, value: "feature" },
+                { text: { type: "plain_text", text: "Chore" }, value: "chore" },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+As an `input` block, a multi-static-select shows selected options as removable chips inside the
+field, and grows to fit them:
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "New issue" },
+    submit: { type: "plain_text", text: "Create" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "labels",
+        label: { type: "plain_text", text: "Labels" },
+        element: {
+          type: "multi_static_select",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Add labels" },
+          initial_options: [{ text: { type: "plain_text", text: "Bug" }, value: "bug" }],
+          options: [
+            { text: { type: "plain_text", text: "Bug" }, value: "bug" },
+            { text: { type: "plain_text", text: "Feature" }, value: "feature" },
+            { text: { type: "plain_text", text: "Chore" }, value: "chore" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+<TypeTable
+  type={{
+    options: {
+      type: "PlainTextOption[]",
+      description: "Up to 100 options. Omit if `option_groups` is set.",
+    },
+    option_groups: {
+      type: "OptionGroup[]",
+      description:
+        "Up to 100 labeled groups of options, each up to 100 options. Omit if `options` is set.",
+    },
+    initial_option: {
+      type: "PlainTextOption",
+      description:
+        "Preselected on load. Must exactly match one entry in `options`/`option_groups`. Single-select only.",
+    },
+    initial_options: {
+      type: "PlainTextOption[]",
+      description: "Preselected on load, one per chip. Multi-select only.",
+    },
+  }}
+/>
+
+### External select
+
+Options aren't provided up front — Slack (and this library) asks your app for them as the person
+types, via a `block_suggestion` request. Give the `<BlockKitProvider>` an `onOptions` handler; it's
+called with the same payload Slack would send your app's options load URL, and its return value is
+what fills the menu.
+
+```tsx
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+
+const fruits = ["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange", "Peach", "Pear"];
+
+function FruitPicker() {
+  return (
+    <BlockKitProvider
+      onOptions={({ value }) => ({
+        options: fruits
+          .filter((fruit) => fruit.toLowerCase().startsWith(value.toLowerCase()))
+          .map((fruit) => ({
+            text: { type: "plain_text", text: fruit },
+            value: fruit.toLowerCase(),
+          })),
+      })}
+    >
+      <Message
+        blocks={[
+          {
+            type: "actions",
+            block_id: "fruit",
+            elements: [
+              {
+                type: "external_select",
+                action_id: "fruit",
+                placeholder: { type: "plain_text", text: "Favorite fruit" },
+                min_query_length: 2,
+              },
+            ],
+          },
+        ]}
+      />
+    </BlockKitProvider>
+  );
+}
+```
+
+The request looks like this (see [Interactivity](#interactivity) below for the full shape):
+
+```json
+{
+  "type": "block_suggestion",
+  "action_id": "fruit",
+  "block_id": "fruit",
+  "value": "ap",
+  "container": { "type": "message", "message_ts": "..." }
+}
+```
+
+Your handler answers with `{ options }` or `{ option_groups }` — the same shapes as a static
+select's — built from `SuggestionOption` objects (`text`, `value`, optional `description`/`url`).
+
+:::note
+Without an `onOptions` handler, this library's preview lets you type a value and press Enter to
+select it directly — useful for prototyping, but not how Slack itself behaves.
+:::
+
+The Preview above already answers `external_select` from a fixed fruit list, so you can try typing
+without wiring up `onOptions` yourself.
+
+`min_query_length` sets how many characters must be typed before the request fires:
+
+<TypeTable
+  type={{
+    initial_option: {
+      type: "PlainTextOption",
+      description: "Preselected on load. Single-select only.",
+    },
+    initial_options: {
+      type: "PlainTextOption[]",
+      description: "Preselected on load. Multi-select only.",
+    },
+    min_query_length: {
+      type: "number",
+      description: "Fewest characters typed before a `block_suggestion` request fires.",
+      default: "3",
+    },
+  }}
+/>
+
+A multi-external-select combines `max_selected_items` with the same lookup, and can start with
+options already picked via `initial_options`:
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "New issue" },
+    submit: { type: "plain_text", text: "Create" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "tags",
+        optional: true,
+        label: { type: "plain_text", text: "Tags (up to 3)" },
+        hint: { type: "plain_text", text: "Options load from the app as you type." },
+        element: {
+          type: "multi_external_select",
+          action_id: "value",
+          min_query_length: 1,
+          max_selected_items: 3,
+          initial_options: [{ text: { type: "plain_text", text: "Urgent" }, value: "urgent" }],
+          placeholder: { type: "plain_text", text: "Search tags" },
+        },
+      },
+    ],
+  }}
+/>
+
+### Users select
+
+Populated from Slack's own user directory — there's nothing to pass for the option list itself,
+only which user (if any) starts selected.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*Code review*" },
+        accessory: {
+          type: "users_select",
+          action_id: "reviewer",
+          placeholder: { type: "plain_text", text: "Assign a reviewer" },
+          initial_user: "U0ADA",
+        },
+      },
+    ],
+  }}
+/>
+
+As an `input` block, `multi_users_select` starts with `initial_users` already selected as chips:
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "Code review" },
+    submit: { type: "plain_text", text: "Request" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "reviewers",
+        label: { type: "plain_text", text: "Reviewers" },
+        element: {
+          type: "multi_users_select",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Select reviewers" },
+          initial_users: ["U0ADA", "U0GRACE"],
+        },
+      },
+    ],
+  }}
+/>
+
+<TypeTable
+  type={{
+    initial_user: {
+      type: "string",
+      description: "A user ID preselected on load. Single-select only.",
+    },
+    initial_users: {
+      type: "string[]",
+      description: "User IDs preselected on load, one chip each. Multi-select only.",
+    },
+  }}
+/>
+
+This library can't look up a real workspace directory, so an id it doesn't know (anything besides
+`U0ADA`, `U0GRACE`, `U0ALAN`) renders as Slack's own loading skeleton rather than the raw id — pass
+a `resolvers.user` function to `<BlockKitProvider>` to show real names instead.
+
+### Conversations select
+
+Populated from every conversation the person can see: public and private channels, DMs, and group
+DMs. `default_to_current_conversation` preselects whatever conversation the surface was opened
+from, and `filter` narrows the list Slack offers.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "notify",
+        elements: [
+          {
+            type: "conversations_select",
+            action_id: "conversation",
+            placeholder: { type: "plain_text", text: "Notify a conversation" },
+            default_to_current_conversation: true,
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+A `filter` object restricts which conversation types Slack shows, and can drop bot users or
+external shared channels from the list:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "notify",
+        elements: [
+          {
+            type: "multi_conversations_select",
+            action_id: "conversations",
+            placeholder: { type: "plain_text", text: "Notify private channels" },
+            filter: {
+              include: ["private"],
+              exclude_bot_users: true,
+              exclude_external_shared_channels: true,
+            },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+<TypeTable
+  type={{
+    initial_conversation: {
+      type: "string",
+      description:
+        "A conversation ID preselected on load. Takes precedence over `default_to_current_conversation`. Single-select only.",
+    },
+    initial_conversations: {
+      type: "string[]",
+      description:
+        "Conversation IDs preselected on load. Ignored if `default_to_current_conversation` is set. Multi-select only.",
+    },
+    default_to_current_conversation: {
+      type: "boolean",
+      description: "Preselects the conversation the surface was opened from, if any.",
+      default: "false",
+    },
+    filter: {
+      type: "ConversationFilter",
+      description: "Narrows the list Slack offers. See below.",
+    },
+  }}
+/>
+
+`filter`'s fields:
+
+<TypeTable
+  type={{
+    include: {
+      type: '("im" | "mpim" | "private" | "public")[]',
+      description: "Only these conversation types are offered. Omit to allow all four.",
+    },
+    exclude_bot_users: {
+      type: "boolean",
+      description: "Drops bot users from the list.",
+      default: "false",
+    },
+    exclude_external_shared_channels: {
+      type: "boolean",
+      description:
+        "Drops Slack Connect (externally shared) channels from the list. Doesn't exclude external users from shared channels that remain.",
+      default: "false",
+    },
+  }}
+/>
+
+### Channels select
+
+The same idea as a conversations select, restricted to public channels the person is a member of
+— no `filter` or `default_to_current_conversation`.
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "Post to" },
+    submit: { type: "plain_text", text: "Post" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "channel",
+        label: { type: "plain_text", text: "Channel" },
+        element: {
+          type: "channels_select",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Select a channel" },
+        },
+      },
+    ],
+  }}
+/>
+
+As an `actions` element, a multi-channels-select with items already picked collapses to a
+content-sized outline button rather than the 190px dropdown a single-select uses:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "broadcast",
+        elements: [
+          {
+            type: "multi_channels_select",
+            action_id: "channels",
+            placeholder: { type: "plain_text", text: "Broadcast to" },
+            initial_channels: ["C0GENERAL", "C0RELEASES"],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+<TypeTable
+  type={{
+    initial_channel: {
+      type: "string",
+      description: "A channel ID preselected on load. Single-select only.",
+    },
+    initial_channels: {
+      type: "string[]",
+      description: "Channel IDs preselected on load. Multi-select only.",
+    },
+  }}
+/>
+
+## Interactivity
+
+A select reports its value the moment it changes — no separate submit step outside a modal. The
+field name in both the `block_actions` action and `state.values` depends on the data source and
+whether it's single- or multi-select:
+
+| Source                 | Single                  | Multi                    |
+| ---------------------- | ----------------------- | ------------------------ |
+| `static_select`        | `selected_option`       | `selected_options`       |
+| `external_select`      | `selected_option`       | `selected_options`       |
+| `users_select`         | `selected_user`         | `selected_users`         |
+| `conversations_select` | `selected_conversation` | `selected_conversations` |
+| `channels_select`      | `selected_channel`      | `selected_channels`      |
+
+A `static_select`/`external_select` reports the full option object; the other sources report just
+the id string.
+
+**Single static select**, from the priority example above:
+
+```json
+{
+  "type": "static_select",
+  "action_id": "priority",
+  "block_id": "assign",
+  "selected_option": { "text": { "type": "plain_text", "text": "High" }, "value": "high" }
+}
+```
+
+`state.values.assign.priority` holds the same `selected_option` shape, tagged with `type`:
+
+```json
+{
+  "type": "static_select",
+  "selected_option": { "text": { "type": "plain_text", "text": "High" }, "value": "high" }
+}
+```
+
+**Multi users select**, from the reviewers example above, after picking Ada and Grace:
+
+```json
+{
+  "type": "multi_users_select",
+  "action_id": "value",
+  "block_id": "reviewers",
+  "selected_users": ["U0ADA", "U0GRACE"]
+}
+```
+
+**A conversations select with a filter**, from the private-channels example:
+
+```json
+{
+  "type": "multi_conversations_select",
+  "action_id": "conversations",
+  "block_id": "notify",
+  "selected_conversations": ["C0DESIGN"]
+}
+```
+
+### Reading it in React
+
+```tsx
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+
+<BlockKitProvider
+  onAction={(action) => {
+    if (action.action_id === "priority") {
+      console.log(action.selected_option.value); // "high"
+    }
+    if (action.action_id === "reviewer") {
+      console.log(action.selected_user); // "U0ADA"
+    }
+  }}
+>
+  <Message blocks={blocks} />
+</BlockKitProvider>;
+```
+
+### block_suggestion (external select)
+
+An `external_select`/`multi_external_select` additionally sends a `block_suggestion` request to
+`onOptions` while the person types, once the query reaches `min_query_length`:
+
+```ts
+interface BlockSuggestionPayload {
+  type: "block_suggestion";
+  action_id: string;
+  block_id: string;
+  value: string; // what's typed so far
+  container: { type: "message" | "view" /* ... */ };
+  // team, user, api_app_id, token — identity fields, like any Slack payload
+}
+```
+
+`onOptions` returns either flat options or labeled groups:
+
+```ts
+type OptionsResponse =
+  | { options: SuggestionOption[] }
+  | { option_groups: { label: PlainTextElement; options: SuggestionOption[] }[] };
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each interactive element can live, and how `action_id` ties it to `state.values`.
+  </Card>
+  <Card title="Checkboxes" href="/elements/checkboxes" icon="check-square">
+    A fixed set of options with all of them visible at once, instead of a dropdown.
+  </Card>
+  <Card title="Radio buttons" href="/elements/radio-buttons" icon="circle-dot">
+    Like checkboxes, but only one option can be selected.
+  </Card>
+  <Card title="Overflow menu" href="/elements/overflow" icon="more-vertical">
+    A compact "..." menu for a short list of actions rather than data-backed options.
+  </Card>
+</CardGroup>

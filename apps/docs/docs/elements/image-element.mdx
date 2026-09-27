@@ -1,0 +1,96 @@
+---
+title: Image element
+description: A small image used as a section accessory or context_actions decoration.
+---
+
+The `image` element renders a single `<img>` from `image_url`, with `alt_text` as its accessible
+text. Use it where an image needs to sit alongside other content — as a section's accessory, or
+inside a `context_actions` row — rather than as its own block. For a full-width standalone image,
+see the [`image` block](/blocks/image) instead.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "This is a section block with an accessory image." },
+        accessory: {
+          type: "image",
+          image_url: "https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg",
+          alt_text: "cute cat",
+        },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `image`.",
+      required: true,
+    },
+    image_url: {
+      type: "string",
+      description: "A public URL to the image.",
+      required: true,
+    },
+    alt_text: {
+      type: "string",
+      description:
+        "A plain-text description of the image, for screen readers. Doesn't accept markup.",
+      required: true,
+    },
+  }}
+/>
+
+:::note
+When `image_url` is missing, the rendered `<img>` has no `src` attribute rather than a broken-image
+placeholder — there's no fallback image.
+:::
+
+## Examples
+
+### As a section accessory
+
+The preview above shows the most common placement: a thumbnail next to a section's text.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*New device sign-in*\nA new device just signed into your account.",
+        },
+        accessory: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/approvalsNewDevice.png",
+          alt_text: "New device icon",
+        },
+      },
+    ],
+  }}
+/>
+
+## Interactivity
+
+`image` is display-only — it doesn't dispatch any action and has no entry in `state.values`.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Image" href="/blocks/image" icon="image">
+    The standalone block for a full-width image with its own optional title.
+  </Card>
+  <Card title="Icon button" href="/elements/icon-button" icon="square-dot">
+    Another compact, non-text element usually placed alongside a section or context row.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

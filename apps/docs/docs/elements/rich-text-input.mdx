@@ -1,0 +1,201 @@
+---
+title: Rich text input
+description: A formatted text field, with Slack's formatting toolbar, that reports a rich_text value.
+---
+
+`rich_text_input` collects text and hands it back as a `rich_text` block, the same structure Slack
+uses for a message composed in its own WYSIWYG editor. It's an `input`-block-only element — it
+doesn't appear in an `actions` block or as a section accessory, and, like `file_input`, Slack only
+supports it in modals, not Home tabs.
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "New entry" },
+    submit: { type: "plain_text", text: "Save" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "summary",
+        label: { type: "plain_text", text: "Summary" },
+        element: {
+          type: "rich_text_input",
+          action_id: "summary_input",
+          placeholder: { type: "plain_text", text: "Write something" },
+        },
+      },
+    ],
+  }}
+/>
+
+:::note
+The formatting toolbar above the field (bold, italic, lists, links, and so on) renders exactly as
+Slack draws it, but the buttons are inert — they only act on a text selection inside Slack's own
+editor. Typing into the field itself works normally.
+:::
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: '"rich_text_input"',
+      description: "Always `rich_text_input`.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload and as the key in `state.values`. Maximum length is 255 characters.",
+    },
+    initial_value: {
+      type: "RichTextBlock",
+      description: "The rich_text content shown when the surface loads.",
+    },
+    placeholder: {
+      type: "PlainTextElement",
+      description:
+        "Grey placeholder text shown when the field is empty. Maximum length is 150 characters.",
+    },
+    min_lines: {
+      type: "number",
+      description: "The minimum number of lines shown. Must be between 1 and 100.",
+    },
+    max_lines: {
+      type: "number",
+      description:
+        "The maximum number of lines shown before the field scrolls. Must be between 1 and 100.",
+      default: "8",
+    },
+    dispatch_action_config: {
+      type: "DispatchActionConfig",
+      description: "Configures which edits fire a `block_actions` payload while typing.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses this field when the surface loads. Only one element per view can set this.",
+      default: "false",
+    },
+  }}
+/>
+
+## Examples
+
+### With an initial value
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "notes",
+        label: { type: "plain_text", text: "Release notes" },
+        element: {
+          type: "rich_text_input",
+          action_id: "notes_input",
+          initial_value: {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [{ type: "text", text: "Fixed the login redirect loop." }],
+              },
+            ],
+          },
+        },
+      },
+    ],
+  }}
+/>
+
+`initial_value` takes a full `rich_text` block, the same shape you'd get back from the element
+itself — not a plain string.
+
+### Sizing the field
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "bio",
+        label: { type: "plain_text", text: "Bio" },
+        element: {
+          type: "rich_text_input",
+          action_id: "bio_input",
+          min_lines: 5,
+          placeholder: { type: "plain_text", text: "Tell the team about yourself" },
+        },
+      },
+    ],
+  }}
+/>
+
+`min_lines` sets the field's starting height; `max_lines` (8 by default) caps how tall it grows
+before it scrolls.
+
+## Interactivity
+
+Typing calls `onAction` with the current content wrapped as a `rich_text` block, under
+`rich_text_value`:
+
+```json
+{
+  "type": "rich_text_input",
+  "action_id": "notes_input",
+  "block_id": "notes",
+  "action_ts": "1706000000.000100",
+  "rich_text_value": {
+    "type": "rich_text",
+    "elements": [
+      {
+        "type": "rich_text_section",
+        "elements": [{ "type": "text", "text": "Fixed the login redirect loop." }]
+      }
+    ]
+  }
+}
+```
+
+### Reading the value
+
+Every edit (and the initial value, if any) is written to `state.values` as `{ type, rich_text_value
+}`:
+
+```json
+{
+  "notes": {
+    "notes_input": {
+      "type": "rich_text_input",
+      "rich_text_value": {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [{ "type": "text", "text": "Fixed the login redirect loop." }]
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Text inputs" href="/elements/text-inputs" icon="text-cursor-input">
+    Plain text, email, URL and number inputs that report a plain string instead.
+  </Card>
+  <Card title="File input" href="/elements/file-input" icon="paperclip">
+    Collect file uploads in a modal.
+  </Card>
+  <Card title="Date picker" href="/elements/date-picker" icon="calendar">
+    Pick a single date from a calendar dropdown.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

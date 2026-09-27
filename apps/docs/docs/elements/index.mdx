@@ -1,0 +1,92 @@
+---
+title: Elements overview
+description: What Block Kit elements are, where each one can live, and how they report interactions.
+---
+
+Elements are the interactive (and image) pieces you place inside a block — a button, a select
+menu, a date picker, a checkbox group. A block lays elements out; an element renders the control
+and, when the person interacts with it, reports what happened.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*Deploy to production?*" },
+        accessory: {
+          type: "button",
+          text: { type: "plain_text", text: "Deploy" },
+          style: "primary",
+          action_id: "deploy",
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+## action_id
+
+Every interactive element carries an `action_id`, a string you choose that identifies it within
+its block. When the element fires, Slack sends it back to your app in `action_id` so you know
+which control the person used. Combined with the block's `block_id`, it's also the path into
+`state.values` for elements that hold a value (see each element's "Reading the value" section).
+
+:::note
+`action_id` only needs to be unique within a block — but keeping it unique across the whole
+surface makes your handler code simpler.
+:::
+
+## Where elements live
+
+Slack restricts which elements can appear in which context:
+
+- **`actions` block** — up to 25 elements laid out in a row (some, like checkboxes and radio
+  buttons, always take the full row).
+- **Section accessory** — one element to the right of (or, for checkboxes/radio buttons, stacked
+  below) a section's text.
+- **`input` block** — one element per block, used in modals and Home tabs to collect a value.
+- **`context_actions` block** — a trailing row of small icon-style actions, typically under an
+  AI-generated message (feedback thumbs, copy, retry, overflow).
+
+## Element × block support
+
+| Element                                           | `actions`        | Section accessory | `input`           | `context_actions` |
+| ------------------------------------------------- | ---------------- | ----------------- | ----------------- | ----------------- |
+| [Button](/elements/button)                        | Yes              | Yes               | —                 | —                 |
+| [Overflow menu](/elements/overflow)               | Yes              | Yes               | —                 | —                 |
+| [Select menus](/elements/select-menus)            | Yes              | Yes               | Yes               | —                 |
+| [Checkboxes](/elements/checkboxes)                | Yes (full width) | Yes (stacked)     | Yes               | —                 |
+| [Radio buttons](/elements/radio-buttons)          | Yes (full width) | Yes (stacked)     | Yes               | —                 |
+| [Date picker](/elements/date-picker)              | Yes              | Yes               | Yes               | —                 |
+| [Time picker](/elements/time-picker)              | Yes              | Yes               | Yes               | —                 |
+| [Date and time picker](/elements/datetime-picker) | Yes (full width) | —                 | Yes               | —                 |
+| [Text inputs](/elements/text-inputs)              | —                | —                 | Yes               | —                 |
+| [Rich text input](/elements/rich-text-input)      | —                | —                 | Yes               | —                 |
+| [File input](/elements/file-input)                | —                | —                 | Yes (modals only) | —                 |
+| [Icon button](/elements/icon-button)              | Yes              | —                 | —                 | Yes               |
+| [Feedback buttons](/elements/feedback-buttons)    | —                | —                 | —                 | Yes               |
+| [Image element](/elements/image-element)          | —                | Yes               | —                 | Yes               |
+| [Workflow button](/elements/workflow-button)      | Yes              | —                 | —                 | —                 |
+
+:::tip
+Any element can carry a [`confirm`](/elements/confirmation-dialogs) object, which shows a
+confirmation dialog before the action goes through.
+:::
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Button" href="/elements/button" icon="mouse-pointer-click">
+    The most common interactive element: default, primary, danger and link styles.
+  </Card>
+  <Card title="Select menus" href="/elements/select-menus" icon="list">
+    Static, external, users, conversations and channels selects, single or multi.
+  </Card>
+  <Card title="Text inputs" href="/elements/text-inputs" icon="text-cursor-input">
+    Plain text, email, URL and number inputs for modals and Home tabs.
+  </Card>
+  <Card title="Confirmation dialogs" href="/elements/confirmation-dialogs" icon="shield-alert">
+    Add a confirm step to any element with the `confirm` object.
+  </Card>
+</CardGroup>

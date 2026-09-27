@@ -1,0 +1,301 @@
+---
+title: Checkboxes
+description: A group of options where any number can be selected at once.
+---
+
+`checkboxes` renders a stack of checkbox options. Use it when someone can pick zero, one, or
+several options from a short list — an `actions` row or section accessory for a live toggle, or an
+`input` block to collect a value in a modal or Home tab.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "notify",
+        elements: [
+          {
+            type: "checkboxes",
+            action_id: "channels",
+            options: [
+              { text: { type: "plain_text", text: "Email me" }, value: "email" },
+              { text: { type: "plain_text", text: "Notify #general" }, value: "general" },
+              { text: { type: "plain_text", text: "Post to #releases" }, value: "releases" },
+            ],
+            initial_options: [{ text: { type: "plain_text", text: "Email me" }, value: "email" }],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `checkboxes`.",
+      required: true,
+    },
+    options: {
+      type: "Option[]",
+      description: "The checkbox options, in order. Slack allows a maximum of 10.",
+      required: true,
+    },
+    initial_options: {
+      type: "Option[]",
+      description:
+        "A subset of `options` that starts checked. Each entry must match one of `options` by `value`.",
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload. Must be unique within the block. Maximum length is 255 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description:
+        "Shows a confirmation dialog before a check or uncheck is dispatched. See Confirmation dialogs.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses the first checkbox when the surface loads. Slack ignores this in messages and allows it on only one element per view.",
+      default: "false",
+    },
+  }}
+/>
+
+Each option is an [Option object](/elements/select-menus):
+
+<TypeTable
+  type={{
+    text: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "The option's label. Maximum length is 75 characters.",
+      required: true,
+    },
+    value: {
+      type: "string",
+      description:
+        "Sent back in the interaction payload when this option is checked. Maximum length is 75 characters.",
+    },
+    description: {
+      type: "PlainTextElement",
+      description:
+        "A line of descriptive text shown below the label. Maximum length is 75 characters.",
+    },
+  }}
+/>
+
+## Examples
+
+### With initial options checked
+
+The preview above starts with "Email me" already checked, using `initial_options`.
+
+### Without initial options
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "flags",
+        elements: [
+          {
+            type: "checkboxes",
+            action_id: "flags-action",
+            options: [
+              { text: { type: "plain_text", text: "Enable beta features" }, value: "beta" },
+              { text: { type: "plain_text", text: "Send usage analytics" }, value: "analytics" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+Every option starts unchecked, and `onAction` doesn't fire until the first check.
+
+### With option descriptions
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "perms",
+        elements: [
+          {
+            type: "checkboxes",
+            action_id: "perms-action",
+            options: [
+              {
+                text: { type: "plain_text", text: "Read access" },
+                description: { type: "plain_text", text: "Can view files and messages" },
+                value: "read",
+              },
+              {
+                text: { type: "plain_text", text: "Write access" },
+                description: { type: "plain_text", text: "Can create and edit content" },
+                value: "write",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+A description adds a second, muted line under the option's label.
+
+### As a section accessory
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*Deployment options*\nChoose what runs after this merge." },
+        accessory: {
+          type: "checkboxes",
+          action_id: "deploy-steps",
+          options: [
+            { text: { type: "plain_text", text: "Run tests" }, value: "tests" },
+            { text: { type: "plain_text", text: "Deploy to staging" }, value: "staging" },
+          ],
+          initial_options: [{ text: { type: "plain_text", text: "Run tests" }, value: "tests" }],
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+As a section accessory, the group stacks below the section's text instead of sitting beside it.
+
+### In an input block
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "Notification settings" },
+    submit: { type: "plain_text", text: "Save" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "notify-input",
+        label: { type: "plain_text", text: "Notify me about" },
+        element: {
+          type: "checkboxes",
+          action_id: "checkboxes-action",
+          options: [
+            { text: { type: "plain_text", text: "New comments" }, value: "comments" },
+            { text: { type: "plain_text", text: "Mentions" }, value: "mentions" },
+            { text: { type: "plain_text", text: "Weekly digest" }, value: "digest" },
+          ],
+        },
+        optional: false,
+      },
+    ],
+  }}
+/>
+
+### With a confirmation dialog
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "danger-zone",
+        elements: [
+          {
+            type: "checkboxes",
+            action_id: "danger-action",
+            options: [
+              {
+                text: { type: "plain_text", text: "Delete source files after export" },
+                value: "delete-source",
+              },
+            ],
+            confirm: {
+              title: { type: "plain_text", text: "Are you sure?" },
+              text: { type: "mrkdwn", text: "This can't be undone." },
+              confirm: { type: "plain_text", text: "Yes, delete" },
+              deny: { type: "plain_text", text: "Cancel" },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+The dialog only appears when checking an option on — unchecking never asks for confirmation. See
+[Confirmation dialogs](/elements/confirmation-dialogs).
+
+## Interactivity
+
+Checking or unchecking an option (after any confirm dialog is accepted) calls `onAction` with the
+full, current set of checked options under `selected_options` — not just the one that changed:
+
+```json
+{
+  "type": "checkboxes",
+  "action_id": "channels",
+  "block_id": "notify",
+  "action_ts": "1706000000.000100",
+  "selected_options": [
+    { "text": { "type": "plain_text", "text": "Email me" }, "value": "email" },
+    { "text": { "type": "plain_text", "text": "Notify #general" }, "value": "general" }
+  ]
+}
+```
+
+### Reading the value
+
+Checkboxes write to `state.values` on mount (reporting `initial_options`, exactly like Slack does
+when the surface loads) and again on every change:
+
+```json
+{
+  "notify": {
+    "channels": {
+      "type": "checkboxes",
+      "selected_options": [
+        { "text": { "type": "plain_text", "text": "Email me" }, "value": "email" }
+      ]
+    }
+  }
+}
+```
+
+An unchecked group with no `initial_options` reports `selected_options: []`, not a missing key.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Radio buttons" href="/elements/radio-buttons" icon="circle-dot">
+    The single-select equivalent — at most one option checked at a time.
+  </Card>
+  <Card title="Select menus" href="/elements/select-menus" icon="list">
+    Static, external, users, conversations and channels selects, single or multi.
+  </Card>
+  <Card title="Confirmation dialogs" href="/elements/confirmation-dialogs" icon="shield-alert">
+    Add a confirm step to any element with the `confirm` object.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

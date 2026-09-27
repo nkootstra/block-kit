@@ -1,0 +1,149 @@
+---
+title: Workflow button
+description: A button that runs a Slack workflow's link trigger.
+---
+
+`workflow_button` looks like a regular button with a small lightning-bolt glyph, and carries a
+`workflow` object describing the [link trigger](https://docs.slack.dev/tools/deno-slack-sdk/guides/creating-link-triggers/#workflow_buttons)
+it runs when clicked.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "workflow",
+        elements: [
+          {
+            type: "workflow_button",
+            action_id: "run_workflow",
+            text: { type: "plain_text", text: "Run workflow" },
+            workflow: {
+              trigger: {
+                url: "https://slack.com/shortcuts/Ft0123ABC456/321cba",
+                customizable_input_parameters: [
+                  { name: "input_parameter_a", value: "Value for input param A" },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `workflow_button`.",
+      required: true,
+    },
+    text: {
+      type: "PlainTextElement",
+      description:
+        "The button's label. Truncates around 30 characters. Maximum length is 75 characters.",
+      required: true,
+    },
+    workflow: {
+      type: "{ trigger: { url: string; customizable_input_parameters?: { name: string; value: string }[] } }",
+      description: "The link trigger this button runs, and any input values to pass to it.",
+      required: true,
+    },
+    style: {
+      type: '"primary" | "danger"',
+      description:
+        "`primary` renders green, `danger` renders red. Omit for the default gray style.",
+    },
+    accessibility_label: {
+      type: "string",
+      description: "Read by screen readers instead of `text`. Maximum length is 75 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description:
+        "Shows a confirmation dialog before the click is dispatched. See Confirmation dialogs.",
+    },
+  }}
+/>
+
+:::note
+Slack's real `block_actions` payload includes `action_id` on a `workflow_button` action, even
+though `@slack/types` omits it from the element's own type. Set `action_id` on the element and this
+library forwards it in the payload; without one it falls back to `""`.
+:::
+
+## Examples
+
+### Primary style
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "workflow_button",
+            action_id: "run_workflow",
+            text: { type: "plain_text", text: "Start onboarding" },
+            style: "primary",
+            workflow: { trigger: { url: "https://slack.com/shortcuts/Ft0123ABC456/321cba" } },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Interactivity
+
+:::warning
+This is a preview environment, not a real Slack workspace: clicking the button never calls the
+trigger URL or runs a real workflow. It only dispatches the `block_actions` payload below, exactly
+like a real Slack client would send to your app before the platform runs the workflow.
+:::
+
+Clicking the button (after any confirm dialog is accepted) calls `onAction` with a
+`workflow_button` action carrying the `workflow` object and text back verbatim:
+
+```json
+{
+  "type": "workflow_button",
+  "action_id": "run_workflow",
+  "block_id": "workflow",
+  "action_ts": "1706000000.000100",
+  "text": { "type": "plain_text", "text": "Run workflow", "emoji": true },
+  "workflow": {
+    "trigger": {
+      "url": "https://slack.com/shortcuts/Ft0123ABC456/321cba",
+      "customizable_input_parameters": [
+        { "name": "input_parameter_a", "value": "Value for input param A" }
+      ]
+    }
+  },
+  "style": "primary"
+}
+```
+
+`style` is only included when the element sets it. A workflow button doesn't write to
+`state.values` — it's a one-shot action.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Button" href="/elements/button" icon="mouse-pointer-click">
+    The plain button this element visually extends.
+  </Card>
+  <Card title="Confirmation dialogs" href="/elements/confirmation-dialogs" icon="shield-alert">
+    Add a confirm step to any element with the `confirm` object.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

@@ -1,0 +1,255 @@
+---
+title: Text inputs
+description: Single-line and multi-line text fields, plus email, URL and number variants, for collecting free text in a modal or Home tab.
+---
+
+`plain_text_input` collects free text. Slack also ships three constrained variants that render the
+same control with a different keyboard and, for email and URL, a small leading icon:
+`email_text_input`, `url_text_input` and `number_input`. All four are `input`-block-only elements —
+they don't appear in an `actions` block or as a section accessory.
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "New task" },
+    submit: { type: "plain_text", text: "Create" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "title",
+        label: { type: "plain_text", text: "Title" },
+        element: {
+          type: "plain_text_input",
+          action_id: "title_input",
+          placeholder: { type: "plain_text", text: "e.g. Ship the release notes" },
+        },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: '"plain_text_input" | "email_text_input" | "url_text_input" | "number_input"',
+      description: "Which variant to render. All four share the fields below.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload and as the key in `state.values`. Maximum length is 255 characters.",
+    },
+    initial_value: {
+      type: "string",
+      description: "The value shown when the surface loads.",
+    },
+    placeholder: {
+      type: "PlainTextElement",
+      description:
+        "Grey placeholder text shown when the field is empty. Maximum length is 150 characters.",
+    },
+    multiline: {
+      type: "boolean",
+      description:
+        "`plain_text_input` only. Renders a resizable textarea instead of a single-line field.",
+      default: "false",
+    },
+    min_length: {
+      type: "number",
+      description:
+        "`plain_text_input` only. Minimum number of characters required on submit. Maximum value is 3000.",
+    },
+    max_length: {
+      type: "number",
+      description: "`plain_text_input` only. Maximum number of characters allowed.",
+    },
+    is_decimal_allowed: {
+      type: "boolean",
+      description:
+        "`number_input` only. Allows a decimal point when `true`; otherwise only whole numbers can be typed. Required for this variant.",
+    },
+    min_value: {
+      type: "string",
+      description:
+        "`number_input` only. The smallest value allowed; cannot be greater than `max_value`.",
+    },
+    max_value: {
+      type: "string",
+      description:
+        "`number_input` only. The largest value allowed; cannot be less than `min_value`.",
+    },
+    dispatch_action_config: {
+      type: "DispatchActionConfig",
+      description:
+        "Configures which keystrokes fire a `block_actions` payload while typing. See Dispatching actions below.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses this field when the surface loads. Only one element per view can set this.",
+      default: "false",
+    },
+  }}
+/>
+
+:::note
+`number_input` requires `is_decimal_allowed` — Slack has no default for it, so always set it
+explicitly.
+:::
+
+## Examples
+
+### Single line vs. multiline
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "feedback",
+        label: { type: "plain_text", text: "Feedback" },
+        element: {
+          type: "plain_text_input",
+          action_id: "feedback_input",
+          multiline: true,
+          placeholder: { type: "plain_text", text: "What went well? What didn't?" },
+        },
+      },
+    ],
+  }}
+/>
+
+Setting `multiline: true` swaps the single-line field for a textarea that grows with the content.
+Pressing Enter inside a multiline field inserts a newline instead of submitting.
+
+### Email, URL and number variants
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "email",
+        label: { type: "plain_text", text: "Email address" },
+        element: {
+          type: "email_text_input",
+          action_id: "email_input",
+          placeholder: { type: "plain_text", text: "name@example.com" },
+        },
+        hint: { type: "plain_text", text: "We'll only use this for receipts." },
+      },
+      {
+        type: "input",
+        block_id: "website",
+        optional: true,
+        label: { type: "plain_text", text: "Website" },
+        element: {
+          type: "url_text_input",
+          action_id: "url_input",
+          initial_value: "https://example.com",
+        },
+      },
+      {
+        type: "input",
+        block_id: "quantity",
+        label: { type: "plain_text", text: "Quantity" },
+        element: {
+          type: "number_input",
+          action_id: "number_input",
+          is_decimal_allowed: false,
+          min_value: "1",
+          max_value: "99",
+          initial_value: "3",
+        },
+      },
+    ],
+  }}
+/>
+
+`email_text_input` and `url_text_input` show a small envelope or link icon inside the field.
+`number_input` restricts what can be typed to digits (and, with `is_decimal_allowed: true`, a
+single decimal point) — Slack rejects the keystroke rather than showing it and clearing it.
+
+### Dispatching actions as you type
+
+By default, an `input` block's element only reports its value into `state.values`, which your app
+reads when the surface is submitted — typing doesn't fire an action. Set the block's
+`dispatch_action: true` and, optionally, the element's `dispatch_action_config` to get a live
+`block_actions` payload while the person types:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "search",
+        dispatch_action: true,
+        label: { type: "plain_text", text: "Search" },
+        element: {
+          type: "plain_text_input",
+          action_id: "search_input",
+          dispatch_action_config: { trigger_actions_on: ["on_character_entered"] },
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+`trigger_actions_on` accepts `on_enter_pressed` (the default) and `on_character_entered`. With the
+default, single-line fields also pick up a "Press 'enter' to submit" hint automatically, unless the
+block already has its own `hint` — multiline fields never show it, since Enter inserts a newline
+there instead of submitting.
+
+### Initial value
+
+The Website field above starts pre-filled with `https://example.com` via `initial_value`. Slack
+reports the initial value into `state.values` as soon as the surface loads, before any typing.
+
+## Interactivity
+
+With `dispatch_action` set, every trigger calls `onAction` with the current text as `value`:
+
+```json
+{
+  "type": "plain_text_input",
+  "action_id": "search_input",
+  "block_id": "search",
+  "action_ts": "1706000000.000100",
+  "value": "rel"
+}
+```
+
+### Reading the value
+
+Every keystroke (and the initial value, if any) is written to `state.values` in Slack's
+`{ type, value }` shape, keyed by the element's variant `type`:
+
+```json
+{
+  "email": {
+    "email_input": { "type": "email_text_input", "value": "name@example.com" }
+  }
+}
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Rich text input" href="/elements/rich-text-input" icon="pilcrow">
+    A formatted text field that reports a `rich_text` value instead of a plain string.
+  </Card>
+  <Card title="File input" href="/elements/file-input" icon="paperclip">
+    Collect file uploads in a modal.
+  </Card>
+  <Card title="Date picker" href="/elements/date-picker" icon="calendar">
+    Pick a single date from a calendar dropdown.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

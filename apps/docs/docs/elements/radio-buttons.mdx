@@ -1,0 +1,294 @@
+---
+title: Radio buttons
+description: A group of options where exactly one can be selected at a time.
+---
+
+`radio_buttons` renders a stack of options where picking one clears any other. Use it when someone
+must choose a single option from a short list — an `actions` row or section accessory for a live
+choice, or an `input` block to collect a value in a modal or Home tab.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "priority",
+        elements: [
+          {
+            type: "radio_buttons",
+            action_id: "level",
+            options: [
+              { text: { type: "plain_text", text: "Low" }, value: "low" },
+              { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+              { text: { type: "plain_text", text: "High" }, value: "high" },
+            ],
+            initial_option: { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `radio_buttons`.",
+      required: true,
+    },
+    options: {
+      type: "Option[]",
+      description: "The options, in order. Slack allows a maximum of 10.",
+      required: true,
+    },
+    initial_option: {
+      type: "Option",
+      description: "The option that starts selected. Must match one of `options` by `value`.",
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload. Must be unique within the block. Maximum length is 255 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description:
+        "Shows a confirmation dialog before a new selection is dispatched. See Confirmation dialogs.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses the first radio button when the surface loads. Slack ignores this in messages and allows it on only one element per view.",
+      default: "false",
+    },
+  }}
+/>
+
+Each option is an [Option object](/elements/select-menus):
+
+<TypeTable
+  type={{
+    text: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "The option's label. Maximum length is 75 characters.",
+      required: true,
+    },
+    value: {
+      type: "string",
+      description:
+        "Sent back in the interaction payload when this option is selected. Maximum length is 75 characters.",
+    },
+    description: {
+      type: "PlainTextElement",
+      description:
+        "A line of descriptive text shown below the label. Maximum length is 75 characters.",
+    },
+  }}
+/>
+
+## Examples
+
+### With an initial option selected
+
+The preview above starts with "Medium" already selected, using `initial_option`.
+
+### Without an initial option
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "plan",
+        elements: [
+          {
+            type: "radio_buttons",
+            action_id: "plan-action",
+            options: [
+              { text: { type: "plain_text", text: "Monthly" }, value: "monthly" },
+              { text: { type: "plain_text", text: "Annual" }, value: "annual" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+Nothing starts selected, and `onAction` doesn't fire until the first pick.
+
+### With option descriptions
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "tier",
+        elements: [
+          {
+            type: "radio_buttons",
+            action_id: "tier-action",
+            options: [
+              {
+                text: { type: "plain_text", text: "Standard" },
+                description: { type: "plain_text", text: "Good for most teams" },
+                value: "standard",
+              },
+              {
+                text: { type: "plain_text", text: "Enterprise" },
+                description: { type: "plain_text", text: "SSO, audit logs, and SLAs" },
+                value: "enterprise",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+A description adds a second, muted line under the option's label.
+
+### As a section accessory
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*Release channel*\nPick which builds you receive." },
+        accessory: {
+          type: "radio_buttons",
+          action_id: "channel-action",
+          options: [
+            { text: { type: "plain_text", text: "Stable" }, value: "stable" },
+            { text: { type: "plain_text", text: "Beta" }, value: "beta" },
+          ],
+          initial_option: { text: { type: "plain_text", text: "Stable" }, value: "stable" },
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+As a section accessory, the group stacks below the section's text instead of sitting beside it.
+
+### In an input block
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "Escalation" },
+    submit: { type: "plain_text", text: "Save" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "severity-input",
+        label: { type: "plain_text", text: "Severity" },
+        element: {
+          type: "radio_buttons",
+          action_id: "radio_buttons-action",
+          options: [
+            { text: { type: "plain_text", text: "Low" }, value: "low" },
+            { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+            { text: { type: "plain_text", text: "High" }, value: "high" },
+          ],
+        },
+        optional: false,
+      },
+    ],
+  }}
+/>
+
+### With a confirmation dialog
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "billing",
+        elements: [
+          {
+            type: "radio_buttons",
+            action_id: "billing-action",
+            options: [
+              { text: { type: "plain_text", text: "Monthly" }, value: "monthly" },
+              { text: { type: "plain_text", text: "Annual (save 20%)" }, value: "annual" },
+            ],
+            confirm: {
+              title: { type: "plain_text", text: "Switch billing plan?" },
+              text: { type: "mrkdwn", text: "This takes effect on your next invoice." },
+              confirm: { type: "plain_text", text: "Switch" },
+              deny: { type: "plain_text", text: "Cancel" },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+The dialog appears before any new selection is applied — picking the option that's already
+selected does nothing and never asks. See [Confirmation dialogs](/elements/confirmation-dialogs).
+
+## Interactivity
+
+Selecting an option (after any confirm dialog is accepted) calls `onAction` with the chosen option
+under `selected_option`:
+
+```json
+{
+  "type": "radio_buttons",
+  "action_id": "level",
+  "block_id": "priority",
+  "action_ts": "1706000000.000100",
+  "selected_option": { "text": { "type": "plain_text", "text": "High" }, "value": "high" }
+}
+```
+
+### Reading the value
+
+Radio buttons write to `state.values` on mount when `initial_option` is set (reporting it exactly
+like Slack does when the surface loads), and again on every selection:
+
+```json
+{
+  "priority": {
+    "level": {
+      "type": "radio_buttons",
+      "selected_option": { "text": { "type": "plain_text", "text": "Medium" }, "value": "medium" }
+    }
+  }
+}
+```
+
+Without `initial_option`, nothing is written to `state.values` until the first pick — unlike
+checkboxes, there's no empty state to report.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Checkboxes" href="/elements/checkboxes" icon="check-square">
+    The multi-select equivalent — any number of options can be checked at once.
+  </Card>
+  <Card title="Select menus" href="/elements/select-menus" icon="list">
+    Static, external, users, conversations and channels selects, single or multi.
+  </Card>
+  <Card title="Confirmation dialogs" href="/elements/confirmation-dialogs" icon="shield-alert">
+    Add a confirm step to any element with the `confirm` object.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>
