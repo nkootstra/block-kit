@@ -9,9 +9,9 @@ export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true" {...props}>
       <path
-        d="M5.5 8L10 12.5L14.5 8"
+        d="M6.25 8L10 11.75L13.75 8"
         stroke="currentColor"
-        strokeWidth="1.75"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -19,32 +19,43 @@ export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Slack's calendar: a 1.5-stroke rounded frame with a header rule over a grid of eight dots. */
 export function CalendarIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true" {...props}>
       <rect
-        x="3.5"
-        y="4.5"
-        width="13"
-        height="12"
-        rx="1.5"
+        x="1.75"
+        y="1.75"
+        width="16.5"
+        height="16.5"
+        rx="2.25"
         stroke="currentColor"
-        strokeWidth="1.4"
+        strokeWidth="1.5"
       />
-      <path d="M3.5 8H16.5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M7 3V5.5M13 3V5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M1.75 5.75H18.25" stroke="currentColor" strokeWidth="1.5" />
+      <g fill="currentColor">
+        <circle cx="10" cy="9" r="1" />
+        <circle cx="14" cy="9" r="1" />
+        <circle cx="6" cy="12" r="1" />
+        <circle cx="10" cy="12" r="1" />
+        <circle cx="14" cy="12" r="1" />
+        <circle cx="6" cy="15" r="1" />
+        <circle cx="10" cy="15" r="1" />
+        <circle cx="14" cy="15" r="1" />
+      </g>
     </svg>
   );
 }
 
+/** Slack's clock: a full-size 1.5-stroke ring with an L-shaped hand pointing at three o'clock. */
 export function ClockIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true" {...props}>
-      <circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="10" cy="10" r="8.25" stroke="currentColor" strokeWidth="1.5" />
       <path
-        d="M10 6.5V10L12.3 11.6"
+        d="M9.75 5.75V10.25H13.75"
         stroke="currentColor"
-        strokeWidth="1.4"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
