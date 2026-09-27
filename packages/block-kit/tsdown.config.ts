@@ -27,6 +27,9 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
+  // Components use hooks and context, so React Server Components need them marked as client
+  // code. The parser, relay and Web API entries stay importable from server code.
+  banner: ({ fileName }) => (fileName === "index.js" ? '"use client";' : undefined),
   async onSuccess() {
     await writeFile("dist/styles.css", await bundleCss("src/styles.css"));
   },
