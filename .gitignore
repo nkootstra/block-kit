@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.turbo/
+coverage/
+*.log
+.DS_Store
+*.tsbuildinfo
+# Playwright / visual diff output
+test-results/
+playwright-report/
+fixtures/**/*.actual.png
+fixtures/**/*.diff.png
+# Slack session used to capture references; never commit
+tools/visual/.auth/
+# Local secrets (e.g. the playground relay's signing secret); never commit
+.env*.local
