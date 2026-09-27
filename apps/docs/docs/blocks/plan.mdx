@@ -1,0 +1,168 @@
+---
+title: Plan
+description: A collapsible, step-by-step agent plan, with a status per task.
+---
+
+`plan` groups a sequence of tasks under one shared goal, each with its own status. It's a [Slack
+block documented for agent surfaces](https://docs.slack.dev/reference/block-kit/blocks/plan-block/),
+newer than the version of `@slack/types` this library depends on — its TypeScript type is the field
+reference here. It's read-only: expanding a plan doesn't emit an action.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "plan",
+        title: "Demonstrating Plan Block Features",
+        tasks: [
+          {
+            task_id: "task_1",
+            title: "Fetching data from Slack API",
+            status: "complete",
+            details: {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [
+                    {
+                      type: "text",
+                      text: "Retrieving thinking steps data from Slack API endpoints",
+                    },
+                  ],
+                },
+              ],
+            },
+            output: {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [
+                    {
+                      type: "text",
+                      text: "Successfully retrieved thinking steps schema and configuration data",
+                    },
+                  ],
+                },
+              ],
+            },
+            sources: [
+              {
+                type: "url",
+                url: "https://api.slack.com/partners/thinking-steps",
+                text: "Thinking Steps Documentation",
+              },
+            ],
+          },
+          {
+            task_id: "task_2",
+            title: "Organizing tasks under a shared goal",
+            status: "in_progress",
+            details: {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [
+                    {
+                      type: "text",
+                      text: "Structuring sequential workflow steps with cohesive planning display",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            task_id: "task_3",
+            title: "Display structured workflow progress",
+            status: "pending",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+Click the pill to expand the plan and see each task's details, output, and sources.
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `plan`.",
+      required: true,
+    },
+    title: {
+      type: "string",
+      description: "The plan's shared goal, shown in the collapsed pill.",
+      required: true,
+    },
+    tasks: {
+      type: "PlanTask[]",
+      description: "The steps, in order. An invalid or missing value renders an empty plan.",
+    },
+  }}
+/>
+
+### PlanTask
+
+A plan's tasks share the same shape as a standalone [task card](/blocks/task-card):
+
+<TypeTable
+  type={{
+    task_id: {
+      type: "string",
+      description: "Identifies the task.",
+      required: true,
+    },
+    title: {
+      type: "string",
+      description: "The task's one-line summary.",
+      required: true,
+    },
+    status: {
+      type: '"pending" | "in_progress" | "complete" | "error"',
+      description:
+        "The task's state. The status icon distinguishes `complete` and `in_progress`; `pending` and `error` currently render the same dashed-circle icon.",
+      required: true,
+    },
+    details: {
+      type: "RichTextBlock",
+      description: "What the task is doing, shown when the plan is expanded.",
+    },
+    output: {
+      type: "RichTextBlock",
+      description: "The task's result, shown below `details`.",
+    },
+    sources: {
+      type: '{ type: "url"; url: string; text?: string }[]',
+      description: "Links shown under the task. `text` defaults to the raw URL.",
+    },
+  }}
+/>
+
+The plan's own collapsed pill shows one aggregate icon: `in_progress` if any task is in progress, else
+`pending` if any task is pending, else `complete`.
+
+## Examples
+
+### Every task status
+
+The preview above covers `complete`, `in_progress`, and `pending` in one plan, plus optional
+`details`, `output`, and `sources` on the first two tasks — all three fields are safe to omit, as the
+third task shows.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Task card" href="/blocks/task-card" icon="square-check">
+    The single-task version of a plan's steps.
+  </Card>
+  <Card title="Data table" href="/blocks/data-table" icon="table-2">
+    Another agent-oriented block for structured output.
+  </Card>
+</CardGroup>

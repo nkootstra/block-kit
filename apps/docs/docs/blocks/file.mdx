@@ -1,0 +1,90 @@
+---
+title: File
+description: A card referencing a file shared by a remote storage provider.
+---
+
+`file` renders a reference to a file — currently only `source: "remote"`, a file registered by an
+app through Slack's `files.remote` APIs (e.g. a Google Drive or Dropbox document). Use it to show a
+linked document Slack knows about without embedding its contents.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "file",
+        external_id: "F0123456789",
+        source: "remote",
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `file`.",
+      required: true,
+    },
+    external_id: {
+      type: "string",
+      description:
+        "The id the registering app assigned the file when it called `files.remote.add`.",
+      required: true,
+    },
+    source: {
+      type: "string",
+      description: 'The file\'s source. Slack currently only documents `"remote"`.',
+      required: true,
+      default: '"remote"',
+    },
+    block_id: {
+      type: "string",
+      description: "A unique identifier, up to 255 characters.",
+    },
+  }}
+/>
+
+:::note
+In a real Slack workspace, Slack resolves `external_id` through the registering app's `files.remote`
+integration and shows a full preview card — filename, file-type icon, and (for supported types) a
+thumbnail. This library has no workspace to call, so it renders a generic placeholder card with the
+raw `external_id` and `source` instead of the resolved filename. This is based on an unverified
+fixture, since there's no Block Kit Builder reference to check it against.
+:::
+
+## Examples
+
+### Remote file reference
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "file",
+        external_id: "F0123456789",
+        source: "remote",
+      },
+    ],
+  }}
+/>
+
+Outside a real Slack workspace, only the fields present in the JSON are available, so the card shows
+the `external_id` in place of the file's actual name — there's no way to look up the real filename,
+type icon, or thumbnail without calling back into the registering app.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Image" href="/blocks/image" icon="image">
+    A standalone image with an optional title row.
+  </Card>
+  <Card title="Video" href="/blocks/video" icon="play">
+    A video preview with a thumbnail, title, and description.
+  </Card>
+  <Card title="Section" href="/blocks/section" icon="rows-3">
+    The most common block for text and accessories.
+  </Card>
+</CardGroup>

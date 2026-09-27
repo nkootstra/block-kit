@@ -1,0 +1,286 @@
+---
+title: Actions
+description: A row of interactive elements — buttons, selects, date pickers, and more.
+---
+
+`actions` lays out a row of interactive elements: buttons, select menus, checkboxes, radio
+buttons, date and time pickers, and overflow menus. Reach for it whenever you need controls that
+aren't tied to a specific piece of text, the way a [section](/blocks/section) accessory is.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "approve",
+            text: { type: "plain_text", text: "Approve", emoji: true },
+            style: "primary",
+            value: "approve",
+          },
+          {
+            type: "button",
+            action_id: "deny",
+            text: { type: "plain_text", text: "Deny", emoji: true },
+            style: "danger",
+            value: "deny",
+          },
+          {
+            type: "overflow",
+            action_id: "more_menu",
+            options: [
+              { text: { type: "plain_text", text: "Edit" }, value: "edit" },
+              { text: { type: "plain_text", text: "Archive" }, value: "archive" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `actions`.",
+      required: true,
+    },
+    elements: {
+      type: "ActionsBlockElement[]",
+      description: "The row's elements, in order. Slack allows up to 25.",
+      required: true,
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for this block. Auto-generated if omitted. Maximum length is 255 characters.",
+    },
+  }}
+/>
+
+`elements` accepts buttons, all five select menu types, checkboxes, radio buttons, a date picker,
+a time picker, a combined date-time picker, an overflow menu, a workflow button, and a rich text
+input. Checkboxes, radio buttons, and the date-time picker each take their own full-width row
+instead of sitting side by side with the others, matching Slack's own layout.
+
+## Examples
+
+### Buttons
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "actionId-0",
+            text: { type: "plain_text", text: "Click Me", emoji: true },
+            value: "click_me_123",
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+### Select menus
+
+Static, users, and conversations selects side by side. See [select menus](/elements/select-menus)
+for the other types, including multi-select and external selects.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "conversations_select",
+            action_id: "actionId-0",
+            placeholder: { type: "plain_text", text: "Select a conversation", emoji: true },
+          },
+          {
+            type: "users_select",
+            action_id: "actionId-1",
+            placeholder: { type: "plain_text", text: "Select a user", emoji: true },
+          },
+          {
+            type: "static_select",
+            action_id: "actionId-2",
+            placeholder: { type: "plain_text", text: "Select an item", emoji: true },
+            options: [
+              { text: { type: "plain_text", text: "Apple", emoji: true }, value: "apple" },
+              { text: { type: "plain_text", text: "Banana", emoji: true }, value: "banana" },
+              { text: { type: "plain_text", text: "Cherry", emoji: true }, value: "cherry" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+:::tip
+A `conversations_select`'s `filter` field narrows it to a subset of conversation types, e.g.
+`{ include: ["private"] }` for private channels only. See [select menus](/elements/select-menus).
+:::
+
+### Checkboxes and radio buttons
+
+Both take their own full-width row:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "checkboxes",
+            action_id: "actionId-0",
+            options: [
+              { text: { type: "mrkdwn", text: "*Notify me by email*" }, value: "email" },
+              { text: { type: "mrkdwn", text: "*Notify me by SMS*" }, value: "sms" },
+            ],
+          },
+          {
+            type: "radio_buttons",
+            action_id: "actionId-1",
+            options: [
+              { text: { type: "plain_text", text: "Low" }, value: "low" },
+              { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+              { text: { type: "plain_text", text: "High" }, value: "high" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+### Date and time pickers
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "datepicker",
+            action_id: "actionId-0",
+            initial_date: "1990-04-28",
+            placeholder: { type: "plain_text", text: "Select a date", emoji: true },
+          },
+          {
+            type: "timepicker",
+            action_id: "actionId-1",
+            initial_time: "13:37",
+            placeholder: { type: "plain_text", text: "Select time", emoji: true },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+:::tip
+Workflow buttons (`workflow_button`) are also supported, rendered like a regular button with a
+small lightning-bolt glyph. Clicking one dispatches a `workflow_button` action carrying the
+workflow's trigger metadata, without actually invoking a trigger URL.
+:::
+
+## Interactivity
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "more",
+        elements: [
+          {
+            type: "button",
+            action_id: "delete",
+            text: { type: "plain_text", text: "Delete" },
+            style: "danger",
+            confirm: {
+              title: { type: "plain_text", text: "Are you sure?" },
+              text: { type: "mrkdwn", text: "This can't be undone." },
+              confirm: { type: "plain_text", text: "Delete" },
+              deny: { type: "plain_text", text: "Cancel" },
+              style: "danger",
+            },
+          },
+          {
+            type: "channels_select",
+            action_id: "channels",
+            placeholder: { type: "plain_text", text: "Pick a channel" },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+Each element type dispatches a different shape of `onAction` payload, all sharing `type`,
+`action_id`, `block_id`, and `action_ts`:
+
+- **`button`** — `value` (if set), plus `url` and `style` when present.
+- **`static_select` / `external_select`** — `selected_option: { text, value }`.
+- **`multi_static_select` / `multi_external_select`** — `selected_options: [...]`.
+- **`users_select`** — `selected_user: "U0ADA"`; **`multi_users_select`** — `selected_users: [...]`.
+- **`conversations_select`** — `selected_conversation: "C0GENERAL"`; **`multi_conversations_select`** — `selected_conversations: [...]`.
+- **`channels_select`** — `selected_channel: "C0GENERAL"`; **`multi_channels_select`** — `selected_channels: [...]`.
+- **`checkboxes`** — `selected_options: [...]` (every checked option, not just the one clicked).
+- **`radio_buttons`** — `selected_option: { text, value }`.
+- **`datepicker`** — `selected_date: "1990-04-28"` (or `null` when cleared).
+- **`timepicker`** — `selected_time: "13:37"`.
+- **`overflow`** — `selected_option: { text, value, url? }`, and opens `url` in a new tab if set.
+- **`workflow_button`** — `text`, `workflow`, and `style` (if set).
+
+For example, picking an option from the static select above dispatches:
+
+```json
+{
+  "type": "static_select",
+  "action_id": "actionId-2",
+  "block_id": "b1",
+  "action_ts": "1706000000.000100",
+  "selected_option": {
+    "text": { "type": "plain_text", "text": "Apple", "emoji": true },
+    "value": "apple"
+  }
+}
+```
+
+Selects, checkboxes, radio buttons, and pickers also write their value to `state.values[block_id][action_id]`,
+so a later action (like a modal submit) can read every element's current value; buttons, overflow,
+and workflow buttons don't — they're one-shot actions.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Section" href="/blocks/section" icon="align-left">
+    Attach a single button or select as an accessory next to text, instead of a full row.
+  </Card>
+  <Card title="Input" href="/blocks/input" icon="text-cursor-input">
+    The modal-only counterpart for collecting a labeled, validated value.
+  </Card>
+  <Card title="Context actions" href="/blocks/context-actions" icon="thumbs-up">
+    A compact row limited to feedback and icon buttons, for AI-generated messages.
+  </Card>
+</CardGroup>

@@ -1,0 +1,226 @@
+---
+title: Data table
+description: A sortable, paginated grid of rows and columns, for datasets larger than the plain table block handles.
+---
+
+`data_table` renders a grid with a header row, per-column sorting, and pagination once a table has
+more than a handful of rows. It isn't part of the public `@slack/types` package — treat this page's
+field list as the reference.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_table",
+        caption: "Open deals",
+        rows: [
+          [
+            { type: "raw_text", text: "Name" },
+            { type: "raw_text", text: "Account" },
+            { type: "raw_text", text: "Stage" },
+          ],
+          [
+            { type: "raw_text", text: "Acme Expansion Deal" },
+            { type: "raw_text", text: "Acme Inc." },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Negotiation", style: { bold: true } }],
+                },
+              ],
+            },
+          ],
+          [
+            { type: "raw_text", text: "Weather Forecast Integration" },
+            { type: "raw_text", text: "Nimbus Corp." },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [
+                    { type: "text", text: "Waiting on " },
+                    { type: "text", text: "review", style: { italic: true } },
+                  ],
+                },
+              ],
+            },
+          ],
+          [
+            { type: "raw_text", text: "Retail Partner Portal" },
+            { type: "raw_text", text: "ShopCo Ltd." },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Closed Won", style: { bold: true } }],
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `data_table`.",
+      required: true,
+    },
+    caption: {
+      type: "string",
+      description: "Shown above the table and used to label the expand control.",
+    },
+    rows: {
+      type: "Cell[][]",
+      description:
+        "The grid, header row first. `rows[0]` is the header and `rows.length - 1` sets the column count; every subsequent row is a data row.",
+      required: true,
+    },
+  }}
+/>
+
+### Cell
+
+Each cell is one of four shapes, picked by `type`:
+
+<TypeTable
+  type={{
+    raw_text: {
+      type: '{ type: "raw_text", text: string }',
+      description: "Plain text, sorted alphabetically.",
+    },
+    raw_number: {
+      type: '{ type: "raw_number", value: number, text: string }',
+      description:
+        "A number with its own display text. Sorts numerically by `value`, displays `text`.",
+    },
+    url: {
+      type: '{ type: "url", url: string, text?: string }',
+      description: "A link, opened in a new tab. `text` defaults to the raw URL.",
+    },
+    rich_text: {
+      type: "RichTextBlock",
+      description: "A Slack rich text node — bold, italic, and other inline styles.",
+    },
+  }}
+/>
+
+:::note
+Sorting and pagination aren't configured through the payload. Clicking a header cycles that column
+through ascending, descending, and back to the original order; pagination controls appear
+automatically once a table has more than 5 data rows, five rows to a page.
+:::
+
+## Examples
+
+### Basic table
+
+The preview above is `fixtures/catalog/table/basic-data-table.json` — a mix of `raw_text` and
+`rich_text` cells.
+
+### Numeric sorting
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_table",
+        rows: [
+          [
+            { type: "raw_text", text: "Name" },
+            { type: "raw_text", text: "Amount" },
+          ],
+          [
+            { type: "raw_text", text: "Acme Inc." },
+            { type: "raw_number", value: 42000, text: "$42,000" },
+          ],
+          [
+            { type: "raw_text", text: "Nimbus Corp." },
+            { type: "raw_number", value: 8500, text: "$8,500" },
+          ],
+          [
+            { type: "raw_text", text: "ShopCo Ltd." },
+            { type: "raw_number", value: 120000, text: "$120,000" },
+          ],
+        ],
+      },
+    ],
+  }}
+/>
+
+`raw_number` cells sort by their numeric `value`, not by the formatted `text`, so `$8,500` sorts below
+`$42,000` even though `"$120,000"` would sort first alphabetically.
+
+### Pagination
+
+Add more than 5 data rows and page controls appear automatically:
+
+<Preview
+  code
+  payload={{
+    blocks: [
+      {
+        type: "data_table",
+        caption: "All accounts",
+        rows: [
+          [
+            { type: "raw_text", text: "Name" },
+            { type: "raw_text", text: "Owner" },
+            { type: "raw_text", text: "Status" },
+          ],
+          [
+            { type: "raw_text", text: "Acme Inc." },
+            { type: "raw_text", text: "Ada Lovelace" },
+            { type: "raw_text", text: "Active" },
+          ],
+          [
+            { type: "raw_text", text: "Nimbus Corp." },
+            { type: "raw_text", text: "Grace Hopper" },
+            { type: "raw_text", text: "Active" },
+          ],
+          [
+            { type: "raw_text", text: "ShopCo Ltd." },
+            { type: "raw_text", text: "Alan Turing" },
+            { type: "raw_text", text: "Active" },
+          ],
+          [
+            { type: "raw_text", text: "GreenTech" },
+            { type: "raw_text", text: "Ada Lovelace" },
+            { type: "raw_text", text: "Churned" },
+          ],
+          [
+            { type: "raw_text", text: "LogiFlow Inc." },
+            { type: "raw_text", text: "Grace Hopper" },
+            { type: "raw_text", text: "Active" },
+          ],
+          [
+            { type: "raw_text", text: "Northwind Traders" },
+            { type: "raw_text", text: "Alan Turing" },
+            { type: "raw_text", text: "Active" },
+          ],
+        ],
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Table" href="/blocks/table" icon="table">
+    A plain grid of `rich_text` cells, for small datasets with no sorting or paging.
+  </Card>
+  <Card title="Data visualization" href="/blocks/data-visualization" icon="bar-chart-3">
+    Charts for the same kind of tabular data.
+  </Card>
+</CardGroup>

@@ -1,0 +1,125 @@
+---
+title: Markdown
+description: A block of standard GitHub-flavored markdown, for text you didn't hand-assemble into rich text.
+---
+
+`markdown` takes one raw markdown string and lets Slack do the parsing, instead of you building a
+`rich_text` tree or a `mrkdwn` string by hand. Slack expands it into the same headings, lists,
+dividers, code blocks, and tables you'd get from other blocks — it's meant for text an LLM
+produced, where you don't control the exact markdown shape ahead of time.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "markdown",
+        text: "Text can be **bold**, _italic_, ~~strikethrough~~, or `inline code`.\n\nCombine them: **_bold italic_** and [links](https://api.slack.com).\n\n> Blockquotes work too, with **formatting** inside.",
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `markdown`.",
+      required: true,
+    },
+    text: {
+      type: "string",
+      description: "Standard markdown-formatted text. Limit 12,000 characters.",
+      required: true,
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for the block, up to 255 characters. Slack generates one if omitted.",
+    },
+  }}
+/>
+
+:::note
+A `markdown` block isn't the same as `mrkdwn` text inside a `section` — `mrkdwn` is Slack's own
+lightweight syntax (`*bold*`, `_italic_`) with no headings or tables. It also differs from
+`rich_text`, which is a structured JSON tree rather than a text string. `markdown` is closer to
+plain GitHub-flavored markdown, parsed by Slack on render.
+:::
+
+## Examples
+
+### Inline styles
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "markdown",
+        text: "Text can be **bold**, _italic_, ~~strikethrough~~, or `inline code`.\n\nCombine them: **_bold italic_** and [links](https://api.slack.com).\n\n> Blockquotes work too, with **formatting** inside.",
+      },
+    ],
+  }}
+/>
+
+### Headings and dividers
+
+Headings past `###` still render at the same size as `###`. A line of `---` renders as a divider.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "markdown",
+        text: "# Heading 1\n\nIntroduction paragraph.\n\n---\n\n## Heading 2\n\nMore details here.\n\n---\n\n### Heading 3\n\nEven more details.\n\n#### Heading 4\n\n##### Heading 5\n\n###### Heading 6",
+      },
+    ],
+  }}
+/>
+
+### Fenced code blocks
+
+A fenced code block with a language tag renders with a language label and copy button, the same
+chrome used by `rich_text`'s preformatted sections:
+
+<Preview
+  code
+  payload={{
+    blocks: [
+      {
+        type: "markdown",
+        text: 'Here is a JavaScript function:\n\n```javascript\nfunction greet(name) {\n  return "Hello, " + name + "!";\n}\n\nconsole.log(greet("world"));\n```',
+      },
+    ],
+  }}
+/>
+
+### Tables
+
+Standard GFM table syntax renders as a table, right inside the markdown text:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "markdown",
+        text: "## Sprint Status\n\n| Task | Owner | Status |\n|---|---|---|\n| **Authentication** | Ada Lovelace | ~~Done~~ _Shipped_ |\n| `Dashboard` | Grace Hopper | **In Progress** |\n| [API Docs](https://api.slack.com) | Alan Turing | _Not Started_ |",
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Rich text" href="/blocks/rich-text" icon="text">
+    The structured block for text you assemble field by field instead of as a markdown string.
+  </Card>
+  <Card title="Section" href="/blocks/section" icon="square-text">
+    A single line of `mrkdwn` or plain text, optionally paired with an accessory element.
+  </Card>
+  <Card title="Table" href="/blocks/table" icon="table">
+    The plain grid block, for tabular data outside of markdown text.
+  </Card>
+</CardGroup>

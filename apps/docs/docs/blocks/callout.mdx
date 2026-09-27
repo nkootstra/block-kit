@@ -1,0 +1,176 @@
+---
+title: Callout
+description: A tinted panel that groups other blocks together, for a highlighted tip or status.
+---
+
+`callout` wraps a list of child blocks in a rounded, tinted panel. Use it to draw attention to a tip,
+a summary, or a status message that's more than a single line of text.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "callout",
+        block_id: "bkb_callout_default",
+        background_color: "green",
+        child_blocks: [
+          {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [
+                  { type: "text", text: "This is a callout block with " },
+                  { type: "text", text: "bold text", style: { bold: true } },
+                  { type: "text", text: " and " },
+                  { type: "text", text: "italic text", style: { italic: true } },
+                  { type: "text", text: "." },
+                ],
+              },
+            ],
+          },
+          { type: "divider" },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: "*Key details*\nCallouts support rich text, sections, dividers, and images as child blocks.",
+            },
+          },
+          {
+            type: "image",
+            image_url: "https://api.slack.com/img/blocks/bkb_template_images/palmtree.png",
+            alt_text: "A sample landscape image",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `callout`.",
+      required: true,
+    },
+    background_color: {
+      type: '"green" | "blue" | "red" | "yellow" | "purple" | "gray" | "grey"',
+      description:
+        "The panel's tint. `green` and `blue` are measured against Slack's Block Kit Builder; the rest are extrapolated to the same pastel style. An unrecognized or omitted value falls back to `gray`.",
+      default: '"gray"',
+    },
+    child_blocks: {
+      type: "Block[]",
+      description:
+        "Blocks rendered inside the panel — rich text, sections, dividers, images, and contact cards.",
+      required: true,
+    },
+  }}
+/>
+
+:::note
+A `contact_card` nested inside a callout renders normally on its own, but if that callout is itself
+nested inside a [container](/blocks/container), Slack can't display the contact card there and shows
+an "unknown block" notice instead. See [Contact card](/blocks/contact-card#inside-a-container).
+:::
+
+## Examples
+
+### Every child block type
+
+The preview above nests rich text, a divider, a section, and an image inside a callout.
+
+### Each background color
+
+<Tabs>
+<Tab title="green">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "callout",
+        background_color: "green",
+        child_blocks: [{ type: "section", text: { type: "mrkdwn", text: "Green callout." } }],
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="blue">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "callout",
+        background_color: "blue",
+        child_blocks: [{ type: "section", text: { type: "mrkdwn", text: "Blue callout." } }],
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="red">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "callout",
+        background_color: "red",
+        child_blocks: [{ type: "section", text: { type: "mrkdwn", text: "Red callout." } }],
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="yellow">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "callout",
+        background_color: "yellow",
+        child_blocks: [{ type: "section", text: { type: "mrkdwn", text: "Yellow callout." } }],
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="purple">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "callout",
+        background_color: "purple",
+        child_blocks: [{ type: "section", text: { type: "mrkdwn", text: "Purple callout." } }],
+      },
+    ],
+  }}
+/>
+
+</Tab>
+</Tabs>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Alert" href="/blocks/alert" icon="alert-triangle">
+    A single-line banner for a status message, restricted to modals.
+  </Card>
+  <Card title="Container" href="/blocks/container" icon="box">
+    Groups blocks with a border instead of a tint, and can be collapsible.
+  </Card>
+</CardGroup>

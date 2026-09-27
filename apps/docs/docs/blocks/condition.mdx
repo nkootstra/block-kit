@@ -1,0 +1,124 @@
+---
+title: Condition
+description: Renders a different set of blocks depending on the client surface that's viewing them.
+---
+
+`condition` picks one branch of blocks to render based on `client` conditions, and falls back to
+`default` when none match. It's a library-invented construct for previewing client-conditional
+payloads — Slack doesn't document a public `condition` block type.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "condition",
+        cases: [
+          {
+            conditions: [{ type: "client", op: "=", value: "desktop" }],
+            blocks: [{ type: "section", text: { type: "mrkdwn", text: "*Desktop branch*" } }],
+          },
+          {
+            conditions: [{ type: "client", op: "=", value: "ios" }],
+            blocks: [{ type: "section", text: { type: "mrkdwn", text: "*iOS branch*" } }],
+          },
+          {
+            conditions: [{ type: "client", op: "=", value: "android" }],
+            blocks: [{ type: "section", text: { type: "mrkdwn", text: "*Android branch*" } }],
+          },
+        ],
+        default: [{ type: "section", text: { type: "mrkdwn", text: "*Default branch*" } }],
+      },
+    ],
+  }}
+/>
+
+Since this renderer only ever simulates Slack's desktop client, the example above always shows the
+desktop branch — the same way it would look in Slack's own Builder preview.
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `condition`.",
+      required: true,
+    },
+    cases: {
+      type: "{ conditions: ConditionClause[]; blocks: Block[] }[]",
+      description:
+        "Branches, tested in order. The first case whose conditions all match wins, and its `blocks` render.",
+    },
+    default: {
+      type: "Block[]",
+      description: "Blocks rendered when no case matches.",
+    },
+  }}
+/>
+
+### `ConditionClause`
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description:
+        'The condition kind. Only `"client"` is evaluated — any other value never matches.',
+      required: true,
+    },
+    op: {
+      type: '"=" | "!="',
+      description: 'Comparison against `value`. Omitted is treated the same as `"="`.',
+      default: '"="',
+    },
+    value: {
+      type: "string",
+      description: 'The client to compare against, e.g. `"desktop"`, `"ios"`, `"android"`.',
+    },
+  }}
+/>
+
+:::note
+This library always evaluates `client` as `"desktop"`, matching how Slack's Block Kit Builder
+previews payloads. There's no way to preview the `ios` or `android` branches here — inspect the JSON
+tab instead to check what a mobile client would receive.
+:::
+
+## Examples
+
+### Client branches with a default
+
+The preview above defines a branch per client plus a `default`, and only the desktop branch renders.
+
+### Negated condition
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "condition",
+        cases: [
+          {
+            conditions: [{ type: "client", op: "!=", value: "desktop" }],
+            blocks: [{ type: "section", text: { type: "mrkdwn", text: "*Not desktop*" } }],
+          },
+        ],
+        default: [{ type: "section", text: { type: "mrkdwn", text: "*Desktop (default)*" } }],
+      },
+    ],
+  }}
+/>
+
+`op: "!="` matches every client except the given `value`. Here the desktop client never matches, so
+the `default` branch renders instead.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Fallback canary" href="/blocks/fallback-canary" icon="flag">
+    Renders substitute blocks when a client doesn't recognize a block type at all.
+  </Card>
+  <Card title="Container" href="/blocks/container" icon="box">
+    A common place to nest conditional content alongside static blocks.
+  </Card>
+</CardGroup>

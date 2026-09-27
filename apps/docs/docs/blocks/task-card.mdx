@@ -1,0 +1,162 @@
+---
+title: Task card
+description: A single collapsible task with a status, details, output, and sources.
+---
+
+`task_card` shows one task's progress — what it's doing, what it produced, and where that came from.
+It's a [Slack block documented for agent surfaces](https://docs.slack.dev/reference/block-kit/blocks/task-card-block/),
+newer than the version of `@slack/types` this library depends on — its TypeScript type is the field
+reference here. It's read-only: expanding a task card doesn't emit an action. Use `plan` instead when
+you have several tasks under one shared goal.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "task_card",
+        task_id: "19c60b5d-553d-4d6c-a854-e94a74e88a9d",
+        title: "Demonstrating Task Card Block Features",
+        status: "in_progress",
+        details: {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: [
+                { type: "text", text: "Fetching from " },
+                {
+                  type: "link",
+                  url: "https://api.slack.com/partners/thinking-steps",
+                  text: "Thinking Steps",
+                },
+              ],
+            },
+          ],
+        },
+        output: {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: [
+                {
+                  type: "text",
+                  text: "This task card shows how timeline mode interleaves text and tool calls in streaming content, making it ideal for short, naturally flowing tasks, unlike plan mode which groups tasks under a shared goal.",
+                },
+              ],
+            },
+          ],
+        },
+        sources: [
+          {
+            type: "url",
+            url: "https://api.slack.com/partners/thinking-steps",
+            text: "Thinking steps",
+          },
+          {
+            type: "url",
+            url: "https://api.slack.com/partners/thinking-steps#task-card-block",
+            text: "Task card block",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+Click the pill to expand the card and see its details, output, and sources.
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `task_card`.",
+      required: true,
+    },
+    task_id: {
+      type: "string",
+      description: "Identifies the task.",
+      required: true,
+    },
+    title: {
+      type: "string",
+      description: "The task's one-line summary, shown in the collapsed pill.",
+      required: true,
+    },
+    status: {
+      type: '"pending" | "in_progress" | "complete" | "error"',
+      description:
+        "The task's state. The status icon distinguishes `complete` and `in_progress`; `pending` and `error` currently render the same dashed-circle icon.",
+      required: true,
+    },
+    details: {
+      type: "RichTextBlock",
+      description: "What the task is doing, shown when the card is expanded.",
+    },
+    output: {
+      type: "RichTextBlock",
+      description: "The task's result, shown below `details`.",
+    },
+    sources: {
+      type: '{ type: "url"; url: string; text?: string }[]',
+      description:
+        "Links shown under the task, opened in a new tab. `text` defaults to the raw URL.",
+    },
+  }}
+/>
+
+## Examples
+
+### In progress, with a rich text link
+
+The preview above's `details` field mixes a plain text run with a `link` element inside a rich text
+section.
+
+### Complete
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "task_card",
+        task_id: "task_2",
+        title: "Fetching data",
+        status: "complete",
+        output: {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: [{ type: "text", text: "Retrieved 42 records." }],
+            },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+### Minimal — title and status only
+
+<Preview
+  payload={{
+    blocks: [
+      { type: "task_card", task_id: "task_3", title: "Display progress", status: "pending" },
+    ],
+  }}
+/>
+
+`details`, `output`, and `sources` are all optional — a bare task card shows just its status and title.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Plan" href="/blocks/plan" icon="list-checks">
+    Groups several tasks under one shared goal.
+  </Card>
+  <Card title="Contact card" href="/blocks/contact-card" icon="id-card">
+    Another compact, read-only agent block.
+  </Card>
+</CardGroup>

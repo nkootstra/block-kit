@@ -1,0 +1,78 @@
+---
+title: Divider
+description: A simple horizontal rule for visually separating blocks.
+---
+
+A divider renders a thin horizontal line. Use it to split up sections of a message or app
+surface — it has no other fields to configure.
+
+<Preview
+  payload={{
+    blocks: [{ type: "divider" }],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: 'Always `"divider"`.',
+      required: true,
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for the block, up to 255 characters. Slack generates one if omitted.",
+    },
+  }}
+/>
+
+## Examples
+
+### Between two sections
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*Farmhouse Thai Cuisine*\n:star::star::star::star: 1528 reviews",
+        },
+        accessory: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          alt_text: "alt text for image",
+        },
+      },
+      { type: "divider" },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "This section has a button." },
+        accessory: {
+          type: "button",
+          action_id: "more",
+          text: { type: "plain_text", text: "Learn more" },
+          value: "more",
+        },
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Section" href="/blocks/section" icon="align-left">
+    Text, fields, and an optional accessory element.
+  </Card>
+  <Card title="Header" href="/blocks/header" icon="heading">
+    A bold, single-line title block.
+  </Card>
+  <Card title="Context" href="/blocks/context" icon="text">
+    Small, muted supplementary text or images.
+  </Card>
+</CardGroup>

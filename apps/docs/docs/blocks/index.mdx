@@ -1,0 +1,137 @@
+---
+title: Blocks overview
+description: What a block is, how block_id works, and every block type @nkootstra/block-kit renders.
+---
+
+A block is one visual unit of a Slack surface — a message, modal, or App Home. Slack composes a
+`blocks` array of these JSON objects, and `@nkootstra/block-kit` renders that same array as React,
+pixel-for-pixel like Slack.
+
+Every block accepts an optional `block_id`: a string up to 255 characters that identifies the
+block. Slack auto-generates one if you omit it, but you should set your own when an interactive
+element inside the block needs a stable id to key off in `onAction` handlers, or when you're
+updating a specific block later with `chat.update`. `block_id` must be unique within a `blocks`
+array.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        block_id: "welcome",
+        text: { type: "mrkdwn", text: "Hello, *Ada*. This is a `section` block." },
+      },
+      { type: "divider" },
+      {
+        type: "context",
+        block_id: "meta",
+        elements: [{ type: "mrkdwn", text: "Posted by <@U0ADA>" }],
+      },
+    ],
+  }}
+/>
+
+## Layout & text
+
+<CardGroup cols={2}>
+  <Card title="Section" href="/blocks/section" icon="align-left">
+    Text with an optional accessory element, or up to 10 side-by-side fields.
+  </Card>
+  <Card title="Header" href="/blocks/header" icon="heading">
+    A single line of large, bold plain text.
+  </Card>
+  <Card title="Divider" href="/blocks/divider" icon="minus">
+    A horizontal rule that separates blocks.
+  </Card>
+  <Card title="Context" href="/blocks/context" icon="text">
+    Small, muted text and images for metadata.
+  </Card>
+  <Card title="Context actions" href="/blocks/context-actions" icon="thumbs-up">
+    A context row with interactive controls, like feedback buttons.
+  </Card>
+  <Card title="Rich text" href="/blocks/rich-text" icon="pilcrow">
+    Slack's structured rich text: lists, quotes, code, styled spans, and more.
+  </Card>
+  <Card title="Markdown" href="/blocks/markdown" icon="file-text">
+    Raw markdown rendered with Slack's mrkdwn-compatible parser.
+  </Card>
+</CardGroup>
+
+## Media
+
+<CardGroup cols={2}>
+  <Card title="Image" href="/blocks/image" icon="image">
+    A single full-width image, with an optional title.
+  </Card>
+  <Card title="Video" href="/blocks/video" icon="play-circle">
+    An embedded, playable video with a thumbnail and description.
+  </Card>
+  <Card title="File" href="/blocks/file" icon="paperclip">
+    A Slack file attachment, shown as a preview card.
+  </Card>
+</CardGroup>
+
+## Input
+
+<CardGroup cols={2}>
+  <Card title="Actions" href="/blocks/actions" icon="mouse-pointer-click">
+    A row of up to 25 interactive elements, like buttons and selects.
+  </Card>
+  <Card title="Input" href="/blocks/input" icon="text-cursor-input">
+    A labeled form field for modals and App Home, with optional hint text.
+  </Card>
+</CardGroup>
+
+## Data
+
+<CardGroup cols={2}>
+  <Card title="Table" href="/blocks/table" icon="table">
+    A simple grid of rows and columns.
+  </Card>
+  <Card title="Data table" href="/blocks/data-table" icon="table-2">
+    A sortable, paginated table for larger datasets.
+  </Card>
+  <Card title="Data visualization" href="/blocks/data-visualization" icon="bar-chart-3">
+    Bar, line, area, and pie charts.
+  </Card>
+</CardGroup>
+
+## Agents & AI
+
+<CardGroup cols={2}>
+  <Card title="Callout" href="/blocks/callout" icon="megaphone">
+    A highlighted banner for a status or a tip.
+  </Card>
+  <Card title="Alert" href="/blocks/alert" icon="alert-triangle">
+    An inline warning, error, info, or success message.
+  </Card>
+  <Card title="Contact card" href="/blocks/contact-card" icon="id-card">
+    A person or team's contact details, laid out as a card.
+  </Card>
+  <Card title="Plan" href="/blocks/plan" icon="list-checks">
+    A step-by-step agent plan with status per step.
+  </Card>
+  <Card title="Task card" href="/blocks/task-card" icon="square-check">
+    A single task with status, assignee, and actions.
+  </Card>
+</CardGroup>
+
+## Containers
+
+<CardGroup cols={2}>
+  <Card title="Container" href="/blocks/container" icon="box">
+    Groups blocks together with a shared border and background.
+  </Card>
+  <Card title="Card" href="/blocks/card" icon="credit-card">
+    A bordered card with a header, image, body, and actions.
+  </Card>
+  <Card title="Carousel" href="/blocks/carousel" icon="gallery-horizontal">
+    A horizontally scrollable row of cards.
+  </Card>
+  <Card title="Condition" href="/blocks/condition" icon="git-branch">
+    Renders different blocks depending on the client surface.
+  </Card>
+  <Card title="Fallback canary" href="/blocks/fallback-canary" icon="flag">
+    What renders when a block type isn't recognized.
+  </Card>
+</CardGroup>

@@ -1,0 +1,406 @@
+---
+title: Input
+description: A labeled form field for a modal or App Home — the only way to collect input from a user.
+---
+
+`input` pairs a label with one form element: a text field, a select, a date or time picker,
+checkboxes, or radio buttons. It's the field type modals and App Home tabs use to collect values a
+user submits; message and card surfaces never render it.
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "New ticket" },
+    submit: { type: "plain_text", text: "Create" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Tell us what went wrong. *All fields* are shared with the on-call team.",
+        },
+      },
+      {
+        type: "input",
+        block_id: "title",
+        label: { type: "plain_text", text: "Title" },
+        element: {
+          type: "plain_text_input",
+          action_id: "title_input",
+          placeholder: { type: "plain_text", text: "Short summary" },
+        },
+      },
+      {
+        type: "input",
+        block_id: "priority",
+        label: { type: "plain_text", text: "Priority" },
+        element: {
+          type: "static_select",
+          action_id: "priority_select",
+          initial_option: { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+          options: [
+            { text: { type: "plain_text", text: "High" }, value: "high" },
+            { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+            { text: { type: "plain_text", text: "Low" }, value: "low" },
+          ],
+        },
+      },
+      {
+        type: "input",
+        block_id: "details",
+        optional: true,
+        label: { type: "plain_text", text: "Details" },
+        hint: { type: "plain_text", text: "Steps to reproduce help a lot." },
+        element: { type: "plain_text_input", action_id: "details_input", multiline: true },
+      },
+      {
+        type: "input",
+        block_id: "notify",
+        label: { type: "plain_text", text: "Notify" },
+        element: {
+          type: "checkboxes",
+          action_id: "notify_checks",
+          options: [
+            { text: { type: "plain_text", text: "Email me updates" }, value: "email" },
+            { text: { type: "plain_text", text: "Post in #incidents" }, value: "channel" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `input`.",
+      required: true,
+    },
+    label: {
+      type: "PlainTextElement",
+      description: "The bold label above the element. Maximum length is 2000 characters.",
+      required: true,
+    },
+    element: {
+      type: "InputBlockElement",
+      description:
+        "The single form element this field wraps — a text input, select, picker, checkboxes, or radio buttons.",
+      required: true,
+    },
+    hint: {
+      type: "PlainTextElement",
+      description: "Muted helper text below the element. Maximum length is 2000 characters.",
+    },
+    optional: {
+      type: "boolean",
+      description:
+        "Lets the modal submit with this field empty. Not shown on a message-surface preview, only in a modal or Home tab form.",
+      default: "false",
+    },
+    dispatch_action: {
+      type: "boolean",
+      description:
+        "Sends a `block_actions` payload as the user interacts with the element. Without it, the value only arrives on submit.",
+      default: "false",
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for this block. Auto-generated if omitted. Maximum length is 255 characters.",
+    },
+  }}
+/>
+
+:::note
+`element` accepts one of `checkboxes`, `datepicker`, `datetimepicker`, `email_text_input`,
+`file_input`, `plain_text_input` (including `multiline: true`), `radio_buttons`, `rich_text_input`,
+`static_select` / `multi_static_select`, `external_select` / `multi_external_select`,
+`users_select` / `multi_users_select`, `conversations_select` / `multi_conversations_select`,
+`channels_select` / `multi_channels_select`, `timepicker`, and `number_input` / `url_text_input`.
+Every option's own fields (placeholders, options, initial values) work exactly as they do on
+[actions](/blocks/actions) or a section accessory.
+:::
+
+## Examples
+
+### Plain text input
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: { type: "plain_text_input", action_id: "plain_text_input-action" },
+      },
+    ],
+  }}
+/>
+
+### Multiline plain text input
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "plain_text_input",
+          multiline: true,
+          action_id: "plain_text_input-action",
+        },
+      },
+    ],
+  }}
+/>
+
+### Checkboxes
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "checkboxes",
+          action_id: "checkboxes-action",
+          options: [
+            { text: { type: "plain_text", text: "Option 0" }, value: "value-0" },
+            { text: { type: "plain_text", text: "Option 1" }, value: "value-1" },
+            { text: { type: "plain_text", text: "Option 2" }, value: "value-2" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+### Radio buttons
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "radio_buttons",
+          action_id: "radio_buttons-action",
+          options: [
+            { text: { type: "plain_text", text: "Option 0" }, value: "value-0" },
+            { text: { type: "plain_text", text: "Option 1" }, value: "value-1" },
+            { text: { type: "plain_text", text: "Option 2" }, value: "value-2" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+### Static select
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "static_select",
+          action_id: "static_select-action",
+          placeholder: { type: "plain_text", text: "Select an item" },
+          options: [
+            { text: { type: "plain_text", text: "Option 0" }, value: "value-0" },
+            { text: { type: "plain_text", text: "Option 1" }, value: "value-1" },
+            { text: { type: "plain_text", text: "Option 2" }, value: "value-2" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+Every select variant renders the same way inside `input` — see [select menus](/elements/select-menus)
+for `multi_static_select`, `users_select`, `external_select`, and the rest.
+
+### Multi-user select
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "multi_users_select",
+          action_id: "multi_users_select-action",
+          placeholder: { type: "plain_text", text: "Select users" },
+        },
+      },
+    ],
+  }}
+/>
+
+### Date and time pickers
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Date" },
+        element: {
+          type: "datepicker",
+          action_id: "datepicker-action",
+          initial_date: "1990-04-28",
+          placeholder: { type: "plain_text", text: "Select a date" },
+        },
+      },
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Time" },
+        element: {
+          type: "timepicker",
+          action_id: "timepicker-action",
+          initial_time: "13:37",
+          placeholder: { type: "plain_text", text: "Select time" },
+        },
+      },
+    ],
+  }}
+/>
+
+### Optional field
+
+An optional field shows an "(optional)" suffix next to its label, in a modal or Home tab form:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        optional: true,
+        label: { type: "plain_text", text: "Label" },
+        element: { type: "plain_text_input", action_id: "plain_text_input-action" },
+      },
+    ],
+  }}
+/>
+
+### Hint
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        label: { type: "plain_text", text: "Details" },
+        hint: { type: "plain_text", text: "Steps to reproduce help a lot." },
+        element: { type: "plain_text_input", action_id: "details_input", multiline: true },
+      },
+    ],
+  }}
+/>
+
+## Interactivity
+
+By default an `input` block's element sends no actions: its value only reaches `state`, and your
+app reads it from the `view_submission` payload. Set `dispatch_action: true` to also get a
+`block_actions` payload as the user interacts, like an element in an `actions` block.
+
+Checkboxes, radio buttons, selects and pickers then dispatch on every change. Single-line text
+inputs (`plain_text_input`, `email_text_input`, `url_text_input`, `number_input`) dispatch on the
+trigger in their `dispatch_action_config`: `on_enter_pressed` (the default) or
+`on_character_entered`. A multiline `plain_text_input` never dispatches on Enter, which inserts a
+newline instead.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        dispatch_action: true,
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: { type: "plain_text_input", action_id: "plain_text_input-action" },
+      },
+    ],
+  }}
+/>
+
+`onAction` receives, on pressing Enter:
+
+```json
+{
+  "type": "plain_text_input",
+  "action_id": "plain_text_input-action",
+  "block_id": "<the input block's block_id>",
+  "value": "…"
+}
+```
+
+When the field doesn't already carry its own `hint`, a single-line `on_enter_pressed`-dispatching
+input shows a synthesized "Press 'enter' to submit" hint below it, matching Slack's Builder
+preview:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        dispatch_action: true,
+        type: "input",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "plain_text_input",
+          action_id: "plain_text_input-action",
+        },
+      },
+    ],
+  }}
+/>
+
+Any other element dispatches on change. Tick a box to see the action:
+
+<Preview
+  actions
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "Preferences" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "prefs",
+        dispatch_action: true,
+        label: { type: "plain_text", text: "Notifications" },
+        element: {
+          type: "checkboxes",
+          action_id: "notify",
+          options: [
+            { text: { type: "plain_text", text: "Email me" }, value: "email" },
+            { text: { type: "plain_text", text: "Send a DM" }, value: "dm" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Actions" href="/blocks/actions" icon="mouse-pointer-click">
+    The same form elements, used outside a labeled field for messages and cards.
+  </Card>
+  <Card title="Section" href="/blocks/section" icon="align-left">
+    Body text that can carry one interactive element as an accessory.
+  </Card>
+  <Card title="Rich text" href="/blocks/rich-text" icon="pilcrow">
+    Slack's structured formatted-text block, also produced by a `rich_text_input` element.
+  </Card>
+</CardGroup>

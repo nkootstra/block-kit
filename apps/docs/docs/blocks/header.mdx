@@ -1,0 +1,107 @@
+---
+title: Header
+description: A bold, single-line title that breaks up a message or view into sections.
+---
+
+A header displays a short, bold line of plain text. Use it to introduce a distinct section
+of a message or app surface — Slack doesn't apply any markdown to it.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: "This is a header block",
+          emoji: true,
+        },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: 'Always `"header"`.',
+      required: true,
+    },
+    text: {
+      type: "plain_text object",
+      description:
+        "The header's text. Must be a `plain_text` text object — `mrkdwn` isn't allowed. Maximum 150 characters.",
+      required: true,
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for the block, up to 255 characters. Slack generates one if omitted.",
+    },
+  }}
+/>
+
+## Examples
+
+### Basic header
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "header",
+        text: { type: "plain_text", text: "Weekly release notes", emoji: true },
+      },
+    ],
+  }}
+/>
+
+### Header with a section and divider
+
+Headers are typically followed by content — a section, a divider, or both.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "header",
+        text: { type: "plain_text", text: "Budget Performance", emoji: true },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*Q3 spend* is tracking 8% under budget across all teams.",
+        },
+      },
+      { type: "divider" },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "Full breakdown is attached below." },
+      },
+    ],
+  }}
+/>
+
+:::note
+This library also renders the Block Kit Builder's `level` field (1–4) on headers, which
+scales the text size. It's not part of the Slack API — `level` defaults to 2, Slack's
+standard header size, and only affects rendering here.
+:::
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Section" href="/blocks/section" icon="align-left">
+    Text, fields, and an optional accessory element.
+  </Card>
+  <Card title="Divider" href="/blocks/divider" icon="minus">
+    A simple horizontal rule between blocks.
+  </Card>
+  <Card title="Context" href="/blocks/context" icon="text">
+    Small, muted supplementary text or images.
+  </Card>
+</CardGroup>
