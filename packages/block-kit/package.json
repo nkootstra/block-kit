@@ -27,6 +27,9 @@
   "exports": {
     ".": "./dist/index.js",
     "./mrkdwn": "./dist/mrkdwn.js",
+    "./transport": "./dist/transport.js",
+    "./server": "./dist/server.js",
+    "./web-api": "./dist/web-api.js",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
@@ -43,6 +46,8 @@
     "micromark-extension-gfm": "^3.0.0"
   },
   "devDependencies": {
+    "@slack/bolt": "^5.1.0",
+    "@slack/web-api": "^8.1.1",
     "@testing-library/react": "16.3.3",
     "@types/mdast": "^4.0.4",
     "@types/react": "19.3.0",
@@ -51,7 +56,13 @@
     "tsdown": "0.23.0"
   },
   "peerDependencies": {
+    "@slack/web-api": ">=8.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@slack/web-api": {
+      "optional": true
+    }
   }
 }

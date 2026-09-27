@@ -6,7 +6,7 @@ import type { BlockAction, StateValues } from "./context";
  * `view_submission` and `view_closed`. Shapes are cross-checked against `@slack/bolt`'s
  * `BlockAction`, `ViewSubmitAction` and `ViewClosedAction` types and Slack's documented examples.
  *
- * These are plain functions (no React) so `@slack-blocks/interactivity-bridge` and tests can use
+ * These are plain functions (no React) so `@nkootstra/block-kit/server` and tests can use
  * them without pulling in the renderer.
  */
 
