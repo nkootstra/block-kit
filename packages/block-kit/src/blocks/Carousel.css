@@ -7,6 +7,9 @@
   display: flex;
   gap: 16px;
   overflow-x: auto;
+  /* Slack hides the track; the arrow buttons scroll instead. Without this a classic-scrollbar
+     system (a mouse on macOS, Windows, Linux) grows the carousel by 15px. */
+  scrollbar-width: none;
   scroll-snap-type: x proximity;
   padding: 8px 0 4px;
   margin: -8px 0 -4px;
