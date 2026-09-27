@@ -1,0 +1,48 @@
+{
+  "name": "@nkootstra/block-kit",
+  "version": "0.0.0",
+  "description": "Render Slack Block Kit JSON in React, pixel-for-pixel the way Slack does.",
+  "keywords": [
+    "block-kit",
+    "blocks",
+    "mrkdwn",
+    "react",
+    "renderer",
+    "slack"
+  ],
+  "license": "MIT",
+  "author": "Niels Kootstra",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkootstra/block-kit.git",
+    "directory": "packages/block-kit"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./mrkdwn": "./dist/mrkdwn.js",
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jsdom": "30.1.1",
+    "tsdown": "0.23.0"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  }
+}
