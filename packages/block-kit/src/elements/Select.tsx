@@ -2,7 +2,7 @@ import type { OptionGroup, PlainTextOption } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
-import { ChevronDownIcon, LockIcon, SearchIcon } from "../icons";
+import { ChannelHashIcon, ChevronDownIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
@@ -182,12 +182,33 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     return resolver?.(id) ?? id;
   };
 
-  /** Slack's own Builder preview can't resolve a fabricated id against the real directory. For
-   * channels/conversations it falls back to a generic "Private channel" pill rather than the raw
-   * id; users/conversations show a loading skeleton we don't attempt to reproduce (documented in
-   * the final report as an approximation limitation). */
-  const isUnresolved = (source: Source, id: string) =>
-    (source === "channels" || source === "conversations") && resolveLabel(id) === id;
+  /** Slack's own Builder preview can't resolve a fabricated id against the real directory, and
+   * never shows the raw id: a channel becomes a "Private channel" pill, a user stays a loading
+   * skeleton, and a conversation stays blank. */
+  const isUnresolved = ({ id, label }: { id: string; label?: string }) =>
+    !label &&
+    (source === "users" || source === "channels" || source === "conversations") &&
+    resolveLabel(id) === id;
+
+  const unresolvedValue = (id: string) =>
+    source === "channels" ? (
+      <span className="sbk-select__value sbk-select__entity">
+        <ChannelHashIcon className="sbk-select__channel-hash" />
+        <span className="sbk-select__entity-text">
+          <span className="sbk-select__missing-channel">
+            <LockIcon />
+            Private channel
+          </span>
+        </span>
+      </span>
+    ) : source === "users" ? (
+      <span className="sbk-select__value sbk-select__skeleton" aria-label={id}>
+        <span className="sbk-select__skeleton-avatar" />
+        <span className="sbk-select__skeleton-name" />
+      </span>
+    ) : (
+      <span className="sbk-select__value" aria-label={id} />
+    );
 
   useEffect(() => {
     if (items.length > 0) {
@@ -337,10 +358,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             <span className="sbk-select__placeholder">{placeholder}</span>
           )
         ) : closedLabel ? (
-          items[0] && isUnresolved(source, items[0].id) ? (
-            <span className="sbk-select__value sbk-select__value--private">
-              <LockIcon /> Private channel
-            </span>
+          items[0] && isUnresolved(items[0]) ? (
+            unresolvedValue(items[0].id)
           ) : (
             <span className="sbk-select__value">{closedLabel}</span>
           )

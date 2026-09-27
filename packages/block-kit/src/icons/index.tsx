@@ -179,10 +179,33 @@ export function ExternalLinkIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 export function LockIcon(props: SVGProps<SVGSVGElement>) {
+  // Slack's lock on its 20-unit grid: a 1.5-stroke body with a 3.75-radius shackle.
   return (
-    <svg viewBox="0 0 20 20" width="12" height="12" fill="none" aria-hidden="true" {...props}>
-      <rect x="4.5" y="9" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" strokeWidth="1.4" />
+    <svg viewBox="0 0 20 20" width="13" height="13" fill="none" aria-hidden="true" {...props}>
+      <rect
+        x="3.75"
+        y="8.25"
+        width="12.5"
+        height="9"
+        rx="1.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="M6.25 8.25V6a3.75 3.75 0 0 1 7.5 0v2.25" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+export function ChannelHashIcon(props: SVGProps<SVGSVGElement>) {
+  // Slack's channel "#": two bars and two slashes leaning 10 degrees, all 1.5 wide.
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M9 2.75L6.5 17.25M13.75 2.75L11.25 17.25M3.75 6.75H16.25M2.75 13.75H15.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

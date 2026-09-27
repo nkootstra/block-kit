@@ -136,6 +136,60 @@ describe("<Select> users_select / channels_select", () => {
     expect(screen.getByText("Private channel")).toBeTruthy();
   });
 
+  it("prefixes the unresolved channel pill with a channel hash, like Slack", () => {
+    const { container } = render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "channels_select",
+              action_id: "a1",
+              initial_channel: "C0UNKNOWN",
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelector(".sbk-select__channel-hash")).toBeTruthy();
+  });
+
+  it("shows a loading skeleton, not the raw id, for an unresolved initial_user", () => {
+    const { container } = render(
+      <BlockKitProvider>
+        <Select
+          element={
+            { type: "users_select", action_id: "a1", initial_user: "U0UNKNOWN" } as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.queryByText("U0UNKNOWN")).toBeNull();
+    expect(container.querySelector(".sbk-select__skeleton")).toBeTruthy();
+  });
+
+  it("leaves an unresolved initial_conversation blank, like Slack", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "conversations_select",
+              action_id: "a1",
+              placeholder: { type: "plain_text", text: "Pick one" },
+              initial_conversation: "G0UNKNOWN",
+            } as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.queryByText("Private channel")).toBeNull();
+    expect(screen.queryByText("G0UNKNOWN")).toBeNull();
+    expect(screen.queryByText("Pick one")).toBeNull();
+  });
+
   it("shows the resolved label instead of the pill when a channel resolver knows the id", () => {
     render(
       <BlockKitProvider resolvers={{ channel: (id) => (id === "C1" ? "general" : undefined) }}>

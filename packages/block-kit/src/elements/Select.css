@@ -79,14 +79,80 @@
   color: var(--sbk-muted);
 }
 
-.sbk-select__value--private {
-  display: inline-flex;
+/* Slack draws a chosen value in an unbordered layer 8px in, and its chevron 28px from the right;
+   our border sits inside the control, so pull both 1px outwards. The placeholder keeps the
+   border's inset, as Slack's lives in the bordered <input>. */
+.sbk-select__value {
+  margin-left: -1px;
+}
+
+.sbk-select__chevron {
+  margin-right: -1px;
+}
+
+/* An id Slack couldn't resolve: c-small_channel_entity with a c-missing_channel--private pill. */
+.sbk-select__entity {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 1px 8px;
-  background: var(--sbk-badge-bg);
-  border-radius: 12px;
-  color: var(--sbk-text);
+  height: 20px;
+  line-height: 20px;
+}
+
+.sbk-select__channel-hash {
+  flex: 0 0 auto;
+  margin-right: 8px;
+}
+
+.sbk-select__entity-text {
+  display: flow-root;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sbk-select__missing-channel {
+  padding: 0 2px 1px 0;
+  color: rgba(29, 28, 29, 0.7);
+  background: rgba(29, 28, 29, 0.13);
+  border-radius: 3px;
+}
+
+.sbk-select__missing-channel svg {
+  display: inline-block;
+  vertical-align: -1.625px;
+}
+
+/* ... and c-small_member_list_entity while the member loads: a blank avatar and a name bar,
+   clipped square where the name's box ends. */
+.sbk-select__skeleton {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.sbk-select__skeleton-avatar {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 0 8px 0 6px;
+  background: rgb(234, 234, 234);
+  border-radius: clamp(4px, min(22.222%, 12px), 12px);
+}
+
+.sbk-select__skeleton-name {
+  flex: 0 0 auto;
+  width: 109px;
+  height: 8px;
+  margin-top: 2px;
+  overflow: hidden;
+}
+
+.sbk-select__skeleton-name::before {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 8px;
+  background: rgb(234, 234, 234);
+  border-radius: 1000px;
 }
 
 .sbk-select__chevron {
