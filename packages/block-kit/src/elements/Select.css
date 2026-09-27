@@ -28,6 +28,27 @@
   line-height: 22px;
 }
 
+/* With chips it grows to fit their rows: each chip sits 4px in from the box and the one above. */
+.sbk-input__element .sbk-select--chips .sbk-select__control {
+  height: auto;
+  min-height: 36px;
+  align-items: flex-start;
+  padding: 0 28px 4px 4px;
+}
+
+/* Slack's p-block_kit_max_selected_items__info, tucked into the label's 8px bottom padding. */
+.sbk-select__max-info {
+  display: none;
+}
+
+.sbk-input__element .sbk-select__max-info {
+  display: block;
+  margin: -8px 0 8px;
+  font-size: 15px;
+  line-height: 22px;
+  color: rgb(97, 96, 97);
+}
+
 /* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
 .sbk-input__element .sbk-select--multi .sbk-select__placeholder {
   color: rgb(94, 93, 96);
@@ -165,35 +186,61 @@
 .sbk-select__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
   flex: 1;
+  min-width: 0;
 }
 
+/* Slack's c-token--medium: a 28px pale-blue tag with a bold 15px label and an 18px "x". */
 .sbk-select__chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 1px 4px 1px 8px;
-  background: var(--sbk-badge-bg);
-  border-radius: 12px;
-  font-size: 12px;
-  line-height: 18px;
+  margin: 4px 0 0 4px;
+  padding: 0 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26.4px;
+  white-space: nowrap;
   color: var(--sbk-text);
+  background: rgba(54, 197, 240, 0.13);
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.sbk-select__chip-label {
+  display: flex;
+  padding: 0 4px;
+}
+
+/* The label is a flow-root on the chip's 18px strut, so 15px text makes its line 27px tall. */
+.sbk-select__chip-text {
+  display: flow-root;
+  overflow: hidden;
+}
+
+.sbk-select__chip-text > span {
+  font-size: 15px;
+  line-height: 26px;
+}
+
+.sbk-select__chip-entity {
+  align-items: center;
+  font-size: 15px;
+  line-height: 26px;
+}
+
+.sbk-select__chip-entity .sbk-select__channel-hash {
+  margin-right: 2px;
+}
+
+.sbk-select__chip-entity .sbk-select__missing-channel svg {
+  width: 15px;
+  height: 15px;
+  vertical-align: -1.875px;
 }
 
 .sbk-select__chip-remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+  display: flex;
   cursor: pointer;
-  color: var(--sbk-muted);
-}
-
-.sbk-select__chip-remove:hover {
-  background: rgba(29, 28, 29, 0.13);
 }
 
 .sbk-select__menu {

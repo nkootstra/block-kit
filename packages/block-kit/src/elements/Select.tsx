@@ -2,7 +2,7 @@ import type { OptionGroup, PlainTextOption } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
-import { ChannelHashIcon, ChevronDownIcon, LockIcon, SearchIcon } from "../icons";
+import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
@@ -190,17 +190,21 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     (source === "users" || source === "channels" || source === "conversations") &&
     resolveLabel(id) === id;
 
-  const unresolvedValue = (id: string) =>
-    source === "channels" ? (
-      <span className="sbk-select__value sbk-select__entity">
-        <ChannelHashIcon className="sbk-select__channel-hash" />
-        <span className="sbk-select__entity-text">
-          <span className="sbk-select__missing-channel">
-            <LockIcon />
-            Private channel
-          </span>
+  const privateChannel = (className: string) => (
+    <span className={className}>
+      <ChannelHashIcon className="sbk-select__channel-hash" />
+      <span className="sbk-select__entity-text">
+        <span className="sbk-select__missing-channel">
+          <LockIcon />
+          Private channel
         </span>
       </span>
+    </span>
+  );
+
+  const unresolvedValue = (id: string) =>
+    source === "channels" ? (
+      privateChannel("sbk-select__value sbk-select__entity")
     ) : source === "users" ? (
       <span className="sbk-select__value sbk-select__skeleton" aria-label={id}>
         <span className="sbk-select__skeleton-avatar" />
@@ -321,10 +325,16 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
 
   return (
     <div
-      className={`sbk-select${multi ? " sbk-select--multi" : ""}${sizeClass}`}
+      className={`sbk-select${multi ? " sbk-select--multi" : ""}${multi && items.length > 0 ? " sbk-select--chips" : ""}${sizeClass}`}
       ref={rootRef}
       onKeyDown={nav.onKeyDown}
     >
+      {multi && element.max_selected_items && (
+        <p className="sbk-select__max-info">
+          You can select up to {element.max_selected_items}{" "}
+          {element.max_selected_items === 1 ? "item" : "items"}.
+        </p>
+      )}
       <button
         ref={triggerRef}
         type="button"
@@ -338,7 +348,15 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             <span className="sbk-select__chips">
               {items.map((item) => (
                 <span className="sbk-select__chip" key={item.id}>
-                  {item.label || resolveLabel(item.id)}
+                  {source === "channels" && isUnresolved(item) ? (
+                    privateChannel("sbk-select__chip-label sbk-select__chip-entity")
+                  ) : (
+                    <span className="sbk-select__chip-label">
+                      <span className="sbk-select__chip-text">
+                        <span>{item.label || resolveLabel(item.id)}</span>
+                      </span>
+                    </span>
+                  )}
                   <span
                     className="sbk-select__chip-remove"
                     role="button"
@@ -349,7 +367,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                       removeItem(item.id);
                     }}
                   >
-                    ×
+                    <CloseIcon />
                   </span>
                 </span>
               ))}

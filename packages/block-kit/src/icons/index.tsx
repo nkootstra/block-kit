@@ -210,6 +210,20 @@ export function ChannelHashIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  // Slack's "x": two 1.5-wide diagonals spanning 4..16 of the 20 grid.
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4 4L16 16M16 4L4 16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function EmailIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" width="14" height="14" fill="none" aria-hidden="true" {...props}>

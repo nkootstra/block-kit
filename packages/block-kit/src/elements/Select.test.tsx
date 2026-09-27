@@ -494,3 +494,42 @@ describe("<Select> multi_external_select with onOptions", () => {
     );
   });
 });
+
+describe("<Select> multi-select chips", () => {
+  it("shows an unresolved initial channel as a 'Private channel' chip, not its id", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "multi_channels_select",
+              action_id: "a1",
+              initial_channels: ["C0UNKNOWN"],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByText("Private channel")).toBeTruthy();
+    expect(screen.queryByText("C0UNKNOWN")).toBeNull();
+  });
+
+  it("tells the user how many items they can pick when max_selected_items is set", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "multi_external_select",
+              action_id: "a1",
+              max_selected_items: 3,
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByText("You can select up to 3 items.")).toBeTruthy();
+  });
+});
