@@ -98,7 +98,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
           <button
             ref={focusRef}
             type="button"
-            className="sbk-datetimepicker__control"
+            className="sbk-datetimepicker__control sbk-datetimepicker__control--date"
             onClick={() => setOpen((o) => !o)}
           >
             <CalendarIcon className="sbk-datetimepicker__icon" />
@@ -117,7 +117,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
         <div className="sbk-datetimepicker__column">
           <button
             type="button"
-            className="sbk-datetimepicker__control"
+            className="sbk-datetimepicker__control sbk-datetimepicker__control--time"
             onClick={() => setOpen((o) => !o)}
           >
             <ClockIcon className="sbk-datetimepicker__icon" />
