@@ -82,6 +82,30 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Isolate rendering from the host page's global styles (Tailwind's preflight, a docs theme's heading
+   fonts, `* { min-width: 0 }`): roll every element back to the browser's defaults, so only the rules
+   below decide how a block looks. Component rules are more specific or come later, so they win.
+   SVG and replaced elements keep their presentational attributes (width, height, fill), which
+   `revert` would drop, and get just the properties preflight changes rolled back.
+   Dialogs and tooltips portalled to <body> sit outside `.sbk-root`, so they get it too. */
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :where(:not(svg, svg *, img, video, canvas, iframe, embed, object)),
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip) :where(:not(svg, svg *))::before,
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip) :where(:not(svg, svg *))::after {
+  all: revert;
+}
+
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :where(svg, img, video, canvas, iframe, embed, object) {
+  display: revert;
+  vertical-align: revert;
+  max-width: revert;
+  margin: revert;
+  padding: revert;
+  border: revert;
+  min-width: revert;
+}
+
 .sbk-root *,
 .sbk-root *::before,
 .sbk-root *::after {

@@ -38,6 +38,11 @@
   border-bottom: 1px solid var(--sbk-outline-ter);
 }
 
+/* Inline code keeps the cell's nowrap, even under a host's `.prose td > code` rule. */
+.sbk-markdown__table :is(th, td) code {
+  white-space: inherit;
+}
+
 .sbk-markdown__table th {
   font-weight: 700;
 }
