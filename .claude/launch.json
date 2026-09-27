@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "playground",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd", "apps/playground", "dev"],
+      "port": 5180
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd", "apps/docs", "dev"],
+      "port": 4321
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Lato, system-ui, sans-serif;
+  background: #f8f8f8;
+  color: #1d1c1d;
+}
+
+.pg {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
+.pg-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #3f0e40;
+  color: #fff;
+}
+
+.pg-title {
+  margin: 0 auto 0 0;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.pg-select {
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 0;
+}
+
+.pg-link {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pg-surfaces {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.pg-surfaces__tab {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+}
+
+.pg-surfaces__tab[aria-selected="true"] {
+  background: #fff;
+  color: #3f0e40;
+}
+
+.pg-main {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.2fr);
+  min-height: 0;
+}
+
+.pg-editor {
+  min-height: 0;
+  overflow: auto;
+  border-right: 1px solid rgba(29, 28, 29, 0.13);
+  background: #fff;
+  font-size: 13px;
+}
+
+.pg-preview {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 0;
+}
+
+.pg-channel {
+  overflow: auto;
+  padding: 16px 0;
+  background: #fff;
+}
+
+.pg-error {
+  margin: 16px 20px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #fdeef3;
+  color: #a4103c;
+  font-family: "Roboto Mono", monospace;
+  font-size: 13px;
+}
+
+.pg-log {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  max-height: 40vh;
+  overflow: auto;
+  padding: 12px 20px;
+  border-top: 1px solid rgba(29, 28, 29, 0.13);
+  background: #f8f8f8;
+  font-size: 13px;
+}
+
+.pg-log__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+}
+
+.pg-log h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.pg-log__empty {
+  color: #616061;
+  margin: 6px 0 0;
+}
+
+/* The Pierre Diffs `File` component (read-only payload viewer): give it real
+   height to grow into so its virtualized/wrapped content is actually visible,
+   instead of collapsing to the height of its (initially empty) shadow DOM. */
+.pg-log > diffs-container {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  margin-top: 8px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .pg-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: 40vh 1fr;
+  }
+}
+
+.pg-delivery {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pg-reply {
+  flex: none;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #e8f5fa;
+  color: #1d1c1d;
+}
+
+.pg-reply[data-ok="false"] {
+  background: #fdeef3;
+  color: #a4103c;
+}
+
+.pg-reply pre {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  font-family: "Roboto Mono", monospace;
+  font-size: 12px;
+}
