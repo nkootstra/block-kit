@@ -31,7 +31,7 @@ export const EMOJI_NAMES: Record<string, string> = {
   cool: "1f192",
   free: "1f193",
   id: "1f194",
-  "new": "1f195",
+  new: "1f195",
   ng: "1f196",
   ok: "1f197",
   sos: "1f198",

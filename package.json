@@ -17,10 +17,12 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "compare": "bun tools/visual/src/compare.ts",
-    "compare:check": "bun tools/visual/src/compare.ts --check"
+    "compare:check": "bun tools/visual/src/compare.ts --check",
+    "emoji": "bun tools/emoji-data/generate.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",
+    "emoji-datasource": "16.0.0",
     "oxfmt": "0.70.0",
     "oxlint": "1.85.0",
     "turbo": "2.11.4",
