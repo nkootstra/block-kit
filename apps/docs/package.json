@@ -1,0 +1,22 @@
+{
+  "name": "@nkootstra/block-kit-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "blume dev",
+    "build": "blume build",
+    "preview": "blume preview",
+    "type-check": "blume check",
+    "validate": "blume validate"
+  },
+  "dependencies": {
+    "@fontsource/lato": "^5.3.0",
+    "@fontsource/roboto-mono": "^5.3.0",
+    "@nkootstra/block-kit": "workspace:*",
+    "@slack/types": "^3.1.0",
+    "blume": "2.0.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

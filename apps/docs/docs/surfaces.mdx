@@ -1,0 +1,284 @@
+---
+title: Surfaces
+description: Render blocks as a Slack message, a modal or a Home tab.
+sidebar:
+  order: 3
+---
+
+Slack shows blocks on three surfaces: messages, modals and the App Home tab. Each has its own component, and each lays the same blocks out the way Slack does on that surface.
+
+| Component   | Slack surface                                    | Takes                                                    |
+| ----------- | ------------------------------------------------ | -------------------------------------------------------- |
+| `<Message>` | A message in a channel                           | `blocks`, or a whole message object                      |
+| `<Modal>`   | A modal opened with `views.open`                 | A `modal` view                                           |
+| `<HomeTab>` | The App Home tab, published with `views.publish` | A `home` view                                            |
+| `<View>`    | Either of the two above                          | Any view; picks `<Modal>` or `<HomeTab>` from its `type` |
+
+## Message
+
+`<Message>` draws the message chrome — app avatar, name, `APP` badge and time — around its blocks.
+
+```tsx
+import { Message } from "@nkootstra/block-kit";
+
+<Message
+  app={{ name: "Deploy Bot", iconUrl: "/deploy-bot.png" }}
+  blocks={[{ type: "section", text: { type: "mrkdwn", text: "Deployed *api@4.2.0* :rocket:" } }]}
+/>;
+```
+
+<Preview
+  payload={{
+    blocks: [{ type: "section", text: { type: "mrkdwn", text: "Deployed *api@4.2.0* :rocket:" } }],
+  }}
+/>
+
+<TypeTable
+  type={{
+    blocks: { type: "AnyBlock[]", description: "The blocks to render." },
+    text: {
+      type: "string",
+      description:
+        "Fallback text. Slack shows it only when the message has no blocks, and so does this.",
+    },
+    app: {
+      type: "{ name: string; iconUrl?: string }",
+      description:
+        "The app the message is from. Without `iconUrl`, the avatar shows the name's first letter.",
+      default: '{ name: "Block Kit Preview" }',
+    },
+    ts: {
+      type: "string | number",
+      description: "The message timestamp in seconds, as in Slack's `ts`.",
+      default: "The time the component mounted",
+    },
+    timeZone: {
+      type: "string",
+      description: "IANA zone for the displayed time.",
+      default: "The viewer's zone",
+    },
+    message: {
+      type: "SlackMessageLike",
+      description: "A whole Slack message object. See below.",
+    },
+    channelId: {
+      type: "string",
+      description:
+        "The channel the message is in, sent in the `container` of `block_actions` payloads.",
+    },
+    isEphemeral: {
+      type: "boolean",
+      description: "Show Slack's “Only visible to you” marker.",
+      default: "false",
+    },
+  }}
+/>
+
+### Message objects
+
+When you already have a message from Slack's API — say from `conversations.history` — pass it as `message`. It supplies the blocks, text, timestamp and sender (`username`, `icon_url`, `icon_emoji` or `bot_profile`), and renders what surrounds them: legacy attachments, reactions, the thread summary and the `(edited)` marker.
+
+```tsx
+const { messages } = await slack.conversations.history({ channel: "C0RELEASES", limit: 1 });
+
+<Message message={messages[0]} channelId="C0RELEASES" />;
+```
+
+<Preview
+  payload={{
+    text: "Release *v4.2.0* is out.",
+    edited: { ts: "43260" },
+    reactions: [
+      { name: "tada", count: 4 },
+      { name: "eyes", count: 1 },
+    ],
+    reply_count: 3,
+  }}
+/>
+
+### Attachments
+
+Legacy [attachments](https://docs.slack.dev/messaging/formatting-message-text#when-to-use-attachments) render with their colour bar, author, title, fields, image and footer. An attachment can also hold `blocks`.
+
+<Preview
+  payload={{
+    text: "New incident",
+    attachments: [
+      {
+        color: "#E01E5A",
+        author_name: "PagerDuty",
+        title: "INC-1024: Elevated error rate on api",
+        title_link: "https://example.com/incidents/1024",
+        text: "5xx responses above 2% for 5 minutes.",
+        fields: [
+          { title: "Severity", value: "High", short: true },
+          { title: "Service", value: "api", short: true },
+        ],
+        footer: "Triggered by the error-rate monitor",
+        ts: 43200,
+      },
+    ],
+  }}
+/>
+
+:::note
+Slack recommends blocks over attachments for new messages. Attachments are here so messages your app already sends look right.
+:::
+
+### Ephemeral messages
+
+Ephemeral messages — posted with `chat.postEphemeral` — carry Slack's “Only visible to you” marker:
+
+```tsx
+<Message isEphemeral blocks={blocks} />
+```
+
+<Preview
+  ephemeral
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "Only you can see this. Run `/deploy help` for options." },
+      },
+    ],
+  }}
+/>
+
+## Modal
+
+`<Modal>` renders a `modal` view the way `views.open` shows it: the title bar with the app icon and close button, a scrolling body, and the close and submit buttons.
+
+```tsx
+import { Modal } from "@nkootstra/block-kit";
+
+<Modal
+  icon="/deploy-bot.png"
+  view={{
+    type: "modal",
+    callback_id: "deploy",
+    title: { type: "plain_text", text: "Deploy" },
+    submit: { type: "plain_text", text: "Deploy" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "version",
+        label: { type: "plain_text", text: "Version" },
+        element: {
+          type: "plain_text_input",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "api@4.2.0" },
+        },
+      },
+    ],
+  }}
+/>;
+```
+
+<Preview
+  payload={{
+    type: "modal",
+    callback_id: "deploy",
+    title: { type: "plain_text", text: "Deploy" },
+    submit: { type: "plain_text", text: "Deploy" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "version",
+        label: { type: "plain_text", text: "Version" },
+        element: {
+          type: "plain_text_input",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "api@4.2.0" },
+        },
+      },
+    ],
+  }}
+/>
+
+Press **Deploy** with the field empty: the modal validates it the way Slack does before it sends anything. When it's valid, the provider's `onSubmit` gets the `view_submission` payload. To open, push and update modals from actions, and answer a submission with errors, see [Modals](/guides/modals).
+
+<TypeTable
+  type={{
+    view: {
+      type: "ModalView",
+      description: "The view, as you'd pass it to `views.open`. Slack allows up to 100 blocks.",
+      required: true,
+    },
+    icon: { type: "string", description: "URL of the app icon shown before the title." },
+  }}
+/>
+
+## Home tab
+
+`<HomeTab>` renders a `home` view full width, under the App Home tab bar.
+
+```tsx
+import { HomeTab } from "@nkootstra/block-kit";
+
+<HomeTab view={{ type: "home", blocks }} />;
+```
+
+<Preview
+  payload={{
+    type: "home",
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "Your deploys" } },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*api@4.2.0* went out to production 12 minutes ago." },
+        accessory: {
+          type: "button",
+          action_id: "rollback",
+          text: { type: "plain_text", text: "Roll back" },
+        },
+      },
+      { type: "divider" },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "Deploys from <#C0RELEASES> in the last 7 days." }],
+      },
+    ],
+  }}
+/>
+
+An action handler can swap the content with `views.publish`, just as your app republishes the Home tab.
+
+## Any view
+
+`<View>` takes any view object — for example one you've loaded from your database — and renders `<Modal>` or `<HomeTab>` depending on its `type`:
+
+```tsx
+import { View } from "@nkootstra/block-kit";
+
+<View view={savedView} icon="/deploy-bot.png" />;
+```
+
+## Choosing the surface for loose blocks
+
+`<Blocks>` renders an array of blocks with no surface around them. Some elements look different per surface — selects and text inputs are taller in modals and the Home tab, and only there does an optional `input` block get its “(optional)” label — so set the provider's `surface` to the one you're imitating:
+
+```tsx
+import { BlockKitProvider, Blocks } from "@nkootstra/block-kit";
+
+<BlockKitProvider surface="modal">
+  <div className="sbk-root">
+    <Blocks blocks={blocks} />
+  </div>
+</BlockKitProvider>;
+```
+
+The `sbk-root` class applies the base font, colours and resets; `<Message>`, `<Modal>` and `<HomeTab>` add it for you.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Modals" href="/guides/modals" icon="app-window">
+    Open, push and update views, and handle submissions.
+  </Card>
+  <Card title="Interactivity" href="/guides/interactivity" icon="mouse-pointer-click">
+    Respond to actions from any surface.
+  </Card>
+</CardGroup>

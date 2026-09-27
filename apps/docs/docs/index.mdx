@@ -1,0 +1,81 @@
+---
+title: Introduction
+description: Render Slack Block Kit JSON in React, pixel-for-pixel the way Slack does.
+sidebar:
+  order: 0
+---
+
+`@nkootstra/block-kit` renders the Block Kit JSON your Slack app sends — messages, modals and Home tabs — as React components that look and behave the way they do in Slack.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*<fakeLink.toEmployeeProfile.com|Ada Lovelace>* requested time off :palm_tree:",
+        },
+      },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: "*Type:*\nPaid time off" },
+          { type: "mrkdwn", text: "*When:*\nAug 10 – Aug 13" },
+          { type: "mrkdwn", text: "*Hours:*\n16.0 (2 days)" },
+          { type: "mrkdwn", text: "*Remaining balance:*\n32.0 hours (4 days)" },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            style: "primary",
+            text: { type: "plain_text", text: "Approve" },
+            value: "approve",
+            action_id: "approve",
+          },
+          {
+            type: "button",
+            style: "danger",
+            text: { type: "plain_text", text: "Deny" },
+            value: "deny",
+            action_id: "deny",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+Click a button: the log under the preview shows the action your `onAction` handler receives, in the same shape Slack sends to your app.
+
+## Why this exists
+
+Slack's [Block Kit Builder](https://app.slack.com/block-kit-builder) only runs inside Slack. When you want to show a message outside of it — a preview in your admin panel, a gallery of templates, an approval queue in your own product, a test harness for your bot — you'd otherwise have to rebuild Slack's layout rules by hand.
+
+This package does that work for you:
+
+- **Every block and element.** Sections, rich text, tables, charts, cards, carousels, inputs, every select menu and picker — including the newer agent blocks such as `plan` and `task_card`.
+- **Measured against Slack.** Each block is compared, pixel by pixel, against captures of Slack's own rendering. Spacing, fonts, colours, hover and focus states match.
+- **Interactive.** Buttons, selects, pickers and inputs work. You receive Slack's `block_actions`, `view_submission` and `block_suggestion` payloads, and can answer them the way your app would: open a modal, update the message, return validation errors.
+- **Plugs into your app.** Forward interactions to an existing Bolt app with a signed relay, and resolve user and channel mentions from the Slack Web API.
+
+## Where to start
+
+<CardGroup cols={2}>
+  <Card title="Installation" href="/installation" icon="download">
+    Add the package, its stylesheet and fonts.
+  </Card>
+  <Card title="Quickstart" href="/quickstart" icon="rocket">
+    Render your first message and handle a button click.
+  </Card>
+  <Card title="Blocks" href="/blocks" icon="blocks">
+    Every block, with live examples you can copy.
+  </Card>
+  <Card title="Interactivity" href="/guides/interactivity" icon="mouse-pointer-click">
+    Handle actions, open modals and update messages.
+  </Card>
+</CardGroup>

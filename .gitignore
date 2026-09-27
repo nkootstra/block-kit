@@ -14,3 +14,6 @@ fixtures/**/*.diff.png
 tools/visual/.auth/
 # Local secrets (e.g. the playground relay's signing secret); never commit
 .env*.local
+# Blume docs build output
+.blume/
+.blume-verify/
