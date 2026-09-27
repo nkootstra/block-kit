@@ -60,6 +60,15 @@ async (win = window) => {
     return out.join(";");
   };
 
+  // The snapshot travels through the clipboard and the console, which have turned every non-ASCII
+  // character into "?" before, icon-font glyphs included. Keep the output pure ASCII.
+  const NON_ASCII = /[\u0080-\u{10ffff}]/gu;
+  const cssAscii = (css) => css.replace(NON_ASCII, (c) => `\\${c.codePointAt(0).toString(16)} `);
+  const htmlAscii = (html) =>
+    html.replace(NON_ASCII, (c) => `&#x${c.codePointAt(0).toString(16)};`);
+  const jsonAscii = (json) =>
+    json.replace(/[\u0080-\uffff]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
+
   const pseudoRules = [];
   let refs = 0;
   const abs = (url) => new URL(url, win.location.href).href;
@@ -97,7 +106,9 @@ async (win = window) => {
           localName: "span",
         });
         pseudoRules.push(
-          `[data-ref="${el.getAttribute("data-ref")}"]${pseudo}{content:${ps.content};${diff(ps, base)}}`,
+          cssAscii(
+            `[data-ref="${el.getAttribute("data-ref")}"]${pseudo}{content:${ps.content};${diff(ps, base)}}`,
+          ),
         );
       }
     }
@@ -186,12 +197,12 @@ async (win = window) => {
   ).backgroundColor;
   return `<!doctype html>
 <html><head><meta charset="utf-8"><title>reference</title>
-<script type="application/json" id="sbk-reference-meta">${JSON.stringify(meta).replace(/</g, "\\u003c")}</script>
+<script type="application/json" id="sbk-reference-meta">${jsonAscii(JSON.stringify(meta).replace(/</g, "\\u003c"))}</script>
 <style>
-${fontFaces.join("\n")}
+${cssAscii(fontFaces.join("\n"))}
 html,body{margin:0;padding:0;background:${bodyBg === "rgba(0, 0, 0, 0)" ? "#fff" : bodyBg}}
 #sbk-reference{width:${Math.round(rect.width)}px}
 ${pseudoRules.join("\n")}
 </style></head>
-<body><div id="sbk-reference">${frozen.outerHTML}</div></body></html>`;
+<body><div id="sbk-reference">${htmlAscii(frozen.outerHTML)}</div></body></html>`;
 };

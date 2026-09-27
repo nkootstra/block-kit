@@ -65,14 +65,13 @@ const context = await browser.newContext({
 
 // The references were captured with classic 15px scrollbars (an overflowing code block reserves a
 // horizontal track below its last line), while headless Chromium hides them (--hide-scrollbars) and
-// macOS may overlay them. Give both sides the same fixed-size track, whatever the OS setting.
-await context.addInitScript(() => {
-  document.addEventListener("DOMContentLoaded", () => {
-    const style = document.createElement("style");
-    style.textContent = "::-webkit-scrollbar { width: 15px; height: 15px; }";
-    document.head.append(style);
-  });
-});
+// macOS may overlay them. Give both sides the same fixed-size, fully styled scrollbar after every
+// load: an init script doesn't reach the document setContent() reuses, and a styled track without
+// a thumb rule paints nothing, so either way one side would draw a native thumb and the other not.
+const SCROLLBAR_CSS = `
+::-webkit-scrollbar { width: 15px; height: 15px; background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(29, 28, 29, 0.35); border: 4px solid transparent; border-radius: 8px; background-clip: padding-box; }
+`;
 
 // Slack's font CDN doesn't send CORS headers for a null origin; serve fonts through the harness.
 const fontCache = new Map<string, Buffer>();
@@ -165,7 +164,7 @@ for (const name of names) {
   )?.[1];
 
   await page.setContent(html, { waitUntil: "load" });
-  await page.addStyleTag({ content: fontFaces });
+  await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
   await settle(page);
   const reference = await shot(page, "#sbk-reference > *");
 
@@ -179,7 +178,7 @@ for (const name of names) {
   let actual: PNG;
   try {
     await page.goto(url.href, { waitUntil: "load" });
-    await page.addStyleTag({ content: fontFaces });
+    await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
     await page.waitForSelector("#sbk-render > *", { timeout: 10_000 });
     await settle(page);
     actual = await shot(page, "#sbk-render > *");
