@@ -5,7 +5,6 @@
 }
 
 .sbk-video__byline {
-  height: 23px;
   color: var(--sbk-muted);
   white-space: nowrap;
 }
