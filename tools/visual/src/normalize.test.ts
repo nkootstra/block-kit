@@ -29,7 +29,7 @@ describe("normalize", () => {
         '[data-ref="1"]::before{content:"?";color:red;content:"?";font-family:"Slack v2"}',
       );
       expect(normalize(html)).toContain(
-        '[data-ref="1"]::before{content:"\\e271";color:red;content:"\\e271";font-family:"Slack v2"}',
+        '[data-ref="1"]::before{content:"\\e271";color:red;content:"\\e271";font-family:"Slack v2";',
       );
     });
 
@@ -74,5 +74,21 @@ describe("normalize", () => {
       '<body><div class="p-bkb_preview_modal__body--slack_scrollbar"></div></body>';
     const twice = normalize(normalize(html));
     expect(twice.split("--slack_scrollbar::-webkit-scrollbar{").length).toBe(2);
+  });
+
+  it("keeps an icon's glyph upright although its <i> host is italic", () => {
+    const html =
+      '<style>\n[data-ref="1"]::before{content:"\\e023";font-family:"Slack v2"}\n</style></head>\n' +
+      '<body><i class="c-icon c-icon--calendar" data-ref="1"></i></body>';
+    expect(normalize(html)).toContain(
+      '[data-ref="1"]::before{content:"\\e023";font-family:"Slack v2";font-style:normal}',
+    );
+  });
+
+  it("leaves a pseudo-element's captured font style alone", () => {
+    const html =
+      '<style>\n[data-ref="1"]::before{content:"x";font-style:oblique}\n</style></head>\n' +
+      '<body><i data-ref="1"></i></body>';
+    expect(normalize(html)).toBe(html);
   });
 });

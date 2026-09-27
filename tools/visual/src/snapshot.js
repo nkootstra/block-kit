@@ -49,13 +49,17 @@ async (win = window) => {
   // properties only add noise; the physical values are already inlined.
   const SKIP =
     /^(--|transition|animation|will-change|cursor|caret|-webkit-tap|pointer-events|user-select|-webkit-user|block-size|inline-size|min-block|min-inline|max-block|max-inline|border-block|border-inline|margin-block|margin-inline|padding-block|padding-inline|inset-block|inset-inline|border-start|border-end|column-rule-color|outline-color|text-emphasis-color|-webkit-text-fill-color|-webkit-text-stroke-color)/;
-  const diff = (cs, base) => {
+  // A pseudo-element inherits from its host, not from a plain span: pass the host's computed style
+  // as `host` so a value that differs from it (an icon's upright glyph in an italic <i>) is kept.
+  const diff = (cs, base, host) => {
     const out = [];
     for (let i = 0; i < cs.length; i++) {
       const prop = cs[i];
       if (SKIP.test(prop)) continue;
       const value = cs.getPropertyValue(prop);
-      if (value !== base[prop]) out.push(`${prop}:${value}`);
+      if (value !== base[prop] || (host && value !== host.getPropertyValue(prop))) {
+        out.push(`${prop}:${value}`);
+      }
     }
     return out.join(";");
   };
@@ -107,7 +111,7 @@ async (win = window) => {
         });
         pseudoRules.push(
           cssAscii(
-            `[data-ref="${el.getAttribute("data-ref")}"]${pseudo}{content:${ps.content};${diff(ps, base)}}`,
+            `[data-ref="${el.getAttribute("data-ref")}"]${pseudo}{content:${ps.content};${diff(ps, base, cs)}}`,
           ),
         );
       }

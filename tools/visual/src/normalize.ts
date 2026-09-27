@@ -12,9 +12,11 @@
  * - Scrollbar pseudo-elements can't be read from computed styles, so the snapshot misses the
  *   modal body's custom scrollbar: an 8px track whose thumb stays transparent until hovered.
  *   Without it the reference falls back to the harness's 15px scrollbar and lays out narrower.
+ * - Pseudo-element styles were diffed against a plain span, so an icon glyph's `font-style:normal`
+ *   was dropped and it inherits italic from its <i> host, which slants it. Slack's is upright.
  */
 export function normalize(html: string): string {
-  return addModalScrollbar(restoreGlyphs(html))
+  return uprightPseudos(addModalScrollbar(restoreGlyphs(html)))
     .replace(/<span\b[^>]*>/g, (tag) =>
       /class="c-timestamp|data-qa="timestamp_label"/.test(tag)
         ? tag.replace(/style="([^"]*)"/, (_, style: string) => {
@@ -57,7 +59,7 @@ function restoreGlyphs(html: string): string {
     const at = html.search(new RegExp(`<[a-z]+\\b[^>]*\\bdata-ref="${ref}"`));
     if (at < 0) return undefined;
     const tag = html.slice(at, html.indexOf(">", at) + 1);
-    const classes = tag.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) ?? [];
+    const classes = (tag.match(/\bclass="([^"]*)"/)?.[1] ?? "").split(/\s+/);
     if (pseudo === "::after" && classes.includes("c-emoji")) return '"\\200b" / ""';
     if (pseudo !== "::before") return undefined;
     const icon = classes.find((c) => c.startsWith("c-icon--") && c.slice(8) in ICON_GLYPHS);
@@ -100,4 +102,15 @@ function addModalScrollbar(html: string): string {
     `.${MODAL_SCROLLBAR}::-webkit-scrollbar-track,.${MODAL_SCROLLBAR}::-webkit-scrollbar-thumb,.${MODAL_SCROLLBAR}::-webkit-scrollbar-corner{background:transparent}`,
   ].join("\n");
   return html.replace("</style>", `${css}\n</style>`);
+}
+
+function uprightPseudos(html: string): string {
+  return html.replace(
+    /(\[data-ref="(\d+)"\]::(?:before|after)\{)([^}]*)\}/g,
+    (rule, head: string, ref: string, body: string) => {
+      if (/(^|;)font-style:/.test(body)) return rule;
+      if (!new RegExp(`<(i|em)\\b[^>]*\\bdata-ref="${ref}"`).test(html)) return rule;
+      return `${head}${body};font-style:normal}`;
+    },
+  );
 }
