@@ -1,5 +1,5 @@
 import type { InputBlock } from "@slack/types";
-import { useBlockKit } from "../context";
+import { SuppressActions, useBlockKit } from "../context";
 import { Element } from "../elements/Element";
 import { InputBlockContext } from "../elements/inputBlockContext";
 import { ReturnIcon } from "../icons";
@@ -30,9 +30,9 @@ function dispatchHint(block: InputBlock): boolean {
 /**
  * Slack's form field wrapper: label (+"(optional)" suffix), the element itself, an optional hint
  * below it, and a validation error (from `errors[block_id]`, as returned by `response_action:
- * "errors"`) shown in red beneath everything. `dispatch_action` is stamped onto the element as an
- * internal `__dispatchAction` field since Slack's own schema only carries it at the block level,
- * but `plain_text_input` (the only element that currently reads it) needs it directly.
+ * "errors"`) shown in red beneath everything. Without `dispatch_action` the element sends no
+ * `block_actions`, as in Slack. The flag is also stamped onto the element as an internal
+ * `__dispatchAction` field, since text inputs need it to pick their triggers.
  */
 export function Input({ block, blockId }: BlockProps<InputBlock>) {
   const { errors, surface } = useBlockKit();
@@ -52,7 +52,13 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
       </div>
       <div className="sbk-input__element">
         <InputBlockContext.Provider value={true}>
-          <Element element={element} blockId={blockId} />
+          {block.dispatch_action === true ? (
+            <Element element={element} blockId={blockId} />
+          ) : (
+            <SuppressActions>
+              <Element element={element} blockId={blockId} />
+            </SuppressActions>
+          )}
         </InputBlockContext.Provider>
       </div>
       {block.hint && (

@@ -1,6 +1,6 @@
 import type { InputBlock } from "@slack/types";
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider } from "../context";
 import { Input } from "./Input";
 
@@ -128,5 +128,38 @@ describe("<Input> block", () => {
       </BlockKitProvider>,
     );
     expect(screen.getByText("This field is required")).toBeTruthy();
+  });
+
+  describe("dispatch_action", () => {
+    const checkboxes = {
+      type: "checkboxes",
+      action_id: "notify",
+      options: [{ text: { type: "plain_text", text: "Email me" }, value: "email" }],
+    };
+
+    async function clickCheckbox(extra: Record<string, unknown>) {
+      const onAction = vi.fn();
+      render(
+        <BlockKitProvider onAction={onAction}>
+          <Input block={block({ element: checkboxes, ...extra })} blockId="prefs" index={0} />
+        </BlockKitProvider>,
+      );
+      // Toggling awaits the (absent) confirm dialog before it reports the change.
+      await act(async () => {
+        fireEvent.click(screen.getByRole("checkbox", { name: "Email me" }));
+      });
+      return onAction;
+    }
+
+    it("sends no block_actions for its element by default, like Slack", async () => {
+      expect(await clickCheckbox({})).not.toHaveBeenCalled();
+    });
+
+    it("sends block_actions for its element when dispatch_action is true", async () => {
+      expect(await clickCheckbox({ dispatch_action: true })).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "checkboxes", action_id: "notify", block_id: "prefs" }),
+        expect.anything(),
+      );
+    });
   });
 });

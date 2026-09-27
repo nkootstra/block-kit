@@ -650,6 +650,17 @@ export function SurfaceScope({ container, message, errors, children }: SurfaceSc
 }
 
 /**
+ * Stops the elements below it from sending `block_actions`, while their values still reach
+ * `state`. An `input` block uses it: Slack only dispatches from an input's element when the block
+ * sets `dispatch_action`.
+ */
+export function SuppressActions({ children }: { children: ReactNode }) {
+  const context = useBlockKit();
+  const value = useMemo<BlockKitContextValue>(() => ({ ...context, dispatch: noop }), [context]);
+  return <BlockKitContext.Provider value={value}>{children}</BlockKitContext.Provider>;
+}
+
+/**
  * The view a `<HomeTab>` or standalone `<Modal>` should show: its `view` prop, or what the app
  * last sent with `views.update`/`views.publish`. A new `view` prop (by content) wins again.
  */
