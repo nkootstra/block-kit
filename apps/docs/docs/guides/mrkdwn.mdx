@@ -1,6 +1,6 @@
 ---
 title: mrkdwn
-description: Slack's mrkdwn syntax, the parser and formatting helpers in @nkootstra/block-kit/mrkdwn, and the <Mrkdwn>/<Text> components.
+description: Slack's mrkdwn syntax, the parser and formatting helpers in @nkootstra/block-kit/mrkdwn, and the Mrkdwn and Text components.
 ---
 
 Mrkdwn is Slack's own text format — not quite Markdown — used in `mrkdwn` text objects throughout
@@ -21,7 +21,7 @@ Block Kit. `@nkootstra/block-kit` ships a parser for it, usable on its own (no R
   }}
 />
 
-## \<Mrkdwn> and \<Text>
+## Mrkdwn and Text
 
 `<Mrkdwn>` renders a raw mrkdwn string directly:
 
@@ -183,7 +183,7 @@ import { parse, decodeEntities, parsePlainTextEmoji } from "@nkootstra/block-kit
     parsePlainTextEmoji: {
       type: "(input: string) => Array<Text | Emoji>",
       description:
-        "Splits a plain_text string into text and emoji nodes, with no other mrkdwn parsing — what <Text> uses for plain_text objects.",
+        "Splits a plain_text string into text and emoji nodes, with no other mrkdwn parsing — what `Text` uses for plain_text objects.",
     },
   }}
 />
