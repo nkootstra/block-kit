@@ -55,12 +55,23 @@ for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
 }
 names.sort();
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ ignoreDefaultArgs: ["--hide-scrollbars"] });
 const context = await browser.newContext({
   viewport: { width: 1200, height: 900 },
   deviceScaleFactor: 1,
   locale: "en-US",
   timezoneId: "UTC",
+});
+
+// The references were captured with classic 15px scrollbars (an overflowing code block reserves a
+// horizontal track below its last line), while headless Chromium hides them (--hide-scrollbars) and
+// macOS may overlay them. Give both sides the same fixed-size track, whatever the OS setting.
+await context.addInitScript(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const style = document.createElement("style");
+    style.textContent = "::-webkit-scrollbar { width: 15px; height: 15px; }";
+    document.head.append(style);
+  });
 });
 
 // Slack's font CDN doesn't send CORS headers for a null origin; serve fonts through the harness.
