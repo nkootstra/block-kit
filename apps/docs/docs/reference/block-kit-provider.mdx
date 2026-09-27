@@ -1,0 +1,174 @@
+---
+title: BlockKitProvider
+description: Every prop of the provider that connects rendered blocks to your app.
+---
+
+`<BlockKitProvider>` holds the state of every input rendered beneath it, and is where interactions reach your code. It's optional: without one, blocks render and inputs work, but actions go nowhere.
+
+```tsx
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+
+<BlockKitProvider
+  onAction={(action, { views, message, state }) => {}}
+  onSubmit={(payload, { views }) => {}}
+  onOptions={(payload) => ({ options: [] })}
+  resolvers={{ user: (id) => users[id]?.name }}
+>
+  <Message blocks={blocks} />
+</BlockKitProvider>;
+```
+
+One provider can hold several surfaces. Each action still carries the message or view it came from.
+
+## Props
+
+### Handlers
+
+<TypeTable
+  type={{
+    onAction: {
+      type: "(action: BlockAction, context: ActionContext) => void",
+      description:
+        "Called for every action: a click, a selection, a date picked. `action` is one entry of the `block_actions` payload's `actions` array. `context` has `state`, `views` and, for actions in a message, `message`.",
+    },
+    onPayload: {
+      type: "(payload: BlockActionsPayload, context: PayloadContext) => void",
+      description:
+        "The same actions, wrapped in the full `block_actions` payload your request URL would receive — team, user, container, `response_url` and `state`. Use it to forward actions to an existing app.",
+    },
+    onSubmit: {
+      type: "(payload, context: { views }) => SubmitResult | Promise<SubmitResult>",
+      description:
+        "Called with a `view_submission` payload when a modal's submit button is pressed and its inputs are valid. Return a `response_action` (`errors`, `update`, `push` or `clear`), or nothing to close the modal. If it throws or rejects, the modal stays open.",
+    },
+    onClose: {
+      type: "(payload) => void",
+      description: "Called with a `view_closed` payload when a modal's close button is pressed.",
+    },
+    onOptions: {
+      type: "(payload: BlockSuggestionPayload) => OptionsResponse | Promise<OptionsResponse>",
+      description:
+        "Answers an `external_select`'s `block_suggestion` request with `{ options }` or `{ option_groups }`, as your options load URL would. Without it, external selects accept a typed value on Enter.",
+    },
+    onStateChange: {
+      type: "(state: StateValues) => void",
+      description: "Called whenever an input value changes, with the full `state.values`.",
+    },
+  }}
+/>
+
+### Data
+
+<TypeTable
+  type={{
+    resolvers: {
+      type: "Resolvers",
+      description:
+        "Look up names for user, channel and usergroup ids, and profiles for the card a user mention opens. See [Mentions and resolvers](/guides/mentions-and-resolvers).",
+    },
+    emoji: {
+      type: "EmojiOptions",
+      description:
+        "`imageUrl(unified)` builds the image URL for a standard emoji; `custom` maps workspace emoji names to image URLs or `alias:<name>`. See [Emoji](/guides/emoji).",
+      default: "Apple emoji from jsDelivr",
+    },
+    identity: {
+      type: "PayloadIdentity",
+      description:
+        "`team`, `user`, `apiAppId`, `token`, `triggerId` and `responseUrl` stamped onto the payloads the provider builds.",
+      default: "Placeholder ids such as `T00000000` and `U00000000`",
+    },
+    errors: {
+      type: "Record<string, string>",
+      description:
+        'Validation errors keyed by `block_id`, shown under `input` blocks — the shape of `response_action: "errors"`.',
+    },
+  }}
+/>
+
+### Display
+
+<TypeTable
+  type={{
+    surface: {
+      type: '"message" | "modal" | "home"',
+      description:
+        "The surface loose `<Blocks>` are laid out for. `<Message>`, `<Modal>` and `<HomeTab>` set their own.",
+      default: '"message"',
+    },
+    theme: {
+      type: '"light" | "dark"',
+      description:
+        "Forces a colour scheme for everything inside. Without it, the page's `data-theme` or the system preference applies. See [Theming](/guides/theming).",
+    },
+    timeZone: {
+      type: "string",
+      description: "IANA zone for `<!date>` tokens and date and time elements.",
+      default: "The viewer's zone",
+    },
+    children: { type: "ReactNode", description: "The surfaces to render.", required: true },
+  }}
+/>
+
+## ActionContext
+
+The second argument to `onAction`.
+
+<TypeTable
+  type={{
+    state: {
+      type: "StateValues",
+      description:
+        "The value of every input on the surface when the action happened, keyed by `block_id`, then `action_id` — like `view.state.values`.",
+    },
+    views: {
+      type: "ViewsApi",
+      description: "Open, push, update, close and clear modals, and publish the Home tab.",
+    },
+    message: {
+      type: "MessageApi | undefined",
+      description:
+        "Set for actions in a `<Message>`. `update({ blocks, text })` replaces the message; `delete()` removes it.",
+    },
+  }}
+/>
+
+## ViewsApi
+
+The calls your app makes with Slack's `views.*` methods. A modal opened this way renders above the provider's children and gets its own input state. Slack allows three modals in the stack.
+
+<TypeTable
+  type={{
+    open: {
+      type: "(view) => string",
+      description: "`views.open`: replaces any open modals with this one. Returns the new view id.",
+    },
+    push: {
+      type: "(view) => string",
+      description:
+        "`views.push`: stacks a modal on top of the current one. Returns the new view id.",
+    },
+    update: {
+      type: "(view, target?: { viewId?; externalId? }) => void",
+      description:
+        "`views.update`: swaps a modal's content, keeping input values whose `block_id` and `action_id` are unchanged. Targets the top modal unless you pass `viewId` or `externalId`.",
+    },
+    close: { type: "() => void", description: "Closes the top modal." },
+    clear: { type: "() => void", description: "Closes every open modal." },
+    publish: {
+      type: "(view) => void",
+      description: "`views.publish`: replaces the content of the `<HomeTab>` under this provider.",
+    },
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Interactivity" href="/guides/interactivity" icon="mouse-pointer-click">
+    Handling actions, step by step.
+  </Card>
+  <Card title="Payloads" href="/reference/payloads" icon="braces">
+    Build Slack's payloads yourself.
+  </Card>
+</CardGroup>

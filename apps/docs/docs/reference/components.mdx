@@ -1,0 +1,82 @@
+---
+title: Components
+description: Every component the package exports, and when to use each.
+---
+
+## Surfaces
+
+These draw Slack's chrome around your blocks. Most apps only need these. See [Surfaces](/surfaces) for examples.
+
+| Component   | Props                                                                            | Renders                                         |
+| ----------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `<Message>` | `blocks`, `text`, `app`, `ts`, `timeZone`, `message`, `channelId`, `isEphemeral` | A message in a channel                          |
+| `<Modal>`   | `view`, `icon`                                                                   | A modal                                         |
+| `<HomeTab>` | `view`                                                                           | The App Home tab                                |
+| `<View>`    | `view`, `icon`                                                                   | `<Modal>` or `<HomeTab>`, picked by `view.type` |
+
+## Building blocks
+
+These render parts of a surface. Reach for them when you build your own layout around blocks, or a [custom block](/reference/custom-blocks).
+
+<TypeTable
+  type={{
+    "<Blocks blocks />": {
+      type: "{ blocks: AnyBlock[] }",
+      description:
+        "A list of blocks with Slack's spacing between them, and no surface around them. Wrap it in an element with the `sbk-root` class for the base font and colours.",
+    },
+    "<Block block index />": {
+      type: "{ block: Json; index: number }",
+      description:
+        "One block. Without a `block_id`, the block gets `block-<index>`. An unknown `type` renders a placeholder.",
+    },
+    "<Element element blockId />": {
+      type: "{ element: Json; blockId: string }",
+      description: "One element — a button, a select, an image — inside the block with `blockId`.",
+    },
+    "<Mrkdwn text />": {
+      type: "{ text: string; verbatim?: boolean; emojiSize?: number }",
+      description:
+        "Slack's mrkdwn: bold, italics, links, mentions, dates, emoji and code. Bare URLs become links unless `verbatim` is set, like Slack's `verbatim` flag.",
+    },
+    "<Text text />": {
+      type: "{ text: TextObject; emojiSize?: number }",
+      description: "A `plain_text` or `mrkdwn` text object.",
+    },
+    "<UserMention id name />": {
+      type: "{ id: string; name?: string }",
+      description:
+        "An `@name` mention that opens a profile card on click, filled from `resolvers.userProfile`.",
+    },
+    "<Tooltip label>": {
+      type: '{ label: ReactNode; placement?: "top" | "bottom"; children: ReactElement }',
+      description:
+        "Slack's dark tooltip, shown on hover and focus of its single child. Flips to the other side when there's no room.",
+    },
+  }}
+/>
+
+## Provider and scope
+
+| Export               | What it's for                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `<BlockKitProvider>` | Handlers, input state, resolvers and theme. See [BlockKitProvider](/reference/block-kit-provider).                           |
+| `<SurfaceScope>`     | Ties elements below it to one message or view, for a surface you build yourself. See [Hooks](/reference/hooks#surfacescope). |
+
+## Registries
+
+| Export              | What it's for                                            |
+| ------------------- | -------------------------------------------------------- |
+| `blockComponents`   | Maps a block `type` to the component that renders it.    |
+| `elementComponents` | Maps an element `type` to the component that renders it. |
+
+Add to them to render your own types — see [Custom blocks](/reference/custom-blocks).
+
+## Validation
+
+| Export                        | What it's for                                                                                                               |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `validateView(blocks, state)` | Checks a modal's `input` blocks the way Slack does before submitting. Returns errors keyed by `block_id`; empty when valid. |
+| `VALIDATION_MESSAGES`         | The messages it uses.                                                                                                       |
+
+See [Validation](/guides/validation).

@@ -1,0 +1,117 @@
+---
+title: Custom blocks
+description: Render your own block and element types, or replace a built-in one.
+---
+
+Every block and element is looked up by its `type` in a registry. Add an entry to render a type the package doesn't know, or replace an entry to change how a built-in type looks.
+
+Unknown types otherwise render as a placeholder that names the type.
+
+## Add a block
+
+A block component receives the block's JSON, its `blockId` and its `index`:
+
+```tsx
+import { blockComponents, Mrkdwn, type BlockProps } from "@nkootstra/block-kit";
+
+interface StatusBlock {
+  type: "status";
+  state: "up" | "down";
+  text: string;
+}
+
+function Status({ block }: BlockProps<StatusBlock>) {
+  return (
+    <div className={`status status--${block.state}`}>
+      <Mrkdwn text={block.text} />
+    </div>
+  );
+}
+
+blockComponents.status = Status;
+```
+
+Register it once, before rendering — for example next to the stylesheet import. Now `{ "type": "status", "state": "up", "text": "All systems *operational*" }` renders with your component, wherever it appears: messages, modals, the Home tab, and blocks nested in containers.
+
+The block is wrapped in `<div class="sbk-block sbk-block--status" data-block-id="…">`, so it gets Slack's spacing between blocks.
+
+## Add an element
+
+Element components receive the element's JSON and the `blockId` of the block they're in. Use [`useBlockKit`](/reference/hooks#useblockkit) to report actions:
+
+```tsx
+import { elementComponents, useBlockKit, type ElementProps } from "@nkootstra/block-kit";
+
+interface RatingElement {
+  type: "rating";
+  action_id: string;
+  max: number;
+}
+
+function Rating({ element, blockId }: ElementProps<RatingElement>) {
+  const { dispatch } = useBlockKit();
+  return (
+    <span>
+      {Array.from({ length: element.max }, (_, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() =>
+            dispatch({
+              type: "rating",
+              action_id: element.action_id,
+              block_id: blockId,
+              value: String(i + 1),
+            })
+          }
+        >
+          ★
+        </button>
+      ))}
+    </span>
+  );
+}
+
+elementComponents.rating = Rating;
+```
+
+The element works in `actions`, `input` and section accessories, and its clicks reach `onAction` like any built-in element's. For an input, call `setValue(blockId, element.action_id, { type: "rating", value })` on change so the value appears in `state` and the `view_submission` payload.
+
+## Replace a built-in
+
+Assign over an existing entry, keeping the original to fall back to:
+
+```tsx
+import { blockComponents } from "@nkootstra/block-kit";
+
+const BuiltInImage = blockComponents.image;
+
+blockComponents.image = (props) =>
+  props.block.image_url?.startsWith("https://internal.") ? (
+    <PrivateImage {...props} />
+  ) : (
+    <BuiltInImage {...props} />
+  );
+```
+
+:::warning
+The registries are shared by every surface in your app. A replaced built-in no longer matches Slack pixel for pixel, so keep replacements for cases where you mean to differ.
+:::
+
+## Rendering blocks yourself
+
+Inside a custom block, render nested blocks and elements with `<Block>` and `<Element>` so they go through the registries too:
+
+```tsx
+import { Block, type BlockProps, type Json } from "@nkootstra/block-kit";
+
+function Panel({ block }: BlockProps<{ type: "panel"; blocks: Json[] }>) {
+  return (
+    <section className="panel">
+      {block.blocks.map((child, i) => (
+        <Block key={i} block={child} index={i} />
+      ))}
+    </section>
+  );
+}
+```

@@ -1,0 +1,72 @@
+---
+title: Payloads
+description: Build the interaction payloads Slack sends to your app's request URL.
+---
+
+The provider builds Slack's interaction payloads for you and passes them to `onPayload`, `onSubmit`, `onClose` and `onOptions`. The same builders are exported, for tests or for payloads you send yourself.
+
+Each builder returns the JSON Slack would send, with the placeholder identity (`T00000000`, `U00000000`, `A00000000`) unless you pass `identity`.
+
+## buildBlockActionsPayload
+
+A `block_actions` payload: a user clicked a button, picked an option, or changed an input that dispatches actions.
+
+```ts
+import { buildBlockActionsPayload } from "@nkootstra/block-kit";
+
+const payload = buildBlockActionsPayload({
+  action: {
+    type: "button",
+    action_id: "approve",
+    block_id: "deploy",
+    value: "api@4.2.0",
+    action_ts: "1700000000.000200",
+  },
+  state: {},
+  container: { type: "message", messageTs: "1700000000.000100", channelId: "C0RELEASES" },
+  identity: { user: { id: "U0ADA", username: "ada", name: "ada", team_id: "T0ACME" } },
+});
+```
+
+A message container gives a payload with `channel`, `message` and `state`; a view container gives one with `view`, whose `state` holds the values. The return type narrows to match.
+
+## buildViewSubmissionPayload
+
+A `view_submission` payload: the modal's submit button was pressed.
+
+```ts
+import { buildViewSubmissionPayload } from "@nkootstra/block-kit";
+
+const payload = buildViewSubmissionPayload({
+  view: { id: "V0DEPLOY", type: "modal", callback_id: "deploy", blocks },
+  state: { version: { value: { type: "plain_text_input", value: "api@4.2.0" } } },
+});
+```
+
+`view.state.values` in the payload is the `state` you pass. Add `responseUrls` for modals with a `response_url_enabled` conversation select.
+
+## buildViewClosedPayload
+
+A `view_closed` payload: the modal was closed, for views with `notify_on_close`. Set `isCleared` when the whole stack closed.
+
+## buildBlockSuggestionPayload
+
+A `block_suggestion` payload: the user typed into an `external_select`. Pass `actionId`, `blockId`, the typed `value`, the `container` and `state`. Your options load URL answers it with an `OptionsResponse`:
+
+```ts
+type OptionsResponse =
+  | { options: SuggestionOption[] }
+  | { option_groups: { label: PlainTextElement; options: SuggestionOption[] }[] };
+```
+
+## Types
+
+| Type                     | Describes                                                                                             |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `BlockAction`            | One entry of `actions`: `type`, `action_id`, `block_id`, `action_ts`, plus the element's value fields |
+| `BlockActionsPayload`    | `MessageBlockActionsPayload \| ViewBlockActionsPayload`                                               |
+| `BlockSuggestionPayload` | The `block_suggestion` payload                                                                        |
+| `Container`              | `MessageContainer \| ViewContainer`                                                                   |
+| `ViewLike`               | The view fields the builders read and echo back                                                       |
+| `ViewResponseAction`     | What `onSubmit` may return: `errors`, `update`, `push` or `clear`                                     |
+| `PayloadIdentity`        | `team`, `user`, `apiAppId`, `token`, `triggerId`, `responseUrl`                                       |
