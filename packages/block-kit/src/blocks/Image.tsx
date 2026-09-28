@@ -4,23 +4,28 @@ import { ImageActions } from "../data/HoverActions";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
 
-/** The caret Slack shows next to an image's file-size caption: down while shown, right while hidden. */
+/**
+ * The caret Slack shows after an image's file-size caption: its icon font's filled triangle,
+ * pointing down while shown and right while hidden. Paths are the font's glyphs (2000 units to the
+ * em, 1700 above the baseline), so they sit in the 15px box exactly as Slack's glyph does.
+ */
+const CARET_GLYPHS = {
+  down: "M1410 911C1463 971 1427 1050 1348 1050H652C573 1050 537 971 590 911L937 521C972 481 1028 481 1063 521Z",
+  right:
+    "M1279 687C1319 722 1319 778 1279 813L889 1160C829 1213 750 1177 750 1098V402C750 323 829 287 889 340Z",
+};
+
 function ExpandCaret({ expanded }: { expanded: boolean }) {
   return (
     <svg
-      className={`sbk-image__caret${expanded ? "" : " sbk-image__caret--collapsed"}`}
-      viewBox="0 0 15 15"
-      width="15"
-      height="15"
+      className={expanded ? "sbk-image__caret" : "sbk-image__caret sbk-image__caret--collapsed"}
+      viewBox="0 0 2000 2000"
       aria-hidden="true"
     >
       <path
-        d="M3.5 5.5l4 4 4-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        transform="matrix(1 0 0 -1 0 1700)"
+        fill="currentColor"
+        d={expanded ? CARET_GLYPHS.down : CARET_GLYPHS.right}
       />
     </svg>
   );
@@ -54,16 +59,19 @@ export function Image({ block }: BlockProps<ImageBlock>) {
               <Text text={block.title} />
             </span>
           )}
-          <button
-            type="button"
-            className="sbk-image__toggle"
-            aria-label="image"
-            aria-expanded={expanded}
-            title={expanded ? "Collapse" : "Expand"}
-            onClick={() => setExpanded((value) => !value)}
-          >
-            <ExpandCaret expanded={expanded} />
-          </button>
+          <span className="sbk-image__trigger">
+            {" "}
+            <button
+              type="button"
+              className="sbk-image__toggle"
+              aria-label="image"
+              aria-expanded={expanded}
+              title={expanded ? "Collapse" : "Expand"}
+              onClick={() => setExpanded((value) => !value)}
+            >
+              <ExpandCaret expanded={expanded} />
+            </button>
+          </span>
         </div>
       )}
       {expanded && (

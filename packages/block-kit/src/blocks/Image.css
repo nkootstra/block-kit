@@ -2,39 +2,45 @@
   margin: 8px 0;
 }
 
+/* Slack sets the row as inline text on a 22px line: the title, then a nowrap caption holding the
+   file size (which we can't know without fetching the image) and the caret button. */
 .sbk-image__title {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 15px;
+  line-height: 22px;
   color: var(--sbk-muted);
-  /* Slack's row is always 22px tall (caption text + caret), even when we have no byte-count
-     text to show — without an explicit height the flex row collapses to the caret's own 15px,
-     pulling the image up out of alignment with the reference. */
-  min-height: 22px;
 }
 
 .sbk-image__title-text {
-  color: var(--sbk-text);
+  display: inline-block;
+  font-size: 13px;
+  line-height: 18px;
+  word-break: break-word;
+}
+
+.sbk-image__trigger {
+  font-size: 13px;
+  line-height: 18px;
+  white-space: nowrap;
 }
 
 .sbk-image__toggle {
-  display: inline-flex;
+  display: inline-block;
+  width: 15px;
+  margin-top: -4px;
   padding: 0;
   border: 0;
   background: none;
-  color: inherit;
+  font-size: 15px;
+  line-height: 15px;
+  color: var(--sbk-link);
   cursor: pointer;
 }
 
 .sbk-image__caret {
-  color: var(--sbk-link);
-  flex: 0 0 auto;
-}
-
-.sbk-image__caret--collapsed {
-  transform: rotate(-90deg);
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
 }
 
 .sbk-image__frame {
