@@ -1,0 +1,113 @@
+.sbk-datetimepicker {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+/* Slack's Builder renders a datetimepicker as two side-by-side boxes (date, then time) rather
+   than a single combined control. */
+.sbk-datetimepicker__row {
+  display: flex;
+  gap: 8px;
+}
+
+/* The time zone caption sits under the time box only, so each box gets its own column. */
+.sbk-datetimepicker__column {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sbk-datetimepicker__control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 36px;
+  padding: 4px 8px 4px 12px;
+  font: 15px var(--sbk-font);
+  color: var(--sbk-text);
+  background: var(--sbk-bg);
+  border: 1px solid rgb(124, 122, 127);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sbk-datetimepicker__icon {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 20px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-datetimepicker__value,
+.sbk-datetimepicker__placeholder {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-datetimepicker__chevron {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-datetimepicker__placeholder {
+  color: var(--sbk-muted);
+}
+
+.sbk-datetimepicker__timezone {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-datetimepicker__popup {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  /* Slack's datepicker dropdown: 16px padding, hairline ring plus a soft drop shadow. */
+  padding: 16px;
+  background: var(--sbk-menu-bg);
+  border-radius: 6px;
+  box-shadow: var(--sbk-popover-shadow);
+}
+
+.sbk-datetimepicker__time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid var(--sbk-border);
+}
+
+.sbk-datetimepicker__time-input {
+  flex: 1;
+  height: 28px;
+  padding: 4px 8px;
+  border: 1px solid rgb(124, 122, 127);
+  border-radius: 8px;
+  font: 13px var(--sbk-font);
+}
+
+.sbk-datetimepicker__apply {
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--sbk-primary);
+  color: #fff;
+  font: 700 13px var(--sbk-font);
+  cursor: pointer;
+}
+
+.sbk-datetimepicker__apply:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

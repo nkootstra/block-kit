@@ -1,0 +1,34 @@
+.sbk-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: rgb(69, 68, 71);
+  cursor: pointer;
+  transition-property: color, background-color, border-color;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+/* Slack's `c-icon_button--default`: solid gray fill and full-strength text on hover, a darker
+   multiply overlay while pressed. */
+.sbk-icon-button:hover,
+.sbk-icon-button:active {
+  color: var(--sbk-text);
+  background-color: var(--sbk-icon-button-hover-bg);
+}
+
+.sbk-icon-button:active {
+  background-image: linear-gradient(var(--sbk-interaction-pressed), var(--sbk-interaction-pressed));
+  background-blend-mode: var(--sbk-blend-interaction);
+}
+
+.sbk-icon-button svg {
+  width: 18px;
+  height: 18px;
+}

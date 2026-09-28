@@ -1,0 +1,9 @@
+.sbk-feedback-buttons {
+  display: inline-flex;
+  align-items: center;
+}
+
+.sbk-icon-button--active {
+  color: var(--sbk-primary);
+  background: var(--sbk-badge-bg);
+}

@@ -1,0 +1,64 @@
+.sbk-input {
+  margin: 0;
+}
+
+.sbk-input__label {
+  font: 700 15px / 22px var(--sbk-font);
+  color: var(--sbk-text);
+  margin-bottom: 8px;
+}
+
+.sbk-input__optional {
+  font-weight: 400;
+  color: var(--sbk-muted);
+}
+
+/* Selects and date/time pickers default to a fixed ~190px width (their size as a section/actions accessory), but
+   Slack's Builder stretches them to the full field width inside an `input` block. */
+.sbk-input__element .sbk-select,
+.sbk-input__element .sbk-datepicker,
+.sbk-input__element .sbk-timepicker {
+  width: 100%;
+}
+
+/* Slack renders radio_buttons as a `<fieldset>` with a `<legend>` inside an `input` block, which
+   carries ~24px of trailing space below the last option — 8px more than the bare-wrapper (no
+   legend) rendering used in actions/section-accessory context. Confirmed via inspect.ts against
+   catalog/input/radio-buttons vs catalog/actions/radio-buttons and catalog/section/radio-buttons. */
+.sbk-input__element .sbk-radio-buttons {
+  margin-bottom: 24px;
+}
+
+/* Slack sets hints inline inside a body-text line box, so they sit flush under the element and the
+   13px text rides on a 22px line. */
+.sbk-input__hint {
+  font: 400 15px / 22px var(--sbk-font);
+}
+
+.sbk-input__hint-text {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-muted);
+}
+
+.sbk-input__hint-text--dispatch {
+  margin-left: 4px;
+}
+
+.sbk-input__hint-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 20px;
+}
+
+.sbk-input__error {
+  margin-top: 4px;
+  font: 400 13px / 18px var(--sbk-font);
+  color: var(--sbk-danger);
+}
+
+.sbk-input--error .sbk-input__element {
+  --sbk-button-border: var(--sbk-danger);
+}

@@ -1,0 +1,16 @@
+.sbk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0 8px;
+}
+
+.sbk-actions__action {
+  margin: 8px 8px 0 0;
+}
+
+/* Forces the element onto its own row: with the parent's `flex-wrap: wrap`, a 100%-wide item
+   always wraps before and after itself. */
+.sbk-actions__action--full-width {
+  flex: 1 1 100%;
+  width: 100%;
+}
