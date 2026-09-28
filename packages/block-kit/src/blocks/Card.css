@@ -119,6 +119,11 @@
   gap: 8px;
 }
 
+/* Slack's card buttons size to their label: no 56px minimum, unlike an actions block's. */
+.sbk-card__actions .sbk-button {
+  min-width: 0;
+}
+
 .sbk-card__actions-start {
   display: flex;
   flex: 1;
