@@ -1,9 +1,5 @@
 :root {
   --sbk-plan-text: rgb(94, 93, 96);
-  --sbk-plan-complete: rgb(0, 122, 90);
-  --sbk-plan-in-progress: rgb(18, 100, 163);
-  --sbk-plan-pending: rgb(94, 93, 96);
-  --sbk-plan-sep: rgba(94, 93, 96, 0.13);
 }
 
 .sbk-plan {
@@ -54,7 +50,6 @@
   font-size: 13px;
   line-height: normal;
   text-indent: 0;
-  color: var(--sbk-plan-in-progress);
 }
 
 .sbk-plan__pill-title {
@@ -75,76 +70,139 @@
   color: var(--sbk-plan-text);
 }
 
+/* Slack's toggle-bar status colours: a grey check once done, a red warning on failure, a blue
+   spinner while running. The timeline's dots are grey, lighter while the step is waiting. */
+.sbk-status-icon--complete,
+.sbk-status-icon--dot-complete {
+  color: var(--sbk-content-sec);
+}
+
+.sbk-status-icon--spinner {
+  color: var(--sbk-link);
+}
+
+.sbk-status-icon--error {
+  color: var(--sbk-code-text);
+}
+
+.sbk-status-icon--dot {
+  display: block;
+}
+
+/* Slack's expanded plan is a timeline: each task is a row with a 12px step indicator (a 1px line
+   in, the status icon, a 1px line out) and the task's content 8px to its right. */
 .sbk-plan__tasks {
   list-style: none;
-  margin: 4px 0 0;
-  padding: 0 0 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin: 0;
+  padding: 0;
 }
 
 .sbk-plan__task {
   display: flex;
+  font-size: 13px;
+  line-height: 19.0668px;
+  color: var(--sbk-plan-text);
+}
+
+.sbk-plan__step {
+  display: flex;
+  flex: 0 0 12px;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--sbk-plan-sep);
 }
 
-.sbk-plan__task:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
+.sbk-plan__line {
+  width: 1px;
+  background: var(--sbk-surface-ter);
 }
 
+.sbk-plan__line--top {
+  flex: 0 0 6px;
+}
+
+.sbk-plan__task:first-child .sbk-plan__line--top {
+  flex-basis: 12px;
+}
+
+.sbk-plan__line--bottom {
+  flex: 1 1 auto;
+}
+
+.sbk-plan__task:last-child .sbk-plan__line--bottom {
+  background: transparent;
+}
+
+/* A 12x8 box: the 5px dot centres in it; the 12px spinner and 13px warning overhang it evenly. */
+.sbk-plan__task-icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 8px;
+  margin: 2px 0;
+}
+
+.sbk-plan__task-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 8px;
+}
+
+.sbk-plan__task:first-child .sbk-plan__task-content {
+  padding-top: 6px;
+}
+
+/* Slack's `taskHeaderSlim`: an unstyled button, the title and a 13px caret 4px apart. */
 .sbk-plan__task-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
 }
 
-.sbk-plan__task-icon {
-  display: flex;
-  flex-shrink: 0;
+.sbk-plan__task-header[aria-disabled="true"] {
+  cursor: default;
 }
 
-.sbk-status-icon--complete {
-  color: var(--sbk-plan-complete);
-}
-
-.sbk-status-icon--in-progress,
-.sbk-status-icon--spinner {
-  color: var(--sbk-plan-in-progress);
-}
-
-.sbk-status-icon--pending {
-  color: var(--sbk-plan-pending);
+.sbk-plan__task-header:focus-visible {
+  outline: 2px solid var(--sbk-focus-ring);
+  outline-offset: -2px;
 }
 
 .sbk-plan__task-title {
-  font-size: 15px;
-  font-weight: 700;
+  margin: 2px 0;
 }
 
-.sbk-plan__task-details,
-.sbk-plan__task-output {
-  font-size: 13px;
-  color: var(--sbk-plan-text);
-  padding-left: 20px;
+/* Slack's caret sits 1px below the header's centre line. */
+.sbk-plan__task-caret {
+  display: flex;
+  width: 13px;
+  height: 13px;
+  margin-top: 2px;
+}
+
+.sbk-plan__task-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .sbk-plan__task-sources {
   list-style: none;
   margin: 0;
-  padding: 0 0 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  padding: 0;
 }
 
 .sbk-plan__task-source-link {
-  font-size: 13px;
-  color: rgb(18, 100, 163);
+  color: var(--sbk-link);
   text-decoration: none;
 }
 
