@@ -1,0 +1,17 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "hero_image": {
+        "type": "image",
+        "image_url": "https://picsum.photos/400/300",
+        "alt_text": "Sample hero image"
+      },
+      "body": {
+        "type": "mrkdwn",
+        "text": "Photo by <http://google.com|John Google>",
+        "verbatim": false
+      }
+    }
+  ]
+}

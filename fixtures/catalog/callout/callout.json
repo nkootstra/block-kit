@@ -1,0 +1,75 @@
+{
+  "blocks": [
+    {
+      "type": "callout",
+      "block_id": "bkb_callout_default",
+      "background_color": "green",
+      "child_blocks": [
+        {
+          "type": "rich_text",
+          "block_id": "callout-rt-1",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "This is a callout block with "
+                },
+                {
+                  "type": "text",
+                  "text": "bold text",
+                  "style": {
+                    "bold": true
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": " and "
+                },
+                {
+                  "type": "text",
+                  "text": "italic text",
+                  "style": {
+                    "italic": true
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "divider",
+          "block_id": "callout-div-1"
+        },
+        {
+          "type": "section",
+          "block_id": "callout-section-1",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*Key details*\nCallouts support rich text, sections, dividers, and images as child blocks."
+          }
+        },
+        {
+          "type": "image",
+          "block_id": "callout-img-1",
+          "image_url": "https://images.pexels.com/photos/257532/pexels-photo-257532.jpeg",
+          "alt_text": "A sample landscape image",
+          "image_width": 400,
+          "image_height": 300,
+          "image_bytes": 50000,
+          "fallback": "A sample landscape image"
+        },
+        {
+          "type": "contact_card",
+          "block_id": "callout-contact-1",
+          "contact_user_id": "U0123456789"
+        }
+      ]
+    }
+  ]
+}

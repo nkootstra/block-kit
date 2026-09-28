@@ -1,0 +1,36 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Ada Lovelace* requested access to *Billing dashboard*.\nApproving replaces this message; dismissing deletes it (as with `response_url`)."
+      }
+    },
+    {
+      "type": "actions",
+      "block_id": "decision",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "demo_approve",
+          "style": "primary",
+          "text": { "type": "plain_text", "text": "Approve" },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny",
+          "style": "danger",
+          "text": { "type": "plain_text", "text": "Deny" },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss",
+          "text": { "type": "plain_text", "text": "Dismiss" }
+        }
+      ]
+    }
+  ]
+}

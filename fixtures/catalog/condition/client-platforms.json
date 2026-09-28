@@ -1,0 +1,72 @@
+{
+  "blocks": [
+    {
+      "type": "condition",
+      "cases": [
+        {
+          "conditions": [
+            {
+              "type": "client",
+              "op": "=",
+              "value": "desktop"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Desktop branch*"
+              }
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "client",
+              "op": "=",
+              "value": "ios"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*iOS branch*"
+              }
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "client",
+              "op": "=",
+              "value": "android"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Android branch*"
+              }
+            }
+          ]
+        }
+      ],
+      "default": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*Default branch*"
+          }
+        }
+      ]
+    }
+  ]
+}

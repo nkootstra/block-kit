@@ -1,0 +1,57 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "rocket"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "Sample Card Title",
+        "verbatim": false
+      },
+      "subtitle": {
+        "type": "mrkdwn",
+        "text": "This is a subtitle",
+        "verbatim": false
+      },
+      "body": {
+        "type": "mrkdwn",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "verbatim": false
+      },
+      "actions": [
+        {
+          "type": "button",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Delete",
+            "emoji": false
+          },
+          "action_id": "button_danger"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": false
+          },
+          "action_id": "button_default"
+        },
+        {
+          "type": "button",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Confirm",
+            "emoji": false
+          },
+          "action_id": "button_primary"
+        }
+      ]
+    }
+  ]
+}

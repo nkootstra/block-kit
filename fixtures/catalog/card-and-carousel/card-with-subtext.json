@@ -1,0 +1,38 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "icon": {
+        "type": "image",
+        "image_url": "https://picsum.photos/36/36",
+        "alt_text": "Icon"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "Sample Card Title",
+        "verbatim": false
+      },
+      "body": {
+        "type": "mrkdwn",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "verbatim": false
+      },
+      "subtext": {
+        "type": "mrkdwn",
+        "text": "This is subtext that appears below the body",
+        "verbatim": false
+      },
+      "actions": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Action Button",
+            "emoji": false
+          },
+          "action_id": "button_action"
+        }
+      ]
+    }
+  ]
+}

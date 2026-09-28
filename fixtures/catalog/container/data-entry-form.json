@@ -1,0 +1,165 @@
+{
+  "blocks": [
+    {
+      "type": "container",
+      "block_id": "bkb_container_data_entry",
+      "title": {
+        "type": "plain_text",
+        "text": "New Support Ticket"
+      },
+      "subtitle": {
+        "type": "plain_text",
+        "text": "Fill in all required fields"
+      },
+      "child_blocks": [
+        {
+          "type": "input",
+          "block_id": "form-title",
+          "label": {
+            "type": "plain_text",
+            "text": "Title",
+            "emoji": true
+          },
+          "element": {
+            "type": "plain_text_input",
+            "action_id": "title_input",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Brief description of the issue"
+            }
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "form-priority",
+          "label": {
+            "type": "plain_text",
+            "text": "Priority",
+            "emoji": true
+          },
+          "element": {
+            "type": "static_select",
+            "action_id": "priority_select",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select priority"
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Critical"
+                },
+                "value": "critical"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "High"
+                },
+                "value": "high"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Medium"
+                },
+                "value": "medium"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Low"
+                },
+                "value": "low"
+              }
+            ]
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "form-category",
+          "label": {
+            "type": "plain_text",
+            "text": "Category",
+            "emoji": true
+          },
+          "element": {
+            "type": "static_select",
+            "action_id": "category_select",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select category"
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Bug"
+                },
+                "value": "bug"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Feature Request"
+                },
+                "value": "feature"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Question"
+                },
+                "value": "question"
+              }
+            ]
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "form-description",
+          "label": {
+            "type": "plain_text",
+            "text": "Description",
+            "emoji": true
+          },
+          "element": {
+            "type": "plain_text_input",
+            "action_id": "description_input",
+            "multiline": true,
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Provide details about the issue..."
+            }
+          }
+        },
+        {
+          "type": "actions",
+          "block_id": "form-actions",
+          "elements": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Submit",
+                "emoji": true
+              },
+              "style": "primary",
+              "action_id": "form_submit"
+            },
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Cancel",
+                "emoji": true
+              },
+              "action_id": "form_cancel"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

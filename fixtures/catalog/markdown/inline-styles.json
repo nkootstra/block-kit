@@ -1,0 +1,8 @@
+{
+  "blocks": [
+    {
+      "type": "markdown",
+      "text": "Text can be **bold**, _italic_, ~~strikethrough~~, or `inline code`.\n\nCombine them: **_bold italic_** and [links](https://api.slack.com).\n\n> Blockquotes work too, with **formatting** inside."
+    }
+  ]
+}
