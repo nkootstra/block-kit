@@ -32,7 +32,7 @@
 
 /* Slack's own canvas. Its tokens follow the site's light/dark theme, like the Slack app. */
 .bkd-preview__stage {
-  padding: 1rem 0;
+  padding: 1rem;
   background: var(--sbk-bg);
 }
 
@@ -68,14 +68,17 @@
   color: var(--blume-muted-foreground);
 }
 
-/* Only the latest call is shown, so repeated clicks never grow the page. */
-.bkd-preview__log pre {
-  margin: 0;
+/* The latest call, in the diffs viewer the playground uses. Only one is shown, so repeated
+   clicks never grow the page. Blume's code background and mono font keep it in step with the
+   page's other code blocks. */
+.bkd-preview__log diffs-container {
+  display: block;
   max-height: 16rem;
   overflow: auto;
-}
-
-.bkd-preview__log code {
-  font-family: var(--blume-font-mono);
-  white-space: pre;
+  border: 1px solid var(--blume-border);
+  border-radius: var(--blume-radius, 0.375rem);
+  --diffs-light-bg: var(--blume-code-background);
+  --diffs-dark-bg: var(--blume-code-background);
+  --diffs-font-family: var(--blume-font-mono);
+  --diffs-font-size: 0.8125rem;
 }

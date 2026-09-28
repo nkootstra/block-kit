@@ -16,8 +16,9 @@ import {
   type SlackMessageLike,
   View,
 } from "@nkootstra/block-kit";
+import { File as DiffsFile } from "@pierre/diffs/react";
 import type { AnyBlock } from "@slack/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface PreviewProps {
   /** What Block Kit Builder accepts: `{ blocks }`, a bare array of blocks, or a modal/home view. */
@@ -78,6 +79,7 @@ export default function Preview({
 }: PreviewProps) {
   const [tab, setTab] = useState<"preview" | "json">(code ? "json" : "preview");
   const [last, setLast] = useState<{ action: BlockAction; count: number } | null>(null);
+  const colorMode = useColorMode();
   const view = asView(payload);
   const blocks = view ? undefined : asBlocks(payload);
   const message = view ? undefined : asMessage(payload);
@@ -138,9 +140,18 @@ export default function Preview({
             )}
           </span>
           {last ? (
-            <pre>
-              <code>{JSON.stringify(summarize(last.action), null, 2)}</code>
-            </pre>
+            <DiffsFile
+              file={{
+                name: "action.json",
+                contents: JSON.stringify(summarize(last.action), null, 2),
+              }}
+              options={{
+                theme: CODE_THEME,
+                themeType: colorMode,
+                overflow: "wrap",
+                disableFileHeader: true,
+              }}
+            />
           ) : (
             <span className="bkd-preview__log-empty">Interact with the preview.</span>
           )}
@@ -148,6 +159,25 @@ export default function Preview({
       )}
     </div>
   );
+}
+
+/** Blume's own code themes, so the action reads like the page's other code blocks. */
+const CODE_THEME = { light: "github-light", dark: "github-dark" } as const;
+
+/** The docs' light or dark mode, which Blume sets as `data-theme` on `<html>` and its toggle changes. */
+function useColorMode(): "light" | "dark" {
+  const read = () => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+  const [mode, setMode] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    setMode(read());
+    const observer = new MutationObserver(() => setMode(read()));
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+  return mode;
 }
 
 /** The action without the ids and timestamp that change on every interaction. */
