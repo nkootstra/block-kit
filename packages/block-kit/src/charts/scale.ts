@@ -37,3 +37,12 @@ export function niceLinearScale(dataMin: number, dataMax: number, targetInterval
 export function formatTick(value: number): string {
   return value.toLocaleString("en-US");
 }
+
+/**
+ * Where Slack's chart library draws a 1px horizontal line meant for `y`: the nearest half pixel, so
+ * the stroke fills exactly one pixel row, rounding up when `y` sits on a row boundary.
+ */
+export function crispLine(y: number): number {
+  const doubled = Math.round(y * 2);
+  return doubled % 2 === 1 ? doubled / 2 : (doubled + 1) / 2;
+}

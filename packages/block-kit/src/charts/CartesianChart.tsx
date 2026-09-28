@@ -1,6 +1,6 @@
 import { areaFillFor, colorForIndex } from "./palette";
 import { roundedBarPath, smoothLinePath } from "./paths";
-import { formatTick, niceLinearScale } from "./scale";
+import { crispLine, formatTick, niceLinearScale } from "./scale";
 import { useContainerWidth } from "./useContainerWidth";
 
 export interface ChartSeries {
@@ -35,7 +35,9 @@ export function CartesianChart({
   const allValues = series.flatMap((s) => s.data.map((d) => d.value));
   const scale = niceLinearScale(Math.min(0, ...allValues), Math.max(0, ...allValues));
   const leftMargin = leftMarginFor(scale.ticks);
-  const rightMargin = type === "bar" ? 0 : 11;
+  // Slack's line and area plots stop 10.7675px short of the edge, leaving room for half the last
+  // category label; bars fill the width.
+  const rightMargin = type === "bar" ? 0 : 10.7675;
   const plotLeft = leftMargin;
   const plotRight = Math.max(plotLeft + 1, width - rightMargin);
   const plotWidth = plotRight - plotLeft;
@@ -76,16 +78,25 @@ export function CartesianChart({
               key={t}
               x1={plotLeft}
               x2={plotRight}
-              y1={y(t)}
-              y2={y(t)}
+              y1={crispLine(y(t))}
+              y2={crispLine(y(t))}
               stroke="rgba(94,93,96,0.13)"
             />
           ))}
+          {/* Slack draws the x axis over the zero gridline, darkening it. */}
+          <line
+            className="sbk-chart__axis"
+            x1={plotLeft}
+            x2={plotRight}
+            y1={crispLine(zeroY)}
+            y2={crispLine(zeroY)}
+            stroke="rgba(94,93,96,0.13)"
+            strokeLinecap="round"
+          />
           {scale.ticks.map((t) => (
             <text
               key={t}
-              x={plotLeft - 8}
-              y={y(t)}
+              transform={`translate(${plotLeft - 8} ${y(t)})`}
               textAnchor="end"
               dominantBaseline="central"
               className="sbk-chart__tick"
@@ -96,8 +107,8 @@ export function CartesianChart({
           {categories.map((c, i) => (
             <text
               key={c}
-              x={type === "bar" ? bandCenterX(i) : pointX(i)}
-              y={LABELS_Y + 9}
+              transform={`translate(${type === "bar" ? bandCenterX(i) : pointX(i)} ${LABELS_Y})`}
+              y={9}
               textAnchor="middle"
               dominantBaseline="central"
               className="sbk-chart__tick"
