@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
 import { StatusIcon, type TaskStatus } from "../data/statusIcon";
@@ -42,7 +43,7 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
           </span>
         </span>
       </button>
-      {expanded ? (
+      <Collapse open={expanded}>
         <div className="sbk-task-card__body">
           {block.details ? (
             <div className="sbk-task-card__details">
@@ -71,7 +72,7 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
             </ul>
           ) : null}
         </div>
-      ) : null}
+      </Collapse>
     </div>
   );
 }

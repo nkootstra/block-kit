@@ -72,6 +72,23 @@ describe("<Plan>", () => {
     expect(screen.queryByText("Fetching data")).toBeNull();
   });
 
+  it("keeps the tasks on screen while it animates shut, like Slack's height transition", () => {
+    const style = document.head.appendChild(document.createElement("style"));
+    style.textContent = ".sbk-collapse { transition-duration: 0.25s; }";
+    try {
+      render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
+      const pill = screen.getByRole("button", { name: /Demonstrating Plan/ });
+      fireEvent.click(pill);
+      fireEvent.click(pill);
+      const list = screen.getByText("Fetching data").closest(".sbk-collapse")!;
+      expect(list).toBeTruthy();
+      fireEvent.transitionEnd(list, { propertyName: "height" });
+      expect(screen.queryByText("Fetching data")).toBeNull();
+    } finally {
+      style.remove();
+    }
+  });
+
   it("treats the plan as in progress overall when any task is still running", () => {
     const { container } = render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
     expect(container.querySelector(".sbk-status-icon--spinner")).toBeTruthy();

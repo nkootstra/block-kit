@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
 import { aggregateStatus, StatusIcon, type TaskStatus } from "../data/statusIcon";
@@ -87,13 +88,13 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
           </span>
         </span>
       </button>
-      {expanded ? (
+      <Collapse open={expanded}>
         <ul className="sbk-plan__tasks">
           {tasks.map((task) => (
             <TaskRow key={task.task_id} task={task} />
           ))}
         </ul>
-      ) : null}
+      </Collapse>
     </div>
   );
 }

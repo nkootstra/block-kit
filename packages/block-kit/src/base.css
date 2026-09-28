@@ -240,6 +240,15 @@
   object-fit: contain;
 }
 
+/* Slack's toggle-bar blocks (plan, task_card) slide open and shut: \`transition: height 0.25s\` on
+   the block, clipped (data/Collapse.tsx). \`flow-root\` keeps the content's margins inside the
+   height being animated. */
+.sbk-collapse {
+  display: flow-root;
+  overflow: clip;
+  transition: height 0.25s;
+}
+
 /* Slack's c-infinite_spinner. */
 .sbk-spinner {
   position: relative;
@@ -358,10 +367,14 @@
 }
 
 /* Slack's menus and popovers open and close instantly (no transition on `c-menu` /
-   `c-popover`), so the only looping motion is the spinner; honour reduced motion for it. */
+   `c-popover`), so the motion to tone down is the spinner and the plan/task_card slide. */
 @media (prefers-reduced-motion: reduce) {
   .sbk-spinner__arc {
     animation-duration: 2.4s;
+  }
+
+  .sbk-collapse {
+    transition: none;
   }
 }
 
