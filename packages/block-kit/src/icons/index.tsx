@@ -198,15 +198,15 @@ export function ChannelHashIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Slack's `close` icon, its filled path as Slack ships it. */
 export function CloseIcon(props: SVGProps<SVGSVGElement>) {
-  // Slack's "x": two 1.5-wide diagonals spanning 4..16 of the 20 grid.
   return (
-    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true" {...props}>
+    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" {...props}>
       <path
-        d="M4 4L16 16M16 4L4 16"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16.53 3.47a.75.75 0 0 1 0 1.06L11.06 10l5.47 5.47a.75.75 0 0 1-1.06 1.06L10 11.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L8.94 10 3.47 4.53a.75.75 0 0 1 1.06-1.06L10 8.94l5.47-5.47a.75.75 0 0 1 1.06 0"
       />
     </svg>
   );

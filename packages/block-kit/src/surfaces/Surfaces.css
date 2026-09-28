@@ -56,14 +56,14 @@
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 33px;
+  width: 33.4375px;
   height: 36px;
   margin-left: 16px;
   padding: 0;
   border: none;
   border-radius: 8px;
   background: none;
-  color: var(--sbk-text);
+  color: var(--sbk-badge-text);
   cursor: pointer;
 }
 

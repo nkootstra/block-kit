@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Blocks } from "../Blocks";
+import { CloseIcon } from "../icons";
 import {
   type StateValues,
   type SubmitResult,
@@ -81,7 +82,7 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
           <h2 className="sbk-modal__title">{view.title?.text}</h2>
         </div>
         <button type="button" className="sbk-modal__close" aria-label="Close" onClick={dismiss}>
-          <CloseIcon />
+          <CloseIcon width="20" height="20" />
         </button>
       </div>
       <div className="sbk-modal__body">
@@ -112,18 +113,5 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
         </div>
       )}
     </div>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path
-        d="M1 1L15 15M15 1L1 15"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
   );
 }
