@@ -69,6 +69,7 @@
 
 .sbk-data-table__col-header {
   display: flex;
+  align-items: center;
   height: 36px;
   font-size: 13px;
   font-weight: 700;
@@ -81,6 +82,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  height: 28px;
   gap: 4px;
   padding: 0 12px;
   font: inherit;
@@ -98,14 +100,86 @@
   background-color: var(--sbk-hover-overlay);
 }
 
+/* Slack's caret stays hidden, even on a sorted column, until the header is hovered or focused. */
 .sbk-data-table__sort-caret {
   display: flex;
+  margin-left: auto;
   opacity: 0;
 }
 
 .sbk-data-table__col-header button:hover .sbk-data-table__sort-caret,
 .sbk-data-table__col-header button:focus-visible .sbk-data-table__sort-caret {
   opacity: 1;
+}
+
+/* Slack's sort menu: a 200px `c-menu` flush below the header, a small "Sort" heading, then
+   Ascending and Descending and, once sorted, a separator and a red Clear Sort. */
+.sbk-data-table__sort-menu {
+  width: 200px;
+  padding: 12px 0;
+  background: var(--sbk-menu-bg);
+  border-radius: 4px;
+  box-shadow: var(--sbk-menu-shadow);
+}
+
+.sbk-data-table__sort-heading {
+  padding: 4px 24px;
+  font: 13px / 18px var(--sbk-font);
+  color: var(--sbk-content-sec);
+}
+
+.sbk-data-table__sort-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 24px;
+  font: 15px / 28px var(--sbk-font);
+  color: var(--sbk-text);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sbk-data-table__sort-item[aria-checked="true"] {
+  color: var(--sbk-menu-selected-text);
+}
+
+/* Slack's danger red is the same token as its inline-code text. */
+.sbk-data-table__sort-item--danger {
+  color: var(--sbk-code-text);
+}
+
+.sbk-data-table__sort-item[data-active] {
+  color: var(--sbk-menu-highlight-text);
+  background: var(--sbk-menu-highlight-bg);
+}
+
+/* Slack's 16px glyphs sit at the start of their 20px boxes. */
+.sbk-data-table__sort-icon {
+  display: flex;
+  width: 20px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* The checked item's check hangs in the 24px gutter, 4px from the menu's edge. */
+.sbk-data-table__sort-check {
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  display: flex;
+  width: 20px;
+  height: 16px;
+}
+
+.sbk-data-table__sort-separator {
+  padding: 8px 0;
+}
+
+.sbk-data-table__sort-separator::before {
+  content: "";
+  display: block;
+  border-top: 1px solid var(--sbk-menu-separator);
 }
 
 .sbk-data-table__col-label {

@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { DataTableCell, dataTableSortValue } from "../data/dataTableCells";
-import { ChevronIcon, ExpandIcon, KebabIcon, SearchIcon, SortNeutralIcon } from "../data/icons";
+import { ChevronIcon, ExpandIcon, KebabIcon, SearchIcon } from "../data/icons";
 import type { BlockProps, Json } from "../types";
+import { DataTableColumnHeader, type SortDirection } from "./DataTableColumnHeader";
 
 interface DataTableBlock extends Json {
   type: "data_table";
@@ -10,11 +11,10 @@ interface DataTableBlock extends Json {
 }
 
 const PAGE_SIZE = 5;
-type SortDirection = "asc" | "desc";
 
 /**
  * The `data_table` block: a caption, a sortable/paginated grid of cells (first row is the
- * header), and a small toolbar. Sorting cycles asc -> desc -> insertion order per column;
+ * header), and a small toolbar. Each column header opens a Sort menu (ascending, descending, or back to insertion order);
  * pagination kicks in above `PAGE_SIZE` data rows, matching Slack's Builder.
  */
 export function DataTable({ block }: BlockProps<DataTableBlock>) {
@@ -48,13 +48,9 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
       ? sortedBody.slice(currentPage * PAGE_SIZE, currentPage * PAGE_SIZE + PAGE_SIZE)
       : sortedBody;
 
-  const toggleSort = (column: number) => {
+  const sortColumn = (column: number, direction: SortDirection | null) => {
     setPage(0);
-    setSort((current) => {
-      if (!current || current.column !== column) return { column, direction: "asc" };
-      if (current.direction === "asc") return { column, direction: "desc" };
-      return null;
-    });
+    setSort(direction ? { column, direction } : null);
   };
 
   const gridStyle = { gridTemplateColumns: `repeat(${columnCount}, 1fr)` };
@@ -81,30 +77,26 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
       </div>
 
       <div className="sbk-data-table__frame">
-        <div className="sbk-data-table__rows">
-          <div className="sbk-data-table__grid-header" style={gridStyle}>
+        <div className="sbk-data-table__rows" role="table" aria-label={block.caption}>
+          <div className="sbk-data-table__grid-header" role="row" style={gridStyle}>
             {header?.map((cell, i) => (
-              <div key={i} className="sbk-data-table__col-header">
-                <button type="button" onClick={() => toggleSort(i)}>
-                  <span className="sbk-data-table__col-label">
-                    <DataTableCell cell={cell} />
-                  </span>
-                  {sort?.column === i ? (
-                    <ChevronIcon direction={sort.direction === "asc" ? "up" : "down"} />
-                  ) : (
-                    <span className="sbk-data-table__sort-caret">
-                      <SortNeutralIcon />
-                    </span>
-                  )}
-                </button>
-              </div>
+              <DataTableColumnHeader
+                key={i}
+                label={<DataTableCell cell={cell} />}
+                sorted={sort?.column === i ? sort.direction : null}
+                onSort={(direction) => sortColumn(i, direction)}
+              />
             ))}
           </div>
-          <div className="sbk-data-table__body">
+          <div className="sbk-data-table__body" role="rowgroup">
             {visibleRows.map((row, r) => (
-              <div key={r} className="sbk-data-table__row" style={gridStyle}>
+              <div key={r} className="sbk-data-table__row" role="row" style={gridStyle}>
                 {row.map((cell, i) => (
-                  <div key={i} className="sbk-data-table__cell">
+                  <div
+                    key={i}
+                    className="sbk-data-table__cell"
+                    role={i === 0 ? "rowheader" : "cell"}
+                  >
                     <div className="sbk-data-table__cell-content">
                       <span className="sbk-data-table__truncate">
                         <DataTableCell cell={cell} />

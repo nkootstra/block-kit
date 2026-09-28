@@ -259,6 +259,7 @@
     --sbk-menu-bg: #212428;
     --sbk-menu-shadow: 0 0 0 1px #797c814d, 0 4px 12px 0 rgba(0, 0, 0, 0.35);
     --sbk-menu-selected-text: #2ba5ce;
+    --sbk-menu-separator: #797c814d;
     --sbk-menu-secondary-text: #b9babd;
     --sbk-popover-shadow: 0 0 0 1px #797c814d, 0 4px 12px 0 rgba(0, 0, 0, 0.35);
     --sbk-spinner-track: #9a9b9e;
@@ -343,6 +344,7 @@
   --sbk-menu-bg: #212428;
   --sbk-menu-shadow: 0 0 0 1px #797c814d, 0 4px 12px 0 rgba(0, 0, 0, 0.35);
   --sbk-menu-selected-text: #2ba5ce;
+  --sbk-menu-separator: #797c814d;
   --sbk-menu-secondary-text: #b9babd;
   --sbk-popover-shadow: 0 0 0 1px #797c814d, 0 4px 12px 0 rgba(0, 0, 0, 0.35);
   --sbk-spinner-track: #9a9b9e;

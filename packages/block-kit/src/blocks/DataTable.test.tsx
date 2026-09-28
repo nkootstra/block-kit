@@ -37,6 +37,14 @@ const numericBlock = {
 
 afterEach(cleanup);
 
+/** Opens a column's sort menu and picks one of its items, as a user would. */
+function sortBy(column: string, item: "Ascending" | "Descending" | "Clear Sort") {
+  fireEvent.click(screen.getByRole("button", { name: column }));
+  fireEvent.click(
+    screen.getByRole(item === "Clear Sort" ? "menuitem" : "menuitemradio", { name: item }),
+  );
+}
+
 describe("<DataTable> sorting", () => {
   it("renders rows in their original order before any sort", () => {
     const { container } = render(
@@ -50,43 +58,45 @@ describe("<DataTable> sorting", () => {
     ]);
   });
 
-  it("sorts numeric columns numerically, not lexicographically, ascending then descending", () => {
+  it("opens a Sort menu from a column header instead of sorting on the click, like Slack", () => {
     const { container } = render(
       <DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />,
     );
-    const amountHeader = screen.getByText("Amount").closest("button");
-    if (!amountHeader) throw new Error("Amount header button not found");
+    const header = screen.getByRole("button", { name: "Amount" });
+    expect(header.getAttribute("aria-haspopup")).toBe("menu");
+    fireEvent.click(header);
 
-    fireEvent.click(amountHeader);
-    expect(bodyRowsText(container).map((r) => r[1])).toEqual(["2", "5", "10", "100"]);
-
-    fireEvent.click(amountHeader);
-    expect(bodyRowsText(container).map((r) => r[1])).toEqual(["100", "10", "5", "2"]);
-
-    // a third click clears the sort back to insertion order
-    fireEvent.click(amountHeader);
+    const menu = screen.getByRole("menu");
+    expect(menu.textContent).toContain("Sort");
+    expect(
+      screen.getAllByRole("menuitemradio").map((item) => item.getAttribute("aria-checked")),
+    ).toEqual(["false", "false"]);
+    expect(screen.queryByRole("menuitem", { name: "Clear Sort" })).toBeNull();
     expect(bodyRowsText(container).map((r) => r[0])).toEqual([
       "Alpha",
       "Bravo",
       "Charlie",
       "Delta",
     ]);
+  });
+
+  it("sorts numeric columns numerically, not lexicographically", () => {
+    const { container } = render(
+      <DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />,
+    );
+    sortBy("Amount", "Ascending");
+    expect(bodyRowsText(container).map((r) => r[1])).toEqual(["2", "5", "10", "100"]);
+    expect(screen.queryByRole("menu")).toBeNull();
+
+    sortBy("Amount", "Descending");
+    expect(bodyRowsText(container).map((r) => r[1])).toEqual(["100", "10", "5", "2"]);
   });
 
   it("sorts text columns alphabetically", () => {
     const { container } = render(
       <DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />,
     );
-    const nameHeader = screen.getByText("Name").closest("button");
-    if (!nameHeader) throw new Error("Name header button not found");
-    fireEvent.click(nameHeader);
-    expect(bodyRowsText(container).map((r) => r[0])).toEqual([
-      "Alpha",
-      "Bravo",
-      "Charlie",
-      "Delta",
-    ]);
-    fireEvent.click(nameHeader);
+    sortBy("Name", "Descending");
     expect(bodyRowsText(container).map((r) => r[0])).toEqual([
       "Delta",
       "Charlie",
@@ -95,19 +105,61 @@ describe("<DataTable> sorting", () => {
     ]);
   });
 
-  it("switching sort column resets to ascending on the new column", () => {
+  it("marks the sorted column with aria-sort", () => {
+    render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
+    const [name, amount] = screen.getAllByRole("columnheader");
+    expect(amount!.getAttribute("aria-sort")).toBe("none");
+    sortBy("Amount", "Descending");
+    expect(amount!.getAttribute("aria-sort")).toBe("descending");
+    expect(name!.getAttribute("aria-sort")).toBe("none");
+  });
+
+  it("checks the current direction and offers Clear Sort once the column is sorted", () => {
     const { container } = render(
       <DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />,
     );
-    fireEvent.click(screen.getByText("Amount").closest("button") as HTMLElement);
-    fireEvent.click(screen.getByText("Amount").closest("button") as HTMLElement); // now desc
-    fireEvent.click(screen.getByText("Name").closest("button") as HTMLElement); // switch column
+    sortBy("Amount", "Ascending");
+    fireEvent.click(screen.getByRole("button", { name: "Amount" }));
+    expect(
+      screen.getByRole("menuitemradio", { name: "Ascending" }).getAttribute("aria-checked"),
+    ).toBe("true");
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Clear Sort" }));
     expect(bodyRowsText(container).map((r) => r[0])).toEqual([
       "Alpha",
       "Bravo",
       "Charlie",
       "Delta",
     ]);
+    expect(screen.getAllByRole("columnheader")[1]!.getAttribute("aria-sort")).toBe("none");
+  });
+
+  it("offers no Clear Sort on a column other than the sorted one", () => {
+    render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
+    sortBy("Amount", "Ascending");
+    fireEvent.click(screen.getByRole("button", { name: "Name" }));
+    expect(screen.queryByRole("menuitem", { name: "Clear Sort" })).toBeNull();
+  });
+
+  it("closes the menu on Escape without sorting", () => {
+    render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
+    const header = screen.getByRole("button", { name: "Amount" });
+    fireEvent.click(header);
+    fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
+    expect(screen.queryByRole("menu")).toBeNull();
+    expect(document.activeElement).toBe(header);
+  });
+
+  it("picks a direction from the keyboard", () => {
+    const { container } = render(
+      <DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Amount" }));
+    const menu = screen.getByRole("menu");
+    fireEvent.keyDown(menu, { key: "ArrowDown" });
+    fireEvent.keyDown(menu, { key: "ArrowDown" });
+    fireEvent.keyDown(menu, { key: "Enter" });
+    expect(bodyRowsText(container).map((r) => r[1])).toEqual(["100", "10", "5", "2"]);
   });
 });
 
@@ -147,8 +199,8 @@ describe("<DataTable> pagination", () => {
       <DataTable block={asDataTableBlock(paginatedBlock)} blockId="b1" index={0} />,
     );
     fireEvent.click(screen.getByLabelText("Next page"));
-    fireEvent.click(screen.getByText("Name").closest("button") as HTMLElement);
-    expect(bodyRowsText(container).map((r) => r[0])[0]).toBe("Row 1");
+    sortBy("Name", "Descending");
+    expect(bodyRowsText(container).map((r) => r[0])[0]).toBe("Row 7");
   });
 });
 
