@@ -19,7 +19,7 @@ import {
 import { Editor } from "@pierre/diffs/edit";
 import { File as DiffsFile, type EditorFactory, EditProvider } from "@pierre/diffs/react";
 import type { AnyBlock } from "@slack/types";
-import { useEffect, useId, useState } from "react";
+import { useId, useState, useSyncExternalStore } from "react";
 
 export interface PreviewProps {
   /** What Block Kit Builder accepts: `{ blocks }`, a bare array of blocks, or a modal/home view. */
@@ -224,33 +224,38 @@ export default function Preview({
 const createEditor: EditorFactory<undefined, undefined> = (type, options, editStateKey) =>
   new Editor(type, options, editStateKey);
 
+/** Nothing to subscribe to: whether we're on the client never changes after hydration. */
+const noSubscription = () => () => {};
+
 /**
- * False on the server and the first client render, so hydration matches the server's plain text
- * before the editor (which needs the DOM) takes over.
+ * False on the server and while hydrating, so hydration matches the server's plain text before the
+ * editor (which needs the DOM) takes over.
  */
 function useMounted(): boolean {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  return mounted;
+  return useSyncExternalStore(
+    noSubscription,
+    () => true,
+    () => false,
+  );
 }
 
 /** Blume's own code themes, so the action reads like the page's other code blocks. */
 const CODE_THEME = { light: "github-light", dark: "github-dark" } as const;
 
+type ColorMode = "light" | "dark";
+
+const readColorMode = (): ColorMode =>
+  document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+
+function subscribeColorMode(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
+}
+
 /** The docs' light or dark mode, which Blume sets as `data-theme` on `<html>` and its toggle changes. */
-function useColorMode(): "light" | "dark" {
-  const read = () => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
-  const [mode, setMode] = useState<"light" | "dark">("light");
-  useEffect(() => {
-    setMode(read());
-    const observer = new MutationObserver(() => setMode(read()));
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
-  return mode;
+function useColorMode(): ColorMode {
+  return useSyncExternalStore(subscribeColorMode, readColorMode, () => "light");
 }
 
 /** The action without the ids and timestamp that change on every interaction. */
