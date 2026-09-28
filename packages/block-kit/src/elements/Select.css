@@ -87,6 +87,12 @@
   font-size: 15px;
 }
 
+/* Slack's single select is a full-width text input with the chevron laid over its right edge, so
+   the text runs under the chevron and only truncates at the input's own 8px padding. */
+.sbk-select:not(.sbk-select--multi) :is(.sbk-select__value, .sbk-select__placeholder) {
+  margin-right: -28px;
+}
+
 .sbk-select__value,
 .sbk-select__placeholder {
   flex: 1;
