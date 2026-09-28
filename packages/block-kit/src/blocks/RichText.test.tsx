@@ -134,6 +134,24 @@ describe("<RichText>", () => {
     expect(nestedList?.textContent).toBe("Nested");
   });
 
+  it("tags each bullet list with its indent, which picks Slack's dot, ring or square", () => {
+    const list = (indent: number, text: string) => ({
+      type: "rich_text_list",
+      style: "bullet",
+      indent,
+      elements: [{ type: "rich_text_section", elements: [{ type: "text", text }] }],
+    });
+    const block = {
+      type: "rich_text",
+      elements: [list(0, "Top"), list(1, "Nested"), list(2, "Deeper")],
+    };
+    const { container } = render(<RichText block={block as never} blockId="b1" index={0} />);
+    const indents = [...container.querySelectorAll("ul.sbk-rich-list")].map((ul) =>
+      ul.getAttribute("data-indent"),
+    );
+    expect(indents).toEqual(["0", "1", "2"]);
+  });
+
   it("renders an ordered list honoring an offset", () => {
     const block = {
       type: "rich_text",

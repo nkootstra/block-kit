@@ -344,14 +344,12 @@ function buildListForest(run: RichTextListExt[]): ListGroup[] {
   return forest;
 }
 
-const MARKER_STYLES: Record<ListGroup["style"], string[]> = {
-  bullet: ["disc", "circle", "square"],
-  ordered: ["decimal", "lower-alpha", "lower-roman"],
-};
+/** Ordered lists count in the browser's markers; bullets are Slack's icon glyphs, drawn in CSS. */
+const ORDERED_MARKERS = ["decimal", "lower-alpha", "lower-roman"];
 
 function renderListGroup(group: ListGroup, ctx: RenderCtx, key: number, depth: number): ReactNode {
   const Tag = group.style === "ordered" ? "ol" : "ul";
-  const markerStyle = MARKER_STYLES[group.style][depth % 3];
+  const ordered = group.style === "ordered";
   const className = `sbk-rich-list sbk-rich-list--${group.style}${group.border ? " sbk-rich-list--bordered" : ""}`;
 
   return (
@@ -359,7 +357,8 @@ function renderListGroup(group: ListGroup, ctx: RenderCtx, key: number, depth: n
       key={key}
       className={className}
       start={group.startValue}
-      style={{ listStyleType: markerStyle }}
+      data-indent={ordered ? undefined : group.indent}
+      style={ordered ? { listStyleType: ORDERED_MARKERS[depth % 3] } : undefined}
     >
       {group.items.map((item, i) => (
         <li key={i} value={item.value} className="sbk-rich-list__item">
