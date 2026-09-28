@@ -18,6 +18,8 @@ jobs:
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     steps:
       - uses: actions/checkout@v4
+      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip.
+      - run: apt-get update && apt-get install -y --no-install-recommends unzip
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
