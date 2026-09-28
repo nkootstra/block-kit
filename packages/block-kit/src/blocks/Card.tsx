@@ -3,7 +3,13 @@ import { Text, type TextObject } from "../Text";
 import { Tooltip } from "../Tooltip";
 import type { BlockProps, Json } from "../types";
 
-/** A card's `icon` (an image element) or `slack_icon` (an icon-font glyph we can't ship). */
+/** Slack's inline icons by `slack_icon` name, their 20-unit paths as Slack ships them. */
+const SLACK_ICONS: Record<string, string> = {
+  rocket:
+    "m18.168 1.832.05.639c.257 3.278-1.016 7.195-5.445 9.976.2 1.025.257 1.866-.078 2.653-.376.881-1.2 1.57-2.327 2.443-.689.535-1.653.22-1.98-.506a11 11 0 0 0-2.229-3.197 11 11 0 0 0-3.196-2.229c-.728-.327-1.041-1.29-.507-1.98.874-1.127 1.562-1.95 2.444-2.326.786-.336 1.627-.28 2.652-.078 2.782-4.43 6.698-5.702 9.977-5.446zM16.749 3.25c-2.714-.008-5.882 1.24-8.182 5.197l-.276.475-.535-.12c-1.302-.289-1.845-.298-2.268-.118-.432.185-.865.615-1.688 1.663.848.405 2.148 1.16 3.42 2.432a12.6 12.6 0 0 1 2.433 3.42c1.048-.823 1.478-1.256 1.662-1.688.18-.423.171-.965-.118-2.267l-.12-.536.475-.276c3.957-2.3 5.206-5.468 5.197-8.182m-3.702 4.955c-.69 0-1.253-.563-1.253-1.252S12.357 5.7 13.047 5.7c.689 0 1.252.563 1.252 1.253 0 .689-.563 1.252-1.252 1.252M2.95 14.217c.597-.596 1.222-.485 1.952-.172a1 1 0 0 0-.081.071l-.809.809a.75.75 0 0 0 1.062 1.061l.808-.808a1 1 0 0 0 .071-.082c.313.73.425 1.356-.171 1.952-1.77 1.77-3.893 1.062-3.893 1.062s-.708-2.124 1.061-3.893",
+};
+
+/** A card's `icon` (an image element) or `slack_icon` (one of Slack's inline icons, by name). */
 function CardIcon({ icon, slackIcon }: { icon?: Json; slackIcon?: Json }) {
   if (icon && icon.type === "image") {
     return (
@@ -15,9 +21,20 @@ function CardIcon({ icon, slackIcon }: { icon?: Json; slackIcon?: Json }) {
     );
   }
   if (slackIcon) {
-    // Slack's icon font glyph (e.g. "rocket") isn't available to us; a neutral badge stands in.
+    const name = slackIcon.name as string;
+    const glyph = SLACK_ICONS[name];
+    if (glyph) {
+      return (
+        <span className="sbk-card__icon sbk-card__icon--slack">
+          <svg viewBox="0 0 20 20" width="24" height="24" aria-hidden="true">
+            <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d={glyph} />
+          </svg>
+        </span>
+      );
+    }
+    // An icon we have no glyph for: a neutral badge stands in, named on hover.
     return (
-      <Tooltip label={slackIcon.name as string}>
+      <Tooltip label={name}>
         <span className="sbk-card__icon sbk-card__icon--fallback">
           <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
             <circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" strokeWidth="1.5" />

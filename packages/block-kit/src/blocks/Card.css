@@ -42,6 +42,14 @@
   object-fit: cover;
 }
 
+/* Slack centres its 24px icon in the 36px slot, in the text colour and with no badge behind it. */
+.sbk-card__icon--slack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sbk-text);
+}
+
 .sbk-card__icon--fallback {
   display: flex;
   align-items: center;

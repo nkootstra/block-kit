@@ -27,11 +27,23 @@ describe("<Card>", () => {
     expect(img.src).toBe("https://example.com/icon.png");
   });
 
-  it("renders a fallback badge for slack_icon", () => {
+  it("draws a known slack_icon with Slack's own glyph", () => {
     const block = {
       type: "card",
       title: { type: "plain_text", text: "Card" },
-      slack_icon: { name: "rocket" },
+      slack_icon: { type: "icon", name: "rocket" },
+    };
+    const { container } = render(<Card block={block as never} blockId="b1" index={0} />);
+    const path = container.querySelector(".sbk-card__icon svg path");
+    expect(path?.getAttribute("d")).toMatch(/^m18\.168 1\.832/);
+    expect(container.querySelector(".sbk-card__icon--fallback")).toBeNull();
+  });
+
+  it("renders a fallback badge for a slack_icon it has no glyph for", () => {
+    const block = {
+      type: "card",
+      title: { type: "plain_text", text: "Card" },
+      slack_icon: { type: "icon", name: "no-such-icon" },
     };
     const { container } = render(<Card block={block as never} blockId="b1" index={0} />);
     expect(container.querySelector(".sbk-card__icon--fallback")).toBeTruthy();
