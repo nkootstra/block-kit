@@ -26,7 +26,8 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin: 2px;
+  /* Slack's buttons carry no bottom margin, so they sit 2px down the 30px bar, not centred in it. */
+  margin: 2px 2px 0;
   color: rgba(29, 28, 29, 0.7);
   opacity: 0.3;
 }
