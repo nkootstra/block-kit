@@ -75,6 +75,14 @@ describe("<TaskCard>", () => {
     expect(container.querySelector(".sbk-status-icon--complete")).toBeTruthy();
   });
 
+  it("shows Slack's warning icon when the task failed", () => {
+    const failed = { ...block, status: "error" };
+    const { container } = render(
+      <TaskCard block={asTaskCardBlock(failed)} blockId="b1" index={0} />,
+    );
+    expect(container.querySelector(".sbk-status-icon--error")).toBeTruthy();
+  });
+
   it("renders a link element inline within rich_text details", () => {
     const withLink = {
       ...block,

@@ -1,6 +1,5 @@
 :root {
   --sbk-task-card-text: rgb(94, 93, 96);
-  --sbk-task-card-in-progress: rgb(18, 100, 163);
 }
 
 .sbk-task-card {
@@ -55,7 +54,6 @@
   font-size: 13px;
   line-height: normal;
   text-indent: 0;
-  color: var(--sbk-task-card-in-progress);
 }
 
 .sbk-task-card__pill-title {
