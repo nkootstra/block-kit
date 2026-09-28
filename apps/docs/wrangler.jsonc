@@ -1,0 +1,11 @@
+// Serves the static `blume build` output from Workers Static Assets, which also reads the
+// `_headers` and `_redirects` files the build writes. No Worker script runs.
+{
+  "name": "block-kit-docs",
+  "compatibility_date": "2026-09-28",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
+  "routes": [{ "pattern": "block-kit.kootstra.io", "custom_domain": true }],
+}
