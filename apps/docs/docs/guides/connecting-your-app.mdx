@@ -8,11 +8,16 @@ drive a real Slack app (the same Bolt or raw HTTP app you'd deploy), point the p
 app's request URL. Two pieces make this safe: `httpTransport` on the client, and a relay on your
 server that signs the request the way Slack does.
 
-```
-┌────────────┐   unsigned POST    ┌──────────────┐   signed POST    ┌─────────────┐
-│  <BlockKit  │ ─────────────────▶│  your server  │ ────────────────▶│  Bolt app   │
-│  Provider>  │   (httpTransport)  │ (the relay)  │  (signingSecret) │ (unchanged) │
-└────────────┘                    └──────────────┘                  └─────────────┘
+```mermaid
+sequenceDiagram
+  participant P as BlockKitProvider (browser)
+  participant R as Your server (the relay)
+  participant A as Bolt app (unchanged)
+  P->>R: Unsigned POST via httpTransport
+  Note over R: Signs with signingSecret
+  R->>A: Signed POST to the request URL
+  A-->>R: Response
+  R-->>P: Relayed response
 ```
 
 The signing secret never reaches the browser: only your server has it. The browser only ever
