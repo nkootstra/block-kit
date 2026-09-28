@@ -1,12 +1,19 @@
 import type { ImageBlock } from "@slack/types";
+import { useState } from "react";
 import { ImageActions } from "../data/HoverActions";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
 
-/** The caret Slack shows next to an image's file-size caption, used to expand the preview. */
-function ExpandCaret() {
+/** The caret Slack shows next to an image's file-size caption: down while shown, right while hidden. */
+function ExpandCaret({ expanded }: { expanded: boolean }) {
   return (
-    <svg className="sbk-image__caret" viewBox="0 0 15 15" width="15" height="15" aria-hidden="true">
+    <svg
+      className={`sbk-image__caret${expanded ? "" : " sbk-image__caret--collapsed"}`}
+      viewBox="0 0 15 15"
+      width="15"
+      height="15"
+      aria-hidden="true"
+    >
       <path
         d="M3.5 5.5l4 4 4-4"
         fill="none"
@@ -28,11 +35,15 @@ function ExpandCaret() {
  * caption — the caption comes from fetching the file's real bytes, which isn't available to us
  * without a network round-trip, so we render the row (title + caret) but omit the byte count.
  * Keeping the row's height/spacing matches Slack's vertical rhythm even where the text differs.
+ *
+ * The caret is a toggle, as in Slack: pressing it hides the image (instantly, no animation) and
+ * leaves only the title row, and pressing it again brings the image back.
  */
 export function Image({ block }: BlockProps<ImageBlock>) {
   const json = block as unknown as Json;
   const imageUrl = "image_url" in block ? block.image_url : undefined;
   const slackFile = json.slack_file as { url?: string; id?: string } | undefined;
+  const [expanded, setExpanded] = useState(true);
 
   return (
     <figure className="sbk-image">
@@ -43,24 +54,35 @@ export function Image({ block }: BlockProps<ImageBlock>) {
               <Text text={block.title} />
             </span>
           )}
-          <ExpandCaret />
+          <button
+            type="button"
+            className="sbk-image__toggle"
+            aria-label="image"
+            aria-expanded={expanded}
+            title={expanded ? "Collapse" : "Expand"}
+            onClick={() => setExpanded((value) => !value)}
+          >
+            <ExpandCaret expanded={expanded} />
+          </button>
         </div>
       )}
-      <div
-        className="sbk-image__frame sbk-hover-actions-host"
-        style={imageUrl ? { backgroundImage: `url(${JSON.stringify(imageUrl)})` } : undefined}
-      >
-        {imageUrl ? (
-          <img className="sbk-image__img" src={imageUrl} alt={block.alt_text} />
-        ) : (
-          <div className="sbk-image__fallback" role="img" aria-label={block.alt_text}>
-            <span className="sbk-image__fallback-text">
-              {slackFile ? "Slack file image unavailable" : block.alt_text}
-            </span>
-          </div>
-        )}
-        {imageUrl && <ImageActions url={imageUrl} />}
-      </div>
+      {expanded && (
+        <div
+          className="sbk-image__frame sbk-hover-actions-host"
+          style={imageUrl ? { backgroundImage: `url(${JSON.stringify(imageUrl)})` } : undefined}
+        >
+          {imageUrl ? (
+            <img className="sbk-image__img" src={imageUrl} alt={block.alt_text} />
+          ) : (
+            <div className="sbk-image__fallback" role="img" aria-label={block.alt_text}>
+              <span className="sbk-image__fallback-text">
+                {slackFile ? "Slack file image unavailable" : block.alt_text}
+              </span>
+            </div>
+          )}
+          {imageUrl && <ImageActions url={imageUrl} />}
+        </div>
+      )}
     </figure>
   );
 }

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { Image } from "./Image";
 
@@ -50,6 +50,35 @@ describe("<Image>", () => {
     expect(container.querySelector(".sbk-image__title")).toBeTruthy();
     expect(container.querySelector(".sbk-image__caret")).toBeTruthy();
     expect(container.querySelector(".sbk-image__title-text")).toBeNull();
+  });
+
+  it("hides the image when its caret is pressed and shows it again on a second press, like Slack", () => {
+    const block = {
+      type: "image",
+      title: { type: "plain_text", text: "I love tacos" },
+      image_url: "https://example.com/a.png",
+      alt_text: "tacos",
+    };
+    const { container } = render(<Image block={block as never} blockId="b1" index={0} />);
+    const toggle = screen.getByRole("button", { name: "image" });
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    expect(toggle.getAttribute("title")).toBe("Collapse");
+
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(toggle.getAttribute("title")).toBe("Expand");
+    expect(container.querySelector(".sbk-image__frame")).toBeNull();
+    expect(screen.getByText("I love tacos")).toBeTruthy();
+
+    fireEvent.click(toggle);
+    expect(container.querySelector("img.sbk-image__img")).toBeTruthy();
+  });
+
+  it("points the caret right while the image is hidden", () => {
+    const block = { type: "image", image_url: "https://example.com/a.png", alt_text: "tacos" };
+    const { container } = render(<Image block={block as never} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: "image" }));
+    expect(container.querySelector(".sbk-image__caret--collapsed")).toBeTruthy();
   });
 
   it("falls back to a placeholder for a slack_file image with no resolvable URL", () => {

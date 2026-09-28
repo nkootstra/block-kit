@@ -19,9 +19,22 @@
   color: var(--sbk-text);
 }
 
+.sbk-image__toggle {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
 .sbk-image__caret {
   color: var(--sbk-link);
   flex: 0 0 auto;
+}
+
+.sbk-image__caret--collapsed {
+  transform: rotate(-90deg);
 }
 
 .sbk-image__frame {
