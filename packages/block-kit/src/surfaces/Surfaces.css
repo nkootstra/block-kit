@@ -1,0 +1,226 @@
+/* Modal and Home tab surfaces, measured against Slack's own modal/home chrome (light theme, desktop). */
+
+.sbk-modal {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  max-width: 100%;
+  /* Slack caps a modal at 640px; past that the body scrolls between the pinned header and footer. */
+  max-height: min(640px, 90vh);
+  background: var(--sbk-bg);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px var(--sbk-border),
+    0 8px 28px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.sbk-modal__header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  padding: 16px 24px;
+}
+
+.sbk-modal__title-row {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sbk-modal__icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  margin-right: 16px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.sbk-modal__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sbk-modal__close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 33px;
+  height: 36px;
+  margin-left: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--sbk-text);
+  cursor: pointer;
+}
+
+.sbk-modal__close:hover {
+  background: var(--sbk-icon-button-hover-bg);
+}
+
+/* Slack pads the body 20px on the right plus a 4px custom scrollbar track, so content sits 24px
+   from both edges. */
+.sbk-modal__body {
+  flex: 1 1 auto;
+  padding: 8px 24px 16px;
+  overflow-y: auto;
+}
+
+/* Builder's modal blocks are spaced further apart than the flat 4px message gap (measured via
+   inspect.ts: consecutive block content boxes sit 16px apart). Scoped here so .sbk-blocks's base
+   4px (Message.css) stays untouched for message fixtures; Home's own reference blocks measured at
+   the same 4px as messages, so it isn't overridden. */
+.sbk-modal .sbk-blocks {
+  gap: 16px;
+}
+
+/* The modal's 16px block gap already spaces sections; Slack drops their message-surface margins. */
+.sbk-modal .sbk-section {
+  margin: 0;
+}
+
+/* A checkbox group's trailing space is shorter in a modal (16px) than in a message (24px). */
+.sbk-modal .sbk-checkboxes {
+  margin-bottom: 16px;
+}
+
+.sbk-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex: 0 0 auto;
+  padding: 20px 24px;
+  border-top: 1px solid var(--sbk-border);
+}
+
+/* Modal buttons render bigger than message buttons in Slack; sized here since it's chrome, not
+   the shared button component (agent B owns elements/Button.css). */
+.sbk-modal__button {
+  height: 36px;
+  min-width: 80px;
+  padding: 0 12px 1px;
+  border-radius: 8px;
+  border: 1px solid var(--sbk-button-border);
+  background: var(--sbk-bg);
+  color: var(--sbk-text);
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    color 80ms,
+    background-color 80ms,
+    border-color 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+/* Same `c-button` hover model as elements/Button.css. */
+.sbk-modal__button:hover {
+  box-shadow: var(--sbk-button-hover-shadow);
+}
+
+.sbk-modal__button:active {
+  box-shadow: none;
+}
+
+.sbk-modal__button--primary {
+  border-color: transparent;
+  background: var(--sbk-primary);
+  color: #fff;
+}
+
+.sbk-modal__button--primary:hover,
+.sbk-modal__button--primary:active {
+  background-image: linear-gradient(var(--sbk-button-overlay), var(--sbk-button-overlay));
+  background-blend-mode: multiply;
+}
+
+.sbk-modal__button--primary:hover {
+  --sbk-button-overlay: #0a403221;
+}
+
+.sbk-modal__button--primary:active {
+  --sbk-button-overlay: #0a403238;
+}
+
+.sbk-modal__button--secondary:hover,
+.sbk-modal__button--secondary:active {
+  background-color: var(--sbk-button-hover-bg);
+}
+
+.sbk-home {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--sbk-bg);
+}
+
+.sbk-home__menu {
+  display: flex;
+  align-items: flex-end;
+  height: 40px;
+  border-bottom: 1px solid var(--sbk-border);
+}
+
+.sbk-home__tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  margin-left: 25px;
+  font-weight: 700;
+  /* Slack's aubergine, independent of the app's primary (green) buttons. */
+  box-shadow: inset 0 -2px 0 0 rgb(74, 21, 75);
+}
+
+/* The Home tab uses Slack's "medium" buttons: 36px tall, 15px text, rounder corners. */
+.sbk-home .sbk-button {
+  height: 36px;
+  font-size: 15px;
+  border-radius: 8px;
+}
+
+.sbk-home .sbk-overflow__button {
+  width: 31px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.sbk-home__content {
+  padding: 25px;
+}
+
+/* Modals opened through `views` sit centred on a dimmed, full-viewport overlay, as in Slack. */
+.sbk-modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.sbk-modal-layer__view {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-height: 100%;
+}
+
+.sbk-modal-layer__view[hidden] {
+  display: none;
+}

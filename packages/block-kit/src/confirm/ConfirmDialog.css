@@ -1,0 +1,64 @@
+.sbk-confirm__overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.sbk-confirm {
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  background: var(--sbk-bg);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.35);
+  padding: 20px;
+  font-family: var(--sbk-font);
+}
+
+.sbk-confirm__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--sbk-text);
+}
+
+.sbk-confirm__text {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-text);
+  margin-bottom: 20px;
+}
+
+.sbk-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sbk-confirm__button {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 4px;
+  border: 1px solid var(--sbk-button-border);
+  background: var(--sbk-bg);
+  color: var(--sbk-text);
+  font: 700 15px var(--sbk-font);
+  cursor: pointer;
+}
+
+.sbk-confirm__button--primary {
+  border: 0;
+  background: var(--sbk-primary);
+  color: #fff;
+}
+
+.sbk-confirm__button--danger {
+  border: 0;
+  background: var(--sbk-danger);
+  color: #fff;
+}

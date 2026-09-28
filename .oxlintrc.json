@@ -8,7 +8,28 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "import/no-cycle": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "ignoreRestSiblings": true }
+    ],
+    // Typing every vi.fn() adds noise to tests without catching anything the assertions don't.
+    "vitest/require-mock-type-parameters": "off",
+    // The renderer reproduces Slack's own markup: custom listboxes and menus driven by
+    // aria-activedescendant from their trigger, role="img" charts, role="group" fieldsets.
+    // These rules assume native elements, so they stay visible as warnings rather than errors.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/interactive-supports-focus": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "jsx-a11y/control-has-associated-label": "warn",
+    "jsx-a11y/role-supports-aria-props": "warn",
+    // Slack honours `focus_on_load`, which is autofocus by definition.
+    "jsx-a11y/no-autofocus": "off",
+    "react/refs": "warn",
+    "react/set-state-in-effect": "warn",
+    "react/immutability": "warn"
   },
   "ignorePatterns": [
     "**/dist/**",
