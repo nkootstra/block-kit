@@ -9,13 +9,15 @@ import {
 import { createPortal } from "react-dom";
 
 /** Space between the anchor and the popover, as in Slack's menus. */
-const GAP = 4;
+const DEFAULT_GAP = 4;
 
 export interface PopoverProps {
   /** The element the popover opens from; it's placed below it, or above when there's no room. */
   anchorRef: RefObject<HTMLElement | null>;
   /** Called on a press outside both the anchor and the popover. */
   onDismiss: () => void;
+  /** Space between the anchor and the popover; Slack's table sort menu sits flush below its header. */
+  gap?: number;
   children: ReactNode;
 }
 
@@ -26,7 +28,7 @@ export interface PopoverProps {
  * The layer is as wide as the anchor, so a child sized `width: 100%` matches the control it opened
  * from.
  */
-export function Popover({ anchorRef, onDismiss, children }: PopoverProps) {
+export function Popover({ anchorRef, onDismiss, gap = DEFAULT_GAP, children }: PopoverProps) {
   const layerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(
     null,
@@ -44,14 +46,14 @@ export function Popover({ anchorRef, onDismiss, children }: PopoverProps) {
       if (!anchor || !layer) return;
       const a = anchor.getBoundingClientRect();
       const height = (layer.firstElementChild as HTMLElement | null)?.offsetHeight ?? 0;
-      const below = a.bottom + GAP;
-      const above = a.top - GAP - height;
+      const below = a.bottom + gap;
+      const above = a.top - gap - height;
       const fitsBelow = below + height <= window.innerHeight;
       const fitsAbove = above >= 0;
       let top = !fitsBelow && fitsAbove ? above : below;
       // Taller than the room on either side: keep it on screen rather than past the window's edge.
       if (!fitsBelow && !fitsAbove) {
-        top = Math.max(GAP, Math.min(below, window.innerHeight - height - GAP));
+        top = Math.max(gap, Math.min(below, window.innerHeight - height - gap));
       }
       setPosition({ top, left: a.left, width: a.width });
     }
@@ -68,7 +70,7 @@ export function Popover({ anchorRef, onDismiss, children }: PopoverProps) {
       window.removeEventListener("resize", place);
       resize?.disconnect();
     };
-  }, [anchorRef]);
+  }, [anchorRef, gap]);
 
   useEffect(() => {
     function onDocDown(e: MouseEvent) {
