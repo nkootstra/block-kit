@@ -36,13 +36,62 @@
   background: var(--sbk-bg);
 }
 
+/* The JSON tab: diffs' editor, or the same text as plain text until it hydrates. */
 .bkd-preview__json {
+  background: var(--blume-code-background);
+}
+
+.bkd-preview__json-placeholder,
+.bkd-preview__json diffs-container {
+  display: block;
   margin: 0;
   max-height: 28rem;
   overflow: auto;
+}
+
+.bkd-preview__json-placeholder {
   padding: 1rem;
+  white-space: pre;
   font: 0.8125rem / 1.6 var(--blume-font-mono);
-  background: var(--blume-code-background);
+}
+
+/* Diffs renders in a shadow root; these custom properties reach into it. Blume's code background
+   and mono font keep it in step with the page's other code blocks. */
+.bkd-preview diffs-container {
+  --diffs-light-bg: var(--blume-code-background);
+  --diffs-dark-bg: var(--blume-code-background);
+  --diffs-font-family: var(--blume-font-mono);
+  --diffs-font-size: 0.8125rem;
+}
+
+.bkd-preview__json-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  color: var(--blume-muted-foreground);
+  border-top: 1px solid var(--blume-border);
+}
+
+.bkd-preview__json-error {
+  color: oklch(0.63 0.2 25);
+}
+
+.bkd-preview__reset {
+  flex: none;
+  padding: 0.125rem 0.625rem;
+  font: inherit;
+  color: var(--blume-foreground);
+  background: transparent;
+  border: 1px solid var(--blume-border);
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.bkd-preview__reset:hover {
+  background: var(--blume-muted, transparent);
 }
 
 .bkd-preview__log {
@@ -69,16 +118,11 @@
 }
 
 /* The latest call, in the diffs viewer the playground uses. Only one is shown, so repeated
-   clicks never grow the page. Blume's code background and mono font keep it in step with the
-   page's other code blocks. */
+   clicks never grow the page. */
 .bkd-preview__log diffs-container {
   display: block;
   max-height: 16rem;
   overflow: auto;
   border: 1px solid var(--blume-border);
   border-radius: var(--blume-radius, 0.375rem);
-  --diffs-light-bg: var(--blume-code-background);
-  --diffs-dark-bg: var(--blume-code-background);
-  --diffs-font-family: var(--blume-font-mono);
-  --diffs-font-size: 0.8125rem;
 }

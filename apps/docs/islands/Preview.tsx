@@ -16,9 +16,10 @@ import {
   type SlackMessageLike,
   View,
 } from "@nkootstra/block-kit";
-import { File as DiffsFile } from "@pierre/diffs/react";
+import { Editor } from "@pierre/diffs/edit";
+import { File as DiffsFile, type EditorFactory, EditProvider } from "@pierre/diffs/react";
 import type { AnyBlock } from "@slack/types";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 export interface PreviewProps {
   /** What Block Kit Builder accepts: `{ blocks }`, a bare array of blocks, or a modal/home view. */
@@ -71,7 +72,7 @@ function onOptions({ value }: { value: string }): OptionsResponse {
 const TS = 43_200;
 
 export default function Preview({
-  payload,
+  payload: original,
   code = false,
   actions = false,
   opens,
@@ -80,6 +81,25 @@ export default function Preview({
   const [tab, setTab] = useState<"preview" | "json">(code ? "json" : "preview");
   const [last, setLast] = useState<{ action: BlockAction; count: number } | null>(null);
   const colorMode = useColorMode();
+  const mounted = useMounted();
+  const editKey = useId();
+  const initial = JSON.stringify(original, null, 2);
+  // What the JSON tab holds, and the last version of it that parsed: the preview renders that one,
+  // so a half-typed edit never blanks it.
+  const [source, setSource] = useState(initial);
+  const [payload, setPayload] = useState(original);
+  const [error, setError] = useState<string | null>(null);
+  const edited = source !== initial;
+
+  function edit(next: string) {
+    setSource(next);
+    try {
+      setPayload(JSON.parse(next));
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
   const view = asView(payload);
   const blocks = view ? undefined : asBlocks(payload);
   const message = view ? undefined : asMessage(payload);
@@ -127,9 +147,48 @@ export default function Preview({
           </BlockKitProvider>
         </div>
       ) : (
-        <pre className="bkd-preview__json">
-          <code>{JSON.stringify(payload, null, 2)}</code>
-        </pre>
+        <div className="bkd-preview__json">
+          {mounted ? (
+            <EditProvider createEditor={createEditor}>
+              <DiffsFile
+                file={{ name: "payload.json", contents: source }}
+                edit
+                editStateKey={editKey}
+                onEditChange={(event) => edit(event.file.contents)}
+                options={{
+                  theme: CODE_THEME,
+                  themeType: colorMode,
+                  overflow: "scroll",
+                  disableFileHeader: true,
+                }}
+              />
+            </EditProvider>
+          ) : (
+            // Not a <pre>: Blume adds a copy button to every server-rendered <pre>, which would no
+            // longer match on hydration.
+            <div className="bkd-preview__json-placeholder">{source}</div>
+          )}
+          {(error || edited) && (
+            <div className="bkd-preview__json-status">
+              <span className={error ? "bkd-preview__json-error" : undefined}>
+                {error
+                  ? `Invalid JSON, the preview shows your last valid edit. ${error}`
+                  : "Edited"}
+              </span>
+              <button
+                type="button"
+                className="bkd-preview__reset"
+                onClick={() => {
+                  setSource(initial);
+                  setPayload(original);
+                  setError(null);
+                }}
+              >
+                Reset
+              </button>
+            </div>
+          )}
+        </div>
       )}
       {actions && tab === "preview" && (
         <div className="bkd-preview__log">
@@ -159,6 +218,20 @@ export default function Preview({
       )}
     </div>
   );
+}
+
+/** Diffs' editor, for the editable JSON tab. */
+const createEditor: EditorFactory<undefined, undefined> = (type, options, editStateKey) =>
+  new Editor(type, options, editStateKey);
+
+/**
+ * False on the server and the first client render, so hydration matches the server's plain text
+ * before the editor (which needs the DOM) takes over.
+ */
+function useMounted(): boolean {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted;
 }
 
 /** Blume's own code themes, so the action reads like the page's other code blocks. */
