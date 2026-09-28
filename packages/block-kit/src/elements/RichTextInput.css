@@ -1,0 +1,53 @@
+/* Slack's modal rich-text editor: a grey formatting toolbar over a text area, in a box that
+   measures 118px tall in the reference (the Aa/emoji button row Slack draws below it overflows
+   that frozen box in the capture, so it's left out). */
+.sbk-rich-text-input {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 118px;
+  background: var(--sbk-bg);
+  border: 1px solid rgba(29, 28, 29, 0.13);
+  border-radius: 4px;
+}
+
+.sbk-rich-text-input__toolbar {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 4px;
+  background: #f8f8f8;
+  border-radius: 8px 8px 0 0;
+}
+
+.sbk-rich-text-input__tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 2px;
+  color: rgba(29, 28, 29, 0.7);
+  opacity: 0.3;
+}
+
+.sbk-rich-text-input__separator {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: rgba(29, 28, 29, 0.13);
+}
+
+.sbk-rich-text-input__editor {
+  flex: 1;
+  padding: 8px 12px;
+  font: 15px / 22px var(--sbk-font);
+  color: var(--sbk-text);
+  overflow-y: auto;
+  outline: none;
+}
+
+.sbk-rich-text-input__editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--sbk-muted);
+}

@@ -1,0 +1,47 @@
+.sbk-file-input {
+  /* Slack renders a `file_input` element inside a `<fieldset>` that carries its own
+     margin-bottom (~20px), on top of the label/hint spacing every other Input-block element
+     shares — confirmed via inspect.ts against extra/modal/rich-and-file's reference. */
+  margin-bottom: 20px;
+}
+
+.sbk-file-input__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  min-width: 80px;
+  padding: 0 12px 1px;
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 8px;
+  background: var(--sbk-bg);
+  color: var(--sbk-text);
+  font: 700 15px var(--sbk-font);
+  cursor: pointer;
+}
+
+.sbk-file-input__button svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sbk-file-input__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.sbk-file-input__list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.sbk-file-input__item {
+  font-size: 13px;
+  color: var(--sbk-text);
+  padding: 2px 0;
+}
