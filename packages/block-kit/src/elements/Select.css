@@ -1,0 +1,346 @@
+.sbk-select {
+  position: relative;
+  width: 190px;
+}
+
+.sbk-select__control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 28px;
+  padding: 4px 8px;
+  font: 13px var(--sbk-font);
+  color: var(--sbk-text);
+  background: var(--sbk-bg);
+  border: 1px solid rgb(124, 122, 127);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* In an input block, Slack's multi-select closed control uses a taller (36px) box than a
+   single-select's (28px), to give its chip row breathing room, even with no chips selected yet.
+   As a section/actions accessory it stays a 28px button. */
+.sbk-input__element .sbk-select--multi .sbk-select__control {
+  height: 36px;
+  padding: 4px 28px 4px 12px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* With chips it grows to fit their rows: each chip sits 4px in from the box and the one above. */
+.sbk-input__element .sbk-select--chips .sbk-select__control {
+  height: auto;
+  min-height: 36px;
+  align-items: flex-start;
+  padding: 0 28px 4px 4px;
+}
+
+/* Slack's p-block_kit_max_selected_items__info, tucked into the label's 8px bottom padding. */
+.sbk-select__max-info {
+  display: none;
+}
+
+.sbk-input__element .sbk-select__max-info {
+  display: block;
+  margin: -8px 0 8px;
+  font-size: 15px;
+  line-height: 22px;
+  color: rgb(97, 96, 97);
+}
+
+/* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
+.sbk-input__element .sbk-select--multi .sbk-select__placeholder {
+  color: rgb(94, 93, 96);
+}
+
+.sbk-input__element .sbk-select--multi .sbk-select__chevron {
+  display: none;
+}
+
+/* As a section accessory, Slack collapses a multi-select into a content-sized outline button
+   ("Select conversations") that opens the picker, rather than a 190px select with a chevron. */
+.sbk-section__accessory .sbk-select--multi {
+  width: auto;
+}
+
+.sbk-section__accessory .sbk-select--multi .sbk-select__control {
+  padding: 0 12px 1px;
+  font-weight: 700;
+  border-color: rgba(94, 93, 96, 0.45);
+  border-radius: 4px;
+}
+
+.sbk-section__accessory .sbk-select--multi .sbk-select__placeholder {
+  color: var(--sbk-text);
+}
+
+.sbk-section__accessory .sbk-select--multi .sbk-select__chevron {
+  display: none;
+}
+
+/* Slack's Builder uses a taller "medium" control (with 15px text) on a modal/Home tab surface than the
+   message-surface preview's 28px "small" control. */
+.sbk-select--medium .sbk-select__control {
+  height: 36px;
+  padding: 4px 12px;
+  font-size: 15px;
+}
+
+/* Slack's single select is a full-width text input with the chevron laid over its right edge, so
+   the text runs under the chevron and only truncates at the input's own 8px padding. */
+.sbk-select:not(.sbk-select--multi) :is(.sbk-select__value, .sbk-select__placeholder) {
+  margin-right: -28px;
+}
+
+.sbk-select__value,
+.sbk-select__placeholder {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-select__placeholder {
+  color: var(--sbk-muted);
+}
+
+/* Slack draws a chosen value in an unbordered layer 8px in, and its chevron 28px from the right;
+   our border sits inside the control, so pull both 1px outwards. The placeholder keeps the
+   border's inset, as Slack's lives in the bordered <input>. */
+.sbk-select__value {
+  margin-left: -1px;
+}
+
+.sbk-select__chevron {
+  margin-right: -1px;
+}
+
+/* An id Slack couldn't resolve: c-small_channel_entity with a c-missing_channel--private pill. */
+.sbk-select__entity {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  line-height: 20px;
+}
+
+.sbk-select__channel-hash {
+  flex: 0 0 auto;
+  margin-right: 8px;
+}
+
+.sbk-select__entity-text {
+  display: flow-root;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sbk-select__missing-channel {
+  padding: 0 2px 1px 0;
+  color: rgba(29, 28, 29, 0.7);
+  background: rgba(29, 28, 29, 0.13);
+  border-radius: 3px;
+}
+
+.sbk-select__missing-channel svg {
+  display: inline-block;
+  vertical-align: -1.625px;
+}
+
+/* ... and c-small_member_list_entity while the member loads: a blank avatar and a name bar,
+   clipped square where the name's box ends. */
+.sbk-select__skeleton {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.sbk-select__skeleton-avatar {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 0 8px 0 6px;
+  background: rgb(234, 234, 234);
+  border-radius: clamp(4px, min(22.222%, 12px), 12px);
+}
+
+.sbk-select__skeleton-name {
+  flex: 0 0 auto;
+  width: 109px;
+  height: 8px;
+  margin-top: 2px;
+  overflow: hidden;
+}
+
+.sbk-select__skeleton-name::before {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 8px;
+  background: rgb(234, 234, 234);
+  border-radius: 1000px;
+}
+
+.sbk-select__chevron {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-select__chips {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Slack's c-token--medium: a 28px pale-blue tag with a bold 15px label and an 18px "x". */
+.sbk-select__chip {
+  display: flex;
+  align-items: center;
+  margin: 4px 0 0 4px;
+  padding: 0 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26.4px;
+  white-space: nowrap;
+  color: var(--sbk-text);
+  background: rgba(54, 197, 240, 0.13);
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.sbk-select__chip-label {
+  display: flex;
+  padding: 0 4px;
+}
+
+/* The label is a flow-root on the chip's 18px strut, so 15px text makes its line 27px tall. */
+.sbk-select__chip-text {
+  display: flow-root;
+  overflow: hidden;
+}
+
+.sbk-select__chip-text > span {
+  font-size: 15px;
+  line-height: 26px;
+}
+
+.sbk-select__chip-entity {
+  align-items: center;
+  font-size: 15px;
+  line-height: 26px;
+}
+
+.sbk-select__chip-entity .sbk-select__channel-hash {
+  margin-right: 2px;
+}
+
+.sbk-select__chip-entity .sbk-select__missing-channel svg {
+  width: 15px;
+  height: 15px;
+  vertical-align: -1.875px;
+}
+
+.sbk-select__chip-remove {
+  display: flex;
+  cursor: pointer;
+}
+
+.sbk-select__menu {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: max(100%, 240px);
+  max-height: 280px;
+  overflow-y: auto;
+  /* Slack's `c-select_options_list`: a hairline ring plus a soft drop shadow, no border. */
+  background: var(--sbk-menu-bg);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px rgba(29, 28, 29, 0.13),
+    0 5px 10px rgba(0, 0, 0, 0.12);
+  padding: 12px 0;
+}
+
+.sbk-select__search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -4px 0 8px;
+  padding: 0 24px 8px;
+  border-bottom: 1px solid var(--sbk-border);
+  color: var(--sbk-muted);
+}
+
+.sbk-select__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font: 13px var(--sbk-font);
+  color: var(--sbk-text);
+}
+
+/* Slack's `c-menu_item__header`. */
+.sbk-select__group-label {
+  padding: 4px 24px;
+  font-size: 13px;
+  line-height: 1.38463;
+  color: var(--sbk-menu-secondary-text);
+}
+
+.sbk-select__group + .sbk-select__group {
+  margin-top: 8px;
+}
+
+/* Slack's `c-select_options_list__option`: 15px rows, 24px side padding, 28px minimum height. */
+.sbk-select__option {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 24px;
+  font: 15px / 1.46668 var(--sbk-font);
+  color: var(--sbk-text);
+  cursor: pointer;
+}
+
+.sbk-select__option:has(.sbk-select__option-description) {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* `--active` (pointer or keyboard highlight) inverts to white on blue; the chosen option keeps its
+   row but turns blue. */
+.sbk-select__option--selected {
+  color: var(--sbk-menu-selected-text);
+}
+
+.sbk-select__option[data-active] {
+  color: var(--sbk-menu-highlight-text);
+  background: var(--sbk-menu-highlight-bg);
+}
+
+.sbk-select__option[data-active] .sbk-select__option-description {
+  color: inherit;
+}
+
+.sbk-select__option-description {
+  margin-top: -2px;
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--sbk-menu-secondary-text);
+}
+
+/* An external select's "Loading…" / "No results" row while it waits on the app's options. */
+.sbk-select__status {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 24px;
+  font: 15px / 1.46668 var(--sbk-font);
+  color: var(--sbk-muted);
+}

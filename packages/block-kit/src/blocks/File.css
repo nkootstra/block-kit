@@ -1,0 +1,41 @@
+.sbk-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  max-width: 360px;
+  background: rgba(29, 28, 29, 0.04);
+  border: 1px solid var(--sbk-border);
+  border-radius: 8px;
+  color: var(--sbk-muted);
+}
+
+/* Slack's pillow file card: the border firms up and a soft shadow appears under the pointer. */
+.sbk-file:hover {
+  border-color: rgba(94, 93, 96, 0.45);
+  box-shadow: rgba(0, 0, 0, 0.047) 0 1px 2px;
+}
+
+.sbk-file__icon {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.sbk-file__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sbk-file__name {
+  color: var(--sbk-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sbk-file__meta {
+  font-size: 12px;
+  text-transform: capitalize;
+}

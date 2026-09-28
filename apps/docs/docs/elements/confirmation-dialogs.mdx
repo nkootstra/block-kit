@@ -1,0 +1,208 @@
+---
+title: Confirmation dialogs
+description: Add an "are you sure?" step to any interactive element with the confirm composition object.
+---
+
+`confirm` isn't an element you place in a block. It's a composition object you attach to an
+interactive element's own `confirm` field. When Slack renders the element and the user interacts
+with it, a modal dialog appears first; the underlying action only fires if the user picks confirm.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "more",
+        elements: [
+          {
+            type: "button",
+            action_id: "delete",
+            text: { type: "plain_text", text: "Delete" },
+            style: "danger",
+            confirm: {
+              title: { type: "plain_text", text: "Are you sure?" },
+              text: { type: "mrkdwn", text: "This can't be undone." },
+              confirm: { type: "plain_text", text: "Delete" },
+              deny: { type: "plain_text", text: "Cancel" },
+              style: "danger",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+Click Delete: the dialog opens and the actions log below stays empty until you pick a button.
+Choosing "Delete" logs the `block_actions` payload for the button, exactly as if it had been
+clicked with no `confirm` at all. Choosing "Cancel" (or clicking outside the dialog) closes it and
+nothing is logged: no action fires, and no element state changes.
+
+## Fields
+
+<TypeTable
+  type={{
+    title: {
+      type: "PlainTextElement",
+      description: "The dialog's heading. Maximum length is 100 characters.",
+    },
+    text: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "The explanatory body text. Maximum length is 300 characters.",
+      required: true,
+    },
+    confirm: {
+      type: "PlainTextElement",
+      description:
+        'Label for the button that confirms the action. Maximum length is 30 characters. Defaults to "Confirm".',
+    },
+    deny: {
+      type: "PlainTextElement",
+      description:
+        'Label for the button that cancels the action. Maximum length is 30 characters. Defaults to "Cancel".',
+    },
+    style: {
+      type: '"primary" | "danger"',
+      description:
+        "Color of the confirm button. `danger` renders red; omit for the default green `primary`.",
+    },
+  }}
+/>
+
+## Examples
+
+### A danger-style confirm on a delete button
+
+Pair `style: "danger"` on the button with `style: "danger"` on its `confirm` object so the
+button's own color and the dialog's confirm button agree.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "danger-example",
+        elements: [
+          {
+            type: "button",
+            action_id: "delete_channel",
+            text: { type: "plain_text", text: "Delete channel" },
+            style: "danger",
+            confirm: {
+              title: { type: "plain_text", text: "Delete this channel?" },
+              text: {
+                type: "mrkdwn",
+                text: "Everything in *#releases* will be lost. This can't be undone.",
+              },
+              confirm: { type: "plain_text", text: "Delete" },
+              deny: { type: "plain_text", text: "Cancel" },
+              style: "danger",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+### Confirm on a select
+
+Any `*_select` (and its `multi_` variant) accepts `confirm`. It fires each time the value changes,
+before the new selection is committed.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        block_id: "assignee",
+        text: { type: "mrkdwn", text: "Reassign this issue" },
+        accessory: {
+          type: "users_select",
+          action_id: "assignee_select",
+          placeholder: { type: "plain_text", text: "Select a teammate" },
+          confirm: {
+            title: { type: "plain_text", text: "Reassign issue?" },
+            text: { type: "mrkdwn", text: "The current assignee will be notified." },
+            confirm: { type: "plain_text", text: "Reassign" },
+            deny: { type: "plain_text", text: "Cancel" },
+          },
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+### Confirm on checkboxes
+
+Checkboxes and radio buttons also accept `confirm`. For checkboxes it only appears when _checking_
+a box. Unchecking one never asks for confirmation.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "notify",
+        elements: [
+          {
+            type: "checkboxes",
+            action_id: "notify_checkboxes",
+            options: [
+              {
+                text: { type: "mrkdwn", text: "Notify the whole channel" },
+                value: "notify_channel",
+              },
+            ],
+            confirm: {
+              title: { type: "plain_text", text: "Notify everyone?" },
+              text: {
+                type: "mrkdwn",
+                text: "This will send a message to every member of #general.",
+              },
+              confirm: { type: "plain_text", text: "Notify" },
+              deny: { type: "plain_text", text: "Cancel" },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Interactivity
+
+`confirm` gates the element's own action rather than emitting one of its own. What actually
+happens when the user chooses confirm or deny:
+
+- **Confirm**: the dialog closes, and the element behaves exactly as it would with no `confirm` at
+  all. `onAction` fires with the element's normal payload, and (for stateful elements like
+  selects, checkboxes, radio buttons, and date/time pickers) `state.values` updates to the new
+  value.
+- **Deny, or dismiss by clicking outside the dialog**: the dialog closes and nothing else
+  happens. `onAction` doesn't fire, `state.values` doesn't change, and (for a `url` button) no new
+  tab opens. The element is left exactly as it was before the interaction.
+
+There's no separate action payload for the confirm/deny choice itself. Slack doesn't report it,
+and neither does this library.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+  <Card title="Button" href="/elements/button" icon="mouse-pointer-click">
+    The most common place to attach a `confirm` object.
+  </Card>
+  <Card title="Overflow menu" href="/elements/overflow" icon="more-vertical">
+    A kebab menu whose whole menu can be gated behind one `confirm`.
+  </Card>
+  <Card title="Select menus" href="/elements/select-menus" icon="chevron-down-square">
+    Every `*_select` and `multi_*_select` variant accepts `confirm`.
+  </Card>
+</CardGroup>

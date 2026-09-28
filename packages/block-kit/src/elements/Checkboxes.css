@@ -1,0 +1,98 @@
+.sbk-checkboxes {
+  display: flex;
+  flex-direction: column;
+  /* Slack renders checkboxes inside a `<fieldset>` in every context (input, section accessory,
+     actions), which carries a fixed ~24px bottom margin beyond the last option row — confirmed
+     via inspect.ts against catalog/input/checkboxes, catalog/section/checkboxes, and
+     catalog/actions/checkboxes (all measured 24px of trailing space). */
+  margin-bottom: 24px;
+}
+
+.sbk-checkboxes__option {
+  display: flex;
+  align-items: flex-start;
+  /* Slack's Builder packs option rows with zero gap between them — each row's own height (22px
+     for a text-only option, 44px for a text+description option) sets the pitch on its own,
+     confirmed via inspect.ts against the same three fixtures above. */
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.sbk-checkboxes__input {
+  appearance: none;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  margin: 6px 4px 2px 4px;
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 4px;
+  background: var(--sbk-bg);
+  cursor: pointer;
+  position: relative;
+  transition: 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+/* Slack's `.p-checkboxes_element .c-input_checkbox`: darker border plus a faint overlay on hover,
+   a stronger overlay while pressed, and a 2px blue ring for keyboard focus. */
+.sbk-checkboxes__option:hover .sbk-checkboxes__input:not(:checked) {
+  border-color: var(--sbk-outline-pry);
+  background-image: linear-gradient(var(--sbk-interaction-hover), var(--sbk-interaction-hover));
+}
+
+.sbk-checkboxes__input:not(:checked):active {
+  background-image: linear-gradient(var(--sbk-interaction-pressed), var(--sbk-interaction-pressed));
+}
+
+.sbk-checkboxes__input:focus-visible {
+  outline: 2px solid var(--sbk-focus-ring);
+  outline-offset: 1px;
+}
+
+/* Slack's checked box is solid blue with no border; hover/focus and press darken it with the same
+   multiply overlays Slack's blue buttons use. */
+.sbk-checkboxes__input:checked {
+  border-color: transparent;
+  background-color: var(--sbk-checkbox-checked);
+}
+
+.sbk-checkboxes__option:hover .sbk-checkboxes__input:checked,
+.sbk-checkboxes__input:checked:focus-visible {
+  background-image: linear-gradient(
+    var(--sbk-checkbox-checked-hover),
+    var(--sbk-checkbox-checked-hover)
+  );
+  background-blend-mode: var(--sbk-blend-interaction);
+}
+
+.sbk-checkboxes__input:checked:active {
+  background-image: linear-gradient(
+    var(--sbk-checkbox-checked-pressed),
+    var(--sbk-checkbox-checked-pressed)
+  );
+  background-blend-mode: var(--sbk-blend-interaction);
+}
+
+.sbk-checkboxes__input:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--sbk-on-highlight);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.sbk-checkboxes__body {
+  display: flex;
+  flex-direction: column;
+  /* Slack's c-label__text is nudged up a pixel with `position: relative; top: -1px`. */
+  position: relative;
+  top: -1px;
+}
+
+.sbk-checkboxes__description,
+.sbk-checkboxes__description .sbk-mrkdwn {
+  color: var(--sbk-content-sec);
+}

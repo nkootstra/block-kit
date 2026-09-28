@@ -1,0 +1,158 @@
+---
+title: Validation
+description: The checks Slack's client runs on a modal before view_submission fires, and how to trigger or override them.
+---
+
+Before a modal's `view_submission` ever reaches your app, Slack's own client checks every `input`
+block: is it filled in when required, is the text within length limits, is the number in range, is the
+email or URL well-formed. `@nkootstra/block-kit` runs the identical checks client-side, so `onSubmit`
+only ever sees a submission that would have passed Slack's client too.
+
+<Preview
+  opens={{
+    type: "modal",
+    title: { type: "plain_text", text: "Invite someone" },
+    submit: { type: "plain_text", text: "Send invite" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "email",
+        label: { type: "plain_text", text: "Email address" },
+        element: { type: "email_text_input", action_id: "value" },
+      },
+      {
+        type: "input",
+        block_id: "note",
+        label: { type: "plain_text", text: "Note" },
+        optional: true,
+        element: { type: "plain_text_input", action_id: "value", multiline: true, max_length: 200 },
+      },
+    ],
+  }}
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "open",
+            text: { type: "plain_text", text: "Invite someone" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+Try submitting the modal above without an email: the error appears under the field, exactly like
+Slack's own client, and `onSubmit` never fires.
+
+## What gets checked
+
+<TypeTable
+  type={{
+    required: {
+      type: "any input element",
+      description: "An input block without optional: true must have a non-empty value.",
+    },
+    "min_length / max_length": { type: "plain_text_input", description: "Character count bounds." },
+    "email format": {
+      type: "email_text_input",
+      description: "Basic something@something shape, no spaces.",
+    },
+    "url format": {
+      type: "url_text_input",
+      description: "Must parse as an http:// or https:// URL.",
+    },
+    "number format": {
+      type: "number_input",
+      description: "Must parse as a number; a whole number unless is_decimal_allowed is set.",
+    },
+    "min_value / max_value": { type: "number_input", description: "Numeric bounds." },
+  }}
+/>
+
+An empty `rich_text_input` (a `rich_text` value whose sections hold no actual text: no words, only an
+empty paragraph) counts as empty for the required check, the same way Slack treats it.
+
+## Messages
+
+Every message comes from `VALIDATION_MESSAGES`, exported so you can read (or override, in your own
+copy) Slack's exact client-side wording:
+
+```ts
+import { VALIDATION_MESSAGES } from "@nkootstra/block-kit";
+
+VALIDATION_MESSAGES.required;
+// "Please complete this required field."
+VALIDATION_MESSAGES.minLength(3);
+// "Please enter at least 3 characters."
+VALIDATION_MESSAGES.maxValue("100");
+// "Please enter a number less than or equal to 100."
+```
+
+<TypeTable
+  type={{
+    required: { type: "string" },
+    minLength: { type: "(n: number) => string" },
+    maxLength: { type: "(n: number) => string" },
+    number: { type: "string" },
+    wholeNumber: { type: "string" },
+    minValue: { type: "(min: string) => string" },
+    maxValue: { type: "(max: string) => string" },
+    email: { type: "string" },
+    url: { type: "string" },
+  }}
+/>
+
+Slack doesn't publish the exact wording of these client-side checks; they follow its client's phrasing
+as closely as observed.
+
+## validateView
+
+`<Modal>` runs this automatically on Submit, but it's exported for anywhere you want the same check:
+a custom submit button, a test, or validating a view server-side before you even open it:
+
+```ts
+import { validateView } from "@nkootstra/block-kit";
+
+const errors = validateView(view.blocks, state);
+// { email: "Please complete this required field." }
+
+if (Object.keys(errors).length === 0) {
+  // safe to submit
+}
+```
+
+`validateView(blocks, state)` returns errors keyed by `block_id`, the same shape as
+`response_action: "errors"` (see [Modals](/guides/modals)), empty when every input block passes.
+
+## The errors prop
+
+Errors an app returns from `onSubmit` (`response_action: "errors"`) apply the way Slack's client shows
+them: under the named block, clearing automatically once that field's value changes. To seed a modal
+(or any surface) with errors up front instead, for a standalone `<Modal>` you're previewing, or
+errors known before the user even touches the form, pass `errors` to `<BlockKitProvider>`:
+
+```tsx
+<BlockKitProvider errors={{ email: "This address is already invited." }}>
+  <Modal view={view} />
+</BlockKitProvider>
+```
+
+`<Modal>`'s own client-side checks (required/length/format) and any `onSubmit` errors layer on top of
+the provider's `errors` rather than replacing them.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Modals" href="/guides/modals" icon="app-window">
+    Where onSubmit and response_action fit around this check.
+  </Card>
+  <Card title="Blocks: Input" href="/blocks/input" icon="text-cursor-input">
+    The input block's fields, including optional, that these rules read.
+  </Card>
+</CardGroup>

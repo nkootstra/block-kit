@@ -1,0 +1,27 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "*Order #1042* is ready for review." },
+      "fields": [
+        { "type": "mrkdwn", "text": "*Customer*\nAda Lovelace" },
+        { "type": "mrkdwn", "text": "*Total*\n$1,234.00" },
+        { "type": "plain_text", "text": "Plain field :tada:", "emoji": true }
+      ],
+      "accessory": {
+        "type": "button",
+        "action_id": "view",
+        "text": { "type": "plain_text", "text": "View" },
+        "url": "https://example.com/orders/1042"
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "plain_text",
+        "text": "Plain text with emoji :rocket: and a very long line that has to wrap across the available width of the message.",
+        "emoji": true
+      }
+    }
+  ]
+}

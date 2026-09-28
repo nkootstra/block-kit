@@ -1,0 +1,64 @@
+@import "./calendar/Calendar.css";
+
+.sbk-datepicker {
+  position: relative;
+  width: 194.5px;
+  color: var(--sbk-muted);
+}
+
+.sbk-datepicker__input_wrap {
+  position: relative;
+}
+
+/* Slack's glyph sits on an 18px text line centred in the 28px field; the line's baseline rounds
+   to a whole pixel, which drops the icon 0.45px below its 13px em box's true centre. Chrome snaps
+   `top` to whole pixels, so the last fraction goes in a transform, as Slack's text glyph isn't. */
+.sbk-datepicker__icon {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  transform: translateY(-0.1px);
+  width: 13px;
+  height: 13px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-datepicker__input {
+  width: 100%;
+  height: 28px;
+  /* Slack's small c-input_text: 8px / 7px vertical padding around an 18px line. */
+  padding: 8px 28px 7px;
+  font: 13px / 18px var(--sbk-font);
+  color: var(--sbk-text);
+  background: var(--sbk-bg);
+  border: 1px solid rgb(124, 122, 127);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Slack's c-date_picker__select_btn: a 28px square on the right with a 20px chevron. */
+.sbk-datepicker__chevron {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  color: var(--sbk-content-sec);
+  pointer-events: none;
+}
+
+.sbk-datepicker__input::placeholder {
+  color: var(--sbk-muted);
+}
+
+.sbk-datepicker__popup {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  /* Slack's datepicker dropdown: 16px padding, hairline ring plus a soft drop shadow. */
+  padding: 16px;
+  background: var(--sbk-menu-bg);
+  border-radius: 6px;
+  box-shadow: var(--sbk-popover-shadow);
+}

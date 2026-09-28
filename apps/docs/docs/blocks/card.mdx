@@ -1,0 +1,300 @@
+---
+title: Card
+description: A bordered card with an icon, title, subtitle, hero image, body text, and actions.
+---
+
+`card` lays out a small piece of content (an icon or image, a title and subtitle, a hero image, body
+text, and buttons) inside a bordered box. It's a library-invented block, not part of the public
+`@slack/types` package; use it standalone or as an item inside a [carousel](/blocks/carousel).
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        icon: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          alt_text: "Icon",
+        },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+        hero_image: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/palmtree.png",
+          alt_text: "Sample hero image",
+        },
+        body: {
+          type: "mrkdwn",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        actions: [
+          {
+            type: "button",
+            text: { type: "plain_text", text: "Action Button" },
+            action_id: "button_action",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `card`.",
+      required: true,
+    },
+    icon: {
+      type: '{ type: "image"; image_url: string; alt_text?: string }',
+      description:
+        "A 36×36 rounded icon, left of the title and subtitle. Takes precedence over `slack_icon`.",
+    },
+    slack_icon: {
+      type: '{ type: "icon"; name: string }',
+      description:
+        "One of Slack's icon-font glyphs. This library can't render the icon font, so it shows a neutral badge with the icon's name in a tooltip instead.",
+    },
+    title: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "The card's bold title.",
+    },
+    subtitle: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "Muted text under the title.",
+    },
+    hero_image: {
+      type: '{ type: "image"; image_url: string; alt_text?: string }',
+      description: "A full-width image above the header.",
+    },
+    body: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "The card's main text.",
+    },
+    subtext: {
+      type: "PlainTextElement | MrkdwnElement",
+      description: "Fine print below the body.",
+    },
+    actions: {
+      type: "Element[]",
+      description: "Buttons and other interactive elements, rendered along the bottom of the card.",
+    },
+  }}
+/>
+
+:::note
+The header row (icon, title, subtitle) only renders when at least one of those three fields is set.
+An entirely empty card renders just its `hero_image`.
+:::
+
+## Examples
+
+### With and without a hero image
+
+<Tabs>
+<Tab title="With image">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        icon: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          alt_text: "Icon",
+        },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+        hero_image: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/palmtree.png",
+          alt_text: "Sample hero image",
+        },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="Without image">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        icon: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          alt_text: "Icon",
+        },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      },
+    ],
+  }}
+/>
+
+</Tab>
+</Tabs>
+
+### With and without an icon
+
+<Tabs>
+<Tab title="Image icon">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        icon: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          alt_text: "Icon",
+        },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="Slack icon-font glyph">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        slack_icon: { type: "icon", name: "rocket" },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      },
+    ],
+  }}
+/>
+
+</Tab>
+<Tab title="No icon">
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+        hero_image: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/palmtree.png",
+          alt_text: "Sample hero image",
+        },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      },
+    ],
+  }}
+/>
+
+</Tab>
+</Tabs>
+
+### With and without a subtitle
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        icon: {
+          type: "image",
+          image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          alt_text: "Icon",
+        },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      },
+    ],
+  }}
+/>
+
+Dropping `subtitle` centers a lone title on the icon instead of stacking the two.
+
+### Subtext and multiple actions
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "card",
+        slack_icon: { type: "icon", name: "rocket" },
+        title: { type: "mrkdwn", text: "Sample Card Title" },
+        subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+        body: { type: "mrkdwn", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+        subtext: { type: "mrkdwn", text: "This is subtext that appears below the body" },
+        actions: [
+          {
+            type: "button",
+            style: "danger",
+            text: { type: "plain_text", text: "Delete" },
+            action_id: "button_danger",
+          },
+          {
+            type: "button",
+            text: { type: "plain_text", text: "Cancel" },
+            action_id: "button_default",
+          },
+          {
+            type: "button",
+            style: "primary",
+            text: { type: "plain_text", text: "Confirm" },
+            action_id: "button_primary",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+A `danger`-styled button is always grouped to the left; every other button keeps its original order on
+the right, regardless of where it appears in `actions`.
+
+## Interactivity
+
+Each entry in `actions` is a standard interactive element, most often a `button`, and dispatches
+Slack's `block_actions` payload the same way an [actions block](/blocks/actions) does. Click a button
+in any preview above and check the action log: `onAction` receives
+
+```json
+{
+  "type": "button",
+  "action_id": "button_action",
+  "block_id": "<the card's block_id>",
+  "text": { "type": "plain_text", "text": "Action Button", "emoji": false },
+  "value": "…"
+}
+```
+
+alongside the full `block_actions` payload your app's request URL would receive.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Carousel" href="/blocks/carousel" icon="gallery-horizontal">
+    A horizontally scrollable row of cards.
+  </Card>
+  <Card title="Container" href="/blocks/container" icon="box">
+    A more general grouping block, without a card's fixed layout.
+  </Card>
+</CardGroup>

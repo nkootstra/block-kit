@@ -1,0 +1,310 @@
+---
+title: Data visualization
+description: Bar, line, area, and pie charts for a series of labeled values.
+---
+
+`data_visualization` renders one chart from a `series` of labeled values, or `segments` for a pie.
+It isn't part of the public `@slack/types` package, so treat this page's field list as the reference.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Messages sent this week",
+        chart: {
+          type: "bar",
+          series: [
+            {
+              name: "Messages",
+              data: [
+                { label: "Mon", value: 2300 },
+                { label: "Tue", value: 2150 },
+                { label: "Wed", value: 2620 },
+                { label: "Thu", value: 2480 },
+                { label: "Fri", value: 1980 },
+              ],
+            },
+          ],
+          axis_config: {
+            categories: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            x_label: "Day",
+            y_label: "Messages",
+          },
+        },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `data_visualization`.",
+      required: true,
+    },
+    title: {
+      type: "string",
+      description: "Shown above the chart. Omit it and no heading renders.",
+    },
+    chart: {
+      type: "Chart",
+      description: "The chart itself.",
+      required: true,
+    },
+  }}
+/>
+
+### Chart
+
+<TypeTable
+  type={{
+    type: {
+      type: '"bar" | "line" | "area" | "pie"',
+      description: "The chart kind. No other values are supported.",
+      required: true,
+    },
+    series: {
+      type: "ChartSeries[]",
+      description:
+        "One or more series, for `bar`, `line`, and `area` charts. One entry draws a single series; two or more group bars or plot multiple lines/areas.",
+    },
+    segments: {
+      type: "{ label: string; value: number }[]",
+      description: "Wedges, for a `pie` chart only. A negative value is clamped to 0.",
+    },
+    axis_config: {
+      type: "AxisConfig",
+      description: "Axis labels and category overrides. Ignored for `pie`.",
+    },
+  }}
+/>
+
+`ChartSeries` is `{ name: string; data: { label: string; value: number }[] }`. `AxisConfig` is
+`{ categories?: string[]; x_label?: string; y_label?: string }`. `categories` overrides the x-axis
+labels; when omitted they're taken from the first series' `data[].label`.
+
+:::note
+Colors come from a fixed 4-color palette and are assigned by series (or segment) index. There's no
+field to set a series' color. A 5th series or segment reuses the first color. Bar, line, and area
+charts always include zero in the y-axis range, so negative values extend below the zero line;
+pie charts clamp negative values to 0.
+:::
+
+## Examples
+
+### Bar: single series
+
+The preview above shows one series as grouped bars.
+
+### Bar: multiple series
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Messages sent by platform",
+        chart: {
+          type: "bar",
+          series: [
+            {
+              name: "Desktop",
+              data: [
+                { label: "Mon", value: 1500 },
+                { label: "Tue", value: 1400 },
+                { label: "Wed", value: 1700 },
+                { label: "Thu", value: 1600 },
+                { label: "Fri", value: 1280 },
+              ],
+            },
+            {
+              name: "Mobile",
+              data: [
+                { label: "Mon", value: 800 },
+                { label: "Tue", value: 750 },
+                { label: "Wed", value: 920 },
+                { label: "Thu", value: 880 },
+                { label: "Fri", value: 700 },
+              ],
+            },
+          ],
+          axis_config: {
+            categories: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            x_label: "Day",
+            y_label: "Messages",
+          },
+        },
+      },
+    ],
+  }}
+/>
+
+### Bar: negative values
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Net headcount change",
+        chart: {
+          type: "bar",
+          series: [
+            {
+              name: "Delta",
+              data: [
+                { label: "Mon", value: 4 },
+                { label: "Tue", value: -2 },
+                { label: "Wed", value: 6 },
+                { label: "Thu", value: -1 },
+                { label: "Fri", value: 3 },
+              ],
+            },
+          ],
+          axis_config: {
+            categories: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            x_label: "Day",
+            y_label: "People (delta)",
+          },
+        },
+      },
+    ],
+  }}
+/>
+
+Bars for negative values extend below the zero line instead of being clipped or flipped.
+
+### Line: negative values
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Net revenue delta (vs. forecast)",
+        chart: {
+          type: "line",
+          series: [
+            {
+              name: "Delta",
+              data: [
+                { label: "Mon", value: -120 },
+                { label: "Tue", value: 80 },
+                { label: "Wed", value: -40 },
+                { label: "Thu", value: 150 },
+                { label: "Fri", value: -200 },
+              ],
+            },
+          ],
+          axis_config: {
+            categories: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            x_label: "Day",
+            y_label: "Delta ($)",
+          },
+        },
+      },
+    ],
+  }}
+/>
+
+### Area: multiple series
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Concurrent users by platform",
+        chart: {
+          type: "area",
+          series: [
+            {
+              name: "Desktop",
+              data: [
+                { label: "Mon", value: 2800 },
+                { label: "Tue", value: 3000 },
+                { label: "Wed", value: 3400 },
+                { label: "Thu", value: 3200 },
+                { label: "Fri", value: 3500 },
+              ],
+            },
+            {
+              name: "Mobile",
+              data: [
+                { label: "Mon", value: 1400 },
+                { label: "Tue", value: 1500 },
+                { label: "Wed", value: 1700 },
+                { label: "Thu", value: 1600 },
+                { label: "Fri", value: 1800 },
+              ],
+            },
+          ],
+          axis_config: {
+            categories: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            x_label: "Day",
+            y_label: "Users",
+          },
+        },
+      },
+    ],
+  }}
+/>
+
+### Pie: multiple segments
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Plan distribution by tier",
+        chart: {
+          type: "pie",
+          segments: [
+            { label: "Free", value: 4200 },
+            { label: "Pro", value: 2300 },
+            { label: "Business+", value: 1100 },
+            { label: "Enterprise", value: 480 },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+### Pie: one dominant segment
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "data_visualization",
+        title: "Active sessions by client (one dominant)",
+        chart: {
+          type: "pie",
+          segments: [
+            { label: "Desktop", value: 8500 },
+            { label: "Mobile", value: 1200 },
+            { label: "Web", value: 600 },
+            { label: "Other", value: 100 },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Data table" href="/blocks/data-table" icon="table-2">
+    Sortable, paginated tabular data, a natural companion to a chart.
+  </Card>
+  <Card title="Card" href="/blocks/card" icon="credit-card">
+    A common place to embed a chart alongside a summary.
+  </Card>
+</CardGroup>

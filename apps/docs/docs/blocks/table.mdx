@@ -1,0 +1,235 @@
+---
+title: Table
+description: A plain grid of rich text cells, for small datasets with no sorting or paging.
+---
+
+`table` renders a fixed grid: first row as the header, every cell either `rich_text` or plain
+text. Reach for it when a dataset is small enough to show in full; for anything that needs
+sorting or pagination, use `data_table` instead.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "table",
+        rows: [
+          [
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Name", style: { bold: true } }],
+                },
+              ],
+            },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Role", style: { bold: true } }],
+                },
+              ],
+            },
+          ],
+          [
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Ada Lovelace" }],
+                },
+              ],
+            },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Engineering" }],
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `table`.",
+      required: true,
+    },
+    rows: {
+      type: "Cell[][]",
+      description:
+        "The grid, header row first. Each row is an array of cells. Slack allows up to 100 rows, with up to 20 cells per row.",
+      required: true,
+    },
+    column_settings: {
+      type: "ColumnSetting[]",
+      description:
+        "Per-column alignment and wrapping, matched to `rows` by index. Slack allows up to 20 entries; columns past the end of this array use the default behavior.",
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for the block, up to 255 characters. Slack generates one if omitted.",
+    },
+  }}
+/>
+
+### Cell
+
+Each cell is one of three shapes, picked by `type`:
+
+<TypeTable
+  type={{
+    rich_text: {
+      type: "RichTextBlock",
+      description: "A Slack rich text node: bold, italic, links, emoji, and other inline styles.",
+    },
+    raw_text: {
+      type: '{ type: "raw_text", text: string }',
+      description: "Plain text.",
+    },
+    raw_number: {
+      type: '{ type: "raw_number", value: number, text: string }',
+      description: "A number with its own display text.",
+    },
+  }}
+/>
+
+### ColumnSetting
+
+<TypeTable
+  type={{
+    align: {
+      type: '"left" | "center" | "right"',
+      description: "Text alignment for every cell in the column.",
+      default: "left",
+    },
+    is_wrapped: {
+      type: "boolean",
+      description: "Wraps cell text onto multiple lines instead of clipping to one.",
+      default: "false",
+    },
+  }}
+/>
+
+:::note
+Slack also caps the total character count across every cell in a table at 10,000. Split a
+larger dataset across multiple messages instead of one big table.
+:::
+
+## Examples
+
+### Basic table
+
+The preview above is adapted from `fixtures/catalog/table/simple-table.json`, a header row and
+one data row, both `rich_text` cells.
+
+### Alignment and wrapping
+
+`column_settings[i]` controls the column at that index. Here the first column wraps long text and
+the second is right-aligned:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "table",
+        rows: [
+          [
+            { type: "raw_text", text: "Task" },
+            { type: "raw_text", text: "Owner" },
+            { type: "raw_text", text: "Hours" },
+          ],
+          [
+            { type: "raw_text", text: "Rewrite the onboarding flow end to end" },
+            { type: "raw_text", text: "Grace Hopper" },
+            { type: "raw_number", value: 12, text: "12" },
+          ],
+          [
+            { type: "raw_text", text: "Fix the flaky release pipeline" },
+            { type: "raw_text", text: "Alan Turing" },
+            { type: "raw_number", value: 3, text: "3" },
+          ],
+        ],
+        column_settings: [{ is_wrapped: true }, { align: "left" }, { align: "right" }],
+      },
+    ],
+  }}
+/>
+
+### Mixed cell types
+
+`raw_text`, `raw_number`, and `rich_text` cells can sit side by side in the same table:
+
+<Preview
+  code
+  payload={{
+    blocks: [
+      {
+        type: "table",
+        rows: [
+          [
+            { type: "raw_text", text: "Account" },
+            { type: "raw_text", text: "Stage" },
+            { type: "raw_text", text: "Value" },
+          ],
+          [
+            { type: "raw_text", text: "Acme Inc." },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Negotiation", style: { bold: true } }],
+                },
+              ],
+            },
+            { type: "raw_number", value: 42000, text: "$42,000" },
+          ],
+          [
+            { type: "raw_text", text: "Nimbus Corp." },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "text", text: "Closed Won", style: { bold: true } }],
+                },
+              ],
+            },
+            { type: "raw_number", value: 8500, text: "$8,500" },
+          ],
+        ],
+      },
+    ],
+  }}
+/>
+
+Hovering the table also shows Slack's download-as-CSV and copy buttons, same as `data_table`.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Data table" href="/blocks/data-table" icon="table-2">
+    A sortable, paginated grid for datasets larger than a plain table handles.
+  </Card>
+  <Card title="Data visualization" href="/blocks/data-visualization" icon="bar-chart-3">
+    Charts for the same kind of tabular data.
+  </Card>
+  <Card title="Markdown" href="/blocks/markdown" icon="file-text">
+    Markdown text that can itself include a GFM table.
+  </Card>
+</CardGroup>

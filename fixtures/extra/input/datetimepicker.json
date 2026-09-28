@@ -1,0 +1,17 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "when",
+      "label": {
+        "type": "plain_text",
+        "text": "Starts at"
+      },
+      "element": {
+        "type": "datetimepicker",
+        "action_id": "starts_at",
+        "initial_date_time": 1767261600
+      }
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+---
+title: External data
+description: Fill an external_select's options from your own data with onOptions and block_suggestion.
+---
+
+A static `select` ships its options inline. An `external_select` (and `multi_external_select`) asks
+your app for them instead, as the user types. Slack calls this a `block_suggestion` request.
+`@nkootstra/block-kit` emulates the same request/response cycle in the browser through `onOptions`.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        block_id: "fruit",
+        text: { type: "mrkdwn", text: "Pick a fruit" },
+        accessory: {
+          type: "external_select",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Search fruit" },
+          min_query_length: 1,
+        },
+      },
+    ],
+  }}
+/>
+
+## onOptions
+
+Pass `onOptions` to `<BlockKitProvider>`. It receives the `block_suggestion` payload and returns
+options the same way an app's options-load URL would reply:
+
+```tsx
+import { BlockKitProvider, Message, type OptionsResponse } from "@nkootstra/block-kit";
+
+const FRUIT = ["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange", "Peach", "Pear"];
+
+function onOptions({ value }: { value: string }): OptionsResponse {
+  const query = value.toLowerCase();
+  return {
+    options: FRUIT.filter((name) => name.toLowerCase().includes(query)).map((name) => ({
+      text: { type: "plain_text", text: name },
+      value: name.toLowerCase(),
+    })),
+  };
+}
+
+export function App() {
+  return (
+    <BlockKitProvider onOptions={onOptions}>
+      <Message
+        blocks={[
+          {
+            type: "section",
+            block_id: "fruit",
+            text: { type: "mrkdwn", text: "Pick a fruit" },
+            accessory: {
+              type: "external_select",
+              action_id: "value",
+              placeholder: { type: "plain_text", text: "Search fruit" },
+              min_query_length: 1,
+            },
+          },
+        ]}
+      />
+    </BlockKitProvider>
+  );
+}
+```
+
+`onOptions` can also return a promise, so it's fine to call a real API from it.
+
+Without an `onOptions` handler, an `external_select` still lets the user type a value and press Enter,
+but it just never offers suggestions, since there's nothing to ask.
+
+## The block_suggestion payload
+
+`onOptions` receives the exact shape Slack sends to an options-load URL:
+
+<TypeTable
+  type={{
+    type: { type: '"block_suggestion"' },
+    action_id: { type: "string" },
+    block_id: { type: "string" },
+    value: { type: "string", description: "What the user has typed into the search box so far." },
+    container: {
+      type: "Container",
+      description:
+        'The message or view the select is in: { type: "message", ... } or { type: "view", ... }.',
+    },
+    view: {
+      type: "ViewLike",
+      description: "Present when the select is inside a modal or Home tab.",
+    },
+    team: { type: "PayloadTeam | null" },
+    user: { type: "PayloadUser" },
+  }}
+/>
+
+Use `value` to filter your results, and `block_id` / `action_id` if the same handler serves more than
+one external select.
+
+## Answering with options or option_groups
+
+<TypeTable
+  type={{
+    options: {
+      type: "SuggestionOption[]",
+      description:
+        'Flat list. Each is { text: { type: "plain_text", text }, value, description?, url? }.',
+    },
+    option_groups: {
+      type: "Array<{ label, options }>",
+      description: "Labelled groups, each with its own options array, same option shape as above.",
+    },
+  }}
+/>
+
+```tsx
+function onOptions({ value }: { value: string }): OptionsResponse {
+  return {
+    option_groups: [
+      {
+        label: { type: "plain_text", text: "Citrus" },
+        options: [{ text: { type: "plain_text", text: "Orange" }, value: "orange" }],
+      },
+      {
+        label: { type: "plain_text", text: "Stone fruit" },
+        options: [{ text: { type: "plain_text", text: "Peach" }, value: "peach" }],
+      },
+    ],
+  };
+}
+```
+
+Slack allows up to 100 options total across `options`/`option_groups` in a single response.
+
+## min_query_length and debouncing
+
+An `external_select` waits for `min_query_length` characters (Slack's default is 3) before it asks
+`onOptions` at all, and debounces keystrokes after that so it doesn't fire on every character. Set
+`min_query_length` on the element to change the threshold. The preview above uses `1` so it responds
+immediately:
+
+```tsx
+{ type: "external_select", action_id: "value", min_query_length: 1 }
+```
+
+## Inside a modal
+
+`onOptions` works the same way whether the select is in a message, a modal, or the Home tab: the
+payload's `container`/`view` tells you which. This is what lets an `external_select` inside a
+[modal](/guides/modals) load real data:
+
+<Preview
+  opens={{
+    type: "modal",
+    title: { type: "plain_text", text: "Assign reviewer" },
+    submit: { type: "plain_text", text: "Assign" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "fruit",
+        label: { type: "plain_text", text: "Favorite fruit" },
+        element: {
+          type: "external_select",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Search fruit" },
+          min_query_length: 1,
+        },
+      },
+    ],
+  }}
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "actions",
+        elements: [
+          { type: "button", action_id: "open", text: { type: "plain_text", text: "Open modal" } },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Handling actions" href="/guides/interactivity" icon="mouse-pointer-click">
+    What state.values holds once an option is selected.
+  </Card>
+  <Card title="Modals" href="/guides/modals" icon="app-window">
+    Open a modal that contains an external_select.
+  </Card>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="server">
+    Forward block_suggestion requests to your app's real options-load URL.
+  </Card>
+</CardGroup>

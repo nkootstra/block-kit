@@ -1,0 +1,145 @@
+/* Slack's `c-date_picker_calendar`. */
+.sbk-calendar {
+  padding: 8px;
+  font-family: var(--sbk-font);
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--sbk-text);
+}
+
+.sbk-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.sbk-calendar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--sbk-text);
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+.sbk-calendar__nav:hover {
+  background: rgba(29, 155, 209, 0.1);
+}
+
+.sbk-calendar__nav:active {
+  background: var(--sbk-highlight);
+  color: var(--sbk-on-highlight);
+}
+
+.sbk-calendar__weekdays,
+.sbk-calendar__grid {
+  display: grid;
+  /* 44px cells whose 1px borders overlap their neighbours (Slack's `margin: -1px`). */
+  grid-template-columns: repeat(7, 43px);
+  text-align: center;
+}
+
+.sbk-calendar__weekdays {
+  padding-right: 1px;
+}
+
+.sbk-calendar__weekdays span {
+  padding: 4px 0 6px;
+  font-size: 13px;
+  color: var(--sbk-content-sec);
+}
+
+.sbk-calendar__cell {
+  position: relative;
+  min-height: 42px;
+  margin: 0 -1px -1px 0;
+  padding: 10px 0;
+  font: inherit;
+  line-height: 20px;
+  color: var(--sbk-text);
+  background: var(--sbk-bg);
+  border: 1px solid var(--sbk-calendar-grid);
+  cursor: pointer;
+}
+
+.sbk-calendar__cell--empty {
+  border-color: transparent;
+  background: none;
+  cursor: default;
+}
+
+/* A light-blue wash with a matching border on hover, raised above its neighbours' borders. */
+.sbk-calendar__cell:hover:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--selected) {
+  z-index: 1;
+  border-color: rgba(29, 155, 209, 0.3);
+  background: rgba(29, 155, 209, 0.2);
+}
+
+.sbk-calendar__cell--today {
+  color: var(--sbk-link);
+}
+
+/* Today gets a 32px ring centred in its cell (white when today is also selected). */
+.sbk-calendar__cell--today::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--sbk-highlight);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.sbk-calendar__cell--selected {
+  z-index: 1;
+  color: var(--sbk-on-highlight);
+  background: var(--sbk-highlight);
+  border-color: var(--sbk-highlight);
+  border-radius: 4px;
+}
+
+.sbk-calendar__cell--selected.sbk-calendar__cell--today::after {
+  border-color: var(--sbk-on-highlight);
+}
+
+.sbk-calendar__cell:focus-visible {
+  z-index: 2;
+}
+
+/* Slack's `c-date_picker__clear_selection`: a full-width bold footer that turns blue on hover. */
+.sbk-calendar__footer {
+  margin: 16px -16px -16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sbk-calendar__clear {
+  display: block;
+  width: 100%;
+  height: 44px;
+  padding: 0;
+  font: 700 15px var(--sbk-font);
+  color: var(--sbk-text);
+  background: none;
+  border: none;
+  border-radius: 0 0 6px 6px;
+  cursor: pointer;
+}
+
+.sbk-calendar__clear:hover,
+.sbk-calendar__clear:focus-visible {
+  color: var(--sbk-link);
+}

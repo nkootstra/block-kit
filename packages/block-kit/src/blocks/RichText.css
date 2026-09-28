@@ -1,0 +1,152 @@
+.sbk-rich-text {
+  font-family: var(--sbk-font);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-text);
+  overflow-wrap: anywhere;
+}
+
+.sbk-rich-text__section {
+  display: block;
+}
+
+.sbk-rich-text__br {
+  display: block;
+  height: 8px;
+}
+
+.sbk-rich-text__jumbo-emoji {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sbk-rich-text__quote {
+  margin: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.sbk-rich-text__quote::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 8px;
+  background: var(--sbk-quote-bar);
+}
+
+.sbk-rich-text__pre {
+  display: block;
+  position: relative;
+  margin: 4px 0;
+  padding: 8px;
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  line-height: 1.50001;
+  color: var(--sbk-text);
+  background: var(--sbk-code-bg);
+  border: 1px solid var(--sbk-code-border);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.sbk-rich-text__pre-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  color: rgb(69, 68, 71);
+  background: rgba(29, 28, 29, 0.04);
+  border-radius: 4px;
+  /* Slack's copy control (`container__nrkPh`) is invisible until the code block is hovered. */
+  opacity: 0;
+}
+
+.sbk-rich-text__pre:hover .sbk-rich-text__pre-copy,
+.sbk-rich-text__pre:focus-within .sbk-rich-text__pre-copy {
+  opacity: 1;
+}
+
+.sbk-rich-text__color-swatch {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 -1px 2px;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--sbk-muted);
+  border-radius: 3px;
+}
+
+.sbk-rich-list {
+  margin: 0;
+  list-style-position: outside;
+}
+
+.sbk-rich-list--ordered {
+  padding: 0 0 0 11px;
+}
+
+.sbk-rich-list--bullet {
+  padding: 0;
+  list-style: none;
+}
+
+/* Slack's bullets are its icon font's presence glyphs, cycling dot, ring and square by indent,
+   each 15px glyph centred in a 22px slot that hangs 28px left of the text. */
+.sbk-rich-list--bullet > .sbk-rich-list__item::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 15px;
+  margin-left: -28px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  background: currentColor;
+  mask: var(--sbk-bullet) center / 15px 15px no-repeat;
+}
+
+.sbk-rich-list--bullet:is([data-indent="0"], [data-indent="3"], [data-indent="6"]) {
+  --sbk-bullet: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 2000 2000%22><path transform=%22matrix(1 0 0 -1 0 1700)%22 d=%22M1000 150C1249 150 1450 351 1450 600C1450 849 1249 1050 1000 1050C751 1050 550 849 550 600C550 351 751 150 1000 150Z%22/></svg>");
+}
+
+.sbk-rich-list--bullet:is([data-indent="1"], [data-indent="4"], [data-indent="7"]) {
+  --sbk-bullet: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 2000 2000%22><path transform=%22matrix(1 0 0 -1 0 1700)%22 d=%22M1000 150C1249 150 1450 351 1450 600C1450 849 1249 1050 1000 1050C751 1050 550 849 550 600C550 351 751 150 1000 150ZM1000 300C834 300 700 434 700 600C700 766 834 900 1000 900C1166 900 1300 766 1300 600C1300 434 1166 300 1000 300Z%22/></svg>");
+}
+
+.sbk-rich-list--bullet:is([data-indent="2"], [data-indent="5"], [data-indent="8"]) {
+  --sbk-bullet: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 2000 2000%22><path transform=%22matrix(1 0 0 -1 0 1700)%22 d=%22M550 303C550 214 614 150 703 150H1297C1386 150 1450 214 1450 303V897C1450 986 1386 1050 1297 1050H703C614 1050 550 986 550 897Z%22/></svg>");
+}
+
+.sbk-rich-list__item {
+  display: list-item;
+}
+
+.sbk-rich-list--ordered > .sbk-rich-list__item {
+  margin: 0 0 0 20px;
+  padding-left: 8px;
+}
+
+.sbk-rich-list--bullet > .sbk-rich-list__item {
+  margin: 0 0 0 28px;
+}
+
+/* A list with `border: 1` carries the same left bar as a quote, so the two join visually. */
+.sbk-rich-list--bordered {
+  position: relative;
+  margin-left: 0;
+}
+
+.sbk-rich-list--bordered::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 8px;
+  background: var(--sbk-quote-bar);
+}

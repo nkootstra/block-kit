@@ -1,0 +1,72 @@
+/* Slack expands a markdown block into one block per heading, paragraph, divider…, so their
+   margins add up instead of collapsing (divider → heading is 8px + 15px). */
+.sbk-markdown {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--sbk-font);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-text);
+  overflow-wrap: anywhere;
+}
+
+.sbk-markdown__section {
+  display: block;
+}
+
+.sbk-markdown__table-wrap {
+  overflow: auto;
+}
+
+/* Slack draws the grid with separate borders (right + bottom on every cell, plus the outer top
+   and left edges) so the corner cells can round off. */
+.sbk-markdown__table {
+  border-collapse: separate;
+  border-spacing: 0;
+  padding: 4px 0;
+}
+
+.sbk-markdown__table th,
+.sbk-markdown__table td {
+  padding: 2px 12px 0;
+  height: 28px;
+  font-weight: 400;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+  border-right: 1px solid var(--sbk-outline-ter);
+  border-bottom: 1px solid var(--sbk-outline-ter);
+}
+
+/* Inline code keeps the cell's nowrap, even under a host's `.prose td > code` rule. */
+.sbk-markdown__table :is(th, td) code {
+  white-space: inherit;
+}
+
+.sbk-markdown__table th {
+  font-weight: 700;
+}
+
+.sbk-markdown__table > :first-child > tr:first-child > * {
+  border-top: 1px solid var(--sbk-outline-ter);
+}
+
+.sbk-markdown__table tr > :first-child {
+  border-left: 1px solid var(--sbk-outline-ter);
+}
+
+.sbk-markdown__table > :first-child > tr:first-child > :first-child {
+  border-top-left-radius: 4px;
+}
+
+.sbk-markdown__table > :first-child > tr:first-child > :last-child {
+  border-top-right-radius: 4px;
+}
+
+.sbk-markdown__table > :last-child > tr:last-child > :first-child {
+  border-bottom-left-radius: 4px;
+}
+
+.sbk-markdown__table > :last-child > tr:last-child > :last-child {
+  border-bottom-right-radius: 4px;
+}

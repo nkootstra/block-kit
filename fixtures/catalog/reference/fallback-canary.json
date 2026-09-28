@@ -1,0 +1,32 @@
+{
+  "blocks": [
+    {
+      "type": "fallback_canary",
+      "fallback": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "Fallback demo"
+          }
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Your client does not recognize this block, so it is showing the producer-supplied *fallback* instead of dropping the content."
+          }
+        },
+        {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "Rendered via the fallback convention"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

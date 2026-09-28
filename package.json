@@ -1,0 +1,36 @@
+{
+  "name": "block-kit-monorepo",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tools/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "type-check": "turbo run type-check",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "compare": "bun tools/visual/src/compare.ts",
+    "compare:check": "bun tools/visual/src/compare.ts --check",
+    "emoji": "bun tools/emoji-data/generate.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "emoji-datasource": "16.0.0",
+    "oxfmt": "0.70.0",
+    "oxlint": "1.85.0",
+    "turbo": "2.11.4",
+    "typescript": "6.0.3",
+    "vitest": "5.0.2"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
+  },
+  "packageManager": "bun@1.4.2"
+}

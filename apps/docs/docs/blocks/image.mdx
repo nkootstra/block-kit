@@ -1,0 +1,136 @@
+---
+title: Image
+description: A standalone image with an optional title row.
+---
+
+`image` renders a single image, either from a public URL or a title-less caption. Use it to show a
+screenshot, photo, or diagram inline in a message, modal, or App Home surface.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "image",
+        title: {
+          type: "plain_text",
+          text: "I love tacos",
+          emoji: true,
+        },
+        image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+        alt_text: "delicious tacos",
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `image`.",
+      required: true,
+    },
+    image_url: {
+      type: "string",
+      description:
+        "A public URL to a GIF, JPEG, PNG, or BMP. Mutually exclusive with `slack_file`.",
+    },
+    slack_file: {
+      type: "{ id?: string; url?: string }",
+      description:
+        "A file already uploaded to Slack, referenced by `id` or internal `url`. Mutually exclusive with `image_url`.",
+    },
+    alt_text: {
+      type: "string",
+      description: "A plain-text summary for screen readers. Doesn't render on screen.",
+      required: true,
+    },
+    title: {
+      type: "PlainTextElement",
+      description: "A caption shown above the image. Plain text only; `mrkdwn` isn't supported.",
+    },
+    block_id: {
+      type: "string",
+      description: "A unique identifier, up to 255 characters.",
+    },
+  }}
+/>
+
+:::note
+Outside a real Slack workspace, this library can't resolve a `slack_file` reference to actual image
+bytes, which needs an authenticated `files.info` call. It renders Slack's documented fallback
+instead: a placeholder box with the `alt_text`. `image_url` renders normally.
+:::
+
+## Examples
+
+### Without a title
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "image",
+        image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+        alt_text: "delicious tacos",
+      },
+    ],
+  }}
+/>
+
+With no `title`, Slack still reserves the title row's height for the expand caret, so the image sits
+at the same vertical offset either way.
+
+### With a title
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "image",
+        title: {
+          type: "plain_text",
+          text: "I love tacos",
+          emoji: true,
+        },
+        image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+        alt_text: "delicious tacos",
+      },
+    ],
+  }}
+/>
+
+### Referencing a Slack file
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "image",
+        slack_file: {
+          url: "https://files.slack.com/files-pri/T0000-F0000/inspiration.png",
+        },
+        alt_text: "inspiration",
+      },
+    ],
+  }}
+/>
+
+Since a `slack_file` needs a live workspace to resolve, this renders as the alt-text fallback rather
+than the actual photo.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Video" href="/blocks/video" icon="play">
+    A video preview with a thumbnail, title, and description.
+  </Card>
+  <Card title="File" href="/blocks/file" icon="file">
+    A card referencing a remote file.
+  </Card>
+  <Card title="Section" href="/blocks/section" icon="rows-3">
+    Section blocks can carry an image as an accessory.
+  </Card>
+</CardGroup>

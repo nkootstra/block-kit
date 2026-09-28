@@ -1,0 +1,28 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Need something from IT?*\nOpen a request form: pick a category and the item list reloads for it."
+      },
+      "accessory": {
+        "type": "button",
+        "action_id": "demo_open_modal",
+        "style": "primary",
+        "text": { "type": "plain_text", "text": "New request" }
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "fruit",
+      "text": { "type": "mrkdwn", "text": "External select: type a letter to load options." },
+      "accessory": {
+        "type": "external_select",
+        "action_id": "demo_fruit",
+        "min_query_length": 1,
+        "placeholder": { "type": "plain_text", "text": "Search fruit" }
+      }
+    }
+  ]
+}

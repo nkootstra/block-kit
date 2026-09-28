@@ -1,0 +1,153 @@
+---
+title: Carousel
+description: A horizontally scrollable row of cards.
+---
+
+`carousel` lays out a row of [cards](/blocks/card) with arrow buttons to scroll between them. It's a
+library-invented block, not part of the public `@slack/types` package.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "carousel",
+        elements: [
+          {
+            type: "card",
+            block_id: "carousel-card-1",
+            icon: {
+              type: "image",
+              image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+              alt_text: "Icon",
+            },
+            title: { type: "mrkdwn", text: "Sample Card Title" },
+            subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+            hero_image: {
+              type: "image",
+              image_url: "https://api.slack.com/img/blocks/bkb_template_images/palmtree.png",
+              alt_text: "Sample hero image",
+            },
+            body: {
+              type: "mrkdwn",
+              text: "Check out the latest updates to our project. We shipped new features this week.",
+            },
+            actions: [
+              {
+                type: "button",
+                text: { type: "plain_text", text: "Action Button" },
+                action_id: "button_action_1",
+              },
+            ],
+          },
+          {
+            type: "card",
+            block_id: "carousel-card-2",
+            icon: {
+              type: "image",
+              image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+              alt_text: "Icon",
+            },
+            title: { type: "mrkdwn", text: "Sample Card Title" },
+            subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+            hero_image: {
+              type: "image",
+              image_url: "https://api.slack.com/img/blocks/bkb_template_images/plants.png",
+              alt_text: "Sample hero image",
+            },
+            body: {
+              type: "mrkdwn",
+              text: "Check out the latest updates to our project. We fixed several bugs reported by the team.",
+            },
+            actions: [
+              {
+                type: "button",
+                text: { type: "plain_text", text: "Action Button" },
+                action_id: "button_action_2",
+              },
+            ],
+          },
+          {
+            type: "card",
+            block_id: "carousel-card-3",
+            icon: {
+              type: "image",
+              image_url: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+              alt_text: "Icon",
+            },
+            title: { type: "mrkdwn", text: "Sample Card Title" },
+            subtitle: { type: "mrkdwn", text: "This is a subtitle" },
+            hero_image: {
+              type: "image",
+              image_url:
+                "https://api.slack.com/img/blocks/bkb_template_images/approvalsNewDevice.png",
+              alt_text: "Sample hero image",
+            },
+            body: { type: "mrkdwn", text: "Check out the latest updates to our project." },
+            actions: [
+              {
+                type: "button",
+                text: { type: "plain_text", text: "Action Button" },
+                action_id: "button_action_3",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `carousel`.",
+      required: true,
+    },
+    elements: {
+      type: "Card[]",
+      description:
+        "The cards, in scroll order. Each has the same fields as a standalone card block.",
+    },
+  }}
+/>
+
+A card inside `elements` can set its own `block_id`; when it doesn't, this library generates
+`carousel-card-{i}` so its actions still have a stable id to key off in `onAction`.
+
+:::note
+The scroll arrows move by a fixed distance per click and disable themselves at each end. There's no
+field to configure how far a click scrolls, or to autoplay the carousel.
+:::
+
+## Examples
+
+### Several cards
+
+The preview above scrolls through three cards. Use the arrow buttons, or drag, to move between them.
+
+### Empty carousel
+
+<Preview payload={{ blocks: [{ type: "carousel", elements: [] }] }} />
+
+An empty `elements` array still renders both scroll arrows, disabled since there's nothing to scroll to.
+
+## Interactivity
+
+Each card's own `actions` dispatch the standard `block_actions` payload described in [Card →
+Interactivity](/blocks/card#interactivity). The scroll arrows are a client-side affordance only. They
+don't emit an action or appear in `onAction`.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Card" href="/blocks/card" icon="credit-card">
+    The block rendered inside each carousel item.
+  </Card>
+  <Card title="Container" href="/blocks/container" icon="box">
+    Groups arbitrary blocks vertically instead of scrolling them horizontally.
+  </Card>
+</CardGroup>

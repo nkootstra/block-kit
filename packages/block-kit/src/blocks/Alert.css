@@ -1,0 +1,69 @@
+/* Measured from the Builder's modal preview (`c-alert--boxed`). Dark values aren't measured; they
+   reuse the dark palette's matching hues. */
+:root {
+  --sbk-alert-default-bg: rgb(234, 234, 234);
+  --sbk-alert-default-icon: rgb(94, 93, 96);
+  --sbk-alert-info-bg: rgba(54, 197, 240, 0.13);
+  --sbk-alert-info-icon: rgb(18, 100, 163);
+  --sbk-alert-warning-bg: rgba(255, 198, 0, 0.18);
+  --sbk-alert-warning-icon: rgb(107, 80, 0);
+  --sbk-alert-error-bg: rgba(255, 129, 170, 0.13);
+  --sbk-alert-error-icon: rgb(192, 19, 67);
+  --sbk-alert-success-bg: rgba(76, 200, 148, 0.25);
+  --sbk-alert-success-icon: rgb(0, 122, 90);
+}
+
+.sbk-alert {
+  display: flex;
+  margin: 8px 0;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.sbk-alert__icon {
+  flex-shrink: 0;
+  margin: 1px 12px 0 0;
+}
+
+.sbk-alert__message {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Links keep the message's ink colour and stay underlined, as in the Builder. */
+.sbk-alert__message .sbk-link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.sbk-alert--default {
+  background: var(--sbk-alert-default-bg);
+}
+.sbk-alert--default .sbk-alert__icon {
+  color: var(--sbk-alert-default-icon);
+}
+.sbk-alert--info {
+  background: var(--sbk-alert-info-bg);
+}
+.sbk-alert--info .sbk-alert__icon {
+  color: var(--sbk-alert-info-icon);
+}
+.sbk-alert--warning {
+  background: var(--sbk-alert-warning-bg);
+}
+.sbk-alert--warning .sbk-alert__icon {
+  color: var(--sbk-alert-warning-icon);
+}
+.sbk-alert--error {
+  background: var(--sbk-alert-error-bg);
+}
+.sbk-alert--error .sbk-alert__icon {
+  color: var(--sbk-alert-error-icon);
+}
+.sbk-alert--success {
+  background: var(--sbk-alert-success-bg);
+}
+.sbk-alert--success .sbk-alert__icon {
+  color: var(--sbk-alert-success-icon);
+}

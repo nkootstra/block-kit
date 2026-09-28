@@ -1,0 +1,85 @@
+.sbk-image {
+  margin: 8px 0;
+}
+
+/* Slack sets the row as inline text on a 22px line: the title, then a nowrap caption holding the
+   file size (which we can't know without fetching the image) and the caret button. */
+.sbk-image__title {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-muted);
+}
+
+.sbk-image__title-text {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 18px;
+  word-break: break-word;
+}
+
+.sbk-image__trigger {
+  font-size: 13px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.sbk-image__toggle {
+  display: inline-block;
+  width: 15px;
+  margin-top: -4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 15px;
+  line-height: 15px;
+  color: var(--sbk-link);
+  cursor: pointer;
+}
+
+.sbk-image__caret {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+}
+
+.sbk-image__frame {
+  position: relative;
+  /* Slack always leaves a 5px gap above the image itself (the image container's own
+     margin-top), independent of whether the title row above it has content or is hidden/0-height
+     — so this lives on the frame rather than as the title row's margin-bottom, which would
+     disappear along with the row when Container.css hides it for a direct-child image. */
+  margin-top: 5px;
+  /* Slack scales large images down to the message width but never upscales a small one. */
+  max-width: 100%;
+  width: fit-content;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  /* Slack paints the photo as this box's background rather than an <img>. Chrome resamples the two
+     differently when downscaling, which on a large photo shifts every high-contrast edge; painting
+     it the same way makes our pixels match. The <img> stays for sizing and alt text. */
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.sbk-image__img {
+  display: block;
+  opacity: 0;
+  max-width: 100%;
+  height: auto;
+}
+
+.sbk-image__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  width: 100%;
+  background: var(--sbk-badge-bg);
+  color: var(--sbk-muted);
+  font-size: 13px;
+  padding: 16px;
+  text-align: center;
+}

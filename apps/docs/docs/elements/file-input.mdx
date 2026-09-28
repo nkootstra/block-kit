@@ -1,0 +1,144 @@
+---
+title: File input
+description: A file picker for collecting uploads in a modal, up to a configurable file count and type list.
+---
+
+`file_input` lets someone attach one or more files to a form. It's an `input`-block-only element,
+and Slack restricts it further than most: it's only supported in modals, not in messages or Home
+tabs.
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "New entry" },
+    submit: { type: "plain_text", text: "Save" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "input",
+        block_id: "attachments",
+        label: { type: "plain_text", text: "Attachments" },
+        element: {
+          type: "file_input",
+          action_id: "files",
+          filetypes: ["pdf", "png"],
+          max_files: 3,
+        },
+      },
+    ],
+  }}
+/>
+
+:::note
+This is a UI-only picker: choosing a file records its name, type and size in the shape Slack sends
+to a `files:read`-scoped app, but no bytes are uploaded anywhere.
+:::
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: '"file_input"',
+      description: "Always `file_input`.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload and as the key in `state.values`. Maximum length is 255 characters.",
+    },
+    filetypes: {
+      type: "string[]",
+      description:
+        'Accepted file extensions, without the dot (e.g. `["pdf", "png"]`). All file types are accepted when omitted.',
+    },
+    max_files: {
+      type: "number",
+      description: "Maximum number of files that can be uploaded. Minimum 1, maximum 10.",
+      default: "10",
+    },
+  }}
+/>
+
+:::note
+Slack always labels the picker button "Upload File" (singular), even when `max_files` allows
+several.
+:::
+
+## Examples
+
+### Restricted to specific file types
+
+The preview above limits uploads to `pdf` and `png` files via `filetypes`, and to 3 files via
+`max_files`. The native file picker only offers matching files, but treat this as a convenience for
+the person filling out the form. Validate the uploaded file types yourself when you handle the
+submission.
+
+### Any file type, single upload
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "resume",
+        label: { type: "plain_text", text: "Resume" },
+        element: {
+          type: "file_input",
+          action_id: "resume_input",
+          max_files: 1,
+        },
+      },
+    ],
+  }}
+/>
+
+Without `filetypes`, any file is accepted. `max_files: 1` still shows the same singular "Upload
+File" button; Slack doesn't change its label based on the limit.
+
+## Interactivity
+
+Picking files calls `onAction` with the picked files' metadata under `files`:
+
+```json
+{
+  "type": "file_input",
+  "action_id": "files",
+  "block_id": "attachments",
+  "action_ts": "1706000000.000100",
+  "files": [{ "id": "F1706000000000", "name": "report.pdf", "filetype": "pdf", "size": 48213 }]
+}
+```
+
+### Reading the value
+
+Picking files writes the same list to `state.values` as `{ type, files }`:
+
+```json
+{
+  "attachments": {
+    "files": {
+      "type": "file_input",
+      "files": [{ "id": "F1706000000000", "name": "report.pdf", "filetype": "pdf", "size": 48213 }]
+    }
+  }
+}
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Rich text input" href="/elements/rich-text-input" icon="pilcrow">
+    A formatted text field, also modal-only, that reports a `rich_text` value.
+  </Card>
+  <Card title="Text inputs" href="/elements/text-inputs" icon="text-cursor-input">
+    Plain text, email, URL and number inputs for modals and Home tabs.
+  </Card>
+  <Card title="Date picker" href="/elements/date-picker" icon="calendar">
+    Pick a single date from a calendar dropdown.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

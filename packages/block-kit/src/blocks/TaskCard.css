@@ -1,0 +1,155 @@
+:root {
+  --sbk-task-card-text: rgb(94, 93, 96);
+}
+
+.sbk-task-card {
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0;
+}
+
+.sbk-task-card__pill {
+  display: flex;
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  max-width: 100%;
+}
+
+/* Slack sets the toggle as inline text: the status icon hangs in a 20px indent and the icon and
+   caret sit `vertical-align: middle` on the 13px title's line. */
+.sbk-task-card__pill-content {
+  display: block;
+  padding-left: 20px;
+  text-indent: -20px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. */
+.sbk-task-card__pill[aria-disabled="true"] {
+  cursor: default;
+}
+
+.sbk-task-card__pill:not([aria-disabled="true"]):hover {
+  background-color: var(--sbk-hover-overlay);
+}
+
+.sbk-task-card__pill:focus-visible {
+  outline: 2px solid var(--sbk-focus-ring);
+  outline-offset: -2px;
+}
+
+/* A 12px slot, as in Slack: the 13px check and warning overhang it rather than push the title. */
+.sbk-task-card__pill-icon {
+  display: inline-flex;
+  width: 12px;
+  /* Slack's `middle` lands here; ours sits 0.5px lower and grows the 22px line box. */
+  vertical-align: -2px;
+  margin: 0 8px 0 0;
+  font-size: 13px;
+  line-height: normal;
+  text-indent: 0;
+}
+
+.sbk-task-card__pill-title {
+  font-size: 13px;
+  /* Slack's is 19.5px, but with our Lato metrics that overhangs the 22px line by half a pixel. */
+  line-height: 19px;
+  color: var(--sbk-task-card-text);
+}
+
+.sbk-task-card__pill-chevron {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 4px;
+  width: 13px;
+  height: 13px;
+  text-indent: 0;
+  color: var(--sbk-task-card-text);
+}
+
+/* Slack's expanded card is a short timeline: the details, with a 1px rule 6px in from the left,
+   then a step whose 5px dot and rule sit in a 12px rail 8px left of the output and sources. */
+.sbk-task-card__body {
+  font-size: 13px;
+  line-height: 19.0668px;
+  color: var(--sbk-task-card-text);
+}
+
+.sbk-task-card__details {
+  position: relative;
+  padding: 0 20px;
+}
+
+.sbk-task-card__details::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 6px;
+  width: 1px;
+  background-color: var(--sbk-surface-ter);
+}
+
+/* Slack underlines the links inside a task's rich text. */
+.sbk-task-card__details .sbk-rtmini__link,
+.sbk-task-card__output .sbk-rtmini__link {
+  text-decoration: underline;
+}
+
+.sbk-task-card__step {
+  display: flex;
+  gap: 8px;
+}
+
+.sbk-task-card__rail {
+  display: flex;
+  flex: 0 0 12px;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 7px;
+}
+
+.sbk-task-card__dot {
+  display: flex;
+  padding-bottom: 2px;
+}
+
+.sbk-task-card__line {
+  flex: 1 1 auto;
+  width: 1px;
+  margin-top: 8px;
+  background-color: var(--sbk-surface-ter);
+}
+
+.sbk-task-card__step-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sbk-task-card__output {
+  margin-bottom: 4px;
+}
+
+.sbk-task-card__sources {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sbk-task-card__source-link {
+  color: var(--sbk-link);
+  text-decoration: none;
+}
+
+.sbk-task-card__source-link:hover {
+  text-decoration: underline;
+}

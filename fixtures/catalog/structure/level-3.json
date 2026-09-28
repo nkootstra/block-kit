@@ -1,0 +1,13 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "This is a level 3 header",
+        "emoji": true
+      },
+      "level": 3
+    }
+  ]
+}

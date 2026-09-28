@@ -1,0 +1,200 @@
+---
+title: Date picker
+description: A calendar control for choosing a single date, rendered like Slack's datepicker.
+---
+
+`datepicker` opens a calendar popup for choosing one date. Use it in an `actions` block or a
+section's accessory for a quick date pick, or in an `input` block to collect a date in a modal.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "trip",
+        elements: [
+          {
+            type: "datepicker",
+            action_id: "select_date",
+            initial_date: "1990-04-28",
+            placeholder: { type: "plain_text", text: "Select a date" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `datepicker`.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this element in the `block_actions` payload. Must be unique within a block.",
+    },
+    initial_date: {
+      type: "string",
+      description: "The date selected when the element loads, as `YYYY-MM-DD`.",
+    },
+    placeholder: {
+      type: "PlainTextElement",
+      description: "Text shown when no date is selected. Slack limits it to 150 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description: "A confirmation dialog shown before the pick (or clear) takes effect.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses this element when its modal or Home tab loads. Only one element per view. Slack ignores it in messages.",
+      default: "false",
+    },
+  }}
+/>
+
+## Examples
+
+### Without an initial value
+
+Empty until the user picks a date. The input shows the `placeholder` text, or "Select a date" if
+none is given.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [{ type: "datepicker", action_id: "select_date" }],
+      },
+    ],
+  }}
+/>
+
+### With an initial value
+
+Outside an `input` block, the closed control shows the date as Slack does on the web:
+`MM/DD/YYYY`.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "datepicker",
+            action_id: "select_date",
+            initial_date: "1990-04-28",
+            placeholder: { type: "plain_text", text: "Select a date" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Inside an input block
+
+An `input` block spells the date out instead, e.g. "April 28th, 1990":
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "birthday",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "datepicker",
+          action_id: "datepicker-action",
+          initial_date: "1990-04-28",
+          placeholder: { type: "plain_text", text: "Select a date" },
+        },
+      },
+    ],
+  }}
+/>
+
+### With a confirmation dialog
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "datepicker",
+            action_id: "select_date",
+            initial_date: "2024-06-15",
+            confirm: {
+              title: { type: "plain_text", text: "Change the date?" },
+              text: { type: "mrkdwn", text: "This will reschedule the trip." },
+              confirm: { type: "plain_text", text: "Do it" },
+              deny: { type: "plain_text", text: "Cancel" },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+The dialog appears before a pick (or a "Clear selection") takes effect; declining leaves the
+element unchanged.
+
+## Interactivity
+
+Picking a day (or opening the popup's "Clear selection" footer, which appears once a date is set)
+fires an action with `selected_date`, and clearing sends `null`:
+
+```json
+{
+  "type": "datepicker",
+  "action_id": "select_date",
+  "block_id": "trip",
+  "selected_date": "2024-06-20"
+}
+```
+
+The same shape lands in `state.values[block_id][action_id]` for reading back later, e.g. from a
+`view_submission` payload:
+
+```json
+{
+  "type": "datepicker",
+  "selected_date": "2024-06-20"
+}
+```
+
+When `initial_date` is set, that value is reported as state as soon as the element mounts. You
+don't need an interaction first to read it back.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Time picker" href="/elements/time-picker" icon="clock">
+    Pick a time of day from a dropdown list.
+  </Card>
+  <Card title="Datetime picker" href="/elements/datetime-picker" icon="calendar-clock">
+    Pick a date and time together as a single Unix timestamp.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="mouse-pointer-click">
+    Every interactive element this library renders.
+  </Card>
+  <Card title="Text inputs" href="/elements/text-inputs" icon="text-cursor-input">
+    Free-text and URL fields for modals and App Home.
+  </Card>
+</CardGroup>

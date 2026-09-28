@@ -1,0 +1,238 @@
+---
+title: Time picker
+description: A dropdown list for choosing a time of day, rendered like Slack's timepicker.
+---
+
+`timepicker` opens a scrollable list of times in 30-minute increments. Use it in an `actions`
+block or a section's accessory for a quick pick, or in an `input` block to collect a time in a
+modal.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "meeting",
+        elements: [
+          {
+            type: "timepicker",
+            action_id: "select_time",
+            initial_time: "13:37",
+            placeholder: { type: "plain_text", text: "Select time" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `timepicker`.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this element in the `block_actions` payload. Must be unique within a block.",
+    },
+    initial_time: {
+      type: "string",
+      description:
+        "The time selected when the element loads, as 24-hour `HH:mm`, e.g. `22:25` for 10:25pm.",
+    },
+    timezone: {
+      type: "string",
+      description:
+        "An IANA time zone, e.g. `America/Chicago`. Shown as hint text under the control and passed back on interaction.",
+    },
+    placeholder: {
+      type: "PlainTextElement",
+      description: "Text shown when no time is selected. Slack limits it to 150 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description: "A confirmation dialog shown before the pick takes effect.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses this element when its modal or Home tab loads. Only one element per view. Slack ignores it in messages.",
+      default: "false",
+    },
+  }}
+/>
+
+## Examples
+
+### Without an initial value
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          { type: "timepicker", action_id: "select_time" },
+          {
+            type: "button",
+            text: { type: "plain_text", text: "Click Me" },
+            value: "click_me_123",
+            action_id: "actionId-1",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+The closed control shows the `placeholder` text, or "Select time" if none is given, until a time
+is picked. Then it reads e.g. "1:37 PM".
+
+### With an initial value
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "timepicker",
+            action_id: "select_time",
+            initial_time: "13:37",
+            placeholder: { type: "plain_text", text: "Select time" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Inside an input block
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "meeting_time",
+        label: { type: "plain_text", text: "Label" },
+        element: {
+          type: "timepicker",
+          action_id: "timepicker-action",
+          initial_time: "13:37",
+          placeholder: { type: "plain_text", text: "Select time" },
+        },
+      },
+    ],
+  }}
+/>
+
+### With a time zone
+
+Setting `timezone` shows a hint underneath the control naming it:
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "timepicker",
+            action_id: "select_time",
+            initial_time: "13:37",
+            timezone: "America/Los_Angeles",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+`timezone` is a display hint only: it labels the picker but doesn't shift `initial_time` or the
+options list, which are always plain `HH:mm` wall-clock values. It's unrelated to the `timeZone`
+prop on `BlockKitProvider`, which controls how _other_ elements (like `datetimepicker`) format
+their values for display.
+
+### With a confirmation dialog
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "timepicker",
+            action_id: "select_time",
+            initial_time: "09:00",
+            confirm: {
+              title: { type: "plain_text", text: "Change the time?" },
+              text: { type: "mrkdwn", text: "This will reschedule the meeting." },
+              confirm: { type: "plain_text", text: "Do it" },
+              deny: { type: "plain_text", text: "Cancel" },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Interactivity
+
+Picking an option fires an action with `selected_time`:
+
+```json
+{
+  "type": "timepicker",
+  "action_id": "select_time",
+  "block_id": "meeting",
+  "selected_time": "14:30"
+}
+```
+
+The same shape lands in `state.values[block_id][action_id]`:
+
+```json
+{
+  "type": "timepicker",
+  "selected_time": "14:30"
+}
+```
+
+When `initial_time` is set, that value is reported as state as soon as the element mounts, before
+any interaction.
+
+:::note
+Unlike `datepicker`, `timepicker` has no "clear" affordance. Once a time is selected, picking a
+different option is the only way to change it.
+:::
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Date picker" href="/elements/date-picker" icon="calendar">
+    Pick a single date from a calendar popup.
+  </Card>
+  <Card title="Datetime picker" href="/elements/datetime-picker" icon="calendar-clock">
+    Pick a date and time together as a single Unix timestamp.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="mouse-pointer-click">
+    Every interactive element this library renders.
+  </Card>
+  <Card title="Text inputs" href="/elements/text-inputs" icon="text-cursor-input">
+    Free-text and URL fields for modals and App Home.
+  </Card>
+</CardGroup>

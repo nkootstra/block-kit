@@ -1,0 +1,77 @@
+/* Messages use Slack's small button variant. */
+.sbk-button {
+  display: block;
+  position: relative;
+  height: 28px;
+  min-width: 56px;
+  padding: 0 8px 1px;
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 4px;
+  background: var(--sbk-bg);
+  background-clip: padding-box;
+  color: var(--sbk-text);
+  font: 700 13px / normal var(--sbk-font);
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  transition:
+    color 80ms,
+    background-color 80ms,
+    border-color 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+/* Slack's `c-button` hover model: outline buttons swap to a light gray fill, filled buttons
+   darken through a `multiply` gradient overlay. Both raise a two-layer shadow on hover and drop
+   it while pressed. Values read from the Block Kit Builder's live stylesheet. */
+.sbk-button:hover {
+  background-color: var(--sbk-button-hover-bg);
+  box-shadow: var(--sbk-button-hover-shadow);
+}
+
+.sbk-button:active {
+  background-color: var(--sbk-button-hover-bg);
+  box-shadow: none;
+}
+
+.sbk-button--primary,
+.sbk-button--danger {
+  border: 0;
+  color: #fff;
+}
+
+.sbk-button--primary {
+  background: var(--sbk-primary);
+}
+
+.sbk-button--primary:hover,
+.sbk-button--primary:active,
+.sbk-button--danger:hover,
+.sbk-button--danger:active {
+  background-image: linear-gradient(var(--sbk-button-overlay), var(--sbk-button-overlay));
+  background-blend-mode: multiply;
+}
+
+.sbk-button--primary:hover {
+  --sbk-button-overlay: #0a403221;
+  background-color: var(--sbk-primary);
+}
+
+.sbk-button--primary:active {
+  --sbk-button-overlay: #0a403238;
+  background-color: var(--sbk-primary);
+}
+
+.sbk-button--danger {
+  background: var(--sbk-danger);
+}
+
+.sbk-button--danger:hover {
+  --sbk-button-overlay: #59000f17;
+  background-color: var(--sbk-danger);
+}
+
+.sbk-button--danger:active {
+  --sbk-button-overlay: #59000f38;
+  background-color: var(--sbk-danger);
+}

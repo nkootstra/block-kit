@@ -1,0 +1,113 @@
+---
+title: Alert
+description: An inline banner for a warning, error, info, or success message.
+---
+
+`alert` is an inline message with a colored background and an icon that matches its `level`. Slack
+only accepts it inside modals, so use it for validation feedback or a heads-up in a form.
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "My App" },
+    submit: { type: "plain_text", text: "Submit" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "alert",
+        level: "info",
+        text: { type: "mrkdwn", text: "The work is mysterious and important." },
+      },
+      {
+        type: "alert",
+        text: { type: "plain_text", text: "Default level, set in plain text." },
+      },
+      {
+        type: "alert",
+        level: "warning",
+        text: { type: "mrkdwn", text: "*Heads up:* this change can't be undone." },
+      },
+      {
+        type: "alert",
+        level: "error",
+        text: {
+          type: "mrkdwn",
+          text: "Couldn't save your changes. <https://example.com|Try again>.",
+        },
+      },
+      {
+        type: "alert",
+        level: "success",
+        text: { type: "mrkdwn", text: "Saved. Your teammates can see it now." },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `alert`.",
+      required: true,
+    },
+    text: {
+      type: "PlainTextElement | MrkdwnElement",
+      description:
+        "The message. Supports the same `plain_text` and `mrkdwn` text objects as a section.",
+    },
+    level: {
+      type: '"default" | "info" | "warning" | "error" | "success"',
+      description:
+        "The banner color and icon. An unrecognized or omitted value falls back to `default`.",
+      default: '"default"',
+    },
+  }}
+/>
+
+:::note
+Slack only accepts `alert` blocks inside modals, not messages or App Home. This library renders it on
+any surface for previewing, but keep it in modal payloads for real apps.
+:::
+
+## Examples
+
+### Every level
+
+The preview above shows all five: `default`, `info`, `warning`, `error`, and `success`. The `error`
+level is announced to assistive technology as an alert; the others as a status update.
+
+### Long text
+
+<Preview
+  payload={{
+    type: "modal",
+    title: { type: "plain_text", text: "My App" },
+    submit: { type: "plain_text", text: "Submit" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "alert",
+        text: {
+          type: "plain_text",
+          text: "A longer alert wraps onto more than one line, to show how the icon lines up with the first line of text and how the box grows with its content.",
+        },
+      },
+    ],
+  }}
+/>
+
+The icon stays aligned with the first line as the text wraps, and the banner grows to fit the content.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Callout" href="/blocks/callout" icon="megaphone">
+    A tinted panel that can hold several blocks, not just one line of text.
+  </Card>
+  <Card title="Input" href="/blocks/input" icon="text-cursor-input">
+    Pairs well with alert for surfacing a modal-wide validation error.
+  </Card>
+</CardGroup>

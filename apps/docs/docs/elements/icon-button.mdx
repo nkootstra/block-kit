@@ -1,0 +1,205 @@
+---
+title: Icon button
+description: A compact, icon-only button for a context_actions row.
+---
+
+`icon_button` renders a single glyph with no visible label, with the label available as a tooltip
+and as the accessible name. It's built for the trailing row of small actions under an
+AI-generated message: pair it with [feedback buttons](/elements/feedback-buttons) inside a
+`context_actions` block, or drop it into an `actions` block on its own.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "context_actions",
+        elements: [
+          {
+            type: "icon_button",
+            action_id: "remove",
+            icon: "trash",
+            text: { type: "plain_text", text: "Remove" },
+            accessibility_label: "Remove this response",
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `icon_button`.",
+      required: true,
+    },
+    icon: {
+      type: "string",
+      description: 'The icon to show, e.g. "trash". See "Supported icons" below.',
+      required: true,
+    },
+    text: {
+      type: "PlainTextElement",
+      description:
+        "Shown as a tooltip on hover, and used as the accessible name when accessibility_label is absent.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload. Must be unique within the block. Maximum length is 255 characters.",
+    },
+    value: {
+      type: "string",
+      description: "Sent back in the interaction payload when the button is clicked.",
+    },
+    accessibility_label: {
+      type: "string",
+      description: "Read by screen readers instead of `text`. Maximum length is 75 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description:
+        "Shows a confirmation dialog before the click is dispatched. See Confirmation dialogs.",
+    },
+  }}
+/>
+
+:::note
+`icon_button` also accepts `visible_to_user_ids` in Slack's spec, to restrict who sees the button.
+This library renders the icon button unconditionally and doesn't filter by viewer.
+:::
+
+### Supported icons
+
+This library renders a fixed set of icon names with an inline glyph; any other name falls back to
+a generic kebab icon rather than rendering nothing:
+
+`trash`, `delete`, `calendar`, `clock`, `time`, `external-link`, `link`, `workflow`, `more`,
+`chevron-down`.
+
+## Examples
+
+### On its own in an actions block
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "icon_button",
+            action_id: "snooze",
+            icon: "clock",
+            text: { type: "plain_text", text: "Snooze" },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+### Alongside feedback buttons
+
+The icon button is designed to sit next to [feedback buttons](/elements/feedback-buttons) in a
+`context_actions` row, as Slack does under an assistant message.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "context_actions",
+        elements: [
+          {
+            type: "feedback_buttons",
+            action_id: "feedback",
+            positive_button: {
+              text: { type: "plain_text", text: "Good response" },
+              value: "positive",
+            },
+            negative_button: {
+              text: { type: "plain_text", text: "Bad response" },
+              value: "negative",
+            },
+          },
+          {
+            type: "icon_button",
+            action_id: "remove",
+            icon: "trash",
+            text: { type: "plain_text", text: "Remove" },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+### With a confirmation dialog
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "icon_button",
+            action_id: "delete_note",
+            icon: "trash",
+            text: { type: "plain_text", text: "Delete note" },
+            confirm: {
+              title: { type: "plain_text", text: "Delete this note?" },
+              text: { type: "mrkdwn", text: "This can't be undone." },
+              confirm: { type: "plain_text", text: "Delete" },
+              deny: { type: "plain_text", text: "Cancel" },
+              style: "danger",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Interactivity
+
+Clicking the button (after any confirm dialog is accepted) calls `onAction` with an `icon_button`
+action:
+
+```json
+{
+  "type": "icon_button",
+  "action_id": "remove",
+  "block_id": "b1",
+  "action_ts": "1706000000.000100",
+  "value": "row-1"
+}
+```
+
+`value` is only included when the element sets it. Like a button, `icon_button` doesn't write to
+`state.values`: it's a one-shot action.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Feedback buttons" href="/elements/feedback-buttons" icon="thumbs-up">
+    Thumbs up/down feedback, usually placed right next to an icon button.
+  </Card>
+  <Card title="Button" href="/elements/button" icon="mouse-pointer-click">
+    A labeled button for a primary action instead of a small icon-only one.
+  </Card>
+  <Card title="Confirmation dialogs" href="/elements/confirmation-dialogs" icon="shield-alert">
+    Add a confirm step to any element with the `confirm` object.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>

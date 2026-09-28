@@ -1,0 +1,5 @@
+/* Slack butts the 32px icon buttons against each other and against the block above. */
+.sbk-context-actions {
+  display: flex;
+  align-items: center;
+}

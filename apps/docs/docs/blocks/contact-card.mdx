@@ -1,0 +1,82 @@
+---
+title: Contact card
+description: A person's name and avatar, resolved from a Slack user id.
+---
+
+`contact_card` shows the name for a Slack user id, resolved the same way a mention is. It doesn't
+appear in the public `@slack/types` package, so treat this page's field list as the reference.
+
+<Preview
+  payload={{
+    blocks: [{ type: "contact_card", contact_user_id: "U0ADA" }],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `contact_card`.",
+      required: true,
+    },
+    contact_user_id: {
+      type: "string",
+      description:
+        "A Slack user id to resolve to a name, the same way `<@U0ADA>` resolves inside mrkdwn.",
+    },
+  }}
+/>
+
+## Examples
+
+### Resolved user
+
+The preview above resolves `U0ADA` to Ada Lovelace using the preview's sample directory. In your own
+app, wire up a [resolver](/guides/mentions-and-resolvers) backed by the Slack Web API so real user ids
+resolve to real names.
+
+### Unresolved user
+
+<Preview
+  payload={{
+    blocks: [{ type: "contact_card", contact_user_id: "U0123456789" }],
+  }}
+/>
+
+When a user id can't be resolved (no resolver configured, or the resolver doesn't know that id), the
+card shows a placeholder skeleton in place of the name, the same way Slack's own Builder does for an
+id it can't look up.
+
+### Inside a container
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "container",
+        title: { type: "plain_text", text: "Team" },
+        child_blocks: [{ type: "contact_card", contact_user_id: "U0ADA" }],
+      },
+    ],
+  }}
+/>
+
+:::warning
+Slack can't display a `contact_card` nested inside a [container](/blocks/container), including one
+nested inside a [callout](/blocks/callout) that's itself inside a container, and shows "This content
+could not be displayed" instead. This library matches that behavior so a payload previews the way it
+would in Slack.
+:::
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Callout" href="/blocks/callout" icon="megaphone">
+    A tinted panel that can hold a contact card alongside other blocks.
+  </Card>
+  <Card title="Container" href="/blocks/container" icon="box">
+    Where a nested contact card falls back to an error notice instead of rendering.
+  </Card>
+</CardGroup>

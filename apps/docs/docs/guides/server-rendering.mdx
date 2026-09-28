@@ -1,0 +1,144 @@
+---
+title: Server rendering
+description: Using @nkootstra/block-kit with SSR and React Server Components, and avoiding hydration mismatches.
+---
+
+Every component in `@nkootstra/block-kit` renders from props alone, with no `window`, no `document`, no
+browser-only API, so `renderToString`/`renderToStaticMarkup` and React Server Components both work
+out of the box.
+
+## The client boundary is already drawn for you
+
+The package's main entry (`@nkootstra/block-kit`, everything including `<Message>`, `<Modal>`,
+`<BlockKitProvider>`, `<HomeTab>`, `<Mrkdwn>`) ships its own `"use client"` directive, so you can import
+these components straight into a Next.js App Router Server Component with no wrapper of your own:
+
+```tsx
+// app/page.tsx (a Server Component)
+import { Message } from "@nkootstra/block-kit";
+
+export default function Page({ blocks }: { blocks: AnyBlock[] }) {
+  return <Message blocks={blocks} />;
+}
+```
+
+The `/mrkdwn`, `/server`, `/transport` and `/web-api` entries carry no directive and stay importable
+from server-only code (a route handler, a server action, `createInteractionRelay`) since none of them
+touch the DOM.
+
+There's one thing the package can't do for you: **handlers are plain functions, and functions can't
+cross from a Server Component into a Client Component as props.** `<BlockKitProvider onAction={...}>`
+being a Client Component itself doesn't help if the function you pass it is defined in a Server
+Component's module: that still fails to serialize. Define the provider and its handlers together in a
+component of your own marked `"use client"`:
+
+```tsx
+// components/slack-message.tsx
+"use client";
+
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import type { AnyBlock } from "@nkootstra/block-kit";
+
+export function SlackMessage({ blocks }: { blocks: AnyBlock[] }) {
+  return (
+    <BlockKitProvider onAction={(action) => console.log(action)}>
+      <Message blocks={blocks} />
+    </BlockKitProvider>
+  );
+}
+```
+
+A `<Message>` with no `<BlockKitProvider>` above it, and no interactive elements in its blocks, needs
+none of this. Render it directly from a Server Component, as above.
+
+## Hydration-stable timestamps
+
+`<Message>` shows a relative timestamp ("2:30 PM", "Yesterday at...") next to the sender's name. Pass
+`ts` explicitly whenever the message is rendered on the server:
+
+```tsx
+<Message ts="1719493800.000200" blocks={blocks} />
+```
+
+Without an explicit `ts`, `<Message>` stamps the current time itself the moment it mounts. On the
+server that's the time of the render; on the client, hydration re-runs the same `useState` initializer
+a moment later: a different value, which React flags as a hydration mismatch. Always pass a real `ts`
+(the message's own Slack timestamp) for anything rendered server-side; reserve the no-`ts` fallback for
+client-only, ephemeral previews.
+
+Pass `timeZone` alongside it, either directly or via `<BlockKitProvider timeZone="...">`, so the
+formatted time matches between server and client instead of depending on the server machine's local
+zone:
+
+```tsx
+<BlockKitProvider timeZone="America/New_York">
+  <Message ts="1719493800.000200" blocks={blocks} />
+</BlockKitProvider>
+```
+
+The same applies to any `<!date^...>` mrkdwn token and to `formatSlackDate` calls. See
+[mrkdwn](/guides/mrkdwn).
+
+## Theme before hydration
+
+If you use `<html data-theme="dark">` (see [Theming](/guides/theming)) driven by something only known
+on the client (a cookie your server can also read is fine), set it in a blocking inline script so the
+attribute is already correct on the very first paint, avoiding a light/dark flash:
+
+```html
+<script dangerouslySetInnerHTML={{ __html: `
+  document.documentElement.dataset.theme = localStorage.getItem("theme") ?? "";
+` }} />
+```
+
+If your dark/light choice comes from a cookie instead, set `data-theme` directly on the server-rendered
+`<html>` tag and skip the script. That's simpler and has no flash to begin with.
+
+## Next.js App Router example
+
+```tsx
+// app/messages/[ts]/page.tsx
+import { Message } from "@nkootstra/block-kit";
+import { getMessage } from "@/lib/slack";
+
+export default async function MessagePage({ params }: { params: { ts: string } }) {
+  const message = await getMessage(params.ts);
+  return <Message ts={message.ts} timeZone="America/New_York" blocks={message.blocks} />;
+}
+```
+
+```tsx
+// components/interactive-message.tsx
+"use client";
+
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import { httpTransport } from "@nkootstra/block-kit/transport";
+import type { AnyBlock } from "@nkootstra/block-kit";
+
+const transport = httpTransport({ url: "/api/slack/relay" });
+
+export function InteractiveMessage({ ts, blocks }: { ts: string; blocks: AnyBlock[] }) {
+  return (
+    <BlockKitProvider timeZone="America/New_York" {...transport}>
+      <Message ts={ts} blocks={blocks} />
+    </BlockKitProvider>
+  );
+}
+```
+
+The page itself stays a Server Component fetching data; only the piece that needs `onAction` and friends
+opts into the client, per [Connecting to your app](/guides/connecting-your-app).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Theming" href="/guides/theming" icon="paintbrush">
+    Setting data-theme without a flash of the wrong theme.
+  </Card>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="plug">
+    Wiring the client boundary's onAction/onSubmit to a real Bolt app.
+  </Card>
+  <Card title="mrkdwn" href="/guides/mrkdwn" icon="hash">
+    formatSlackDate and the timeZone option for dates parsed inline.
+  </Card>
+</CardGroup>

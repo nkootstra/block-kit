@@ -1,0 +1,227 @@
+---
+title: Button
+description: A clickable button, Slack's most common interactive element.
+---
+
+`button` is a clickable control that dispatches a `block_actions` payload when clicked. It can
+also carry a `url` to open a link, or a `confirm` object to ask before it fires.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "approval",
+        elements: [
+          {
+            type: "button",
+            action_id: "approve",
+            text: { type: "plain_text", text: "Approve", emoji: true },
+            style: "primary",
+            value: "approve_123",
+          },
+          {
+            type: "button",
+            action_id: "deny",
+            text: { type: "plain_text", text: "Deny", emoji: true },
+            style: "danger",
+            value: "deny_123",
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `button`.",
+      required: true,
+    },
+    text: {
+      type: "PlainTextElement",
+      description:
+        "The button's label. Truncates around 30 characters. Maximum length is 75 characters.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload. Must be unique within the block. Maximum length is 255 characters.",
+    },
+    value: {
+      type: "string",
+      description:
+        "Sent back in the interaction payload when the button is clicked. Maximum length is 2000 characters.",
+    },
+    url: {
+      type: "string",
+      description:
+        "A URL to open in a new tab when the button is clicked. Slack still sends the interaction payload; your app is expected to acknowledge it. Maximum length is 3000 characters.",
+    },
+    style: {
+      type: '"primary" | "danger"',
+      description:
+        "`primary` renders green, `danger` renders red. Omit for the default gray style. Use `primary` on at most one button in a set, and `danger` sparingly.",
+    },
+    accessibility_label: {
+      type: "string",
+      description: "Read by screen readers instead of `text`. Maximum length is 75 characters.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description:
+        "Shows a confirmation dialog before the click is dispatched. See Confirmation dialogs.",
+    },
+  }}
+/>
+
+## Examples
+
+### Default, primary and danger styles
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          { type: "button", action_id: "a", text: { type: "plain_text", text: "Default" } },
+          {
+            type: "button",
+            action_id: "b",
+            text: { type: "plain_text", text: "Primary" },
+            style: "primary",
+          },
+          {
+            type: "button",
+            action_id: "c",
+            text: { type: "plain_text", text: "Danger" },
+            style: "danger",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Link button
+
+A `url` button still fires a `block_actions` payload; the browser navigation is a side effect the
+component performs in addition to dispatching.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "This is a section block with a button." },
+        accessory: {
+          type: "button",
+          action_id: "button-action",
+          text: { type: "plain_text", text: "Click Me", emoji: true },
+          value: "click_me_123",
+          url: "https://google.com",
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+### As a section accessory
+
+A button can sit to the right of a section's text instead of inside an `actions` block.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "This is a section block with a button." },
+        accessory: {
+          type: "button",
+          action_id: "button-action",
+          text: { type: "plain_text", text: "Click Me", emoji: true },
+          value: "click_me_123",
+        },
+      },
+    ],
+  }}
+  actions
+/>
+
+### With a confirmation dialog
+
+Add `confirm` to make a destructive action ask first. See
+[Confirmation dialogs](/elements/confirmation-dialogs) for the full object shape.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        block_id: "more",
+        elements: [
+          {
+            type: "button",
+            action_id: "delete",
+            text: { type: "plain_text", text: "Delete" },
+            style: "danger",
+            confirm: {
+              title: { type: "plain_text", text: "Are you sure?" },
+              text: { type: "mrkdwn", text: "This can't be undone." },
+              confirm: { type: "plain_text", text: "Delete" },
+              deny: { type: "plain_text", text: "Cancel" },
+              style: "danger",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Interactivity
+
+Clicking a button (after any confirm dialog is accepted) calls `onAction` with a `button` action
+and, if `url` is set, opens it in a new tab:
+
+```json
+{
+  "type": "button",
+  "action_id": "approve",
+  "block_id": "approval",
+  "action_ts": "1706000000.000100",
+  "text": { "type": "plain_text", "text": "Approve", "emoji": true },
+  "value": "approve_123",
+  "style": "primary"
+}
+```
+
+`url` and `style` are only included when the element itself sets them. A button doesn't write to
+`state.values`: Slack only tracks state for elements that hold a value across interactions
+(selects, inputs, date pickers, and so on).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+  <Card title="Confirmation dialogs" href="/elements/confirmation-dialogs" icon="shield-alert">
+    Add a confirm step to any element with the `confirm` object.
+  </Card>
+  <Card title="Overflow menu" href="/elements/overflow" icon="more-vertical">
+    A kebab menu of up to 5 actions, for when buttons would crowd a row.
+  </Card>
+  <Card title="Icon button" href="/elements/icon-button" icon="square-dot">
+    A compact, icon-only button for a `context_actions` row.
+  </Card>
+</CardGroup>

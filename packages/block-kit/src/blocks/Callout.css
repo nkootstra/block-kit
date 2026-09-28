@@ -1,0 +1,37 @@
+.sbk-callout {
+  padding: 12px;
+  border: 1px solid rgba(94, 93, 96, 0.13);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sbk-callout .sbk-block:first-child > * {
+  margin-top: 0;
+}
+
+.sbk-callout .sbk-block:last-child > * {
+  margin-bottom: 0;
+}
+
+/* In a container Slack lays a callout's blocks out in a flex column with an 8px gap, so their own
+   margins no longer collapse into each other (catalog/container/with-callout). */
+.sbk-container .sbk-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sbk-container .sbk-callout .sbk-image__title {
+  display: none;
+}
+
+/* Keeps the frame's 5px top margin from collapsing into the block's own now that the title row
+   above it is hidden. */
+.sbk-container .sbk-callout .sbk-image {
+  display: flow-root;
+}
+
+/* Slack keeps the unknown-block notice's bottom margin even as a callout's last child. */
+.sbk-container .sbk-callout .sbk-block:last-child > .sbk-block-error {
+  margin-bottom: 6px;
+}

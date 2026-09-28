@@ -1,0 +1,200 @@
+---
+title: Datetime picker
+description: A combined date and time control, rendered like Slack's datetimepicker.
+---
+
+`datetimepicker` opens a calendar plus a time field so a user can pick a date and time together,
+represented as a single Unix timestamp. Slack allows it in `actions` blocks, section accessories,
+and `input` blocks, but not in App Home.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "when",
+        label: { type: "plain_text", text: "Starts at" },
+        element: {
+          type: "datetimepicker",
+          action_id: "starts_at",
+          initial_date_time: 1767261600,
+        },
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `datetimepicker`.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this element in the `block_actions` payload. Must be unique within a block.",
+    },
+    initial_date_time: {
+      type: "number",
+      description:
+        "The date and time selected when the element loads, as a 10-digit Unix timestamp in seconds, e.g. `1628633820`.",
+    },
+    confirm: {
+      type: "ConfirmationDialog",
+      description: "A confirmation dialog shown before Apply takes effect.",
+    },
+    focus_on_load: {
+      type: "boolean",
+      description:
+        "Focuses this element when its modal or Home tab loads. Only one element per view. Slack ignores it in messages.",
+      default: "false",
+    },
+  }}
+/>
+
+:::note
+`datetimepicker` has no `placeholder` field: Slack always shows "Select a date" and "Select a
+time" in its two boxes until a value is chosen.
+:::
+
+## Examples
+
+### Without an initial value
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [{ type: "datetimepicker", action_id: "starts_at" }],
+      },
+    ],
+  }}
+/>
+
+The date box and time box each show their own placeholder ("Select a date" / "Select a time")
+until the user picks a day and clicks Apply.
+
+### With an initial value
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "datetimepicker",
+            action_id: "starts_at",
+            initial_date_time: 1718461800,
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Inside an input block
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "input",
+        block_id: "when",
+        label: { type: "plain_text", text: "Starts at" },
+        element: {
+          type: "datetimepicker",
+          action_id: "starts_at",
+          initial_date_time: 1767261600,
+        },
+      },
+    ],
+  }}
+/>
+
+### With a confirmation dialog
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "datetimepicker",
+            action_id: "starts_at",
+            initial_date_time: 1718461800,
+            confirm: {
+              title: { type: "plain_text", text: "Change the start time?" },
+              text: { type: "mrkdwn", text: "This will reschedule the event." },
+              confirm: { type: "plain_text", text: "Do it" },
+              deny: { type: "plain_text", text: "Cancel" },
+            },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+The dialog appears when the user clicks Apply in the popup, before the new value takes effect.
+
+## Interactivity
+
+Picking a day and time and clicking Apply fires an action with `selected_date_time`, a Unix
+timestamp in seconds:
+
+```json
+{
+  "type": "datetimepicker",
+  "action_id": "starts_at",
+  "block_id": "when",
+  "selected_date_time": 1718872500
+}
+```
+
+The same shape lands in `state.values[block_id][action_id]`:
+
+```json
+{
+  "type": "datetimepicker",
+  "selected_date_time": 1718872500
+}
+```
+
+When `initial_date_time` is set, that value is reported as state as soon as the element mounts,
+before any interaction.
+
+### Time zone
+
+`BlockKitProvider`'s `timeZone` prop (an IANA zone like `Europe/Amsterdam`) controls how the
+closed control _displays_ the date and time, and labels the hint text underneath it (e.g. "Time
+zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"). It doesn't change `selected_date_time`
+itself, which is always a UTC-based Unix timestamp, exactly as Slack sends it. Without a `timeZone`
+prop, the picker displays in UTC.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Date picker" href="/elements/date-picker" icon="calendar">
+    Pick a single date from a calendar popup.
+  </Card>
+  <Card title="Time picker" href="/elements/time-picker" icon="clock">
+    Pick a time of day from a dropdown list.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="mouse-pointer-click">
+    Every interactive element this library renders.
+  </Card>
+  <Card title="Text inputs" href="/elements/text-inputs" icon="text-cursor-input">
+    Free-text and URL fields for modals and App Home.
+  </Card>
+</CardGroup>

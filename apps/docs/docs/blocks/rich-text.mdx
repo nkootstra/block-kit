@@ -1,0 +1,453 @@
+---
+title: Rich text
+description: Slack's structured formatted-text block, the same format its own composer produces.
+---
+
+`rich_text` is Slack's most expressive text block: paragraphs, lists, quotes, and code, each built
+from styled runs and mentions rather than a markdown string. It's what Slack's WYSIWYG message
+composer outputs, and what a `rich_text_input` element returns on submit. Reach for it whenever
+you need structure `mrkdwn` can't express, like nested lists or a fenced code block.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Ship it, " },
+              { type: "user", user_id: "U0ADA" },
+              { type: "text", text: "! Don't forget to update " },
+              { type: "channel", channel_id: "C0RELEASES" },
+              { type: "text", text: " and loop in " },
+              { type: "usergroup", usergroup_id: "S0ENG" },
+              { type: "text", text: ".", style: { bold: true } },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `rich_text`.",
+      required: true,
+    },
+    elements: {
+      type: "RichTextBlockElement[]",
+      description: "The block's top-level content, in order.",
+      required: true,
+    },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier for this block. Auto-generated if omitted. Maximum length is 255 characters.",
+    },
+  }}
+/>
+
+Each entry in `elements` is a block-level element: a paragraph, a list, a quote, or a code block.
+A block-level element (except a list) in turn holds an array of inline elements: styled text,
+links, mentions, emoji, and dates.
+
+<TypeTable
+  type={{
+    rich_text_section: {
+      type: '{ type: "rich_text_section"; elements: RichTextElement[] }',
+      description: "A paragraph of inline content, the most common block-level element.",
+    },
+    rich_text_list: {
+      type: '{ type: "rich_text_list"; style: "bullet" | "ordered"; indent?: number; border?: number; elements: RichTextSection[] }',
+      description:
+        "A list. `indent` (0–8) nests it under the previous list item at a shallower indent; consecutive rich_text_list elements merge into one continuous outline.",
+    },
+    rich_text_quote: {
+      type: '{ type: "rich_text_quote"; elements: RichTextElement[] }',
+      description: "A blockquote with a colored left bar.",
+    },
+    rich_text_preformatted: {
+      type: '{ type: "rich_text_preformatted"; elements: (RichTextText | RichTextLink)[] }',
+      description:
+        "A monospace code block. A `language` renders it as a syntax-highlighted fenced code block with a copy button; without one it's a plain `<pre>`.",
+    },
+  }}
+/>
+
+Inline (`RichTextElement`) types: `text` (with `style.bold` / `italic` / `strike` / `code` /
+`underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, and `color`.
+
+## Examples
+
+### Section with styled text
+
+Bold, italic, strikethrough, and inline code each come from a `text` element's `style`:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Hello there, " },
+              { type: "text", text: "I am bold", style: { bold: true } },
+              { type: "text", text: ", " },
+              { type: "text", text: "italic", style: { italic: true } },
+              { type: "text", text: ", " },
+              { type: "text", text: "struck through", style: { strike: true } },
+              { type: "text", text: ", and " },
+              { type: "text", text: "code", style: { code: true } },
+              { type: "text", text: "." },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Bullet list
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_list",
+            style: "bullet",
+            indent: 0,
+            elements: [
+              { type: "rich_text_section", elements: [{ type: "text", text: "First item" }] },
+              { type: "rich_text_section", elements: [{ type: "text", text: "Second item" }] },
+              { type: "rich_text_section", elements: [{ type: "text", text: "Third item" }] },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Ordered list
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_list",
+            style: "ordered",
+            indent: 0,
+            elements: [
+              { type: "rich_text_section", elements: [{ type: "text", text: "First" }] },
+              { type: "rich_text_section", elements: [{ type: "text", text: "Second" }] },
+              { type: "rich_text_section", elements: [{ type: "text", text: "Third" }] },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Indented (nested) list
+
+Consecutive `rich_text_list` elements merge into one outline: a deeper `indent` nests inside the
+previous item, and matching a shallower list's `indent`/`style` continues it. `offset` (a
+Builder/undocumented extension to the public schema) sets the starting number of an `ordered` list
+that continues from an earlier one.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_list",
+            style: "ordered",
+            indent: 0,
+            border: 1,
+            elements: [
+              { type: "rich_text_section", elements: [{ type: "text", text: "First" }] },
+              { type: "rich_text_section", elements: [{ type: "text", text: "Second" }] },
+            ],
+          },
+          {
+            type: "rich_text_list",
+            style: "bullet",
+            indent: 1,
+            elements: [
+              { type: "rich_text_section", elements: [{ type: "text", text: "Nested bullet" }] },
+            ],
+          },
+          {
+            type: "rich_text_list",
+            style: "ordered",
+            indent: 0,
+            offset: 2,
+            elements: [
+              { type: "rich_text_section", elements: [{ type: "text", text: "Third (offset)" }] },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Quote
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_quote",
+            elements: [{ type: "text", text: "I am a basic rich text quote." }],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Preformatted / code block
+
+Without a `language`, preformatted text renders as a plain monospace block:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_preformatted",
+            elements: [{ type: "text", text: "npm install @nkootstra/block-kit" }],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+A `language` (a Builder/undocumented extension to the public schema) renders it as a
+syntax-highlighted fenced code block instead:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_preformatted",
+            language: "tsx",
+            elements: [
+              {
+                type: "text",
+                text: "function Hello({ name }: { name: string }) {\n  return <p>Hello, {name}!</p>;\n}",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Links
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Check out " },
+              { type: "link", url: "https://slack.com", text: "Slack" },
+              { type: "text", text: " or a " },
+              {
+                type: "link",
+                url: "https://example.com",
+                text: "styled link",
+                style: { italic: true },
+              },
+              { type: "text", text: "." },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### User, channel, and usergroup mentions
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Hey " },
+              { type: "user", user_id: "U0ADA" },
+              { type: "text", text: " and " },
+              { type: "user", user_id: "U0GRACE" },
+              { type: "text", text: ", see " },
+              { type: "channel", channel_id: "C0DESIGN" },
+              { type: "text", text: " and loop in " },
+              { type: "usergroup", usergroup_id: "S0ENG" },
+              { type: "text", text: ". " },
+              { type: "broadcast", range: "here" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+:::note
+A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to render. The preview
+resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DESIGN` for you (see
+[interactivity](/guides/interactivity) for how resolvers work in your own app). An unresolved
+`channel` renders as a locked "Private channel" placeholder; an unresolved `user` or `usergroup`
+renders a loading placeholder instead.
+:::
+
+### Emoji
+
+Text made up only of emoji (and whitespace) renders at a larger "jumbo" size, same as Slack:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "emoji", name: "rocket" },
+              { type: "text", text: " " },
+              { type: "emoji", name: "tada" },
+              { type: "text", text: " " },
+              { type: "emoji", name: "checkered_flag" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+Mixed into text, emoji render inline at normal text size:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Nice work " },
+              { type: "emoji", name: "wave", skin_tone: 3 },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Dates
+
+A `date` element formats a UNIX `timestamp` using curly-brace tokens like `{date_short_pretty}` and
+`{time}`; `fallback` is shown if formatting fails, and an optional `url` makes the whole date a link.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Due " },
+              {
+                type: "date",
+                timestamp: 1767261600,
+                format: "{date_short_pretty} at {time}",
+                fallback: "Jan 1",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Color swatch
+
+A `color` element (a Builder/undocumented extension) prints a hex value next to a small swatch:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Brand color: " },
+              { type: "color", value: "#1264A3" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Markdown" href="/blocks/markdown" icon="file-text">
+    A simpler block for a plain markdown string instead of structured elements.
+  </Card>
+  <Card title="Section" href="/blocks/section" icon="align-left">
+    The more common way to show `mrkdwn` or plain text in a message.
+  </Card>
+  <Card title="Context" href="/blocks/context" icon="more-horizontal">
+    A compact row of muted text and images for metadata below a section.
+  </Card>
+</CardGroup>

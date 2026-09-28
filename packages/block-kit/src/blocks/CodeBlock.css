@@ -1,0 +1,72 @@
+.sbk-code-block {
+  margin: 4px 0;
+  padding: 8px;
+}
+
+.sbk-code-block__box {
+  margin: 4px 0;
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  line-height: 18px;
+  background: var(--sbk-surface-sec);
+  border: 1px solid rgba(29, 28, 29, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sbk-code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 4px 12px;
+  font-family: var(--sbk-font);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sbk-code-block__language {
+  color: var(--sbk-outline-pry);
+}
+
+.sbk-code-block__copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: rgb(69, 68, 71);
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: default;
+}
+
+.sbk-code-block__scroll {
+  display: flex;
+  padding: 0 12px 8px 0;
+  overflow: auto;
+}
+
+.sbk-code-block__code,
+.sbk-code-block__code code {
+  /* The UA stylesheet gives <pre> and <code> the generic `monospace`, which beats inheriting the
+     box's Slack-Roboto-Mono. Slack also turns ligatures off for code. */
+  font-family: inherit;
+  font-variant-ligatures: none;
+}
+
+.sbk-code-block__code {
+  margin: 0;
+  padding: 0 8px 8px;
+  line-height: 18px;
+  color: var(--sbk-text);
+  border-radius: 4px;
+  tab-size: 4;
+  -moz-tab-size: 4;
+}
+
+.sbk-code-block__line {
+  display: block;
+  white-space: pre;
+}

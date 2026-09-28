@@ -1,0 +1,55 @@
+.sbk-text-input {
+  width: 100%;
+  height: 28px;
+  padding: 8px 8px 7px;
+  font: 13px / 18px var(--sbk-font);
+  color: var(--sbk-text);
+  background: var(--sbk-bg);
+  border: 1px solid rgb(124, 122, 127);
+  border-radius: 8px;
+}
+
+.sbk-text-input::placeholder {
+  color: var(--sbk-muted);
+}
+
+/* Slack's Builder uses a taller "medium" control on a modal/Home tab surface (36px, more
+   horizontal padding, 15px text) instead of the message-surface preview's 28px "small" control. */
+.sbk-text-input--medium {
+  height: 36px;
+  padding: 4px 12px;
+  font-size: 15px;
+}
+
+.sbk-text-input__wrap .sbk-text-input.sbk-text-input--medium {
+  padding-left: 32px;
+}
+
+/* Slack's textarea is 104px tall on every surface, with less padding below the text than above.
+   Block-level, so no inline baseline gap opens up under it. */
+.sbk-text-input--multiline {
+  display: block;
+  height: auto;
+  min-height: 104px;
+  padding: 8px 12px 4px;
+  font-size: 15px;
+  line-height: 22px;
+  resize: vertical;
+}
+
+.sbk-text-input__wrap {
+  position: relative;
+}
+
+.sbk-text-input__wrap .sbk-text-input {
+  padding-left: 28px;
+}
+
+.sbk-text-input__icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sbk-muted);
+  pointer-events: none;
+}

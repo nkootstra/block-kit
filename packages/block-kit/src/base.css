@@ -1,0 +1,431 @@
+/* Values measured from Slack's Block Kit Builder (light theme, desktop). */
+:root {
+  --sbk-font: "Slack-Lato", Lato, appleLogo, sans-serif;
+  --sbk-font-mono:
+    "Slack-Roboto-Mono", "Roboto Mono", Monaco, Menlo, Consolas, "Courier New", monospace;
+  --sbk-text: #1d1c1d;
+  --sbk-link: #1264a3;
+  --sbk-code-text: rgb(192, 19, 67);
+  --sbk-code-bg: rgba(29, 28, 29, 0.04);
+  --sbk-code-border: rgba(29, 28, 29, 0.13);
+  --sbk-quote-bar: #dddddd;
+  --sbk-skeleton-bg: #eaeaea;
+  --sbk-mention-bg: rgba(29, 155, 209, 0.1);
+  --sbk-mention-text: #1264a3;
+  --sbk-mention-private-bg: rgba(29, 28, 29, 0.13);
+  --sbk-mention-private-text: rgba(29, 28, 29, 0.7);
+  --sbk-broadcast-bg: rgba(255, 198, 0, 0.18);
+  --sbk-bg: #fff;
+  --sbk-muted: #616061;
+  --sbk-badge-text: #454447;
+  --sbk-badge-bg: rgba(29, 28, 29, 0.06);
+  --sbk-border: rgba(29, 28, 29, 0.13);
+  --sbk-divider: rgba(94, 93, 96, 0.45);
+  --sbk-button-border: rgba(94, 93, 96, 0.45);
+  --sbk-primary: #007a5a;
+  --sbk-primary-hover: #148567;
+  --sbk-danger: #e01e5a;
+  --sbk-danger-hover: #e23067;
+  /* Interaction states, from the Builder's `c-button`, `c-icon_button`, `c-member_slug` and
+     `c-select_options_list` hover/active rules. */
+  --sbk-button-hover-bg: #f8f8f8;
+  --sbk-button-hover-shadow: rgba(0, 0, 0, 0.098) 0 1px 3px, rgba(0, 0, 0, 0.098) 0 1px 2px -1px;
+  --sbk-icon-button-hover-bg: #eaeaea;
+  --sbk-hover-overlay: rgba(29, 28, 29, 0.06);
+  --sbk-row-hover-bg: #f8f8f8;
+  --sbk-mention-hover-bg: rgba(29, 155, 209, 0.2);
+  --sbk-mention-hover-text: rgb(11, 76, 140);
+  --sbk-menu-highlight-bg: #1264a3;
+  --sbk-menu-highlight-text: #fff;
+  --sbk-focus-ring: #1264a3;
+  --sbk-focus-ring-invalid: #e01e5a;
+  --sbk-checkbox-checked: #1264a3;
+  --sbk-checkbox-checked-hover: #122a5921;
+  --sbk-checkbox-checked-pressed: #122a5938;
+  /* Menus and option lists (`c-menu`, `c-select_options_list`). */
+  --sbk-menu-bg: #fff;
+  --sbk-menu-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
+  --sbk-menu-selected-text: #1264a3;
+  --sbk-menu-separator: rgba(29, 28, 29, 0.13);
+  --sbk-menu-secondary-text: #454447;
+  --sbk-popover-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+  --sbk-spinner-track: #5e5d60;
+  /* Tooltips (`c-tooltip__tip`). */
+  --sbk-tooltip-bg: #1d1c1d;
+  --sbk-tooltip-text: #fff;
+  /* Slack design-token equivalents shared by component styles, so the dark theme can remap them
+     in one place: `base-sec`, `ctr-pry`, `content-sec/ter`, `otl-pry/ter`, `base-pry-hover/pressed`,
+     `base-inv-hgl-1`, and `--dt_blend-mode-interaction` (multiply in light, lighten in dark). */
+  --sbk-surface-sec: #f8f8f8;
+  --sbk-surface-ter: #eaeaea;
+  --sbk-container-bg: #fff;
+  --sbk-content-sec: #454447;
+  --sbk-content-ter: #5e5d60;
+  --sbk-outline-pry: #7c7a7f;
+  --sbk-outline-ter: rgba(94, 93, 96, 0.13);
+  --sbk-interaction-hover: #4544470f;
+  --sbk-interaction-pressed: #45444721;
+  --sbk-highlight: #1264a3;
+  --sbk-on-highlight: #fff;
+  --sbk-blend-interaction: multiply;
+  --sbk-calendar-grid: rgb(221, 221, 221);
+  --sbk-avatar-placeholder: #dddddd;
+  --sbk-hover-actions-icon: #616061;
+}
+
+.sbk-root {
+  font-family: var(--sbk-font);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-text);
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Isolate rendering from the host page's global styles (Tailwind's preflight, a docs theme's heading
+   fonts, `* { min-width: 0 }`): roll every element back to the browser's defaults, so only the rules
+   below decide how a block looks. Component rules are more specific or come later, so they win.
+   SVG and replaced elements keep their presentational attributes (width, height, fill), which
+   `revert` would drop, and get just the properties preflight changes rolled back.
+   Dialogs and tooltips portalled to <body> sit outside `.sbk-root`, so they get it too. */
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :where(:not(svg, svg *, img, video, canvas, iframe, embed, object)),
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip) :where(:not(svg, svg *))::before,
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip) :where(:not(svg, svg *))::after {
+  all: revert;
+}
+
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :where(svg, img, video, canvas, iframe, embed, object) {
+  display: revert;
+  vertical-align: revert;
+  max-width: revert;
+  margin: revert;
+  padding: revert;
+  border: revert;
+  min-width: revert;
+}
+
+.sbk-root *,
+.sbk-root *::before,
+.sbk-root *::after {
+  box-sizing: border-box;
+}
+
+.sbk-unsupported {
+  display: inline-block;
+  padding: 2px 6px;
+  font: 12px var(--sbk-font-mono);
+  color: var(--sbk-muted);
+  border: 1px dashed var(--sbk-border);
+  border-radius: 4px;
+}
+
+.sbk-mrkdwn {
+  font-family: var(--sbk-font);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-text);
+  overflow-wrap: anywhere;
+}
+
+.sbk-mrkdwn__code {
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--sbk-code-text);
+  background: var(--sbk-code-bg);
+  border: 1px solid var(--sbk-code-border);
+  border-radius: 3px;
+  padding: 2px 3px 1px;
+}
+
+.sbk-mrkdwn__pre {
+  display: block;
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  line-height: 1.50001;
+  background: var(--sbk-code-bg);
+  border: 1px solid var(--sbk-code-border);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+
+.sbk-mrkdwn__quote {
+  margin: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.sbk-mrkdwn__quote::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 8px;
+  background: var(--sbk-quote-bar);
+}
+
+.sbk-link {
+  color: var(--sbk-link);
+  text-decoration: underline;
+}
+
+.sbk-mention {
+  color: var(--sbk-mention-text);
+  background: var(--sbk-mention-bg);
+  border-radius: 3px;
+  padding: 0 2px 1px;
+}
+
+.sbk-mention:hover {
+  color: var(--sbk-mention-hover-text);
+  background: var(--sbk-mention-hover-bg);
+}
+
+.sbk-mention--unresolved {
+  display: inline-block;
+  vertical-align: middle;
+  width: 120px;
+  height: 8px;
+  background: var(--sbk-skeleton-bg);
+  border-radius: 1000px;
+}
+
+.sbk-mention--broadcast {
+  color: var(--sbk-text);
+  background: var(--sbk-broadcast-bg);
+  border-radius: 3px;
+  padding: 1px 2px;
+  font-weight: 700;
+}
+
+.sbk-mention--private {
+  display: inline;
+  color: var(--sbk-mention-private-text);
+  background: var(--sbk-mention-private-bg);
+  border-radius: 3px;
+  padding: 0 2px 1px 0;
+}
+
+/* Slack butts the lock straight up against the channel name, dropped an eighth of an em. */
+.sbk-mention__lock-icon {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  vertical-align: -0.125em;
+}
+
+.sbk-mention--loading {
+  display: inline-block;
+  vertical-align: middle;
+  width: 120px;
+  height: 8px;
+  border: 1px solid var(--sbk-quote-bar);
+  border-radius: 1000px;
+}
+
+.sbk-emoji {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  vertical-align: top;
+}
+
+.sbk-emoji__img {
+  display: block;
+  position: absolute;
+  object-fit: contain;
+}
+
+/* Slack's toggle-bar blocks (plan, task_card) slide open and shut: \`transition: height 0.25s\` on
+   the block, clipped (data/Collapse.tsx). \`flow-root\` keeps the content's margins inside the
+   height being animated. */
+.sbk-collapse {
+  display: flow-root;
+  overflow: clip;
+  transition: height 0.25s;
+}
+
+/* Slack's c-infinite_spinner. */
+.sbk-spinner {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.sbk-spinner__arc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-45deg);
+  animation: sbk-spinner-spin 1.2s cubic-bezier(0.25, 0.29, 0.54, 0.86) infinite;
+}
+
+.sbk-spinner__tail {
+  animation-timing-function: cubic-bezier(0.41, 0.24, 0.64, 0.69);
+}
+
+.sbk-spinner__bg {
+  fill: none;
+  stroke: var(--sbk-spinner-track);
+  stroke-width: 8px;
+  opacity: 0.25;
+}
+
+.sbk-spinner__path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 8px;
+  stroke-dasharray: 55, 200;
+  stroke-dashoffset: 90px;
+  stroke-linecap: round;
+}
+
+@keyframes sbk-spinner-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Slack's focus ring (`c-input_text:focus`, `c-select_button:focus`, `c-button--focus-visible`):
+   a 1px solid ring plus a 4px 30% halo, replacing the border. Text fields show it on any focus;
+   buttons only for keyboard focus. */
+.sbk-root {
+  --sbk-focus-shadow:
+    0 0 0 1px var(--sbk-focus-ring),
+    0 0 0 5px color-mix(in srgb, var(--sbk-focus-ring) 30%, transparent);
+  --sbk-focus-shadow-invalid:
+    0 0 0 1px var(--sbk-focus-ring-invalid),
+    0 0 0 5px color-mix(in srgb, var(--sbk-focus-ring-invalid) 30%, transparent);
+}
+
+.sbk-text-input,
+.sbk-rich-text-input,
+.sbk-datepicker__input,
+.sbk-datetimepicker__time-input,
+.sbk-select__control,
+.sbk-timepicker__control,
+.sbk-datetimepicker__control {
+  transition:
+    border 80ms ease-out,
+    box-shadow 80ms ease-out;
+}
+
+.sbk-text-input:focus,
+.sbk-rich-text-input:focus-within,
+.sbk-datepicker__input:focus,
+.sbk-datetimepicker__time-input:focus,
+.sbk-select__control:focus-visible,
+.sbk-select__control[aria-expanded="true"],
+.sbk-timepicker__control:focus-visible,
+.sbk-timepicker__control[aria-expanded="true"],
+.sbk-datetimepicker__control:focus-visible,
+.sbk-datetimepicker__control[aria-expanded="true"] {
+  outline: none;
+  border-color: transparent;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+.sbk-text-input[aria-invalid="true"],
+.sbk-text-input[aria-invalid="true"]:focus {
+  border-color: transparent;
+  box-shadow: var(--sbk-focus-shadow-invalid);
+}
+
+.sbk-text-input:focus::placeholder,
+.sbk-datepicker__input:focus::placeholder {
+  color: var(--sbk-content-ter);
+}
+
+.sbk-button:focus-visible,
+.sbk-modal__button:focus-visible,
+.sbk-overflow__button:focus-visible,
+.sbk-file-input__button:focus-visible,
+.sbk-icon-button:focus-visible,
+.sbk-code-block__copy:focus-visible,
+.sbk-carousel__arrow:focus-visible,
+.sbk-calendar__nav:focus-visible,
+.sbk-calendar__cell:focus-visible,
+.sbk-calendar__clear:focus-visible {
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Keyboard focus shouldn't also paint the pointer's hover shadow on outline buttons. */
+.sbk-button:focus-visible:hover,
+.sbk-overflow__button:focus-visible:hover {
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Slack's menus and popovers open and close instantly (no transition on `c-menu` /
+   `c-popover`), so the motion to tone down is the spinner and the plan/task_card slide. */
+@media (prefers-reduced-motion: reduce) {
+  .sbk-spinner__arc {
+    animation-duration: 2.4s;
+  }
+
+  .sbk-collapse {
+    transition: none;
+  }
+}
+
+/* Slack's `c-tooltip__tip`. Portalled to <body>, so it sets its own font. */
+.sbk-tooltip {
+  position: fixed;
+  z-index: 1100;
+  max-width: 200px;
+  padding: 8px 12px;
+  font-family: var(--sbk-font);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.38463;
+  text-align: center;
+  overflow-wrap: break-word;
+  color: var(--sbk-tooltip-text);
+  background: var(--sbk-tooltip-bg);
+  border-radius: 8px;
+  pointer-events: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sbk-tooltip__arrow {
+  position: absolute;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  background: var(--sbk-tooltip-bg);
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+.sbk-tooltip--top .sbk-tooltip__arrow {
+  bottom: -4px;
+}
+
+.sbk-tooltip--bottom .sbk-tooltip__arrow {
+  top: -4px;
+}
+
+.sbk-tooltip__secondary {
+  display: block;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* The layer menus and calendars open in (elements/Popover.tsx), portalled to <body> and pinned to
+   the control that opened them. */
+.sbk-popover {
+  position: fixed;
+  z-index: 1000;
+}

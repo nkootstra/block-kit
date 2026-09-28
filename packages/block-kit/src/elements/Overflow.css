@@ -1,0 +1,61 @@
+.sbk-overflow {
+  position: relative;
+  display: inline-block;
+}
+
+.sbk-overflow__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  padding: 0 7px 1px;
+  background: var(--sbk-bg);
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 4px;
+  color: var(--sbk-text);
+  cursor: pointer;
+}
+
+/* The trigger is a small outline `c-button` in Slack, so it shares Button.css's hover. */
+.sbk-overflow__button:hover {
+  background: var(--sbk-button-hover-bg);
+  box-shadow: var(--sbk-button-hover-shadow);
+}
+
+.sbk-overflow__button:active {
+  box-shadow: none;
+}
+
+.sbk-overflow__menu {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  /* Slack's `c-menu`: 200-300px wide, hairline ring plus drop shadow, 12px list padding. */
+  min-width: 200px;
+  max-width: 300px;
+  width: max-content;
+  padding: 12px 0;
+  background: var(--sbk-menu-bg);
+  border-radius: 4px;
+  box-shadow: var(--sbk-menu-shadow);
+}
+
+/* `c-menu_item__button`: 15px text on a 28px line, 24px side padding. */
+.sbk-overflow__option {
+  min-height: 28px;
+  padding: 0 24px;
+  font: 15px / 28px var(--sbk-font);
+  color: var(--sbk-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+/* Highlighted (pointer or keyboard) `c-menu_item__button`: white on blue. */
+.sbk-overflow__option[data-active] {
+  color: var(--sbk-menu-highlight-text);
+  background: var(--sbk-menu-highlight-bg);
+}

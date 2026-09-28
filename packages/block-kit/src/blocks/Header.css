@@ -1,0 +1,24 @@
+/* Sizes measured from the Builder's level-1..4 header references (level 2 is Slack's default). */
+.sbk-header {
+  margin: 15px 0 4px;
+  font-weight: 400;
+}
+
+.sbk-header--level-1 {
+  font-size: 18px;
+  line-height: 1.33334;
+  font-weight: 900;
+}
+
+.sbk-header--level-2 {
+  font-size: 15px;
+  line-height: 1.46668;
+  font-weight: 900;
+}
+
+.sbk-header--level-3,
+.sbk-header--level-4 {
+  font-size: 15px;
+  line-height: 1.46668;
+  font-weight: 700;
+}

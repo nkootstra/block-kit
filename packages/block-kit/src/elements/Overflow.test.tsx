@@ -1,0 +1,119 @@
+import type { Overflow as OverflowElement } from "@slack/types";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BlockKitProvider } from "../context";
+import { Overflow } from "./Overflow";
+import { clickAsync, keyDownAsync } from "./test-utils";
+
+afterEach(cleanup);
+
+function element(extra: Record<string, unknown> = {}): OverflowElement {
+  return {
+    type: "overflow",
+    action_id: "a1",
+    options: [
+      { value: "a", text: { type: "plain_text", text: "Edit" } },
+      { value: "b", text: { type: "plain_text", text: "Delete" } },
+    ],
+    ...extra,
+  } as unknown as OverflowElement;
+}
+
+describe("<Overflow>", () => {
+  it("opens the menu on click and dispatches selected_option when an item is chosen", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Overflow element={element()} blockId="b1" />
+      </BlockKitProvider>,
+    );
+    expect(screen.queryByRole("menu")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    expect(screen.getByRole("menu")).toBeTruthy();
+    await clickAsync(screen.getByText("Delete"));
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "overflow",
+        action_id: "a1",
+        block_id: "b1",
+        selected_option: { value: "b", text: { type: "plain_text", text: "Delete" } },
+      }),
+      expect.anything(),
+    );
+  });
+
+  it("opens the url for a link option and closes the menu", async () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <BlockKitProvider>
+        <Overflow
+          element={element({
+            options: [
+              {
+                value: "a",
+                text: { type: "plain_text", text: "Open docs" },
+                url: "https://example.com/docs",
+              },
+            ],
+          })}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    await clickAsync(screen.getByText("Open docs"));
+    expect(openSpy).toHaveBeenCalledWith(
+      "https://example.com/docs",
+      "_blank",
+      "noopener,noreferrer",
+    );
+    expect(screen.queryByRole("menu")).toBeNull();
+    openSpy.mockRestore();
+  });
+
+  it("closes the menu on outside click", () => {
+    render(
+      <div>
+        <Overflow element={element()} blockId="b1" />
+        <button type="button">outside</button>
+      </div>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    expect(screen.getByRole("menu")).toBeTruthy();
+    fireEvent.mouseDown(screen.getByText("outside"));
+    expect(screen.queryByRole("menu")).toBeNull();
+  });
+
+  it("supports Home/End and Enter from the keyboard", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Overflow element={element()} blockId="b1" />
+      </BlockKitProvider>,
+    );
+    const trigger = screen.getByRole("button", { name: "More options" });
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: "End" });
+    expect(screen.getByText("Delete").closest("[data-active]")).toBeTruthy();
+    fireEvent.keyDown(trigger, { key: "Home" });
+    expect(screen.getByText("Edit").closest("[data-active]")).toBeTruthy();
+    await keyDownAsync(trigger, "Enter");
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ selected_option: expect.objectContaining({ value: "a" }) }),
+      expect.anything(),
+    );
+    expect(screen.queryByRole("menu")).toBeNull();
+  });
+
+  it("highlights the row under the pointer", () => {
+    render(
+      <BlockKitProvider>
+        <Overflow element={element()} blockId="b1" />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    fireEvent.mouseEnter(screen.getByText("Delete"));
+    expect(screen.getByText("Delete").closest("[data-active]")).toBeTruthy();
+    expect(screen.getByText("Edit").closest("[data-active]")).toBeNull();
+  });
+});

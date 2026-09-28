@@ -1,0 +1,47 @@
+name: Visual
+
+# Pixel-compares every fixture against its Block Kit Builder reference and fails when a fixture
+# regresses past fixtures/visual-baseline.linux.json. Run manually with `update_baseline` to
+# regenerate that file; it's uploaded as an artifact to commit.
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      update_baseline:
+        description: Regenerate fixtures/visual-baseline.linux.json
+        type: boolean
+        default: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - name: Start playground
+        run: |
+          (cd apps/playground && bunx vite --host 0.0.0.0 --port 5180 --strictPort > /tmp/vite.log 2>&1 &)
+          for i in $(seq 1 60); do
+            bun -e 'await fetch("http://localhost:5180")' 2> /dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/vite.log
+          exit 1
+      - name: Compare
+        if: ${{ !inputs.update_baseline }}
+        run: bun tools/visual/src/compare.ts --check
+      - name: Update baseline
+        if: ${{ inputs.update_baseline }}
+        run: bun tools/visual/src/compare.ts --update-baseline
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual
+          path: |
+            test-results/visual/
+            fixtures/visual-baseline.linux.json
+          if-no-files-found: ignore

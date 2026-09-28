@@ -1,0 +1,91 @@
+---
+title: Hooks
+description: Read the provider's state from your own components, and build custom surfaces.
+---
+
+You need these hooks only when you write your own [custom blocks](/reference/custom-blocks) or surfaces. The built-in components use them internally.
+
+## useBlockKit
+
+Returns the nearest provider's context: the current `surface`, input `state`, `resolvers`, `emoji`, `errors`, `timeZone` and `views`, plus the functions elements use to report changes.
+
+```tsx
+import { useBlockKit } from "@nkootstra/block-kit";
+
+function Counter({ blockId }: { blockId: string }) {
+  const { state } = useBlockKit();
+  const filled = Object.keys(state[blockId] ?? {}).length;
+  return <span>{filled} fields filled</span>;
+}
+```
+
+Without a provider, it returns defaults: the `message` surface, empty state, and handlers that do nothing.
+
+Two functions matter for custom elements:
+
+<TypeTable
+  type={{
+    setValue: {
+      type: "(blockId: string, actionId: string, value: ElementState | undefined) => void",
+      description:
+        'Records an input\'s current value in `state`, as Slack does for `view.state.values`. `value` has a `type` plus the element\'s value fields, for example `{ type: "plain_text_input", value: "hi" }`.',
+    },
+    dispatch: {
+      type: "(action) => void",
+      description:
+        "Reports an action to `onAction` and `onPayload`. Pass `type`, `action_id` and `block_id`, plus fields such as `value`; `action_ts` is filled in for you.",
+    },
+  }}
+/>
+
+## useLiveView
+
+```ts
+const { view, update } = useLiveView(viewProp);
+```
+
+Returns the view a surface should show right now: its `view` prop, or the content an action last sent with `views.update` or `views.publish`. Passing a `view` prop with new content takes over again. `<Modal>` and `<HomeTab>` use it; call it in your own surface to get the same behaviour.
+
+## SurfaceScope
+
+Ties the elements below it to one message or view. Their actions carry that `container`, and `message` for a message, even when several surfaces share one provider. It also sets `surface` for them: `modal` or `home` for a view container, `message` otherwise.
+
+```tsx
+import { Blocks, SurfaceScope } from "@nkootstra/block-kit";
+
+<SurfaceScope
+  container={{ type: "message", messageTs: "1700000000.000100", channelId: "C0RELEASES" }}
+>
+  <div className="sbk-root">
+    <Blocks blocks={blocks} />
+  </div>
+</SurfaceScope>;
+```
+
+<TypeTable
+  type={{
+    container: {
+      type: "Container",
+      description:
+        '`{ type: "message", messageTs, channelId?, isEphemeral?, message? }` or `{ type: "view", view }`. Becomes the `container` of `block_actions` payloads.',
+      required: true,
+    },
+    message: {
+      type: "MessageApi",
+      description: "What `onAction` receives as `context.message` for actions in this scope.",
+    },
+    errors: {
+      type: "Record<string, string>",
+      description: "Validation errors by `block_id`, shown on top of the provider's.",
+    },
+    children: { type: "ReactNode", required: true },
+  }}
+/>
+
+## useContainer
+
+```ts
+useContainer(container);
+```
+
+Registers the message or view a surface renders, so the provider can build full payloads for actions dispatched without a scope. `<SurfaceScope>` calls it for you; call it yourself only if you dispatch actions outside any scope.

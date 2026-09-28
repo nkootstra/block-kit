@@ -1,0 +1,18 @@
+{
+  "blocks": [
+    {
+      "type": "data_visualization",
+      "block_id": "viz-pie-single",
+      "title": "Plan distribution (single tier)",
+      "chart": {
+        "type": "pie",
+        "segments": [
+          {
+            "label": "Free",
+            "value": 100
+          }
+        ]
+      }
+    }
+  ]
+}

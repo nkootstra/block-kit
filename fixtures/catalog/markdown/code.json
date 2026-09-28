@@ -1,0 +1,8 @@
+{
+  "blocks": [
+    {
+      "type": "markdown",
+      "text": "Here is a JavaScript function:\n\n```javascript\nfunction greet(name) {\n  return \"Hello, \" + name + \"!\";\n}\n\nconsole.log(greet(\"world\"));\n```"
+    }
+  ]
+}

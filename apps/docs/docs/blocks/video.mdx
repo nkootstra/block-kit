@@ -1,0 +1,132 @@
+---
+title: Video
+description: A video preview with a thumbnail, title, and provider byline.
+---
+
+`video` renders a video preview (a thumbnail with a play pill, a title, a description, and a
+provider byline) the way Slack shows an unfurled video before it's expanded into a player.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "video",
+        title: { type: "plain_text", text: "How to use Slack.", emoji: true },
+        title_url: "https://www.youtube.com/watch?v=RRxQQxiM7AA",
+        description: {
+          type: "plain_text",
+          text: "Slack is a new way to communicate with your team.",
+          emoji: true,
+        },
+        video_url: "https://www.youtube.com/embed/RRxQQxiM7AA?feature=oembed&autoplay=1",
+        alt_text: "How to use Slack?",
+        thumbnail_url: "https://i.ytimg.com/vi/RRxQQxiM7AA/hqdefault.jpg",
+        author_name: "Arcado Buendia",
+        provider_name: "YouTube",
+        provider_icon_url: "https://a.slack-edge.com/80588/img/unfurl_icons/youtube.png",
+      },
+    ],
+  }}
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `video`.",
+      required: true,
+    },
+    video_url: {
+      type: "string",
+      description: "An embeddable video URL, opened in a new tab when the frame is clicked.",
+      required: true,
+    },
+    thumbnail_url: {
+      type: "string",
+      description: "The preview image shown inside the video frame.",
+      required: true,
+    },
+    alt_text: {
+      type: "string",
+      description: "A plain-text summary for screen readers.",
+      required: true,
+    },
+    title: {
+      type: "PlainTextElement",
+      description: "The video's title, shown below the description.",
+      required: true,
+    },
+    title_url: {
+      type: "string",
+      description: "Wraps the title in a link, opened in a new tab.",
+    },
+    description: {
+      type: "PlainTextElement",
+      description: "A line of text shown above the title.",
+    },
+    author_name: {
+      type: "string",
+      description: "Shown in the byline, after the provider name.",
+    },
+    provider_name: {
+      type: "string",
+      description: 'Shown in bold in the byline, e.g. "YouTube".',
+    },
+    provider_icon_url: {
+      type: "string",
+      description: "A small icon shown before the provider name in the byline.",
+    },
+    block_id: {
+      type: "string",
+      description: "A unique identifier, up to 255 characters.",
+    },
+  }}
+/>
+
+:::note
+Slack also documents `is_animated` on the `video` block. This library doesn't read it: the preview
+always renders the same static thumbnail-and-play-pill frame that a message surface shows before a
+video is expanded into a live player.
+:::
+
+## Examples
+
+### Full video block
+
+The preview above sets every optional field: `description`, `title_url`, `author_name`,
+`provider_name`, and `provider_icon_url`.
+
+### Minimal video block
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "video",
+        title: { type: "plain_text", text: "How to use Slack.", emoji: true },
+        video_url: "https://www.youtube.com/embed/RRxQQxiM7AA?feature=oembed&autoplay=1",
+        alt_text: "How to use Slack?",
+        thumbnail_url: "https://i.ytimg.com/vi/RRxQQxiM7AA/hqdefault.jpg",
+      },
+    ],
+  }}
+/>
+
+Without `provider_name` or `author_name`, the byline row doesn't render at all. Without
+`description`, that line is skipped too, leaving only the thumbnail and title.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Image" href="/blocks/image" icon="image">
+    A standalone image with an optional title row.
+  </Card>
+  <Card title="File" href="/blocks/file" icon="file">
+    A card referencing a remote file.
+  </Card>
+  <Card title="Card" href="/blocks/card" icon="square">
+    A richer, freeform preview card for links and rich content.
+  </Card>
+</CardGroup>

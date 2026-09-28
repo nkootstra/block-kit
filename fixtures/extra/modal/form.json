@@ -1,0 +1,62 @@
+{
+  "type": "modal",
+  "callback_id": "new_ticket",
+  "title": { "type": "plain_text", "text": "New ticket" },
+  "submit": { "type": "plain_text", "text": "Create" },
+  "close": { "type": "plain_text", "text": "Cancel" },
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Tell us what went wrong. *All fields* are shared with the on-call team."
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "title",
+      "label": { "type": "plain_text", "text": "Title" },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "title_input",
+        "placeholder": { "type": "plain_text", "text": "Short summary" }
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "priority",
+      "label": { "type": "plain_text", "text": "Priority" },
+      "element": {
+        "type": "static_select",
+        "action_id": "priority_select",
+        "initial_option": { "text": { "type": "plain_text", "text": "Medium" }, "value": "medium" },
+        "options": [
+          { "text": { "type": "plain_text", "text": "High" }, "value": "high" },
+          { "text": { "type": "plain_text", "text": "Medium" }, "value": "medium" },
+          { "text": { "type": "plain_text", "text": "Low" }, "value": "low" }
+        ]
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "details",
+      "optional": true,
+      "label": { "type": "plain_text", "text": "Details" },
+      "hint": { "type": "plain_text", "text": "Steps to reproduce help a lot." },
+      "element": { "type": "plain_text_input", "action_id": "details_input", "multiline": true }
+    },
+    {
+      "type": "input",
+      "block_id": "notify",
+      "label": { "type": "plain_text", "text": "Notify" },
+      "element": {
+        "type": "checkboxes",
+        "action_id": "notify_checks",
+        "options": [
+          { "text": { "type": "plain_text", "text": "Email me updates" }, "value": "email" },
+          { "text": { "type": "plain_text", "text": "Post in #incidents" }, "value": "channel" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "title": {
+        "type": "mrkdwn",
+        "text": "Sample Card Title",
+        "verbatim": false
+      },
+      "subtitle": {
+        "type": "mrkdwn",
+        "text": "This is a subtitle",
+        "verbatim": false
+      },
+      "hero_image": {
+        "type": "image",
+        "image_url": "https://picsum.photos/400/300",
+        "alt_text": "Sample hero image"
+      },
+      "body": {
+        "type": "mrkdwn",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "verbatim": false
+      }
+    }
+  ]
+}

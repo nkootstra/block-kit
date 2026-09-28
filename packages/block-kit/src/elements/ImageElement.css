@@ -1,0 +1,11 @@
+.sbk-section__accessory--image {
+  margin-left: 12px;
+}
+
+.sbk-image-element {
+  display: block;
+  width: 88px;
+  height: 88px;
+  border-radius: 8px;
+  object-fit: cover;
+}

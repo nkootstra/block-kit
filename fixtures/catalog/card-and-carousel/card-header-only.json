@@ -1,0 +1,22 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "icon": {
+        "type": "image",
+        "image_url": "https://picsum.photos/36/36",
+        "alt_text": "Icon"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "Sample Card Title",
+        "verbatim": false
+      },
+      "subtitle": {
+        "type": "mrkdwn",
+        "text": "This is a subtitle",
+        "verbatim": false
+      }
+    }
+  ]
+}

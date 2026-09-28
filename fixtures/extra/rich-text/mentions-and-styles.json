@@ -1,0 +1,86 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            { "type": "text", "text": "Hey " },
+            { "type": "user", "user_id": "U0123456789" },
+            { "type": "text", "text": " and " },
+            { "type": "usergroup", "usergroup_id": "S0123456789" },
+            { "type": "text", "text": ", see " },
+            { "type": "channel", "channel_id": "C0123456789" },
+            { "type": "text", "text": " " },
+            { "type": "broadcast", "range": "here" },
+            { "type": "text", "text": "\nDue " },
+            {
+              "type": "date",
+              "timestamp": 1767261600,
+              "format": "{date_short_pretty} at {time}",
+              "fallback": "Jan 1"
+            },
+            { "type": "text", "text": " · colour " },
+            { "type": "color", "value": "#1264A3" },
+            { "type": "text", "text": "\n" },
+            { "type": "text", "text": "underlined", "style": { "underline": true } },
+            { "type": "text", "text": " " },
+            { "type": "text", "text": "bold code", "style": { "bold": true, "code": true } },
+            { "type": "text", "text": " " },
+            {
+              "type": "link",
+              "url": "https://slack.com",
+              "text": "a styled link",
+              "style": { "italic": true }
+            },
+            { "type": "text", "text": " " },
+            { "type": "emoji", "name": "wave", "skin_tone": 3 }
+          ]
+        },
+        {
+          "type": "rich_text_list",
+          "style": "ordered",
+          "indent": 0,
+          "border": 1,
+          "elements": [
+            { "type": "rich_text_section", "elements": [{ "type": "text", "text": "First" }] },
+            { "type": "rich_text_section", "elements": [{ "type": "text", "text": "Second" }] }
+          ]
+        },
+        {
+          "type": "rich_text_list",
+          "style": "bullet",
+          "indent": 1,
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [{ "type": "text", "text": "Nested bullet" }]
+            }
+          ]
+        },
+        {
+          "type": "rich_text_list",
+          "style": "ordered",
+          "indent": 0,
+          "offset": 2,
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [{ "type": "text", "text": "Third (offset)" }]
+            }
+          ]
+        },
+        {
+          "type": "rich_text_quote",
+          "elements": [{ "type": "text", "text": "Quoted text" }]
+        },
+        {
+          "type": "rich_text_preformatted",
+          "border": 0,
+          "elements": [{ "type": "text", "text": "npm install @slack-blocks/react" }]
+        }
+      ]
+    }
+  ]
+}

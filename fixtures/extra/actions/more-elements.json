@@ -1,0 +1,81 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "more",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "delete",
+          "text": {
+            "type": "plain_text",
+            "text": "Delete"
+          },
+          "style": "danger",
+          "confirm": {
+            "title": {
+              "type": "plain_text",
+              "text": "Are you sure?"
+            },
+            "text": {
+              "type": "mrkdwn",
+              "text": "This can't be undone."
+            },
+            "confirm": {
+              "type": "plain_text",
+              "text": "Delete"
+            },
+            "deny": {
+              "type": "plain_text",
+              "text": "Cancel"
+            },
+            "style": "danger"
+          }
+        },
+        {
+          "type": "external_select",
+          "action_id": "external",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Search tickets"
+          },
+          "min_query_length": 2
+        },
+        {
+          "type": "channels_select",
+          "action_id": "channels",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Pick a channel"
+          }
+        },
+        {
+          "type": "datetimepicker",
+          "action_id": "due",
+          "initial_date_time": 1767261600
+        },
+        {
+          "type": "overflow",
+          "action_id": "more_menu",
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Edit"
+              },
+              "value": "edit"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Open docs"
+              },
+              "value": "docs",
+              "url": "https://api.slack.com"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

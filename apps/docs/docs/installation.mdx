@@ -1,0 +1,103 @@
+---
+title: Installation
+description: Add @nkootstra/block-kit to a React 19 app, with its stylesheet and fonts.
+sidebar:
+  order: 1
+---
+
+The package needs React 19 or later. It works with any bundler that can import CSS: Vite, Next.js, Remix, Astro and the like.
+
+<Steps>
+<Step title="Install the package">
+
+```package-install
+@nkootstra/block-kit
+```
+
+</Step>
+<Step title="Import the stylesheet">
+
+Import the styles once, near the root of your app:
+
+```tsx main.tsx
+import "@nkootstra/block-kit/styles.css";
+```
+
+The stylesheet only styles elements inside the components it ships, and rolls them back to the browser's defaults first. Global styles in your app, such as Tailwind's preflight, don't change how blocks render.
+
+</Step>
+<Step title="Load the fonts">
+
+Slack sets text in Lato and code in Roboto Mono. Slack's own font files aren't redistributable, so install the open-source builds from Fontsource:
+
+```package-install
+@fontsource/lato @fontsource/roboto-mono
+```
+
+```tsx main.tsx
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/400-italic.css";
+import "@fontsource/lato/700.css";
+import "@fontsource/lato/900.css";
+import "@fontsource/roboto-mono/400.css";
+```
+
+:::tip
+Already serving Lato from a CDN or your own assets? Skip this step. The stylesheet asks for `Slack-Lato` first, then `Lato`, so any `@font-face` named `Lato` is picked up.
+:::
+
+</Step>
+<Step title="Render a message">
+
+```tsx App.tsx
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+
+export function App() {
+  return (
+    <BlockKitProvider>
+      <Message
+        blocks={[
+          { type: "section", text: { type: "mrkdwn", text: "*Hello* from Block Kit :wave:" } },
+        ]}
+      />
+    </BlockKitProvider>
+  );
+}
+```
+
+</Step>
+</Steps>
+
+<Preview
+  payload={{
+    blocks: [{ type: "section", text: { type: "mrkdwn", text: "*Hello* from Block Kit :wave:" } }],
+  }}
+/>
+
+## Optional peer dependencies
+
+| Package          | When you need it                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `@slack/web-api` | To resolve user, channel and usergroup names with [`@nkootstra/block-kit/web-api`](/guides/mentions-and-resolvers). |
+
+## Entry points
+
+| Import                            | What it contains                                                                                                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders.                                                                  |
+| `@nkootstra/block-kit/styles.css` | The stylesheet.                                                                                                        |
+| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React. See [mrkdwn](/guides/mrkdwn).                                                        |
+| `@nkootstra/block-kit/transport`  | Sends interactions to your app's request URL from the browser. See [Connecting your app](/guides/connecting-your-app). |
+| `@nkootstra/block-kit/server`     | Signs and relays interactions to your app from your server.                                                            |
+| `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API.                                                                                 |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" href="/quickstart" icon="rocket">
+    Build an interactive approval message.
+  </Card>
+  <Card title="Theming" href="/guides/theming" icon="palette">
+    Dark mode and the CSS custom properties.
+  </Card>
+</CardGroup>

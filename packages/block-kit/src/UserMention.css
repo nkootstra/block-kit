@@ -1,0 +1,82 @@
+/* A clickable user mention and its profile card popover (Slack's `p-member_profile_card`): a
+   300px card with the popover shadow, a 72px rounded avatar beside the name block. */
+.sbk-mention--user {
+  cursor: pointer;
+}
+
+.sbk-mention--user:focus-visible {
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+.sbk-profile-card {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  gap: 16px;
+  width: 300px;
+  padding: 20px;
+  color: var(--sbk-text);
+  background: var(--sbk-menu-bg);
+  border-radius: 6px;
+  box-shadow: var(--sbk-popover-shadow);
+}
+
+.sbk-profile-card__avatar {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.sbk-profile-card__avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sbk-on-highlight);
+  background: var(--sbk-highlight);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.sbk-profile-card__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sbk-profile-card__name {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.33334;
+  overflow-wrap: anywhere;
+}
+
+.sbk-profile-card__pronouns {
+  margin-left: 6px;
+  color: var(--sbk-content-sec);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.sbk-profile-card__secondary {
+  color: var(--sbk-content-sec);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.sbk-profile-card__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.sbk-profile-card__time {
+  color: var(--sbk-content-ter);
+  font-size: 13px;
+  line-height: 18px;
+}

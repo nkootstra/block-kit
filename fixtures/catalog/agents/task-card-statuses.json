@@ -1,0 +1,22 @@
+{
+  "blocks": [
+    {
+      "type": "task_card",
+      "task_id": "task_in_progress",
+      "title": "Task that is in progress",
+      "status": "in_progress"
+    },
+    {
+      "type": "task_card",
+      "task_id": "task_complete",
+      "title": "Task that is complete",
+      "status": "complete"
+    },
+    {
+      "type": "task_card",
+      "task_id": "task_error",
+      "title": "Task that is error",
+      "status": "error"
+    }
+  ]
+}

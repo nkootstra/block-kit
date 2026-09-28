@@ -1,0 +1,9 @@
+{
+  "blocks": [
+    {
+      "type": "file",
+      "external_id": "F0123456789",
+      "source": "remote"
+    }
+  ]
+}

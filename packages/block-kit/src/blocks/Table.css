@@ -1,0 +1,67 @@
+/* Values measured from Slack's Block Kit Builder for the `table` block. */
+:root {
+  --sbk-table-border: rgba(94, 93, 96, 0.13);
+}
+
+.sbk-table {
+  padding: 4px 0;
+}
+
+/* Scrolls wide tables while the hover actions stay pinned to the visible corner. */
+.sbk-table__scroll {
+  overflow: auto;
+}
+
+/* Separate borders (right + bottom on every cell, plus the outer top and left edges), as Slack
+   draws them: collapsed borders land the rows on half pixels. */
+.sbk-table__table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.sbk-table__thead,
+.sbk-table__tbody {
+  background-color: var(--sbk-bg);
+}
+
+.sbk-table__th,
+.sbk-table__td {
+  box-sizing: border-box;
+  height: 28px;
+  padding: 2px 12px 0;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+  border-right: 1px solid var(--sbk-table-border);
+  border-bottom: 1px solid var(--sbk-table-border);
+}
+
+.sbk-table__table > :first-child > tr:first-child > * {
+  border-top: 1px solid var(--sbk-table-border);
+}
+
+.sbk-table__table tr > :first-child {
+  border-left: 1px solid var(--sbk-table-border);
+}
+
+.sbk-table__th {
+  font-weight: 700;
+}
+
+.sbk-table__thead tr:first-child th:first-child {
+  border-top-left-radius: 4px;
+}
+
+.sbk-table__thead tr:first-child th:last-child {
+  border-top-right-radius: 4px;
+}
+
+.sbk-table__tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 4px;
+}
+
+.sbk-table__tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 4px;
+}

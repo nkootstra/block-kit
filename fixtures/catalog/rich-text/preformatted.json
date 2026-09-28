@@ -1,0 +1,19 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_preformatted",
+          "language": "typescript",
+          "elements": [
+            {
+              "type": "text",
+              "text": "import React, { useState } from 'react';\nimport { createRoot } from 'react-dom/client';\n\ninterface Todo {\n\tid: number;\n\ttext: string;\n\tdone: boolean;\n}\n\nconst App = () => {\n\tconst [todos, setTodos] = useState<Todo[]>([]);\n\tconst [input, setInput] = useState('');\n\n\tconst addTodo = () => {\n\t\tif (!input.trim()) return;\n\t\tsetTodos([...todos, { id: Date.now(), text: input, done: false }]);\n\t\tsetInput('');\n\t};\n\n\tconst toggleTodo = (id: number) => {\n\t\tsetTodos(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));\n\t};\n\n\treturn (\n\t\t<div>\n\t\t\t<h1>Todo App</h1>\n\t\t\t<input value={input} onChange={(e) => setInput(e.target.value)} />\n\t\t\t<button onClick={addTodo}>Add</button>\n\t\t\t<ul>\n\t\t\t\t{todos.map((t) => (\n\t\t\t\t\t<li key={t.id} onClick={() => toggleTodo(t.id)}>\n\t\t\t\t\t\t{t.done ? '? ' : '? '}{t.text}\n\t\t\t\t\t</li>\n\t\t\t\t))}\n\t\t\t</ul>\n\t\t</div>\n\t);\n};\n\ncreateRoot(document.getElementById('root')!).render(<App />);"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

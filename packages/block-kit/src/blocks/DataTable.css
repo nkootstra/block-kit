@@ -1,0 +1,363 @@
+/* Values measured from Slack's Block Kit Builder for the `data_table` block. */
+:root {
+  --sbk-data-table-bg: rgba(29, 28, 29, 0.06);
+  --sbk-data-table-sep: rgba(94, 93, 96, 0.13);
+  --sbk-data-table-active: #007a5a;
+}
+
+.sbk-data-table {
+  margin: 4px 0;
+}
+
+.sbk-data-table__header {
+  display: flex;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 8px;
+}
+
+.sbk-data-table__caption {
+  flex: 1 1 auto;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sbk-data-table__toolbar {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.sbk-data-table__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: var(--sbk-badge-text);
+  background: none;
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Slack's grey frame holds both the grid and the pagination footer below it, and scrolls them
+   sideways together when the columns can't fit. Like Slack's, it's a flex column, so its end
+   padding counts as scrollable space. */
+.sbk-data-table__frame {
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  padding: 0 4px;
+  background-color: var(--sbk-data-table-bg);
+  border-radius: 12px;
+}
+
+/* Slack's scrollbar: an 8px track whose rounded thumb only shows while the table is hovered. */
+.sbk-data-table__frame::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sbk-data-table__frame::-webkit-scrollbar-track,
+.sbk-data-table__frame::-webkit-scrollbar-thumb,
+.sbk-data-table__frame::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.sbk-data-table__frame::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+}
+
+.sbk-data-table__frame:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--sbk-text) 52%, transparent);
+}
+
+/* Like Slack's <table>, the grid never narrows below its columns' 120px minimums. */
+.sbk-data-table__rows {
+  position: relative;
+  min-width: min-content;
+}
+
+/* Without pagination Slack's footer shrinks to a 4px strip. */
+.sbk-data-table__rows:last-child {
+  margin-bottom: 4px;
+}
+
+.sbk-data-table__grid-header,
+.sbk-data-table__row {
+  display: grid;
+}
+
+.sbk-data-table__col-header {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-data-table__col-header button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 28px;
+  gap: 4px;
+  padding: 0 12px;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Slack hides the unsorted caret until the header is hovered or focused, and tints the header
+   with the same 6% overlay as its other hoverable table chrome. */
+.sbk-data-table__col-header button:hover,
+.sbk-data-table__col-header button:focus-visible {
+  background-color: var(--sbk-hover-overlay);
+}
+
+/* Slack's caret stays hidden, even on a sorted column, until the header is hovered or focused. */
+.sbk-data-table__sort-caret {
+  display: flex;
+  margin-left: auto;
+  opacity: 0;
+}
+
+.sbk-data-table__col-header button:hover .sbk-data-table__sort-caret,
+.sbk-data-table__col-header button:focus-visible .sbk-data-table__sort-caret {
+  opacity: 1;
+}
+
+/* Slack's sort menu: a 200px `c-menu` flush below the header, a small "Sort" heading, then
+   Ascending and Descending and, once sorted, a separator and a red Clear Sort. */
+.sbk-data-table__sort-menu {
+  width: 200px;
+  padding: 12px 0;
+  background: var(--sbk-menu-bg);
+  border-radius: 4px;
+  box-shadow: var(--sbk-menu-shadow);
+}
+
+.sbk-data-table__sort-heading {
+  padding: 4px 24px;
+  font: 13px / 18px var(--sbk-font);
+  color: var(--sbk-content-sec);
+}
+
+.sbk-data-table__sort-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 24px;
+  font: 15px / 28px var(--sbk-font);
+  color: var(--sbk-text);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sbk-data-table__sort-item[aria-checked="true"] {
+  color: var(--sbk-menu-selected-text);
+}
+
+/* Slack's danger red is the same token as its inline-code text. */
+.sbk-data-table__sort-item--danger {
+  color: var(--sbk-code-text);
+}
+
+.sbk-data-table__sort-item[data-active] {
+  color: var(--sbk-menu-highlight-text);
+  background: var(--sbk-menu-highlight-bg);
+}
+
+/* Slack's 16px glyphs sit at the start of their 20px boxes. */
+.sbk-data-table__sort-icon {
+  display: flex;
+  width: 20px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* The checked item's check hangs in the 24px gutter, 4px from the menu's edge. */
+.sbk-data-table__sort-check {
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  display: flex;
+  width: 20px;
+  height: 16px;
+}
+
+.sbk-data-table__sort-separator {
+  padding: 8px 0;
+}
+
+.sbk-data-table__sort-separator::before {
+  content: "";
+  display: block;
+  border-top: 1px solid var(--sbk-menu-separator);
+}
+
+.sbk-data-table__col-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-data-table__cell {
+  position: relative;
+  min-width: 0;
+  height: 48px;
+  overflow: hidden;
+  background-color: var(--sbk-bg);
+}
+
+/* The body's outline is drawn by its edge cells, inside the 48px rows as in Slack. */
+.sbk-data-table__row:first-child .sbk-data-table__cell {
+  border-top: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__row:last-child .sbk-data-table__cell {
+  border-bottom: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__cell:first-child {
+  border-left: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__cell:last-child {
+  border-right: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__row:hover .sbk-data-table__cell {
+  background-color: var(--sbk-row-hover-bg);
+}
+
+.sbk-data-table__row:not(:first-child) .sbk-data-table__cell {
+  box-shadow: inset 0 1px 0 var(--sbk-data-table-sep);
+}
+
+.sbk-data-table__row:first-child .sbk-data-table__cell:first-child {
+  border-top-left-radius: 8px;
+}
+
+.sbk-data-table__row:first-child .sbk-data-table__cell:last-child {
+  border-top-right-radius: 8px;
+}
+
+.sbk-data-table__row:last-child .sbk-data-table__cell:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.sbk-data-table__row:last-child .sbk-data-table__cell:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.sbk-data-table__cell-content {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 12px;
+}
+
+/* Slack clips overlong cell text without an ellipsis. */
+.sbk-data-table__truncate {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Pinned to the frame's left edge, so the pages stay in view while the columns scroll sideways. */
+.sbk-data-table__pagination {
+  position: sticky;
+  left: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-data-table__page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sbk-data-table__page-nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sbk-data-table__page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sbk-data-table__page-btn--active {
+  color: #fff;
+  background-color: var(--sbk-data-table-active);
+}
+
+.sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):hover,
+.sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):focus-visible {
+  color: var(--sbk-text);
+  background-color: var(--sbk-button-hover-bg);
+}
+
+/* Same multiply darkening as a primary button: hover ≈ rgb(20,133,103), pressed ≈ rgb(0,110,81). */
+.sbk-data-table__page-btn--active:hover {
+  background-color: rgb(20, 133, 103);
+}
+
+.sbk-data-table__page-btn--active:active {
+  background-color: rgb(0, 110, 81);
+}
+
+.sbk-rtmini__link {
+  color: var(--sbk-link);
+  text-decoration: none;
+}
+
+.sbk-rtmini__link:hover {
+  text-decoration: underline;
+}
+
+.sbk-rtmini__code {
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  background: var(--sbk-code-bg);
+  border: 1px solid var(--sbk-code-border);
+  border-radius: 3px;
+  padding: 1px 3px;
+}

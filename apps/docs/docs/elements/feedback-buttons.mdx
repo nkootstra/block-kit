@@ -1,0 +1,150 @@
+---
+title: Feedback buttons
+description: Thumbs up / thumbs down feedback for an AI-generated message.
+---
+
+`feedback_buttons` renders a pair of thumbs-up and thumbs-down icon buttons, as seen under an
+AI agent's response in Slack. Only one of the two can be picked at a time: clicking the selected
+one again clears it, matching Slack's own toggle behavior. It's a `context_actions` block element,
+so it's typically placed alongside an [icon button](/elements/icon-button) rather than in an
+`actions` row.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "context_actions",
+        elements: [
+          {
+            type: "feedback_buttons",
+            action_id: "feedback",
+            positive_button: {
+              text: { type: "plain_text", text: "Good response" },
+              value: "positive",
+            },
+            negative_button: {
+              text: { type: "plain_text", text: "Bad response" },
+              value: "negative",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "string",
+      description: "Always `feedback_buttons`.",
+      required: true,
+    },
+    positive_button: {
+      type: "{ text: PlainTextElement; value: string; accessibility_label?: string }",
+      description:
+        "The thumbs-up button. `text` is shown as its tooltip and default accessible name.",
+      required: true,
+    },
+    negative_button: {
+      type: "{ text: PlainTextElement; value: string; accessibility_label?: string }",
+      description:
+        "The thumbs-down button. `text` is shown as its tooltip and default accessible name.",
+      required: true,
+    },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the interaction payload. Must be unique within the block. Maximum length is 255 characters.",
+    },
+  }}
+/>
+
+:::note
+`accessibility_label` on either button's `text` label is read by screen readers instead of that
+button's `text`, same as on a plain button.
+:::
+
+## Examples
+
+### With an accessibility_label
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "context_actions",
+        elements: [
+          {
+            type: "feedback_buttons",
+            action_id: "feedback",
+            positive_button: {
+              text: { type: "plain_text", text: "Good response" },
+              accessibility_label: "Good response",
+              value: "positive",
+            },
+            negative_button: {
+              text: { type: "plain_text", text: "Bad response" },
+              accessibility_label: "Bad response",
+              value: "negative",
+            },
+          },
+          {
+            type: "icon_button",
+            action_id: "remove",
+            icon: "trash",
+            text: { type: "plain_text", text: "Remove" },
+            accessibility_label: "Remove this response",
+          },
+        ],
+      },
+    ],
+  }}
+  actions
+/>
+
+## Interactivity
+
+Clicking a thumb dispatches a `feedback_buttons` action carrying that button's `value` and `text`:
+
+```json
+{
+  "type": "feedback_buttons",
+  "action_id": "feedback",
+  "block_id": "b1",
+  "action_ts": "1706000000.000100",
+  "value": "positive",
+  "text": { "type": "plain_text", "text": "Good response" }
+}
+```
+
+Unlike a plain button, feedback buttons hold a value: picking a thumb writes to `state.values`, and
+picking the same thumb again clears it back out:
+
+```json
+// state.values after picking "Good response"
+{ "b1": { "feedback": { "type": "feedback_buttons", "value": "positive" } } }
+
+// state.values after clicking the same thumb again
+{ "b1": {} }
+```
+
+Only one thumb can be selected at a time. Choosing the other one replaces the selection rather
+than allowing both to be active.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Icon button" href="/elements/icon-button" icon="square-dot">
+    The compact icon-only button feedback buttons are usually paired with.
+  </Card>
+  <Card title="Button" href="/elements/button" icon="mouse-pointer-click">
+    The general-purpose clickable button, for actions outside a context_actions row.
+  </Card>
+  <Card title="Elements overview" href="/elements/index" icon="layout-grid">
+    Where each element can live, and how `action_id` and `block_id` fit together.
+  </Card>
+</CardGroup>
