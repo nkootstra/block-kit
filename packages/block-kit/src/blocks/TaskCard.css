@@ -74,31 +74,77 @@
   color: var(--sbk-task-card-text);
 }
 
+/* Slack's expanded card is a short timeline: the details, with a 1px rule 6px in from the left,
+   then a step whose 5px dot and rule sit in a 12px rail 8px left of the output and sources. */
 .sbk-task-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 0 0 20px;
+  font-size: 13px;
+  line-height: 19.0668px;
+  color: var(--sbk-task-card-text);
 }
 
-.sbk-task-card__details,
+.sbk-task-card__details {
+  position: relative;
+  padding: 0 20px;
+}
+
+.sbk-task-card__details::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 6px;
+  width: 1px;
+  background-color: var(--sbk-surface-ter);
+}
+
+/* Slack underlines the links inside a task's rich text. */
+.sbk-task-card__details .sbk-rtmini__link,
+.sbk-task-card__output .sbk-rtmini__link {
+  text-decoration: underline;
+}
+
+.sbk-task-card__step {
+  display: flex;
+  gap: 8px;
+}
+
+.sbk-task-card__rail {
+  display: flex;
+  flex: 0 0 12px;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 7px;
+}
+
+.sbk-task-card__dot {
+  display: flex;
+  padding-bottom: 2px;
+}
+
+.sbk-task-card__line {
+  flex: 1 1 auto;
+  width: 1px;
+  margin-top: 8px;
+  background-color: var(--sbk-surface-ter);
+}
+
+.sbk-task-card__step-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .sbk-task-card__output {
-  font-size: 13px;
-  color: var(--sbk-task-card-text);
+  margin-bottom: 4px;
 }
 
 .sbk-task-card__sources {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .sbk-task-card__source-link {
-  font-size: 13px;
-  color: rgb(18, 100, 163);
+  color: var(--sbk-link);
   text-decoration: none;
 }
 

@@ -105,4 +105,26 @@ describe("<TaskCard>", () => {
       "https://api.slack.com/partners",
     );
   });
+
+  it("sets the output and sources beside a timeline dot, under the details, like Slack", () => {
+    const { container } = render(
+      <TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />,
+    );
+    fireEvent.click(screen.getByRole("button"));
+    const step = container.querySelector(".sbk-task-card__step")!;
+    expect(step.querySelector(".sbk-status-icon--dot")).toBeTruthy();
+    expect(step.textContent).toContain("This task card shows how timeline mode works");
+    expect(step.textContent).toContain("Task card block");
+    expect(step.textContent).not.toContain("Fetching data");
+  });
+
+  it("leaves out the timeline step when there are only details", () => {
+    const detailsOnly = { ...block, output: undefined, sources: undefined };
+    const { container } = render(
+      <TaskCard block={asTaskCardBlock(detailsOnly)} blockId="b1" index={0} />,
+    );
+    fireEvent.click(screen.getByRole("button"));
+    expect(screen.getByText("Fetching data")).toBeTruthy();
+    expect(container.querySelector(".sbk-task-card__step")).toBeNull();
+  });
 });

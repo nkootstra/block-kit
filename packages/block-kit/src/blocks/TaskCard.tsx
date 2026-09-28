@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
-import { StatusIcon, type TaskStatus } from "../data/statusIcon";
+import { DotIcon, StatusIcon, type TaskStatus } from "../data/statusIcon";
 import type { BlockProps, Json } from "../types";
 
 interface TaskCardSource extends Json {
@@ -57,26 +57,38 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
               <RichTextMini value={block.details} />
             </div>
           ) : null}
-          {block.output ? (
-            <div className="sbk-task-card__output">
-              <RichTextMini value={block.output} />
+          {block.output || sources.length > 0 ? (
+            <div className="sbk-task-card__step">
+              <div className="sbk-task-card__rail">
+                <span className="sbk-task-card__dot">
+                  <DotIcon status="pending" />
+                </span>
+                <span className="sbk-task-card__line" />
+              </div>
+              <div className="sbk-task-card__step-content">
+                {block.output ? (
+                  <div className="sbk-task-card__output">
+                    <RichTextMini value={block.output} />
+                  </div>
+                ) : null}
+                {sources.length > 0 ? (
+                  <ul className="sbk-task-card__sources">
+                    {sources.map((source, i) => (
+                      <li key={source.url ?? i}>
+                        <a
+                          className="sbk-task-card__source-link"
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          {source.text ?? source.url}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             </div>
-          ) : null}
-          {sources.length > 0 ? (
-            <ul className="sbk-task-card__sources">
-              {sources.map((source, i) => (
-                <li key={source.url ?? i}>
-                  <a
-                    className="sbk-task-card__source-link"
-                    href={source.url}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {source.text ?? source.url}
-                  </a>
-                </li>
-              ))}
-            </ul>
           ) : null}
         </div>
       </Collapse>
