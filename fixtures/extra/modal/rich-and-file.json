@@ -1,0 +1,29 @@
+{
+  "type": "modal",
+  "title": { "type": "plain_text", "text": "New entry" },
+  "submit": { "type": "plain_text", "text": "Save" },
+  "close": { "type": "plain_text", "text": "Cancel" },
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "summary",
+      "label": { "type": "plain_text", "text": "Summary" },
+      "element": {
+        "type": "rich_text_input",
+        "action_id": "summary_input",
+        "placeholder": { "type": "plain_text", "text": "Write something" }
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "attachments",
+      "label": { "type": "plain_text", "text": "Attachments" },
+      "element": {
+        "type": "file_input",
+        "action_id": "files",
+        "filetypes": ["pdf", "png"],
+        "max_files": 3
+      }
+    }
+  ]
+}

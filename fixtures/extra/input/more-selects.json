@@ -1,0 +1,42 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "conversation",
+      "label": { "type": "plain_text", "text": "Conversation" },
+      "element": {
+        "type": "conversations_select",
+        "action_id": "conversation",
+        "placeholder": { "type": "plain_text", "text": "Select a conversation" }
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "channels",
+      "label": { "type": "plain_text", "text": "Channels" },
+      "element": {
+        "type": "multi_channels_select",
+        "action_id": "channels",
+        "initial_channels": ["C0123456789"],
+        "placeholder": { "type": "plain_text", "text": "Select channels" }
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "tags",
+      "optional": true,
+      "label": { "type": "plain_text", "text": "Tags (up to 3)" },
+      "hint": { "type": "plain_text", "text": "Options load from the app as you type." },
+      "element": {
+        "type": "multi_external_select",
+        "action_id": "tags",
+        "min_query_length": 1,
+        "max_selected_items": 3,
+        "initial_options": [
+          { "text": { "type": "plain_text", "text": "Urgent" }, "value": "urgent" }
+        ],
+        "placeholder": { "type": "plain_text", "text": "Search tags" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "type": "home",
+  "blocks": [
+    { "type": "header", "text": { "type": "plain_text", "text": "Your tickets" } },
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "*3 open* · 1 waiting on you" },
+      "accessory": {
+        "type": "button",
+        "action_id": "new_ticket",
+        "text": { "type": "plain_text", "text": "New ticket" },
+        "style": "primary"
+      }
+    },
+    { "type": "divider" },
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "*Login page times out*\nOpened 2 days ago · High" },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "ticket_menu",
+        "options": [
+          { "text": { "type": "plain_text", "text": "Close" }, "value": "close" },
+          { "text": { "type": "plain_text", "text": "Reassign" }, "value": "reassign" }
+        ]
+      }
+    },
+    {
+      "type": "context",
+      "elements": [{ "type": "mrkdwn", "text": "Last updated today" }]
+    }
+  ]
+}

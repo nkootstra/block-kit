@@ -1,0 +1,29 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "workflow",
+      "elements": [
+        {
+          "type": "workflow_button",
+          "action_id": "run_workflow",
+          "text": {
+            "type": "plain_text",
+            "text": "Run workflow"
+          },
+          "workflow": {
+            "trigger": {
+              "url": "https://slack.com/shortcuts/Ft0123ABC456/321cba",
+              "customizable_input_parameters": [
+                {
+                  "name": "input_parameter_a",
+                  "value": "Value for input param A"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

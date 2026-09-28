@@ -1,0 +1,49 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "email",
+      "label": { "type": "plain_text", "text": "Email address" },
+      "element": {
+        "type": "email_text_input",
+        "action_id": "email_input",
+        "placeholder": { "type": "plain_text", "text": "name@example.com" }
+      },
+      "hint": { "type": "plain_text", "text": "We'll only use this for receipts." }
+    },
+    {
+      "type": "input",
+      "block_id": "website",
+      "optional": true,
+      "label": { "type": "plain_text", "text": "Website" },
+      "element": {
+        "type": "url_text_input",
+        "action_id": "url_input",
+        "initial_value": "https://example.com"
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "quantity",
+      "label": { "type": "plain_text", "text": "Quantity" },
+      "element": {
+        "type": "number_input",
+        "action_id": "number_input",
+        "is_decimal_allowed": false,
+        "min_value": "1",
+        "max_value": "99",
+        "initial_value": "3"
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "notes",
+      "label": { "type": "plain_text", "text": "Notes" },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "notes_input",
+        "initial_value": "Deliver after 5pm"
+      }
+    }
+  ]
+}

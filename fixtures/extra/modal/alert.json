@@ -1,0 +1,65 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "My App"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Submit"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "alert",
+      "text": {
+        "type": "mrkdwn",
+        "text": "The work is mysterious and important.",
+        "verbatim": false
+      },
+      "level": "info"
+    },
+    {
+      "type": "alert",
+      "text": {
+        "type": "plain_text",
+        "text": "Default level, set in plain text."
+      }
+    },
+    {
+      "type": "alert",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Heads up:* this change can't be undone."
+      },
+      "level": "warning"
+    },
+    {
+      "type": "alert",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Couldn't save your changes. <https://example.com|Try again>."
+      },
+      "level": "error"
+    },
+    {
+      "type": "alert",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Saved. Your teammates can see it now."
+      },
+      "level": "success"
+    },
+    {
+      "type": "alert",
+      "text": {
+        "type": "plain_text",
+        "text": "A longer alert wraps onto more than one line, to show how the icon lines up with the first line of text and how the box grows with its content."
+      },
+      "level": "default"
+    }
+  ]
+}

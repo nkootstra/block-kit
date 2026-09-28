@@ -62,7 +62,9 @@ export {
   type ViewLike,
   type ViewResponseAction,
 } from "./payloads";
+export { HomeTab, type HomeTabProps, type HomeTabView } from "./surfaces/HomeTab";
 export { Modal, type ModalProps, type ModalView } from "./surfaces/Modal";
+export { type AnyView, View, type ViewProps } from "./surfaces/View";
 export { Text, type TextObject } from "./Text";
 export { Tooltip, type TooltipProps } from "./Tooltip";
 export type { BlockProps, ElementProps, Json } from "./types";

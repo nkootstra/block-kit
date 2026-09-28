@@ -1,0 +1,53 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "Here's a summary of what I found."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "context_actions",
+      "elements": [
+        {
+          "type": "feedback_buttons",
+          "action_id": "feedback",
+          "positive_button": {
+            "text": {
+              "type": "plain_text",
+              "text": "Good response"
+            },
+            "accessibility_label": "Good response",
+            "value": "positive"
+          },
+          "negative_button": {
+            "text": {
+              "type": "plain_text",
+              "text": "Bad response"
+            },
+            "accessibility_label": "Bad response",
+            "value": "negative"
+          }
+        },
+        {
+          "type": "icon_button",
+          "action_id": "remove",
+          "icon": "trash",
+          "text": {
+            "type": "plain_text",
+            "text": "Remove"
+          },
+          "accessibility_label": "Remove this response"
+        }
+      ]
+    }
+  ]
+}
