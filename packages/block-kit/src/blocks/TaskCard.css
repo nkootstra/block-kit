@@ -46,8 +46,10 @@
   outline-offset: -2px;
 }
 
+/* A 12px slot, as in Slack: the 13px check and warning overhang it rather than push the title. */
 .sbk-task-card__pill-icon {
   display: inline-flex;
+  width: 12px;
   /* Slack's `middle` lands here; ours sits 0.5px lower and grows the 22px line box. */
   vertical-align: -2px;
   margin: 0 8px 0 0;
