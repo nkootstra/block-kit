@@ -44,17 +44,42 @@
   cursor: pointer;
 }
 
-/* Slack's grey frame holds both the grid and the pagination footer below it. */
+/* Slack's grey frame holds both the grid and the pagination footer below it, and scrolls them
+   sideways together when the columns can't fit. Like Slack's, it's a flex column, so its end
+   padding counts as scrollable space. */
 .sbk-data-table__frame {
-  display: flow-root;
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
   padding: 0 4px;
   background-color: var(--sbk-data-table-bg);
   border-radius: 12px;
 }
 
+/* Slack's scrollbar: an 8px track whose rounded thumb only shows while the table is hovered. */
+.sbk-data-table__frame::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sbk-data-table__frame::-webkit-scrollbar-track,
+.sbk-data-table__frame::-webkit-scrollbar-thumb,
+.sbk-data-table__frame::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.sbk-data-table__frame::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+}
+
+.sbk-data-table__frame:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--sbk-text) 52%, transparent);
+}
+
+/* Like Slack's <table>, the grid never narrows below its columns' 120px minimums. */
 .sbk-data-table__rows {
   position: relative;
-  overflow: auto;
+  min-width: min-content;
 }
 
 /* Without pagination Slack's footer shrinks to a 4px strip. */
@@ -250,7 +275,11 @@
   white-space: nowrap;
 }
 
+/* Pinned to the frame's left edge, so the pages stay in view while the columns scroll sideways. */
 .sbk-data-table__pagination {
+  position: sticky;
+  left: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

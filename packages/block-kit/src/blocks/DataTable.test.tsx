@@ -194,6 +194,17 @@ describe("<DataTable> pagination", () => {
     expect(bodyRowsText(container).map((r) => r[0])[0]).toBe("Row 1");
   });
 
+  it("keeps a short last page as tall as a full one, so the pager stays put like Slack's", () => {
+    const { container } = render(
+      <DataTable block={asDataTableBlock(paginatedBlock)} blockId="b1" index={0} />,
+    );
+    expect(container.querySelector(".sbk-data-table__spacer")).toBeNull();
+    fireEvent.click(screen.getByLabelText("Next page"));
+    const spacer = container.querySelector<HTMLElement>(".sbk-data-table__spacer");
+    // Two of five rows on page 2: three 48px rows' worth of space.
+    expect(spacer?.style.height).toBe("144px");
+  });
+
   it("resets to page 1 when a new sort is applied", () => {
     const { container } = render(
       <DataTable block={asDataTableBlock(paginatedBlock)} blockId="b1" index={0} />,

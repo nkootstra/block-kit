@@ -11,6 +11,8 @@ interface DataTableBlock extends Json {
 }
 
 const PAGE_SIZE = 5;
+/** Height of a body row, which Slack uses to pad a short last page up to a full one. */
+const ROW_HEIGHT = 48;
 
 /**
  * The `data_table` block: a caption, a sortable/paginated grid of cells (first row is the
@@ -53,7 +55,8 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
     setSort(direction ? { column, direction } : null);
   };
 
-  const gridStyle = { gridTemplateColumns: `repeat(${columnCount}, 1fr)` };
+  // Slack's columns share the width but never shrink below 120px; past that the frame scrolls.
+  const gridStyle = { gridTemplateColumns: `repeat(${columnCount}, minmax(120px, 1fr))` };
 
   return (
     <div className="sbk-data-table">
@@ -109,6 +112,12 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
           </div>
         </div>
 
+        {sortedBody.length > PAGE_SIZE && visibleRows.length < PAGE_SIZE ? (
+          <div
+            className="sbk-data-table__spacer"
+            style={{ height: (PAGE_SIZE - visibleRows.length) * ROW_HEIGHT }}
+          />
+        ) : null}
         {sortedBody.length > PAGE_SIZE ? (
           <div className="sbk-data-table__pagination" aria-label="Pagination">
             <button
