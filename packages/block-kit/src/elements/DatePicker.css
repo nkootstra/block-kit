@@ -11,11 +11,13 @@
 }
 
 /* Slack's glyph sits on an 18px text line centred in the 28px field; the line's baseline rounds
-   to a whole pixel, which drops the icon 0.45px below its 13px em box's true centre. */
+   to a whole pixel, which drops the icon 0.45px below its 13px em box's true centre. Chrome snaps
+   `top` to whole pixels, so the last fraction goes in a transform, as Slack's text glyph isn't. */
 .sbk-datepicker__icon {
   position: absolute;
   left: 8px;
-  top: 7.95px;
+  top: 8px;
+  transform: translateY(-0.1px);
   width: 13px;
   height: 13px;
   color: var(--sbk-badge-text);
