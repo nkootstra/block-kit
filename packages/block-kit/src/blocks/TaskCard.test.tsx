@@ -1,0 +1,90 @@
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
+import { afterEach, describe, expect, it } from "vitest";
+import type { Json } from "../types";
+import { TaskCard } from "./TaskCard";
+
+/** TaskCard's block prop is narrowed beyond `Json`; tests build plain JSON fixtures and cast in. */
+function asTaskCardBlock(value: object): ComponentProps<typeof TaskCard>["block"] {
+  return value as ComponentProps<typeof TaskCard>["block"];
+}
+
+function richText(text: string): Json {
+  return {
+    type: "rich_text",
+    elements: [{ type: "rich_text_section", elements: [{ type: "text", text }] }],
+  };
+}
+
+const block = {
+  type: "task_card",
+  task_id: "task_1",
+  title: "Demonstrating Task Card Block Features",
+  status: "in_progress",
+  details: richText("Fetching data"),
+  output: richText("This task card shows how timeline mode works"),
+  sources: [
+    { type: "url", url: "https://api.slack.com/a", text: "Thinking steps" },
+    { type: "url", url: "https://api.slack.com/b", text: "Task card block" },
+  ],
+};
+
+afterEach(cleanup);
+
+describe("<TaskCard>", () => {
+  it("starts collapsed as a single pill showing only the title", () => {
+    render(<TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />);
+    expect(screen.getByText("Demonstrating Task Card Block Features")).toBeTruthy();
+    expect(screen.queryByText("Fetching data")).toBeNull();
+    expect(screen.getByRole("button").getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("expands to reveal details, output and every source link", () => {
+    render(<TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(screen.getByText("Fetching data")).toBeTruthy();
+    expect(screen.getByText("This task card shows how timeline mode works")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Thinking steps" }).getAttribute("href")).toBe(
+      "https://api.slack.com/a",
+    );
+    expect(screen.getByRole("link", { name: "Task card block" }).getAttribute("href")).toBe(
+      "https://api.slack.com/b",
+    );
+  });
+
+  it("shows a spinner icon while the task is in progress", () => {
+    const { container } = render(
+      <TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />,
+    );
+    expect(container.querySelector(".sbk-status-icon--spinner")).toBeTruthy();
+  });
+
+  it("shows a check icon when the task is complete", () => {
+    const done = { ...block, status: "complete" };
+    const { container } = render(<TaskCard block={asTaskCardBlock(done)} blockId="b1" index={0} />);
+    expect(container.querySelector(".sbk-status-icon--complete")).toBeTruthy();
+  });
+
+  it("renders a link element inline within rich_text details", () => {
+    const withLink = {
+      ...block,
+      details: {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "Fetching from " },
+              { type: "link", url: "https://api.slack.com/partners", text: "Thinking Steps" },
+            ],
+          },
+        ],
+      },
+    };
+    render(<TaskCard block={asTaskCardBlock(withLink)} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(screen.getByRole("link", { name: "Thinking Steps" }).getAttribute("href")).toBe(
+      "https://api.slack.com/partners",
+    );
+  });
+});

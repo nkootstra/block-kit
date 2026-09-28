@@ -1,0 +1,64 @@
+.sbk-carousel {
+  position: relative;
+  margin: 8px 0;
+}
+
+.sbk-carousel__scroller {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 8px 0 4px;
+  margin: -8px 0 -4px;
+}
+
+.sbk-carousel__item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.sbk-carousel__item .sbk-card {
+  margin: 0;
+}
+
+.sbk-carousel__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-16px);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--sbk-bg);
+  color: rgb(69, 68, 71);
+  box-shadow:
+    rgba(0, 0, 0, 0.098) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.098) 0px 1px 2px -1px;
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+
+.sbk-carousel__arrow:hover {
+  transform: translateY(-16px) scale(1.1);
+}
+
+/* At either end of the scroll Slack shrinks the arrow away rather than disabling it. */
+.sbk-carousel__arrow--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-16px) scale(0.8);
+}
+
+.sbk-carousel__arrow--left {
+  left: 12px;
+}
+
+.sbk-carousel__arrow--right {
+  right: 12px;
+}

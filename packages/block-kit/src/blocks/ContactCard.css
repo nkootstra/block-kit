@@ -1,0 +1,57 @@
+.sbk-contact-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--sbk-bg);
+  border: 1px solid rgba(94, 93, 96, 0.13);
+  border-radius: 12px;
+}
+
+.sbk-contact-card__avatar {
+  display: block;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--sbk-avatar-placeholder);
+}
+
+.sbk-contact-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 15.6px;
+  color: var(--sbk-muted);
+}
+
+.sbk-contact-card__name {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 19.2px;
+  color: var(--sbk-text);
+}
+
+.sbk-contact-card__skeleton {
+  display: inline-block;
+  width: 120px;
+  height: 8px;
+  border-radius: 1000px;
+  background: var(--sbk-surface-ter);
+}
+
+/* Slack's p-block_kit_unknown_block_error, shown in place of a card it won't render. */
+.sbk-block-error {
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.sbk-block-error__message {
+  font-size: 12.5px;
+  line-height: 18.33px;
+  color: var(--sbk-text);
+  opacity: 0.5;
+}

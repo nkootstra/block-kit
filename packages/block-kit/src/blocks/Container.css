@@ -1,0 +1,117 @@
+.sbk-container {
+  margin: 16px 0 0;
+  background: var(--sbk-bg);
+  border: 1px solid var(--sbk-outline-ter);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Every width keeps the card frame; only the cap differs (`full` has none), per Slack's client. */
+.sbk-container--narrow {
+  max-width: 320px;
+}
+
+.sbk-container--standard {
+  max-width: 480px;
+}
+
+.sbk-container--wide {
+  max-width: 642px;
+}
+
+.sbk-container__header {
+  display: flex;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: default;
+}
+
+.sbk-container__header--button {
+  cursor: pointer;
+}
+
+.sbk-container__header--divider {
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--sbk-outline-ter);
+}
+
+.sbk-container__titles {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sbk-container__icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.sbk-container__title-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sbk-container__title {
+  font-weight: 700;
+  line-height: 22.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sbk-container__subtitle {
+  font-size: 13px;
+  line-height: 16.25px;
+  color: var(--sbk-content-sec);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sbk-container__chevron {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-left: 8px;
+  transition: transform 0.15s ease;
+}
+
+.sbk-container__chevron--collapsed {
+  transform: rotate(-90deg);
+}
+
+.sbk-container__body {
+  padding: 0 12px 12px;
+}
+
+/* Builder omits the image title/caret row when an `image` block is a direct child of a
+   container (Callout.css does the same for one nested in a callout there). */
+.sbk-container__body > .sbk-block--image .sbk-image__title {
+  display: none;
+}
+
+/* Builder's reference for an `image` block directly inside a container drops the block's own
+   top margin (only the bottom margin remains) — the container's body padding provides the top
+   spacing instead. */
+.sbk-container__body > .sbk-block--image .sbk-image {
+  margin-top: 0;
+}
+
+/* Builder drops the top margin of a leading section: its text starts right under the header
+   (catalog/container/icon-plus-subtitle), or 12px below a header divider (header-divider). */
+.sbk-container__header + .sbk-container__body > .sbk-block--section:first-child .sbk-section {
+  margin-top: 0;
+}

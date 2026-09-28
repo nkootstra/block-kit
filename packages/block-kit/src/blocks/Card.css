@@ -1,0 +1,118 @@
+.sbk-card {
+  margin: 8px 0;
+}
+
+.sbk-card__box {
+  width: 340px;
+  max-width: 100%;
+  background: var(--sbk-bg);
+  border: 1px solid rgba(94, 93, 96, 0.13);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sbk-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+.sbk-card__hero {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.sbk-card__header {
+  display: flex;
+  /* A lone title centres on the 36px icon. */
+  align-items: center;
+  gap: 12px;
+}
+
+.sbk-card__icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.sbk-card__icon--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(29, 28, 29, 0.06);
+  color: var(--sbk-muted);
+}
+
+.sbk-card__titles {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sbk-card__title {
+  font-weight: 700;
+  line-height: 22.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Text/mrkdwn content renders its own `.sbk-mrkdwn`/`.sbk-plain-text` span with a fixed
+   font-size/line-height (set in base.css), which otherwise overrides the size we want here
+   since it's set directly on that inline element rather than inherited. Re-assert our sizing
+   on the span itself so title/subtitle actually take the compact card typography. */
+.sbk-card__title .sbk-mrkdwn,
+.sbk-card__title .sbk-plain-text {
+  font-size: 15px;
+  line-height: 22.5px;
+}
+
+.sbk-card__subtitle {
+  font-size: 13px;
+  line-height: 16.25px;
+  color: rgb(94, 93, 96);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sbk-card__subtitle .sbk-mrkdwn,
+.sbk-card__subtitle .sbk-plain-text {
+  font-size: 13px;
+  line-height: 16.25px;
+  color: inherit;
+}
+
+.sbk-card__body {
+  line-height: 22px;
+}
+
+.sbk-card__subtext {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-muted);
+}
+
+.sbk-card__subtext .sbk-mrkdwn,
+.sbk-card__subtext .sbk-plain-text {
+  font-size: 13px;
+  line-height: 18px;
+  color: inherit;
+}
+
+.sbk-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sbk-card__actions-start {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+}

@@ -1,0 +1,153 @@
+:root {
+  --sbk-plan-text: rgb(94, 93, 96);
+  --sbk-plan-complete: rgb(0, 122, 90);
+  --sbk-plan-in-progress: rgb(18, 100, 163);
+  --sbk-plan-pending: rgb(94, 93, 96);
+  --sbk-plan-sep: rgba(94, 93, 96, 0.13);
+}
+
+.sbk-plan {
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0;
+}
+
+.sbk-plan__pill {
+  display: flex;
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  max-width: 100%;
+}
+
+/* Slack sets the toggle as inline text: the status icon hangs in a 20px indent and the icon and
+   caret sit `vertical-align: middle` on the 13px title's line. */
+.sbk-plan__pill-content {
+  display: block;
+  padding-left: 20px;
+  text-indent: -20px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. */
+.sbk-plan__pill:hover {
+  background-color: var(--sbk-hover-overlay);
+}
+
+.sbk-plan__pill:focus-visible {
+  outline: 2px solid var(--sbk-focus-ring);
+  outline-offset: -2px;
+}
+
+.sbk-plan__pill-icon {
+  display: inline-flex;
+  /* Slack's `middle` lands here; ours sits 0.5px lower and grows the 22px line box. */
+  vertical-align: -2px;
+  margin: 0 8px 0 0;
+  font-size: 13px;
+  line-height: normal;
+  text-indent: 0;
+  color: var(--sbk-plan-in-progress);
+}
+
+.sbk-plan__pill-title {
+  font-size: 13px;
+  /* Slack's is 19.5px, but with our Lato metrics that overhangs the 22px line by half a pixel. */
+  line-height: 19px;
+  color: var(--sbk-plan-text);
+}
+
+.sbk-plan__pill-chevron {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 4px;
+  width: 13px;
+  height: 13px;
+  text-indent: 0;
+  color: var(--sbk-plan-text);
+}
+
+.sbk-plan__tasks {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sbk-plan__task {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sbk-plan-sep);
+}
+
+.sbk-plan__task:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sbk-plan__task-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sbk-plan__task-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.sbk-status-icon--complete {
+  color: var(--sbk-plan-complete);
+}
+
+.sbk-status-icon--in-progress,
+.sbk-status-icon--spinner {
+  color: var(--sbk-plan-in-progress);
+}
+
+.sbk-status-icon--pending {
+  color: var(--sbk-plan-pending);
+}
+
+.sbk-plan__task-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sbk-plan__task-details,
+.sbk-plan__task-output {
+  font-size: 13px;
+  color: var(--sbk-plan-text);
+  padding-left: 20px;
+}
+
+.sbk-plan__task-sources {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sbk-plan__task-source-link {
+  font-size: 13px;
+  color: rgb(18, 100, 163);
+  text-decoration: none;
+}
+
+.sbk-plan__task-source-link:hover {
+  text-decoration: underline;
+}
