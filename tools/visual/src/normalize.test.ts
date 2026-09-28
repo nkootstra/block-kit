@@ -104,4 +104,14 @@ describe("normalize", () => {
       "<style>\n</style></head>\n" + '<body><div class="p-gallery_scroller__content"></div></body>';
     expect(normalize(normalize(html)).split(".p-gallery_scroller__content>*{").length).toBe(2);
   });
+
+  it("gives a data table's scroller Slack's 8px, idle-invisible scrollbar", () => {
+    const html =
+      "<style>\n</style></head>\n" +
+      '<body><div class="dataTableBlockContainer__JT5Zf" style="overflow-x:auto"></div></body>';
+    const out = normalize(normalize(html));
+    expect(
+      out.split(".dataTableBlockContainer__JT5Zf::-webkit-scrollbar{width:8px;height:8px}"),
+    ).toHaveLength(2);
+  });
 });

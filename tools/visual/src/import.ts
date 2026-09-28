@@ -13,7 +13,7 @@ const FIXTURES = resolve(import.meta.dir, "../../../fixtures");
 const refs = JSON.parse(await Bun.stdin.text()) as Record<string, string>;
 let written = 0;
 for (const [name, html] of Object.entries(refs)) {
-  if (!/^[a-z0-9/_-]+$/.test(name) || name.includes("..")) {
+  if (!/^[a-z0-9/_-]+(@[a-z0-9-]+)?$/.test(name) || name.includes("..")) {
     console.warn(`skipping invalid name ${JSON.stringify(name)}`);
     continue;
   }

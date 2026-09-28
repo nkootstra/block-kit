@@ -5,6 +5,9 @@
  *   bun tools/visual/src/compare.ts [fixture-prefix...] [--base=http://localhost:5180]
  *     [--check [--tolerance=0.5]] [--update-baseline]
  *
+ * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
+ * expanded, a table sorted); STATES replays the same interaction on our rendering first.
+ *
  * Writes reference/actual/diff/compare PNGs to test-results/visual/, plus report.json and
  * index.html on a full (unfiltered) run.
  *
@@ -113,6 +116,59 @@ await context.route(/slack-imgs\.com|picsum\.photos/, async (route) => {
   });
 });
 
+/**
+ * How to reach each captured `@state`: `ours` clicks through our rendering the way the reference was
+ * clicked through in Builder. `reference` restores what a DOM snapshot can't record, such as a
+ * scroll offset.
+ */
+const STATES: Record<
+  string,
+  { ours: (page: Page) => Promise<void>; reference?: (page: Page) => Promise<void> }
+> = {
+  "catalog/agents/plan@expanded": { ours: (p) => p.click(".sbk-plan__pill") },
+  "catalog/agents/plan-error@expanded": { ours: (p) => p.click(".sbk-plan__pill") },
+  "catalog/agents/plan@tasks-collapsed": {
+    ours: async (p) => {
+      await p.click(".sbk-plan__pill");
+      for (const header of await p
+        .locator('.sbk-plan__task-header:not([aria-disabled="true"])')
+        .all()) {
+        await header.click();
+      }
+    },
+  },
+  "catalog/agents/task-card@expanded": { ours: (p) => p.click(".sbk-task-card__pill") },
+  "catalog/container/collapsible@collapsed": {
+    ours: (p) => p.click(".sbk-container__header--button"),
+  },
+  "catalog/image/title@hidden": { ours: (p) => p.click(".sbk-image__toggle") },
+  "catalog/image/no-title@hidden": { ours: (p) => p.click(".sbk-image__toggle") },
+  "catalog/table/numeric-sort-data-table@sort-asc": {
+    ours: async (p) => {
+      await p.getByRole("button", { name: "Amount" }).click();
+      await p.getByRole("menuitemradio", { name: "Ascending" }).click();
+    },
+  },
+  "catalog/table/paginated-data-table@page-2": {
+    ours: (p) => p.getByRole("button", { name: "Next page" }).click(),
+  },
+  // One press of Slack's right arrow scrolls the gallery by a card and its gap: 356px.
+  "catalog/card-and-carousel/carousel@scrolled": {
+    ours: (p) => p.getByRole("button", { name: "Scroll right" }).click(),
+    reference: (p) =>
+      p.evaluate(() => {
+        const wrapper = document.querySelector(".p-gallery_scroller__wrapper");
+        if (wrapper) wrapper.scrollLeft = 356;
+      }),
+  },
+};
+
+/** Lets transitions and smooth scrolling started by a state's clicks finish before the screenshot. */
+async function afterInteraction(page: Page) {
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(600);
+}
+
 async function settle(page: Page) {
   await page.evaluate(async () => {
     await document.fonts.ready;
@@ -166,10 +222,14 @@ for (const name of names) {
   await page.setContent(html, { waitUntil: "load" });
   await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
   await settle(page);
+  const state = STATES[name];
+  if (name.includes("@") && !state)
+    console.warn(`  no STATES entry for ${name}; comparing its initial state`);
+  if (state?.reference) await state.reference(page);
   const reference = await shot(page, "#sbk-reference > *");
 
   const url = new URL(base);
-  url.searchParams.set("render", name);
+  url.searchParams.set("render", name.split("@")[0] ?? name);
   url.searchParams.set("width", String(meta.width));
   if (icon) url.searchParams.set("icon", icon.replace(/&amp;/g, "&"));
   const errors: string[] = [];
@@ -181,6 +241,10 @@ for (const name of names) {
     await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
     await page.waitForSelector("#sbk-render > *", { timeout: 10_000 });
     await settle(page);
+    if (state) {
+      await state.ours(page);
+      await afterInteraction(page);
+    }
     actual = await shot(page, "#sbk-render > *");
   } catch (err) {
     const error = errors[0] ?? (err as Error).message.split("\n")[0];

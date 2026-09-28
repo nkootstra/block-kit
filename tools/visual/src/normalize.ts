@@ -16,9 +16,12 @@
  *   was dropped and it inherits italic from its <i> host, which slants it. Slack's is upright.
  * - An inherited property reset to its default was dropped too: Slack's gallery scroller is
  *   `nowrap` and its carousel cards set `wrap` again, so card bodies rendered as one clipped line.
+ * - The same goes for a data table's scroller, whose 8px scrollbar Slack also keeps idle-invisible.
  */
 export function normalize(html: string): string {
-  return uprightPseudos(wrapCarouselCards(addModalScrollbar(restoreGlyphs(html))))
+  return uprightPseudos(
+    wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))),
+  )
     .replace(/<span\b[^>]*>/g, (tag) =>
       /class="c-timestamp|data-qa="timestamp_label"/.test(tag)
         ? tag.replace(/style="([^"]*)"/, (_, style: string) => {
@@ -102,6 +105,19 @@ function addModalScrollbar(html: string): string {
   const css = [
     `${rule}width:8px}`,
     `.${MODAL_SCROLLBAR}::-webkit-scrollbar-track,.${MODAL_SCROLLBAR}::-webkit-scrollbar-thumb,.${MODAL_SCROLLBAR}::-webkit-scrollbar-corner{background:transparent}`,
+  ].join("\n");
+  return html.replace("</style>", `${css}\n</style>`);
+}
+
+/** Slack's `.dataTableBlockContainer` scrollbar rules, idle: an 8px track, its thumb hidden. */
+function addDataTableScrollbar(html: string): string {
+  const scroller = html.match(/class="(dataTableBlockContainer__[\w-]+)/)?.[1];
+  if (!scroller) return html;
+  const rule = `.${scroller}::-webkit-scrollbar{`;
+  if (html.includes(rule)) return html;
+  const css = [
+    `${rule}width:8px;height:8px}`,
+    `.${scroller}::-webkit-scrollbar-track,.${scroller}::-webkit-scrollbar-thumb,.${scroller}::-webkit-scrollbar-corner{background:transparent}`,
   ].join("\n");
   return html.replace("</style>", `${css}\n</style>`);
 }

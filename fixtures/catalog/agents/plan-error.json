@@ -1,0 +1,26 @@
+{
+  "blocks": [
+    {
+      "type": "plan",
+      "plan_id": "plan_error",
+      "title": "Plan with a failed task",
+      "tasks": [
+        {
+          "task_id": "t1",
+          "title": "Fetch data",
+          "status": "complete"
+        },
+        {
+          "task_id": "t2",
+          "title": "Summarize results",
+          "status": "error"
+        },
+        {
+          "task_id": "t3",
+          "title": "Post summary",
+          "status": "pending"
+        }
+      ]
+    }
+  ]
+}
