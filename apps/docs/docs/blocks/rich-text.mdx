@@ -1,11 +1,11 @@
 ---
 title: Rich text
-description: Slack's structured formatted-text block — the same format its own composer produces.
+description: Slack's structured formatted-text block, the same format its own composer produces.
 ---
 
 `rich_text` is Slack's most expressive text block: paragraphs, lists, quotes, and code, each built
 from styled runs and mentions rather than a markdown string. It's what Slack's WYSIWYG message
-composer outputs, and what a `rich_text_input` element returns on submit — reach for it whenever
+composer outputs, and what a `rich_text_input` element returns on submit. Reach for it whenever
 you need structure `mrkdwn` can't express, like nested lists or a fenced code block.
 
 <Preview
@@ -54,7 +54,7 @@ you need structure `mrkdwn` can't express, like nested lists or a fenced code bl
   }}
 />
 
-Each entry in `elements` is a block-level element — a paragraph, a list, a quote, or a code block.
+Each entry in `elements` is a block-level element: a paragraph, a list, a quote, or a code block.
 A block-level element (except a list) in turn holds an array of inline elements: styled text,
 links, mentions, emoji, and dates.
 
@@ -62,7 +62,7 @@ links, mentions, emoji, and dates.
   type={{
     rich_text_section: {
       type: '{ type: "rich_text_section"; elements: RichTextElement[] }',
-      description: "A paragraph of inline content — the most common block-level element.",
+      description: "A paragraph of inline content, the most common block-level element.",
     },
     rich_text_list: {
       type: '{ type: "rich_text_list"; style: "bullet" | "ordered"; indent?: number; border?: number; elements: RichTextSection[] }',
@@ -332,7 +332,7 @@ syntax-highlighted fenced code block instead:
 />
 
 :::note
-A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to render — the preview
+A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to render. The preview
 resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DESIGN` for you (see
 [interactivity](/guides/interactivity) for how resolvers work in your own app). An unresolved
 `channel` renders as a locked "Private channel" placeholder; an unresolved `user` or `usergroup`

@@ -3,8 +3,8 @@ title: Card
 description: A bordered card with an icon, title, subtitle, hero image, body text, and actions.
 ---
 
-`card` lays out a small piece of content — an icon or image, a title and subtitle, a hero image, body
-text, and buttons — inside a bordered box. It's a library-invented block, not part of the public
+`card` lays out a small piece of content (an icon or image, a title and subtitle, a hero image, body
+text, and buttons) inside a bordered box. It's a library-invented block, not part of the public
 `@slack/types` package; use it standalone or as an item inside a [carousel](/blocks/carousel).
 
 <Preview
@@ -272,7 +272,7 @@ the right, regardless of where it appears in `actions`.
 
 ## Interactivity
 
-Each entry in `actions` is a standard interactive element — most often a `button` — and dispatches
+Each entry in `actions` is a standard interactive element, most often a `button`, and dispatches
 Slack's `block_actions` payload the same way an [actions block](/blocks/actions) does. Click a button
 in any preview above and check the action log: `onAction` receives
 

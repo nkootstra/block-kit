@@ -31,7 +31,7 @@ function Status({ block }: BlockProps<StatusBlock>) {
 blockComponents.status = Status;
 ```
 
-Register it once, before rendering — for example next to the stylesheet import. Now `{ "type": "status", "state": "up", "text": "All systems *operational*" }` renders with your component, wherever it appears: messages, modals, the Home tab, and blocks nested in containers.
+Register it once, before rendering, for example next to the stylesheet import. Now `{ "type": "status", "state": "up", "text": "All systems *operational*" }` renders with your component, wherever it appears: messages, modals, the Home tab, and blocks nested in containers.
 
 The block is wrapped in `<div class="sbk-block sbk-block--status" data-block-id="…">`, so it gets Slack's spacing between blocks.
 

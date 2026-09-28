@@ -5,7 +5,7 @@ sidebar:
   order: 0
 ---
 
-`@nkootstra/block-kit` renders the Block Kit JSON your Slack app sends — messages, modals and Home tabs — as React components that look and behave the way they do in Slack.
+`@nkootstra/block-kit` renders the Block Kit JSON your Slack app sends (messages, modals and Home tabs) as React components that look and behave the way they do in Slack.
 
 <Preview
   actions
@@ -54,11 +54,11 @@ Click a button: the log under the preview shows the action your `onAction` handl
 
 ## Why this exists
 
-Slack's [Block Kit Builder](https://app.slack.com/block-kit-builder) only runs inside Slack. When you want to show a message outside of it — a preview in your admin panel, a gallery of templates, an approval queue in your own product, a test harness for your bot — you'd otherwise have to rebuild Slack's layout rules by hand.
+Slack's [Block Kit Builder](https://app.slack.com/block-kit-builder) only runs inside Slack. When you want to show a message outside of it, such as in a preview in your admin panel, a gallery of templates, an approval queue in your own product, or a test harness for your bot, you'd otherwise have to rebuild Slack's layout rules by hand.
 
 This package does that work for you:
 
-- **Every block and element.** Sections, rich text, tables, charts, cards, carousels, inputs, every select menu and picker — including the newer agent blocks such as `plan` and `task_card`.
+- **Every block and element.** Sections, rich text, tables, charts, cards, carousels, inputs, every select menu and picker, including the newer agent blocks such as `plan` and `task_card`.
 - **Measured against Slack.** Each block is compared, pixel by pixel, against captures of Slack's own rendering. Spacing, fonts, colours, hover and focus states match.
 - **Interactive.** Buttons, selects, pickers and inputs work. You receive Slack's `block_actions`, `view_submission` and `block_suggestion` payloads, and can answer them the way your app would: open a modal, update the message, return validation errors.
 - **Plugs into your app.** Forward interactions to an existing Bolt app with a signed relay, and resolve user and channel mentions from the Slack Web API.

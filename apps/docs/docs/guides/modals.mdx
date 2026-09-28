@@ -4,7 +4,7 @@ description: Open, push and update modals from an action, validate and submit th
 ---
 
 A modal is a `<Modal>` rendering a `view`: a title, a scrollable body of blocks, and an optional
-close/submit footer. You rarely render one directly — instead a button's `onAction` opens it through
+close/submit footer. You rarely render one directly: instead a button's `onAction` opens it through
 `views`, the same `views.open` / `views.push` / `views.update` an app would call.
 
 <Preview
@@ -47,7 +47,7 @@ close/submit footer. You rarely render one directly — instead a button's `onAc
 ## Opening a modal from a button
 
 `views` is on every `ActionContext` (see [Handling actions](/guides/interactivity)). Call `views.open`
-with a view object — no `id`, `hash` or `root_view_id`, the provider assigns those the way Slack does:
+with a view object with no `id`, `hash` or `root_view_id`; the provider assigns those the way Slack does:
 
 ```tsx
 import { BlockKitProvider, Message, type ViewsApi } from "@nkootstra/block-kit";
@@ -97,7 +97,7 @@ export function App() {
 }
 ```
 
-The provider renders any opened modal on top of your page automatically — you don't add `<Modal>`
+The provider renders any opened modal on top of your page automatically. You don't add `<Modal>`
 yourself for this flow.
 
 ## views.open / push / update / close / clear
@@ -179,8 +179,8 @@ nothing to just close the modal.
   }}
 />
 
-If `onSubmit` throws or its promise rejects — the same as an app's request timing out or answering
-with an error — the modal stays open, matching Slack's behavior when it can't reach your app.
+If `onSubmit` throws or its promise rejects, the same as an app's request timing out or answering
+with an error, the modal stays open, matching Slack's behavior when it can't reach your app.
 
 ## Validation errors
 
@@ -191,8 +191,8 @@ and the submission never fires. See [Validation](/guides/validation) for the exa
 Errors your `onSubmit` returns via `response_action: "errors"` layer on top of those and clear once
 the field's value changes, exactly as Slack's client behaves.
 
-You can also seed a modal with errors up front — useful for a standalone `<Modal>` you're previewing
-outside the `views` flow — with the `errors` prop on `<BlockKitProvider>`:
+You can also seed a modal with errors up front, useful for a standalone `<Modal>` you're previewing
+outside the `views` flow, with the `errors` prop on `<BlockKitProvider>`:
 
 ```tsx
 <BlockKitProvider errors={{ summary: "This field is required." }}>
@@ -212,19 +212,19 @@ the root view, is pressed.
 ```
 
 Like Slack, a pushed view only reports `view_closed` for its own dismissal when its `notify_on_close`
-field is `true` — a root view (or a standalone `<Modal>`) always reports it, since something needs to
+field is `true`. A root view (or a standalone `<Modal>`) always reports it, since something needs to
 know to stop showing it.
 
 ## The 3-view stack limit
 
 Slack caps a modal stack at 3 views. `views.push` beyond that returns `""` and does nothing (with a
-console warning) instead of stacking a 4th view — build your flow assuming callers check the id, or
+console warning) instead of stacking a 4th view. Build your flow assuming callers check the id, or
 just keep flows to 2-3 steps as Slack recommends.
 
 ## Rendering a modal directly
 
-For a modal that isn't opened from a button — a docs example, a settings panel embedded in your own
-page — render `<Modal>` (or the surface-agnostic `<View>`) yourself:
+For a modal that isn't opened from a button (a docs example, a settings panel embedded in your own
+page), render `<Modal>` (or the surface-agnostic `<View>`) yourself:
 
 ```tsx
 import { BlockKitProvider, Modal } from "@nkootstra/block-kit";
@@ -245,7 +245,7 @@ import { BlockKitProvider, Modal } from "@nkootstra/block-kit";
 ## useLiveView
 
 A standalone `<Modal>`/`<HomeTab>` you render this way can still be updated by `views.update` /
-`views.publish` from elsewhere in the tree — `<Modal>` and `<HomeTab>` use `useLiveView` internally to
+`views.publish` from elsewhere in the tree. `<Modal>` and `<HomeTab>` use `useLiveView` internally to
 track that. If you're building a custom surface and want the same "the app's last update wins, until
 the `view` prop changes by content" behavior, use it directly:
 

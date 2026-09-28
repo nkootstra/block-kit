@@ -4,7 +4,7 @@ description: A group of options where exactly one can be selected at a time.
 ---
 
 `radio_buttons` renders a stack of options where picking one clears any other. Use it when someone
-must choose a single option from a short list — an `actions` row or section accessory for a live
+must choose a single option from a short list: an `actions` row or section accessory for a live
 choice, or an `input` block to collect a value in a modal or Home tab.
 
 <Preview
@@ -239,7 +239,7 @@ As a section accessory, the group stacks below the section's text instead of sit
   actions
 />
 
-The dialog appears before any new selection is applied — picking the option that's already
+The dialog appears before any new selection is applied. Picking the option that's already
 selected does nothing and never asks. See [Confirmation dialogs](/elements/confirmation-dialogs).
 
 ## Interactivity
@@ -273,14 +273,14 @@ like Slack does when the surface loads), and again on every selection:
 }
 ```
 
-Without `initial_option`, nothing is written to `state.values` until the first pick — unlike
+Without `initial_option`, nothing is written to `state.values` until the first pick. Unlike
 checkboxes, there's no empty state to report.
 
 ## Related
 
 <CardGroup cols={2}>
   <Card title="Checkboxes" href="/elements/checkboxes" icon="check-square">
-    The multi-select equivalent — any number of options can be checked at once.
+    The multi-select equivalent: any number of options can be checked at once.
   </Card>
   <Card title="Select menus" href="/elements/select-menus" icon="list">
     Static, external, users, conversations and channels selects, single or multi.

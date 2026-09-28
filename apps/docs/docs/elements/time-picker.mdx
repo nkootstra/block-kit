@@ -93,7 +93,7 @@ modal.
 />
 
 The closed control shows the `placeholder` text, or "Select time" if none is given, until a time
-is picked — then it reads e.g. "1:37 PM".
+is picked. Then it reads e.g. "1:37 PM".
 
 ### With an initial value
 
@@ -159,7 +159,7 @@ Setting `timezone` shows a hint underneath the control naming it:
   }}
 />
 
-`timezone` is a display hint only — it labels the picker but doesn't shift `initial_time` or the
+`timezone` is a display hint only: it labels the picker but doesn't shift `initial_time` or the
 options list, which are always plain `HH:mm` wall-clock values. It's unrelated to the `timeZone`
 prop on `BlockKitProvider`, which controls how _other_ elements (like `datetimepicker`) format
 their values for display.
@@ -216,7 +216,7 @@ When `initial_time` is set, that value is reported as state as soon as the eleme
 any interaction.
 
 :::note
-Unlike `datepicker`, `timepicker` has no "clear" affordance — once a time is selected, picking a
+Unlike `datepicker`, `timepicker` has no "clear" affordance. Once a time is selected, picking a
 different option is the only way to change it.
 :::
 

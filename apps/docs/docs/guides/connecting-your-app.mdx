@@ -4,7 +4,7 @@ description: Send real Slack interaction payloads from the browser to an existin
 ---
 
 Everything so far handles interactions locally with `onAction`/`onSubmit`/`onOptions`. To instead
-drive a real Slack app — the same Bolt (or raw HTTP) app you'd deploy — point the provider at your
+drive a real Slack app (the same Bolt or raw HTTP app you'd deploy), point the provider at your
 app's request URL. Two pieces make this safe: `httpTransport` on the client, and a relay on your
 server that signs the request the way Slack does.
 
@@ -15,7 +15,7 @@ server that signs the request the way Slack does.
 └────────────┘                    └──────────────┘                  └─────────────┘
 ```
 
-The signing secret never reaches the browser — only your server has it — and the browser only ever
+The signing secret never reaches the browser: only your server has it. The browser only ever
 talks to its own origin.
 
 ## Client: httpTransport
@@ -63,7 +63,7 @@ export function App() {
       type: "string",
       required: true,
       description:
-        "Where payloads are POSTed — your relay route, or an app with signature verification disabled.",
+        "Where payloads are POSTed: your relay route, or an app with signature verification disabled.",
     },
     headers: {
       type: "HeadersInit",
@@ -86,7 +86,7 @@ export function App() {
 
 `block_actions` and `view_closed` are sent fire-and-forget. A `view_submission`'s `response_action`
 reply is parsed and applied to the modal automatically, and a `block_suggestion`'s reply fills the
-external select — the same as if you'd wired up `onSubmit`/`onOptions` by hand.
+external select, the same as if you'd wired up `onSubmit`/`onOptions` by hand.
 
 ## Server: createInteractionRelay
 
@@ -155,7 +155,7 @@ Bun.serve({
 });
 ```
 
-The relay works with any framework that speaks the Fetch API `Request`/`Response` pair — Hono, Vite
+The relay works with any framework that speaks the Fetch API `Request`/`Response` pair: Hono, Vite
 middleware, Cloudflare Workers, and so on.
 
 ## Why the signing secret must stay server-side
@@ -163,8 +163,8 @@ middleware, Cloudflare Workers, and so on.
 Slack's apps verify every incoming request with an HMAC computed from the signing secret, the request
 timestamp and the raw body (`X-Slack-Signature` / `X-Slack-Request-Timestamp`); an unsigned request is
 rejected. If the secret shipped in your page's JavaScript, anyone could read it out of the bundle and
-forge requests to your app as if they came from Slack. Keeping `signingSecret` only on the server — and
-having the browser talk only to your own relay route, over your own origin's auth — is the same trust
+forge requests to your app as if they came from Slack. Keeping `signingSecret` only on the server, and
+having the browser talk only to your own relay route, over your own origin's auth, is the same trust
 boundary a real Slack app relies on.
 
 ## Signing without the relay

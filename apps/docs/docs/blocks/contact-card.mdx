@@ -4,7 +4,7 @@ description: A person's name and avatar, resolved from a Slack user id.
 ---
 
 `contact_card` shows the name for a Slack user id, resolved the same way a mention is. It doesn't
-appear in the public `@slack/types` package — treat this page's field list as the reference.
+appear in the public `@slack/types` package, so treat this page's field list as the reference.
 
 <Preview
   payload={{
@@ -45,7 +45,7 @@ resolve to real names.
   }}
 />
 
-When a user id can't be resolved — no resolver configured, or the resolver doesn't know that id — the
+When a user id can't be resolved (no resolver configured, or the resolver doesn't know that id), the
 card shows a placeholder skeleton in place of the name, the same way Slack's own Builder does for an
 id it can't look up.
 
@@ -64,8 +64,8 @@ id it can't look up.
 />
 
 :::warning
-Slack can't display a `contact_card` nested inside a [container](/blocks/container) — including one
-nested inside a [callout](/blocks/callout) that's itself inside a container — and shows "This content
+Slack can't display a `contact_card` nested inside a [container](/blocks/container), including one
+nested inside a [callout](/blocks/callout) that's itself inside a container, and shows "This content
 could not be displayed" instead. This library matches that behavior so a payload previews the way it
 would in Slack.
 :::

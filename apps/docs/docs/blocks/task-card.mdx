@@ -3,9 +3,9 @@ title: Task card
 description: A single collapsible task with a status, details, output, and sources.
 ---
 
-`task_card` shows one task's progress — what it's doing, what it produced, and where that came from.
+`task_card` shows one task's progress: what it's doing, what it produced, and where that came from.
 It's a [Slack block documented for agent surfaces](https://docs.slack.dev/reference/block-kit/blocks/task-card-block/),
-newer than the version of `@slack/types` this library depends on — its TypeScript type is the field
+newer than the version of `@slack/types` this library depends on, so its TypeScript type is the field
 reference here. It's read-only: expanding a task card doesn't emit an action. Use `plan` instead when
 you have several tasks under one shared goal.
 
@@ -138,7 +138,7 @@ section.
   }}
 />
 
-### Minimal — title and status only
+### Minimal: title and status only
 
 <Preview
   payload={{
@@ -148,7 +148,7 @@ section.
   }}
 />
 
-`details`, `output`, and `sources` are all optional — a bare task card shows just its status and title.
+`details`, `output`, and `sources` are all optional. A bare task card shows just its status and title.
 
 ## Related
 

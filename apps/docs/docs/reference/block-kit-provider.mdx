@@ -34,7 +34,7 @@ One provider can hold several surfaces. Each action still carries the message or
     onPayload: {
       type: "(payload: BlockActionsPayload, context: PayloadContext) => void",
       description:
-        "The same actions, wrapped in the full `block_actions` payload your request URL would receive — team, user, container, `response_url` and `state`. Use it to forward actions to an existing app.",
+        "The same actions, wrapped in the full `block_actions` payload your request URL would receive: team, user, container, `response_url` and `state`. Use it to forward actions to an existing app.",
     },
     onSubmit: {
       type: "(payload, context: { views }) => SubmitResult | Promise<SubmitResult>",
@@ -81,7 +81,7 @@ One provider can hold several surfaces. Each action still carries the message or
     errors: {
       type: "Record<string, string>",
       description:
-        'Validation errors keyed by `block_id`, shown under `input` blocks — the shape of `response_action: "errors"`.',
+        'Validation errors keyed by `block_id`, shown under `input` blocks: the shape of `response_action: "errors"`.',
     },
   }}
 />
@@ -119,7 +119,7 @@ The second argument to `onAction`.
     state: {
       type: "StateValues",
       description:
-        "The value of every input on the surface when the action happened, keyed by `block_id`, then `action_id` — like `view.state.values`.",
+        "The value of every input on the surface when the action happened, keyed by `block_id`, then `action_id`, like `view.state.values`.",
     },
     views: {
       type: "ViewsApi",

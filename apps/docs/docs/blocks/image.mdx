@@ -49,7 +49,7 @@ screenshot, photo, or diagram inline in a message, modal, or App Home surface.
     },
     title: {
       type: "PlainTextElement",
-      description: "A caption shown above the image. Plain text only — `mrkdwn` isn't supported.",
+      description: "A caption shown above the image. Plain text only; `mrkdwn` isn't supported.",
     },
     block_id: {
       type: "string",
@@ -60,7 +60,7 @@ screenshot, photo, or diagram inline in a message, modal, or App Home surface.
 
 :::note
 Outside a real Slack workspace, this library can't resolve a `slack_file` reference to actual image
-bytes — that needs an authenticated `files.info` call. It renders Slack's documented fallback
+bytes, which needs an authenticated `files.info` call. It renders Slack's documented fallback
 instead: a placeholder box with the `alt_text`. `image_url` renders normally.
 :::
 

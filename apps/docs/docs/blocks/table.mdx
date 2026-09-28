@@ -3,7 +3,7 @@ title: Table
 description: A plain grid of rich text cells, for small datasets with no sorting or paging.
 ---
 
-`table` renders a fixed grid — first row as the header, every cell either `rich_text` or plain
+`table` renders a fixed grid: first row as the header, every cell either `rich_text` or plain
 text. Reach for it when a dataset is small enough to show in full; for anything that needs
 sorting or pagination, use `data_table` instead.
 
@@ -95,7 +95,7 @@ Each cell is one of three shapes, picked by `type`:
   type={{
     rich_text: {
       type: "RichTextBlock",
-      description: "A Slack rich text node — bold, italic, links, emoji, and other inline styles.",
+      description: "A Slack rich text node: bold, italic, links, emoji, and other inline styles.",
     },
     raw_text: {
       type: '{ type: "raw_text", text: string }',
@@ -126,7 +126,7 @@ Each cell is one of three shapes, picked by `type`:
 />
 
 :::note
-Slack also caps the total character count across every cell in a table at 10,000 — split a
+Slack also caps the total character count across every cell in a table at 10,000. Split a
 larger dataset across multiple messages instead of one big table.
 :::
 
@@ -134,7 +134,7 @@ larger dataset across multiple messages instead of one big table.
 
 ### Basic table
 
-The preview above is adapted from `fixtures/catalog/table/simple-table.json` — a header row and
+The preview above is adapted from `fixtures/catalog/table/simple-table.json`, a header row and
 one data row, both `rich_text` cells.
 
 ### Alignment and wrapping

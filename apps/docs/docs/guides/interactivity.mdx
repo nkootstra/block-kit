@@ -3,7 +3,7 @@ title: Handling actions
 description: Respond to clicks, selects and inputs with onAction, read state.values, and update or delete the message they came from.
 ---
 
-Every interactive element — a button, a select, a checkbox — reports back through the
+Every interactive element (a button, a select, a checkbox) reports back through the
 `<BlockKitProvider>` that wraps it. `onAction` is where you react: log the click, look at what else
 is filled in on the surface, open a modal, or change the message.
 
@@ -88,7 +88,7 @@ The second argument is the `ActionContext`:
     state: {
       type: "StateValues",
       description:
-        "Every input's current value on the surface, keyed by block_id then action_id — see below.",
+        "Every input's current value on the surface, keyed by block_id then action_id. See below.",
     },
     views: {
       type: "ViewsApi",
@@ -128,8 +128,8 @@ modal is submitted or another element sends an action.
 
 ## onStateChange
 
-To watch every value change as it happens — for a live character count, or to mirror a form's state
-into your own component — pass `onStateChange` to the provider. It's called with the full
+To watch every value change as it happens, for a live character count or to mirror a form's state
+into your own component, pass `onStateChange` to the provider. It's called with the full
 `state.values` object after each change, the same shape `onAction` receives as `state`.
 
 ```tsx
@@ -201,8 +201,8 @@ the action came from, so unrelated messages elsewhere on the page are untouched.
 ## onPayload: the full Slack payload
 
 `onAction` gives you the one action plus convenient handles. If you'd rather work with the exact JSON
-Slack would POST to your app's request URL — to feed straight into Bolt-style handler code, or to log
-what you'd actually receive in production — use `onPayload` instead (or alongside `onAction`):
+Slack would POST to your app's request URL, to feed straight into Bolt-style handler code or to log
+what you'd actually receive in production, use `onPayload` instead (or alongside `onAction`):
 
 ```tsx
 <BlockKitProvider
@@ -216,7 +216,7 @@ what you'd actually receive in production — use `onPayload` instead (or alongs
 ```
 
 `onPayload` needs the surface it fires from (`<Message>`, `<Modal>`, `<HomeTab>`) to know its
-container, which they register automatically — you don't need to do anything extra to enable it.
+container, which they register automatically. You don't need to do anything extra to enable it.
 
 ## Identity
 

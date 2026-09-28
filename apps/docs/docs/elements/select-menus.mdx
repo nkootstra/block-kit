@@ -4,8 +4,8 @@ description: Dropdowns for a fixed list, an external data source, or Slack's own
 ---
 
 A select menu is a dropdown that reports one chosen value (`*_select`) or several
-(`multi_*_select`). Slack has five data sources — `static`, `external`, `users`, `conversations`,
-`channels` — each with its own single- and multi-select type, and its own field name in
+(`multi_*_select`). Slack has five data sources: `static`, `external`, `users`, `conversations`,
+and `channels`, each with its own single- and multi-select type, and its own field name in
 `state.values`. Use it wherever a button's fixed set of choices isn't enough: picking a user to
 assign, a channel to post to, or an option from a list you don't want to spell out as buttons.
 
@@ -199,7 +199,7 @@ field, and grows to fit them:
 
 ### External select
 
-Options aren't provided up front — Slack (and this library) asks your app for them as the person
+Options aren't provided up front. Slack (and this library) asks your app for them as the person
 types, via a `block_suggestion` request. Give the `<BlockKitProvider>` an `onOptions` handler; it's
 called with the same payload Slack would send your app's options load URL, and its return value is
 what fills the menu.
@@ -254,12 +254,12 @@ The request looks like this (see [Interactivity](#interactivity) below for the f
 }
 ```
 
-Your handler answers with `{ options }` or `{ option_groups }` — the same shapes as a static
-select's — built from `SuggestionOption` objects (`text`, `value`, optional `description`/`url`).
+Your handler answers with `{ options }` or `{ option_groups }`, the same shapes as a static
+select's, built from `SuggestionOption` objects (`text`, `value`, optional `description`/`url`).
 
 :::note
 Without an `onOptions` handler, this library's preview lets you type a value and press Enter to
-select it directly — useful for prototyping, but not how Slack itself behaves.
+select it directly. This is useful for prototyping, but it's not how Slack itself behaves.
 :::
 
 The Preview above already answers `external_select` from a fixed fruit list, so you can try typing
@@ -316,7 +316,7 @@ options already picked via `initial_options`:
 
 ### Users select
 
-Populated from Slack's own user directory — there's nothing to pass for the option list itself,
+Populated from Slack's own user directory: there's nothing to pass for the option list itself,
 only which user (if any) starts selected.
 
 <Preview
@@ -374,7 +374,7 @@ As an `input` block, `multi_users_select` starts with `initial_users` already se
 />
 
 This library can't look up a real workspace directory, so an id it doesn't know (anything besides
-`U0ADA`, `U0GRACE`, `U0ALAN`) renders as Slack's own loading skeleton rather than the raw id — pass
+`U0ADA`, `U0GRACE`, `U0ALAN`) renders as Slack's own loading skeleton rather than the raw id. Pass
 a `resolvers.user` function to `<BlockKitProvider>` to show real names instead.
 
 ### Conversations select
@@ -476,8 +476,8 @@ external shared channels from the list:
 
 ### Channels select
 
-The same idea as a conversations select, restricted to public channels the person is a member of
-— no `filter` or `default_to_current_conversation`.
+The same idea as a conversations select, restricted to public channels the person is a member of.
+It has no `filter` or `default_to_current_conversation`.
 
 <Preview
   payload={{
@@ -537,7 +537,7 @@ content-sized outline button rather than the 190px dropdown a single-select uses
 
 ## Interactivity
 
-A select reports its value the moment it changes — no separate submit step outside a modal. The
+A select reports its value the moment it changes, with no separate submit step outside a modal. The
 field name in both the `block_actions` action and `state.values` depends on the data source and
 whether it's single- or multi-select:
 
@@ -625,7 +625,7 @@ interface BlockSuggestionPayload {
   block_id: string;
   value: string; // what's typed so far
   container: { type: "message" | "view" /* ... */ };
-  // team, user, api_app_id, token — identity fields, like any Slack payload
+  // team, user, api_app_id, token: identity fields, like any Slack payload
 }
 ```
 

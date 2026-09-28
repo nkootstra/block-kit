@@ -3,8 +3,8 @@ title: Context actions
 description: A compact row of feedback and icon buttons, typically under an AI-generated message.
 ---
 
-`context_actions` holds a small row of interactive elements — feedback buttons and icon
-buttons — the way `context` holds a row of static text and images. Slack shows it under an
+`context_actions` holds a small row of interactive elements, feedback buttons and icon
+buttons, the way `context` holds a row of static text and images. Slack shows it under an
 assistant's response for a "was this helpful" prompt, paired with actions like copy or retry.
 
 <Preview
@@ -117,7 +117,7 @@ first, then a trailing icon button for a secondary action.
 
 ### Icon buttons only
 
-A row doesn't need feedback buttons — any mix of up to 5 icon buttons works too:
+A row doesn't need feedback buttons: any mix of up to 5 icon buttons works too.
 
 <Preview
   payload={{
@@ -173,7 +173,7 @@ An icon button sends a plain action, with `value` only when the element sets it:
 
 Feedback buttons also toggle: picking a thumb writes `{ type: "feedback_buttons", value }` to
 `state.values`, and clicking the same thumb again clears it. Icon buttons never write to
-`state.values` — they're one-shot actions. See [feedback buttons](/elements/feedback-buttons) and
+`state.values`, since they're one-shot actions. See [feedback buttons](/elements/feedback-buttons) and
 [icon button](/elements/icon-button) for the full details.
 
 ## Related

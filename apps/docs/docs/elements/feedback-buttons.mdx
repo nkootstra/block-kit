@@ -4,7 +4,7 @@ description: Thumbs up / thumbs down feedback for an AI-generated message.
 ---
 
 `feedback_buttons` renders a pair of thumbs-up and thumbs-down icon buttons, as seen under an
-AI agent's response in Slack. Only one of the two can be picked at a time — clicking the selected
+AI agent's response in Slack. Only one of the two can be picked at a time: clicking the selected
 one again clears it, matching Slack's own toggle behavior. It's a `context_actions` block element,
 so it's typically placed alongside an [icon button](/elements/icon-button) rather than in an
 `actions` row.
@@ -132,7 +132,7 @@ picking the same thumb again clears it back out:
 { "b1": {} }
 ```
 
-Only one thumb can be selected at a time — choosing the other one replaces the selection rather
+Only one thumb can be selected at a time. Choosing the other one replaces the selection rather
 than allowing both to be active.
 
 ## Related

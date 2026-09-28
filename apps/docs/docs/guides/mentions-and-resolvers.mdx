@@ -3,7 +3,7 @@ title: Mentions and resolvers
 description: Resolve user, channel and usergroup ids to names, show unresolved mentions like Slack, and back it with the real Slack Web API.
 ---
 
-Slack's mrkdwn and rich text only ever carry ids — `<@U0123ABC>`, `<#C0123ABC>`, `<!subteam^S0123>` —
+Slack's mrkdwn and rich text only ever carry ids (`<@U0123ABC>`, `<#C0123ABC>`, `<!subteam^S0123>`),
 never names. `@nkootstra/block-kit` never fetches on your behalf; you supply `resolvers` and it renders
 whatever they return, the same way Slack's own client resolves ids against its cache.
 
@@ -23,7 +23,7 @@ whatever they return, the same way Slack's own client resolves ids against its c
 
 ## The Resolvers shape
 
-Pass `resolvers` to `<BlockKitProvider>`. Each function is synchronous — return a name if you have it,
+Pass `resolvers` to `<BlockKitProvider>`. Each function is synchronous: return a name if you have it,
 or `undefined` if you don't (yet):
 
 ```tsx
@@ -79,16 +79,16 @@ emoji?, text? }`, and `timeZone` (an IANA zone, used for the card's "local time"
 ## What unresolved ids look like
 
 An id a resolver returns `undefined` for renders exactly like Slack's client does when it hasn't
-cached that id yet — not an error, not the raw id:
+cached that id yet: not an error, not the raw id:
 
 - **A user mention in mrkdwn or a Home tab/modal's plain mrkdwn text** (`<@U0123>` with no
-  resolver hit) falls back to plain `@U0123` text — Slack doesn't show a loading pill for it either.
+  resolver hit) falls back to plain `@U0123` text. Slack doesn't show a loading pill for it either.
 - **A user or usergroup mention in a `rich_text` block** shows an empty loading pill (a small pulsing
   bar), matching Slack's Builder while it's still resolving a mention it hasn't seen before.
 - **A channel mention with no `channel` resolver hit and no inline label** (`<#C0123>` without
   `|name`) renders as a locked "Private channel" pill, since Slack can't show a name for a channel the
   viewer isn't in either.
-- **A usergroup mention** always shows the loading state until resolved — there's no unresolved
+- **A usergroup mention** always shows the loading state until resolved. There's no unresolved
   fallback text for subteams, matching Slack.
 
 <Preview
@@ -102,7 +102,7 @@ cached that id yet — not an error, not the raw id:
 
 ## The profile card
 
-Clicking a resolved user mention opens a popover — Slack's `p-member_profile_card` — built from
+Clicking a resolved user mention opens a popover (Slack's `p-member_profile_card`) built from
 `resolvers.userProfile`. It shows the avatar (or an initial), name and pronouns, real name and title if
 they differ from the display name, a custom status with its emoji, and local time when `timeZone` is
 set. Without a `userProfile` resolver it still opens, showing just the name from `user`.
@@ -128,7 +128,7 @@ const resolvers = createWebApiResolvers(client, { batchWindowMs: 20 });
 
 Because the resolver functions must stay synchronous, a lookup that hasn't finished yet returns
 `undefined` immediately and schedules a background fetch. Calls for the same kind (`user` or
-`channel`) made within `batchWindowMs` (default 20ms) — e.g. every mention in a long message — are
+`channel`) made within `batchWindowMs` (default 20ms), for example every mention in a long message, are
 coalesced into one batch of concurrent requests rather than firing one at a time.
 
 ## useWebApiResolvers
@@ -154,11 +154,11 @@ export function Channel({ blocks }: { blocks: AnyBlock[] }) {
 ```
 
 `client` is captured once (like `createWebApiResolvers`, `opts` is only read on first render for that
-client) — construct the `WebClient` outside the component, or memoize it, so it has a stable identity
+client): construct the `WebClient` outside the component, or memoize it, so it has a stable identity
 across renders.
 
 :::note
-`createWebApiResolvers`/`useWebApiResolvers` implement `user`, `channel` and `usergroup` — not
+`createWebApiResolvers`/`useWebApiResolvers` implement `user`, `channel` and `usergroup`, not
 `userProfile`. Supply `userProfile` yourself (e.g. from `users.info`'s `profile` fields) if you want
 the profile card to show more than a name.
 :::

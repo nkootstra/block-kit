@@ -143,7 +143,7 @@ Each option is a [plain-text option](/elements/select-menus) object:
 ## Interactivity
 
 Picking an item (after any confirm dialog is accepted) closes the menu, calls `onAction` with the
-chosen option under `selected_option`, and — if that option has a `url` — opens it in a new tab:
+chosen option under `selected_option`, and opens the option's `url` in a new tab if it has one:
 
 ```json
 {
@@ -160,7 +160,7 @@ chosen option under `selected_option`, and — if that option has a `url` — op
 ```
 
 The menu also supports arrow keys, Home/End, and Enter for keyboard navigation, and closes on
-Escape or an outside click. Like a button, overflow doesn't write to `state.values` — it's a
+Escape or an outside click. Like a button, overflow doesn't write to `state.values`: it's a
 one-shot action, not a persisted value.
 
 ## Related

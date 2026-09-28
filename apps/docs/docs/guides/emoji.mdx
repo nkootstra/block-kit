@@ -3,7 +3,7 @@ title: Emoji
 description: "Standard, custom and skin-toned :shortcode: emoji, and the plain_text emoji flag."
 ---
 
-Slack sends emoji as `:shortcode:` text — never images — inside mrkdwn, rich text, and plain text
+Slack sends emoji as `:shortcode:` text, never images, inside mrkdwn, rich text, and plain text
 objects. `@nkootstra/block-kit` resolves each shortcode to an image the way Slack's client does,
 including workspace custom emoji and skin tone modifiers.
 
@@ -20,7 +20,7 @@ including workspace custom emoji and skin tone modifiers.
 
 ## Standard emoji
 
-Any shortcode from Slack's standard set renders automatically — nothing to configure. By default,
+Any shortcode from Slack's standard set renders automatically: nothing to configure. By default,
 images come from the Apple emoji set on jsDelivr, matching what Slack itself uses:
 
 ```tsx
@@ -40,7 +40,7 @@ Override the image source with `emoji.imageUrl`, given a unified codepoint seque
 
 ## Custom emoji
 
-Workspace custom emoji have no fixed set — pass them as a name → URL map with `emoji.custom`:
+Workspace custom emoji have no fixed set: pass them as a name → URL map with `emoji.custom`:
 
 ```tsx
 <BlockKitProvider
@@ -69,13 +69,13 @@ Workspace custom emoji have no fixed set — pass them as a name → URL map wit
   }}
 />
 
-An unrecognized shortcode — not standard, and not in `custom` — falls back to the literal `:name:`
+An unrecognized shortcode, not standard and not in `custom`, falls back to the literal `:name:`
 text, exactly as Slack shows an emoji it can't find.
 
 ## Skin tones
 
 `:thumbsup::skin-tone-3:` (Fitzpatrick modifiers 2–6) picks the matching variant of a standard emoji
-that supports one. Modifiers on emoji without skin tone variants, or on custom emoji, are ignored — the
+that supports one. Modifiers on emoji without skin tone variants, or on custom emoji, are ignored: the
 base emoji renders instead.
 
 <Preview
@@ -95,7 +95,7 @@ base emoji renders instead.
 ## Sizing
 
 Every emoji renders at Slack's inline size (22px, matching 15px body text) by default. Components that
-take an `emojiSize` prop — `<Mrkdwn>`, `<Text>` — pass it straight through, useful for a larger emoji in
+take an `emojiSize` prop, such as `<Mrkdwn>` and `<Text>`, pass it straight through, useful for a larger emoji in
 a header or a smaller one in dense UI:
 
 ```tsx
@@ -105,7 +105,7 @@ a header or a smaller one in dense UI:
 ## plain_text and the emoji flag
 
 A `plain_text` text object converts `:shortcode:` to emoji images by default, same as `mrkdwn`. Set
-`emoji: false` to show the literal colons-and-name text instead — useful for values that happen to
+`emoji: false` to show the literal colons-and-name text instead, useful for values that happen to
 contain a colon, like a code or a time range, that shouldn't be treated as emoji:
 
 ```tsx
@@ -121,7 +121,7 @@ contain a colon, like a code or a time range, that shouldn't be treated as emoji
   }}
 />
 
-`emoji` has no effect on `mrkdwn` text objects — mrkdwn always converts shortcodes; use `verbatim` (see
+`emoji` has no effect on `mrkdwn` text objects: mrkdwn always converts shortcodes; use `verbatim` (see
 [mrkdwn](/guides/mrkdwn)) if you need to suppress other mrkdwn formatting instead.
 
 ## Related

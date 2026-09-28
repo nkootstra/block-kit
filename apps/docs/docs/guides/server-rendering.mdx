@@ -3,18 +3,18 @@ title: Server rendering
 description: Using @nkootstra/block-kit with SSR and React Server Components, and avoiding hydration mismatches.
 ---
 
-Every component in `@nkootstra/block-kit` renders from props alone — no `window`, no `document`, no
-browser-only API — so `renderToString`/`renderToStaticMarkup` and React Server Components both work
+Every component in `@nkootstra/block-kit` renders from props alone, with no `window`, no `document`, no
+browser-only API, so `renderToString`/`renderToStaticMarkup` and React Server Components both work
 out of the box.
 
 ## The client boundary is already drawn for you
 
-The package's main entry (`@nkootstra/block-kit` — everything including `<Message>`, `<Modal>`,
+The package's main entry (`@nkootstra/block-kit`, everything including `<Message>`, `<Modal>`,
 `<BlockKitProvider>`, `<HomeTab>`, `<Mrkdwn>`) ships its own `"use client"` directive, so you can import
 these components straight into a Next.js App Router Server Component with no wrapper of your own:
 
 ```tsx
-// app/page.tsx — a Server Component
+// app/page.tsx (a Server Component)
 import { Message } from "@nkootstra/block-kit";
 
 export default function Page({ blocks }: { blocks: AnyBlock[] }) {
@@ -23,13 +23,13 @@ export default function Page({ blocks }: { blocks: AnyBlock[] }) {
 ```
 
 The `/mrkdwn`, `/server`, `/transport` and `/web-api` entries carry no directive and stay importable
-from server-only code — a route handler, a server action, `createInteractionRelay` — since none of them
+from server-only code (a route handler, a server action, `createInteractionRelay`) since none of them
 touch the DOM.
 
 There's one thing the package can't do for you: **handlers are plain functions, and functions can't
 cross from a Server Component into a Client Component as props.** `<BlockKitProvider onAction={...}>`
 being a Client Component itself doesn't help if the function you pass it is defined in a Server
-Component's module — that still fails to serialize. Define the provider and its handlers together in a
+Component's module: that still fails to serialize. Define the provider and its handlers together in a
 component of your own marked `"use client"`:
 
 ```tsx
@@ -49,7 +49,7 @@ export function SlackMessage({ blocks }: { blocks: AnyBlock[] }) {
 ```
 
 A `<Message>` with no `<BlockKitProvider>` above it, and no interactive elements in its blocks, needs
-none of this — render it directly from a Server Component, as above.
+none of this. Render it directly from a Server Component, as above.
 
 ## Hydration-stable timestamps
 
@@ -62,11 +62,11 @@ none of this — render it directly from a Server Component, as above.
 
 Without an explicit `ts`, `<Message>` stamps the current time itself the moment it mounts. On the
 server that's the time of the render; on the client, hydration re-runs the same `useState` initializer
-a moment later — a different value, which React flags as a hydration mismatch. Always pass a real `ts`
+a moment later: a different value, which React flags as a hydration mismatch. Always pass a real `ts`
 (the message's own Slack timestamp) for anything rendered server-side; reserve the no-`ts` fallback for
 client-only, ephemeral previews.
 
-Pass `timeZone` alongside it — either directly, or via `<BlockKitProvider timeZone="...">` — so the
+Pass `timeZone` alongside it, either directly or via `<BlockKitProvider timeZone="...">`, so the
 formatted time matches between server and client instead of depending on the server machine's local
 zone:
 
@@ -76,13 +76,13 @@ zone:
 </BlockKitProvider>
 ```
 
-The same applies to any `<!date^...>` mrkdwn token and to `formatSlackDate` calls — see
+The same applies to any `<!date^...>` mrkdwn token and to `formatSlackDate` calls. See
 [mrkdwn](/guides/mrkdwn).
 
 ## Theme before hydration
 
 If you use `<html data-theme="dark">` (see [Theming](/guides/theming)) driven by something only known
-on the client — a cookie your server can also read is fine — set it in a blocking inline script so the
+on the client (a cookie your server can also read is fine), set it in a blocking inline script so the
 attribute is already correct on the very first paint, avoiding a light/dark flash:
 
 ```html
@@ -92,7 +92,7 @@ attribute is already correct on the very first paint, avoiding a light/dark flas
 ```
 
 If your dark/light choice comes from a cookie instead, set `data-theme` directly on the server-rendered
-`<html>` tag and skip the script — that's simpler and has no flash to begin with.
+`<html>` tag and skip the script. That's simpler and has no flash to begin with.
 
 ## Next.js App Router example
 

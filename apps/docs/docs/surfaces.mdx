@@ -16,7 +16,7 @@ Slack shows blocks on three surfaces: messages, modals and the App Home tab. Eac
 
 ## Message
 
-`<Message>` draws the message chrome — app avatar, name, `APP` badge and time — around its blocks.
+`<Message>` draws the message chrome (app avatar, name, `APP` badge and time) around its blocks.
 
 ```tsx
 import { Message } from "@nkootstra/block-kit";
@@ -76,7 +76,7 @@ import { Message } from "@nkootstra/block-kit";
 
 ### Message objects
 
-When you already have a message from Slack's API — say from `conversations.history` — pass it as `message`. It supplies the blocks, text, timestamp and sender (`username`, `icon_url`, `icon_emoji` or `bot_profile`), and renders what surrounds them: legacy attachments, reactions, the thread summary and the `(edited)` marker.
+When you already have a message from Slack's API, say from `conversations.history`, pass it as `message`. It supplies the blocks, text, timestamp and sender (`username`, `icon_url`, `icon_emoji` or `bot_profile`), and renders what surrounds them: legacy attachments, reactions, the thread summary and the `(edited)` marker.
 
 ```tsx
 const { messages } = await slack.conversations.history({ channel: "C0RELEASES", limit: 1 });
@@ -127,7 +127,7 @@ Slack recommends blocks over attachments for new messages. Attachments are here 
 
 ### Ephemeral messages
 
-Ephemeral messages — posted with `chat.postEphemeral` — carry Slack's “Only visible to you” marker:
+Ephemeral messages, posted with `chat.postEphemeral`, carry Slack's “Only visible to you” marker:
 
 ```tsx
 <Message isEphemeral blocks={blocks} />
@@ -248,7 +248,7 @@ An action handler can swap the content with `views.publish`, just as your app re
 
 ## Any view
 
-`<View>` takes any view object — for example one you've loaded from your database — and renders `<Modal>` or `<HomeTab>` depending on its `type`:
+`<View>` takes any view object, for example one you've loaded from your database, and renders `<Modal>` or `<HomeTab>` depending on its `type`:
 
 ```tsx
 import { View } from "@nkootstra/block-kit";
@@ -258,7 +258,7 @@ import { View } from "@nkootstra/block-kit";
 
 ## Choosing the surface for loose blocks
 
-`<Blocks>` renders an array of blocks with no surface around them. Some elements look different per surface — selects and text inputs are taller in modals and the Home tab, and only there does an optional `input` block get its “(optional)” label — so set the provider's `surface` to the one you're imitating:
+`<Blocks>` renders an array of blocks with no surface around them. Some elements look different per surface: selects and text inputs are taller in modals and the Home tab, and only there does an optional `input` block get its “(optional)” label. Set the provider's `surface` to the one you're imitating:
 
 ```tsx
 import { BlockKitProvider, Blocks } from "@nkootstra/block-kit";

@@ -3,7 +3,7 @@ title: Elements overview
 description: What Block Kit elements are, where each one can live, and how they report interactions.
 ---
 
-Elements are the interactive (and image) pieces you place inside a block — a button, a select
+Elements are the interactive (and image) pieces you place inside a block: a button, a select
 menu, a date picker, a checkbox group. A block lays elements out; an element renders the control
 and, when the person interacts with it, reports what happened.
 
@@ -33,7 +33,7 @@ which control the person used. Combined with the block's `block_id`, it's also t
 `state.values` for elements that hold a value (see each element's "Reading the value" section).
 
 :::note
-`action_id` only needs to be unique within a block — but keeping it unique across the whole
+`action_id` only needs to be unique within a block, but keeping it unique across the whole
 surface makes your handler code simpler.
 :::
 
@@ -41,33 +41,33 @@ surface makes your handler code simpler.
 
 Slack restricts which elements can appear in which context:
 
-- **`actions` block** — up to 25 elements laid out in a row (some, like checkboxes and radio
+- **`actions` block**: up to 25 elements laid out in a row (some, like checkboxes and radio
   buttons, always take the full row).
-- **Section accessory** — one element to the right of (or, for checkboxes/radio buttons, stacked
+- **Section accessory**: one element to the right of (or, for checkboxes/radio buttons, stacked
   below) a section's text.
-- **`input` block** — one element per block, used in modals and Home tabs to collect a value.
-- **`context_actions` block** — a trailing row of small icon-style actions, typically under an
+- **`input` block**: one element per block, used in modals and Home tabs to collect a value.
+- **`context_actions` block**: a trailing row of small icon-style actions, typically under an
   AI-generated message (feedback thumbs, copy, retry, overflow).
 
 ## Element × block support
 
 | Element                                           | `actions`        | Section accessory | `input`           | `context_actions` |
 | ------------------------------------------------- | ---------------- | ----------------- | ----------------- | ----------------- |
-| [Button](/elements/button)                        | Yes              | Yes               | —                 | —                 |
-| [Overflow menu](/elements/overflow)               | Yes              | Yes               | —                 | —                 |
-| [Select menus](/elements/select-menus)            | Yes              | Yes               | Yes               | —                 |
-| [Checkboxes](/elements/checkboxes)                | Yes (full width) | Yes (stacked)     | Yes               | —                 |
-| [Radio buttons](/elements/radio-buttons)          | Yes (full width) | Yes (stacked)     | Yes               | —                 |
-| [Date picker](/elements/date-picker)              | Yes              | Yes               | Yes               | —                 |
-| [Time picker](/elements/time-picker)              | Yes              | Yes               | Yes               | —                 |
-| [Date and time picker](/elements/datetime-picker) | Yes (full width) | —                 | Yes               | —                 |
-| [Text inputs](/elements/text-inputs)              | —                | —                 | Yes               | —                 |
-| [Rich text input](/elements/rich-text-input)      | —                | —                 | Yes               | —                 |
-| [File input](/elements/file-input)                | —                | —                 | Yes (modals only) | —                 |
-| [Icon button](/elements/icon-button)              | Yes              | —                 | —                 | Yes               |
-| [Feedback buttons](/elements/feedback-buttons)    | —                | —                 | —                 | Yes               |
-| [Image element](/elements/image-element)          | —                | Yes               | —                 | Yes               |
-| [Workflow button](/elements/workflow-button)      | Yes              | —                 | —                 | —                 |
+| [Button](/elements/button)                        | Yes              | Yes               | No                | No                |
+| [Overflow menu](/elements/overflow)               | Yes              | Yes               | No                | No                |
+| [Select menus](/elements/select-menus)            | Yes              | Yes               | Yes               | No                |
+| [Checkboxes](/elements/checkboxes)                | Yes (full width) | Yes (stacked)     | Yes               | No                |
+| [Radio buttons](/elements/radio-buttons)          | Yes (full width) | Yes (stacked)     | Yes               | No                |
+| [Date picker](/elements/date-picker)              | Yes              | Yes               | Yes               | No                |
+| [Time picker](/elements/time-picker)              | Yes              | Yes               | Yes               | No                |
+| [Date and time picker](/elements/datetime-picker) | Yes (full width) | No                | Yes               | No                |
+| [Text inputs](/elements/text-inputs)              | No               | No                | Yes               | No                |
+| [Rich text input](/elements/rich-text-input)      | No               | No                | Yes               | No                |
+| [File input](/elements/file-input)                | No               | No                | Yes (modals only) | No                |
+| [Icon button](/elements/icon-button)              | Yes              | No                | No                | Yes               |
+| [Feedback buttons](/elements/feedback-buttons)    | No               | No                | No                | Yes               |
+| [Image element](/elements/image-element)          | No               | Yes               | No                | Yes               |
+| [Workflow button](/elements/workflow-button)      | Yes              | No                | No                | No                |
 
 :::tip
 Any element can carry a [`confirm`](/elements/confirmation-dialogs) object, which shows a

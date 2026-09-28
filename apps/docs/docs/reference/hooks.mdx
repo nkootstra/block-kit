@@ -48,7 +48,7 @@ Returns the view a surface should show right now: its `view` prop, or the conten
 
 ## SurfaceScope
 
-Ties the elements below it to one message or view. Their actions carry that `container` — and `message`, for a message — even when several surfaces share one provider. It also sets `surface` for them: `modal` or `home` for a view container, `message` otherwise.
+Ties the elements below it to one message or view. Their actions carry that `container`, and `message` for a message, even when several surfaces share one provider. It also sets `surface` for them: `modal` or `home` for a view container, `message` otherwise.
 
 ```tsx
 import { Blocks, SurfaceScope } from "@nkootstra/block-kit";

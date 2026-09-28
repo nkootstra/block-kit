@@ -5,7 +5,7 @@ description: Single-line and multi-line text fields, plus email, URL and number 
 
 `plain_text_input` collects free text. Slack also ships three constrained variants that render the
 same control with a different keyboard and, for email and URL, a small leading icon:
-`email_text_input`, `url_text_input` and `number_input`. All four are `input`-block-only elements —
+`email_text_input`, `url_text_input` and `number_input`. All four are `input`-block-only elements:
 they don't appear in an `actions` block or as a section accessory.
 
 <Preview
@@ -97,7 +97,7 @@ they don't appear in an `actions` block or as a section accessory.
 />
 
 :::note
-`number_input` requires `is_decimal_allowed` — Slack has no default for it, so always set it
+`number_input` requires `is_decimal_allowed`. Slack has no default for it, so always set it
 explicitly.
 :::
 
@@ -172,12 +172,12 @@ Pressing Enter inside a multiline field inserts a newline instead of submitting.
 
 `email_text_input` and `url_text_input` show a small envelope or link icon inside the field.
 `number_input` restricts what can be typed to digits (and, with `is_decimal_allowed: true`, a
-single decimal point) — Slack rejects the keystroke rather than showing it and clearing it.
+single decimal point), Slack rejects the keystroke rather than showing it and clearing it.
 
 ### Dispatching actions as you type
 
 By default, an `input` block's element only reports its value into `state.values`, which your app
-reads when the surface is submitted — typing doesn't fire an action. Set the block's
+reads when the surface is submitted. Typing doesn't fire an action. Set the block's
 `dispatch_action: true` and, optionally, the element's `dispatch_action_config` to get a live
 `block_actions` payload while the person types:
 
@@ -202,7 +202,7 @@ reads when the surface is submitted — typing doesn't fire an action. Set the b
 
 `trigger_actions_on` accepts `on_enter_pressed` (the default) and `on_character_entered`. With the
 default, single-line fields also pick up a "Press 'enter' to submit" hint automatically, unless the
-block already has its own `hint` — multiline fields never show it, since Enter inserts a newline
+block already has its own `hint`. Multiline fields never show it, since Enter inserts a newline
 there instead of submitting.
 
 ### Initial value

@@ -4,8 +4,8 @@ description: A small image used as a section accessory or context_actions decora
 ---
 
 The `image` element renders a single `<img>` from `image_url`, with `alt_text` as its accessible
-text. Use it where an image needs to sit alongside other content — as a section's accessory, or
-inside a `context_actions` row — rather than as its own block. For a full-width standalone image,
+text. Use it where an image needs to sit alongside other content (as a section's accessory, or
+inside a `context_actions` row) rather than as its own block. For a full-width standalone image,
 see the [`image` block](/blocks/image) instead.
 
 <Preview
@@ -49,7 +49,7 @@ see the [`image` block](/blocks/image) instead.
 
 :::note
 When `image_url` is missing, the rendered `<img>` has no `src` attribute rather than a broken-image
-placeholder — there's no fallback image.
+placeholder. There's no fallback image.
 :::
 
 ## Examples
@@ -79,7 +79,7 @@ The preview above shows the most common placement: a thumbnail next to a section
 
 ## Interactivity
 
-`image` is display-only — it doesn't dispatch any action and has no entry in `state.values`.
+`image` is display-only: it doesn't dispatch any action and has no entry in `state.values`.
 
 ## Related
 

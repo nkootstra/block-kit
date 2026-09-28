@@ -5,7 +5,7 @@ description: Renders a different set of blocks depending on the client surface t
 
 `condition` picks one branch of blocks to render based on `client` conditions, and falls back to
 `default` when none match. It's a library-invented construct for previewing client-conditional
-payloads — Slack doesn't document a public `condition` block type.
+payloads; Slack doesn't document a public `condition` block type.
 
 <Preview
   payload={{
@@ -33,7 +33,7 @@ payloads — Slack doesn't document a public `condition` block type.
 />
 
 Since this renderer only ever simulates Slack's desktop client, the example above always shows the
-desktop branch — the same way it would look in Slack's own Builder preview.
+desktop branch, the same way it would look in Slack's own Builder preview.
 
 ## Fields
 
@@ -63,7 +63,7 @@ desktop branch — the same way it would look in Slack's own Builder preview.
     type: {
       type: "string",
       description:
-        'The condition kind. Only `"client"` is evaluated — any other value never matches.',
+        'The condition kind. Only `"client"` is evaluated; any other value never matches.',
       required: true,
     },
     op: {
@@ -80,7 +80,7 @@ desktop branch — the same way it would look in Slack's own Builder preview.
 
 :::note
 This library always evaluates `client` as `"desktop"`, matching how Slack's Block Kit Builder
-previews payloads. There's no way to preview the `ios` or `android` branches here — inspect the JSON
+previews payloads. There's no way to preview the `ios` or `android` branches here. Inspect the JSON
 tab instead to check what a mobile client would receive.
 :::
 

@@ -3,7 +3,7 @@ title: Confirmation dialogs
 description: Add an "are you sure?" step to any interactive element with the confirm composition object.
 ---
 
-`confirm` isn't an element you place in a block — it's a composition object you attach to an
+`confirm` isn't an element you place in a block. It's a composition object you attach to an
 interactive element's own `confirm` field. When Slack renders the element and the user interacts
 with it, a modal dialog appears first; the underlying action only fires if the user picks confirm.
 
@@ -37,7 +37,7 @@ with it, a modal dialog appears first; the underlying action only fires if the u
 Click Delete: the dialog opens and the actions log below stays empty until you pick a button.
 Choosing "Delete" logs the `block_actions` payload for the button, exactly as if it had been
 clicked with no `confirm` at all. Choosing "Cancel" (or clicking outside the dialog) closes it and
-nothing is logged — no action fires, and no element state changes.
+nothing is logged: no action fires, and no element state changes.
 
 ## Fields
 
@@ -139,7 +139,7 @@ before the new selection is committed.
 ### Confirm on checkboxes
 
 Checkboxes and radio buttons also accept `confirm`. For checkboxes it only appears when _checking_
-a box — unchecking one never asks for confirmation.
+a box. Unchecking one never asks for confirmation.
 
 <Preview
   payload={{
@@ -179,15 +179,15 @@ a box — unchecking one never asks for confirmation.
 `confirm` gates the element's own action rather than emitting one of its own. What actually
 happens when the user chooses confirm or deny:
 
-- **Confirm** — the dialog closes, the element behaves exactly as it would with no `confirm` at
-  all: `onAction` fires with the element's normal payload, and (for stateful elements like
+- **Confirm**: the dialog closes, and the element behaves exactly as it would with no `confirm` at
+  all. `onAction` fires with the element's normal payload, and (for stateful elements like
   selects, checkboxes, radio buttons, and date/time pickers) `state.values` updates to the new
   value.
-- **Deny, or dismiss by clicking outside the dialog** — the dialog closes and nothing else
+- **Deny, or dismiss by clicking outside the dialog**: the dialog closes and nothing else
   happens. `onAction` doesn't fire, `state.values` doesn't change, and (for a `url` button) no new
   tab opens. The element is left exactly as it was before the interaction.
 
-There's no separate action payload for the confirm/deny choice itself — Slack doesn't report it,
+There's no separate action payload for the confirm/deny choice itself. Slack doesn't report it,
 and neither does this library.
 
 ## Related

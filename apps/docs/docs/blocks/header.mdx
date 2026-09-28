@@ -4,7 +4,7 @@ description: A bold, single-line title that breaks up a message or view into sec
 ---
 
 A header displays a short, bold line of plain text. Use it to introduce a distinct section
-of a message or app surface — Slack doesn't apply any markdown to it.
+of a message or app surface. Slack doesn't apply any markdown to it.
 
 <Preview
   payload={{
@@ -33,7 +33,7 @@ of a message or app surface — Slack doesn't apply any markdown to it.
     text: {
       type: "plain_text object",
       description:
-        "The header's text. Must be a `plain_text` text object — `mrkdwn` isn't allowed. Maximum 150 characters.",
+        "The header's text. Must be a `plain_text` text object; `mrkdwn` isn't allowed. Maximum 150 characters.",
       required: true,
     },
     block_id: {
@@ -61,7 +61,7 @@ of a message or app surface — Slack doesn't apply any markdown to it.
 
 ### Header with a section and divider
 
-Headers are typically followed by content — a section, a divider, or both.
+Headers are typically followed by content: a section, a divider, or both.
 
 <Preview
   payload={{
@@ -88,7 +88,7 @@ Headers are typically followed by content — a section, a divider, or both.
 
 :::note
 This library also renders the Block Kit Builder's `level` field (1–4) on headers, which
-scales the text size. It's not part of the Slack API — `level` defaults to 2, Slack's
+scales the text size. It's not part of the Slack API; `level` defaults to 2, Slack's
 standard header size, and only affects rendering here.
 :::
 

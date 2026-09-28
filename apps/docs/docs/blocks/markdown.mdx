@@ -5,7 +5,7 @@ description: A block of standard GitHub-flavored markdown, for text you didn't h
 
 `markdown` takes one raw markdown string and lets Slack do the parsing, instead of you building a
 `rich_text` tree or a `mrkdwn` string by hand. Slack expands it into the same headings, lists,
-dividers, code blocks, and tables you'd get from other blocks — it's meant for text an LLM
+dividers, code blocks, and tables you'd get from other blocks. It's meant for text an LLM
 produced, where you don't control the exact markdown shape ahead of time.
 
 <Preview
@@ -42,7 +42,7 @@ produced, where you don't control the exact markdown shape ahead of time.
 />
 
 :::note
-A `markdown` block isn't the same as `mrkdwn` text inside a `section` — `mrkdwn` is Slack's own
+A `markdown` block isn't the same as `mrkdwn` text inside a `section`. `mrkdwn` is Slack's own
 lightweight syntax (`*bold*`, `_italic_`) with no headings or tables. It also differs from
 `rich_text`, which is a structured JSON tree rather than a text string. `markdown` is closer to
 plain GitHub-flavored markdown, parsed by Slack on render.

@@ -5,7 +5,7 @@ description: A collapsible, step-by-step agent plan, with a status per task.
 
 `plan` groups a sequence of tasks under one shared goal, each with its own status. It's a [Slack
 block documented for agent surfaces](https://docs.slack.dev/reference/block-kit/blocks/plan-block/),
-newer than the version of `@slack/types` this library depends on — its TypeScript type is the field
+newer than the version of `@slack/types` this library depends on, so its TypeScript type is the field
 reference here. It's read-only: expanding a plan doesn't emit an action.
 
 <Preview
@@ -153,7 +153,7 @@ The plan's own collapsed pill shows one aggregate icon: `in_progress` if any tas
 ### Every task status
 
 The preview above covers `complete`, `in_progress`, and `pending` in one plan, plus optional
-`details`, `output`, and `sources` on the first two tasks — all three fields are safe to omit, as the
+`details`, `output`, and `sources` on the first two tasks. All three fields are safe to omit, as the
 third task shows.
 
 ## Related

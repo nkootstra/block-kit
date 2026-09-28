@@ -47,7 +47,7 @@ only ever sees a submission that would have passed Slack's client too.
   }}
 />
 
-Try submitting the modal above without an email — the error appears under the field, exactly like
+Try submitting the modal above without an email: the error appears under the field, exactly like
 Slack's own client, and `onSubmit` never fires.
 
 ## What gets checked
@@ -75,8 +75,8 @@ Slack's own client, and `onSubmit` never fires.
   }}
 />
 
-An empty `rich_text_input` — a `rich_text` value whose sections hold no actual text (no words, only an
-empty paragraph) — counts as empty for the required check, the same way Slack treats it.
+An empty `rich_text_input` (a `rich_text` value whose sections hold no actual text: no words, only an
+empty paragraph) counts as empty for the required check, the same way Slack treats it.
 
 ## Messages
 
@@ -113,7 +113,7 @@ as closely as observed.
 
 ## validateView
 
-`<Modal>` runs this automatically on Submit, but it's exported for anywhere you want the same check —
+`<Modal>` runs this automatically on Submit, but it's exported for anywhere you want the same check:
 a custom submit button, a test, or validating a view server-side before you even open it:
 
 ```ts
@@ -127,15 +127,15 @@ if (Object.keys(errors).length === 0) {
 }
 ```
 
-`validateView(blocks, state)` returns errors keyed by `block_id` — the same shape as
-`response_action: "errors"` (see [Modals](/guides/modals)) — empty when every input block passes.
+`validateView(blocks, state)` returns errors keyed by `block_id`, the same shape as
+`response_action: "errors"` (see [Modals](/guides/modals)), empty when every input block passes.
 
 ## The errors prop
 
 Errors an app returns from `onSubmit` (`response_action: "errors"`) apply the way Slack's client shows
 them: under the named block, clearing automatically once that field's value changes. To seed a modal
-(or any surface) with errors up front instead — for a standalone `<Modal>` you're previewing, or
-errors known before the user even touches the form — pass `errors` to `<BlockKitProvider>`:
+(or any surface) with errors up front instead, for a standalone `<Modal>` you're previewing, or
+errors known before the user even touches the form, pass `errors` to `<BlockKitProvider>`:
 
 ```tsx
 <BlockKitProvider errors={{ email: "This address is already invited." }}>

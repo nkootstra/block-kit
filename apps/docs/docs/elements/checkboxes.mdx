@@ -4,7 +4,7 @@ description: A group of options where any number can be selected at once.
 ---
 
 `checkboxes` renders a stack of checkbox options. Use it when someone can pick zero, one, or
-several options from a short list — an `actions` row or section accessory for a live toggle, or an
+several options from a short list: an `actions` row or section accessory for a live toggle, or an
 `input` block to collect a value in a modal or Home tab.
 
 <Preview
@@ -242,13 +242,13 @@ As a section accessory, the group stacks below the section's text instead of sit
   actions
 />
 
-The dialog only appears when checking an option on — unchecking never asks for confirmation. See
+The dialog only appears when checking an option on. Unchecking never asks for confirmation. See
 [Confirmation dialogs](/elements/confirmation-dialogs).
 
 ## Interactivity
 
 Checking or unchecking an option (after any confirm dialog is accepted) calls `onAction` with the
-full, current set of checked options under `selected_options` — not just the one that changed:
+full, current set of checked options under `selected_options`, not just the one that changed:
 
 ```json
 {
@@ -287,7 +287,7 @@ An unchecked group with no `initial_options` reports `selected_options: []`, not
 
 <CardGroup cols={2}>
   <Card title="Radio buttons" href="/elements/radio-buttons" icon="circle-dot">
-    The single-select equivalent — at most one option checked at a time.
+    The single-select equivalent: at most one option checked at a time.
   </Card>
   <Card title="Select menus" href="/elements/select-menus" icon="list">
     Static, external, users, conversations and channels selects, single or multi.

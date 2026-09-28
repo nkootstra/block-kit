@@ -4,7 +4,7 @@ description: Light and dark mode, the --sbk-* CSS custom properties, fonts, and 
 ---
 
 Every color in the stylesheet is a `--sbk-*` CSS custom property, measured from Slack's own Block Kit
-Builder. Dark mode is a matter of which values are active — you rarely need to override them, but
+Builder. Dark mode is a matter of which values are active. You rarely need to override them, but
 they're there when you do.
 
 <Preview
@@ -17,7 +17,7 @@ they're there when you do.
 
 ## Light and dark mode
 
-By default, dark values apply under `prefers-color-scheme: dark` — the page follows the visitor's OS
+By default, dark values apply under `prefers-color-scheme: dark`: the page follows the visitor's OS
 setting, same as Slack's own desktop client.
 
 To force a theme regardless of OS preference, set `data-theme` on `<html>` (or any ancestor of your
@@ -36,8 +36,8 @@ the OS prefers it.
 
 ### The theme prop
 
-`<BlockKitProvider theme="light" | "dark">` sets `data-theme` on a wrapper `<div>` around its children
-— useful for previewing both themes side by side on the same page, independent of the OS setting:
+`<BlockKitProvider theme="light" | "dark">` sets `data-theme` on a wrapper `<div>` around its children,
+useful for previewing both themes side by side on the same page, independent of the OS setting:
 
 ```tsx
 <div style={{ display: "flex", gap: 16 }}>
@@ -54,13 +54,13 @@ Leave `theme` unset to follow the page's own `data-theme`/`prefers-color-scheme`
 
 :::note
 A modal opened through `views.open`/`views.push` renders in a nested provider that doesn't inherit
-`theme` — it follows the surrounding page instead, matching how a real Slack modal always uses the
+`theme`. It follows the surrounding page instead, matching how a real Slack modal always uses the
 workspace's theme rather than something set per-message.
 :::
 
 ## CSS custom properties
 
-The full set lives in `base.css` and `Message.css` — override any of them after importing the
+The full set lives in `base.css` and `Message.css`. Override any of them after importing the
 stylesheet to restyle without touching the components. The main tokens:
 
 <TypeTable
@@ -125,7 +125,7 @@ import "@fontsource/lato/900.css";
 import "@fontsource/roboto-mono/400.css";
 ```
 
-The stylesheet asks for `Slack-Lato` first, then falls back to plain `Lato` — so if you're already
+The stylesheet asks for `Slack-Lato` first, then falls back to plain `Lato`, so if you're already
 serving Lato yourself (a CDN, self-hosted `@font-face`), you can skip installing Fontsource: any
 `font-family: Lato` declaration is picked up.
 
@@ -141,8 +141,8 @@ the stylesheet rolls everything under it back to the browser's defaults before a
 }
 ```
 
-This means global resets in your app — Tailwind's preflight, a docs theme's heading font, a blanket
-`* { min-width: 0 }` — don't leak into how a block renders, and the reverse: block styles don't leak
+This means global resets in your app (Tailwind's preflight, a docs theme's heading font, a blanket
+`* { min-width: 0 }`) don't leak into how a block renders, and the reverse: block styles don't leak
 into your app either, since everything is scoped under `.sbk-root`. You don't need to configure
 anything for this; it's automatic once you import `@nkootstra/block-kit/styles.css`.
 

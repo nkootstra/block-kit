@@ -5,7 +5,7 @@ description: How this renderer falls back for a block type it doesn't recognize,
 
 Slack Block Kit has a fallback convention: when a client doesn't recognize a block's `type`, it can render
 that block's producer-supplied `fallback` array in its place instead of dropping the content. `fallback_canary`
-is a synthetic block type this library ships to exercise that path in tests and demos — it isn't a block Slack
+is a synthetic block type this library ships to exercise that path in tests and demos. It isn't a block Slack
 itself sends. Point any real, unrecognized block at a `fallback` array and this renderer handles it the same way.
 
 <Preview
@@ -47,13 +47,13 @@ itself sends. Point any real, unrecognized block at a `fallback` array and this 
     fallback: {
       type: "Block[]",
       description:
-        "Blocks to render in place of this one. Slack renders the whole list inside the single wrapper it gave the unknown block, which is a flex row — so the fallback blocks sit side by side rather than stacking vertically.",
+        "Blocks to render in place of this one. Slack renders the whole list inside the single wrapper it gave the unknown block, which is a flex row, so the fallback blocks sit side by side rather than stacking vertically.",
       required: true,
     },
   }}
 />
 
-This isn't a standard Block Kit block type — it's a test fixture for the fallback mechanism itself. When this
+This isn't a standard Block Kit block type. It's a test fixture for the fallback mechanism itself. When this
 library encounters a block `type` it doesn't have a component for, it looks for a `fallback` array on that
 block and renders those blocks instead of showing nothing.
 
@@ -71,6 +71,6 @@ doesn't know about yet, but included a `fallback` for older clients.
     The most common block inside a fallback list.
   </Card>
   <Card title="Container" href="/blocks/container" icon="square">
-    Groups blocks visually — useful context for how fallback's flex-row wrapper differs.
+    Groups blocks visually, useful context for how fallback's flex-row wrapper differs.
   </Card>
 </CardGroup>

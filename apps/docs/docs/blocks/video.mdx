@@ -3,8 +3,8 @@ title: Video
 description: A video preview with a thumbnail, title, and provider byline.
 ---
 
-`video` renders a video preview — a thumbnail with a play pill, a title, a description, and a
-provider byline — the way Slack shows an unfurled video before it's expanded into a player.
+`video` renders a video preview (a thumbnail with a play pill, a title, a description, and a
+provider byline) the way Slack shows an unfurled video before it's expanded into a player.
 
 <Preview
   payload={{
@@ -86,7 +86,7 @@ provider byline — the way Slack shows an unfurled video before it's expanded i
 />
 
 :::note
-Slack also documents `is_animated` on the `video` block. This library doesn't read it — the preview
+Slack also documents `is_animated` on the `video` block. This library doesn't read it: the preview
 always renders the same static thumbnail-and-play-pill frame that a message surface shows before a
 video is expanded into a live player.
 :::
@@ -115,7 +115,7 @@ The preview above sets every optional field: `description`, `title_url`, `author
 />
 
 Without `provider_name` or `author_name`, the byline row doesn't render at all. Without
-`description`, that line is skipped too — only the thumbnail and title remain.
+`description`, that line is skipped too, leaving only the thumbnail and title.
 
 ## Related
 

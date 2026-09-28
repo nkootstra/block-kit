@@ -324,12 +324,12 @@ The preview at the top of this page shows a container with an icon, title, and s
   }}
 />
 
-A container doesn't intercept its children's interactions — an `input` or `actions` block inside it
+A container doesn't intercept its children's interactions. An `input` or `actions` block inside it
 dispatches the same `block_actions` payload it would at the top level.
 
 ## Interactivity
 
-Interactive `child_blocks` — buttons, selects, inputs — dispatch Slack's standard `block_actions`
+Interactive `child_blocks` (buttons, selects, inputs) dispatch Slack's standard `block_actions`
 payload, keyed by whatever `block_id` and `action_id` that child block declares. See
 [Interactivity](/guides/interactivity) for the full payload shape.
 

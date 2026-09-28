@@ -3,7 +3,7 @@ title: File
 description: A card referencing a file shared by a remote storage provider.
 ---
 
-`file` renders a reference to a file — currently only `source: "remote"`, a file registered by an
+`file` renders a reference to a file, currently only `source: "remote"`, a file registered by an
 app through Slack's `files.remote` APIs (e.g. a Google Drive or Dropbox document). Use it to show a
 linked document Slack knows about without embedding its contents.
 
@@ -49,7 +49,7 @@ linked document Slack knows about without embedding its contents.
 
 :::note
 In a real Slack workspace, Slack resolves `external_id` through the registering app's `files.remote`
-integration and shows a full preview card — filename, file-type icon, and (for supported types) a
+integration and shows a full preview card: filename, file-type icon, and (for supported types) a
 thumbnail. This library has no workspace to call, so it renders a generic placeholder card with the
 raw `external_id` and `source` instead of the resolved filename. This is based on an unverified
 fixture, since there's no Block Kit Builder reference to check it against.
@@ -72,7 +72,7 @@ fixture, since there's no Block Kit Builder reference to check it against.
 />
 
 Outside a real Slack workspace, only the fields present in the JSON are available, so the card shows
-the `external_id` in place of the file's actual name — there's no way to look up the real filename,
+the `external_id` in place of the file's actual name. There's no way to look up the real filename,
 type icon, or thumbnail without calling back into the registering app.
 
 ## Related

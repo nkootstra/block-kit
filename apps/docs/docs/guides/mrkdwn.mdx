@@ -3,7 +3,7 @@ title: mrkdwn
 description: Slack's mrkdwn syntax, the parser and formatting helpers in @nkootstra/block-kit/mrkdwn, and the Mrkdwn and Text components.
 ---
 
-Mrkdwn is Slack's own text format — not quite Markdown — used in `mrkdwn` text objects throughout
+Mrkdwn is Slack's own text format (not quite Markdown) used in `mrkdwn` text objects throughout
 Block Kit. `@nkootstra/block-kit` ships a parser for it, usable on its own (no React, no DOM) through
 `@nkootstra/block-kit/mrkdwn`, and the `<Mrkdwn>`/`<Text>` components that render its output.
 
@@ -44,7 +44,7 @@ import { Mrkdwn } from "@nkootstra/block-kit";
   }}
 />
 
-`<Text>` renders a full Block Kit text object — either kind — and is what block/element components use
+`<Text>` renders a full Block Kit text object, either kind, and is what block/element components use
 internally:
 
 ```tsx
@@ -54,7 +54,7 @@ import { Text } from "@nkootstra/block-kit";
 <Text text={{ type: "plain_text", text: "Hello :wave:" }} />;
 ```
 
-A `plain_text` object has no formatting beyond emoji shortcodes — no bold, links or mentions — since
+A `plain_text` object has no formatting beyond emoji shortcodes: no bold, links or mentions, since
 that's what Slack itself restricts it to.
 
 ## Supported syntax
@@ -133,7 +133,7 @@ format can't be rendered:
 `{date_long_pretty}` (the `_pretty` variants show "Today"/"Yesterday"/"Tomorrow" when applicable),
 `{time}`, `{time_secs}`, and `{ago}` (a relative time like "in 3 hours"). Unknown tokens are left as-is.
 
-`formatSlackDate` does the same formatting outside of parsed mrkdwn — useful when you have a raw
+`formatSlackDate` does the same formatting outside of parsed mrkdwn, useful when you have a raw
 timestamp and format string from elsewhere:
 
 ```ts
@@ -160,7 +160,7 @@ formatSlackDate(1392734382, "{date_long_pretty}", {
   }}
 />
 
-`<BlockKitProvider timeZone="...">` sets the zone used for dates parsed inline within `<Mrkdwn>` — pass
+`<BlockKitProvider timeZone="...">` sets the zone used for dates parsed inline within `<Mrkdwn>`. Pass
 `timeZone` to `formatSlackDate` directly when formatting outside of that context.
 
 ## Other exports
@@ -174,7 +174,7 @@ import { parse, decodeEntities, parsePlainTextEmoji } from "@nkootstra/block-kit
     parse: {
       type: "(input: string, options?: { verbatim?: boolean }) => Root",
       description:
-        "Parses a mrkdwn string into an AST (MrkdwnNode[]). Never throws — malformed markup is kept as plain text.",
+        "Parses a mrkdwn string into an AST (MrkdwnNode[]). Never throws: malformed markup is kept as plain text.",
     },
     decodeEntities: {
       type: "(text: string) => string",
@@ -183,13 +183,13 @@ import { parse, decodeEntities, parsePlainTextEmoji } from "@nkootstra/block-kit
     parsePlainTextEmoji: {
       type: "(input: string) => Array<Text | Emoji>",
       description:
-        "Splits a plain_text string into text and emoji nodes, with no other mrkdwn parsing — what `Text` uses for plain_text objects.",
+        "Splits a plain_text string into text and emoji nodes, with no other mrkdwn parsing. This is what `Text` uses for plain_text objects.",
     },
   }}
 />
 
 `parse` is what powers `<Mrkdwn>`; reach for it directly when you want the structured AST instead of
-React output — for example to render mrkdwn somewhere other than the DOM, or to extract just the plain
+React output, for example to render mrkdwn somewhere other than the DOM, or to extract just the plain
 text.
 
 ## Related

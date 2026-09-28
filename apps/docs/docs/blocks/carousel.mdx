@@ -119,7 +119,7 @@ A card inside `elements` can set its own `block_id`; when it doesn't, this libra
 `carousel-card-{i}` so its actions still have a stable id to key off in `onAction`.
 
 :::note
-The scroll arrows move by a fixed distance per click and disable themselves at each end — there's no
+The scroll arrows move by a fixed distance per click and disable themselves at each end. There's no
 field to configure how far a click scrolls, or to autoplay the carousel.
 :::
 
@@ -138,7 +138,7 @@ An empty `elements` array still renders both scroll arrows, disabled since there
 ## Interactivity
 
 Each card's own `actions` dispatch the standard `block_actions` payload described in [Card →
-Interactivity](/blocks/card#interactivity). The scroll arrows are a client-side affordance only — they
+Interactivity](/blocks/card#interactivity). The scroll arrows are a client-side affordance only. They
 don't emit an action or appear in `onAction`.
 
 ## Related

@@ -58,7 +58,7 @@ and `input` blocks, but not in App Home.
 />
 
 :::note
-`datetimepicker` has no `placeholder` field — Slack always shows "Select a date" and "Select a
+`datetimepicker` has no `placeholder` field: Slack always shows "Select a date" and "Select a
 time" in its two boxes until a value is chosen.
 :::
 
@@ -179,7 +179,7 @@ before any interaction.
 `BlockKitProvider`'s `timeZone` prop (an IANA zone like `Europe/Amsterdam`) controls how the
 closed control _displays_ the date and time, and labels the hint text underneath it (e.g. "Time
 zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"). It doesn't change `selected_date_time`
-itself — that's always a UTC-based Unix timestamp, exactly as Slack sends it. Without a `timeZone`
+itself, which is always a UTC-based Unix timestamp, exactly as Slack sends it. Without a `timeZone`
 prop, the picker displays in UTC.
 
 ## Related

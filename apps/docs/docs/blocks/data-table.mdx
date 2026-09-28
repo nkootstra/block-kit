@@ -4,7 +4,7 @@ description: A sortable, paginated grid of rows and columns, for datasets larger
 ---
 
 `data_table` renders a grid with a header row, per-column sorting, and pagination once a table has
-more than a handful of rows. It isn't part of the public `@slack/types` package — treat this page's
+more than a handful of rows. It isn't part of the public `@slack/types` package, so treat this page's
 field list as the reference.
 
 <Preview
@@ -110,7 +110,7 @@ Each cell is one of four shapes, picked by `type`:
     },
     rich_text: {
       type: "RichTextBlock",
-      description: "A Slack rich text node — bold, italic, and other inline styles.",
+      description: "A Slack rich text node: bold, italic, and other inline styles.",
     },
   }}
 />
@@ -125,7 +125,7 @@ automatically once a table has more than 5 data rows, five rows to a page.
 
 ### Basic table
 
-The preview above is `fixtures/catalog/table/basic-data-table.json` — a mix of `raw_text` and
+The preview above is `fixtures/catalog/table/basic-data-table.json`, a mix of `raw_text` and
 `rich_text` cells.
 
 ### Numeric sorting

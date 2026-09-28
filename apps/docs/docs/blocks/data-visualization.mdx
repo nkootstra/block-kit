@@ -4,7 +4,7 @@ description: Bar, line, area, and pie charts for a series of labeled values.
 ---
 
 `data_visualization` renders one chart from a `series` of labeled values, or `segments` for a pie.
-It isn't part of the public `@slack/types` package — treat this page's field list as the reference.
+It isn't part of the public `@slack/types` package, so treat this page's field list as the reference.
 
 <Preview
   payload={{
@@ -84,11 +84,11 @@ It isn't part of the public `@slack/types` package — treat this page's field l
 />
 
 `ChartSeries` is `{ name: string; data: { label: string; value: number }[] }`. `AxisConfig` is
-`{ categories?: string[]; x_label?: string; y_label?: string }` — `categories` overrides the x-axis
+`{ categories?: string[]; x_label?: string; y_label?: string }`. `categories` overrides the x-axis
 labels; when omitted they're taken from the first series' `data[].label`.
 
 :::note
-Colors come from a fixed 4-color palette and are assigned by series (or segment) index — there's no
+Colors come from a fixed 4-color palette and are assigned by series (or segment) index. There's no
 field to set a series' color. A 5th series or segment reuses the first color. Bar, line, and area
 charts always include zero in the y-axis range, so negative values extend below the zero line;
 pie charts clamp negative values to 0.
@@ -96,11 +96,11 @@ pie charts clamp negative values to 0.
 
 ## Examples
 
-### Bar — single series
+### Bar: single series
 
 The preview above shows one series as grouped bars.
 
-### Bar — multiple series
+### Bar: multiple series
 
 <Preview
   payload={{
@@ -143,7 +143,7 @@ The preview above shows one series as grouped bars.
   }}
 />
 
-### Bar — negative values
+### Bar: negative values
 
 <Preview
   payload={{
@@ -178,7 +178,7 @@ The preview above shows one series as grouped bars.
 
 Bars for negative values extend below the zero line instead of being clipped or flipped.
 
-### Line — negative values
+### Line: negative values
 
 <Preview
   payload={{
@@ -211,7 +211,7 @@ Bars for negative values extend below the zero line instead of being clipped or 
   }}
 />
 
-### Area — multiple series
+### Area: multiple series
 
 <Preview
   payload={{
@@ -254,7 +254,7 @@ Bars for negative values extend below the zero line instead of being clipped or 
   }}
 />
 
-### Pie — multiple segments
+### Pie: multiple segments
 
 <Preview
   payload={{
@@ -276,7 +276,7 @@ Bars for negative values extend below the zero line instead of being clipped or 
   }}
 />
 
-### Pie — one dominant segment
+### Pie: one dominant segment
 
 <Preview
   payload={{
@@ -302,7 +302,7 @@ Bars for negative values extend below the zero line instead of being clipped or 
 
 <CardGroup cols={2}>
   <Card title="Data table" href="/blocks/data-table" icon="table-2">
-    Sortable, paginated tabular data — a natural companion to a chart.
+    Sortable, paginated tabular data, a natural companion to a chart.
   </Card>
   <Card title="Card" href="/blocks/card" icon="credit-card">
     A common place to embed a chart alongside a summary.
