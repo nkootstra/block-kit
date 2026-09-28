@@ -34,7 +34,11 @@
 }
 
 /* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. */
-.sbk-task-card__pill:hover {
+.sbk-task-card__pill[aria-disabled="true"] {
+  cursor: default;
+}
+
+.sbk-task-card__pill:not([aria-disabled="true"]):hover {
   background-color: var(--sbk-hover-overlay);
 }
 

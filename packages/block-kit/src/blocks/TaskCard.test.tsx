@@ -52,6 +52,16 @@ describe("<TaskCard>", () => {
     );
   });
 
+  it("disables the toggle and drops the caret when there is nothing to expand, like Slack", () => {
+    const bare = { type: "task_card", task_id: "t", title: "Bare task", status: "complete" };
+    const { container } = render(<TaskCard block={asTaskCardBlock(bare)} blockId="b1" index={0} />);
+    const toggle = screen.getByRole("button");
+    expect(toggle.getAttribute("aria-disabled")).toBe("true");
+    expect(container.querySelector(".sbk-task-card__pill-chevron")).toBeNull();
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  });
+
   it("shows a spinner icon while the task is in progress", () => {
     const { container } = render(
       <TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />,

@@ -24,6 +24,8 @@ interface TaskCardBlock extends Json {
 export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
   const [expanded, setExpanded] = useState(false);
   const sources = Array.isArray(block.sources) ? block.sources : [];
+  // Slack disables the toggle, and drops its caret, when the card has nothing to reveal.
+  const expandable = Boolean(block.details || block.output || sources.length > 0);
 
   return (
     <div className="sbk-task-card">
@@ -31,16 +33,21 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
         type="button"
         className="sbk-task-card__pill"
         aria-expanded={expanded}
-        onClick={() => setExpanded((value) => !value)}
+        aria-disabled={expandable ? undefined : true}
+        onClick={() => {
+          if (expandable) setExpanded((value) => !value);
+        }}
       >
         <span className="sbk-task-card__pill-content">
           <span className="sbk-task-card__pill-icon">
             <StatusIcon status={block.status} />
           </span>
           <span className="sbk-task-card__pill-title">{block.title}</span>
-          <span className="sbk-task-card__pill-chevron">
-            <CaretIcon direction={expanded ? "down" : "right"} />
-          </span>
+          {expandable ? (
+            <span className="sbk-task-card__pill-chevron">
+              <CaretIcon direction={expanded ? "down" : "right"} />
+            </span>
+          ) : null}
         </span>
       </button>
       <Collapse open={expanded}>
