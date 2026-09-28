@@ -6,7 +6,16 @@ import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
  * keeps the content mounted until the closing transition ends, and skips the animation when the
  * stylesheet sets no transition (reduced motion, or no CSS loaded).
  */
-export function Collapse({ open, children }: { open: boolean; children: ReactNode }) {
+export function Collapse({
+  open,
+  className,
+  children,
+}: {
+  open: boolean;
+  /** Sets a block's own timing, e.g. the container's shorter, eased slide. */
+  className?: string;
+  children: ReactNode;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   // Whether the content is mounted: it opens with `open` but only closes once the transition ends.
   const [shown, setShown] = useState(open);
@@ -36,7 +45,7 @@ export function Collapse({ open, children }: { open: boolean; children: ReactNod
   return (
     <div
       ref={ref}
-      className="sbk-collapse"
+      className={className ? `sbk-collapse ${className}` : "sbk-collapse"}
       inert={!open}
       onTransitionEnd={(e) => {
         if (e.target !== e.currentTarget || e.propertyName !== "height") return;

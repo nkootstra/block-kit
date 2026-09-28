@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Collapse } from "../data/Collapse";
 import { Text, type TextObject } from "../Text";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
@@ -69,6 +70,16 @@ export function Container({ block }: BlockProps) {
     </div>
   );
 
+  const body = (
+    <div className="sbk-container__body">
+      <InContainerContext.Provider value={true}>
+        {children.map((child, i) => (
+          <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+        ))}
+      </InContainerContext.Provider>
+    </div>
+  );
+
   return (
     <div className={`sbk-container sbk-container--${width}`}>
       {isCollapsible ? (
@@ -89,14 +100,12 @@ export function Container({ block }: BlockProps) {
           </div>
         )
       )}
-      {!collapsed && (
-        <div className="sbk-container__body">
-          <InContainerContext.Provider value={true}>
-            {children.map((child, i) => (
-              <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
-            ))}
-          </InContainerContext.Provider>
-        </div>
+      {isCollapsible ? (
+        <Collapse open={!collapsed} className="sbk-container__collapse">
+          {body}
+        </Collapse>
+      ) : (
+        body
       )}
     </div>
   );

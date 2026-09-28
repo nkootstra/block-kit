@@ -86,7 +86,7 @@
   flex: 0 0 auto;
   align-items: center;
   margin-left: 8px;
-  transition: transform 0.15s ease;
+  transition: transform 0.16s cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
 .sbk-container__chevron--collapsed {
@@ -95,6 +95,19 @@
 
 .sbk-container__body {
   padding: 0 12px 12px;
+}
+
+/* Builder's `containerBlockContent` slides open and shut faster than plan and task_card, on the
+   same curve as the chevron. */
+.sbk-collapse.sbk-container__collapse {
+  transition: height 0.16s cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sbk-container__chevron,
+  .sbk-collapse.sbk-container__collapse {
+    transition: none;
+  }
 }
 
 /* Builder omits the image title/caret row when an `image` block is a direct child of a
@@ -112,6 +125,11 @@
 
 /* Builder drops the top margin of a leading section: its text starts right under the header
    (catalog/container/icon-plus-subtitle), or 12px below a header divider (header-divider). */
-.sbk-container__header + .sbk-container__body > .sbk-block--section:first-child .sbk-section {
+.sbk-container__header + .sbk-container__body > .sbk-block--section:first-child .sbk-section,
+.sbk-container__header
+  + .sbk-container__collapse
+  > .sbk-container__body
+  > .sbk-block--section:first-child
+  .sbk-section {
   margin-top: 0;
 }

@@ -77,6 +77,27 @@ describe("<Container>", () => {
     expect(screen.queryByText("Hideable content")).toBeNull();
   });
 
+  it("keeps the content on screen while it animates shut, like Slack's height transition", () => {
+    const style = document.head.appendChild(document.createElement("style"));
+    style.textContent = ".sbk-container__collapse { transition-duration: 0.16s; }";
+    try {
+      const block = {
+        type: "container",
+        title: { type: "plain_text", text: "Title" },
+        is_collapsible: true,
+        child_blocks: [richText("Sliding content")],
+      };
+      render(<Container block={block as never} blockId="b1" index={0} />);
+      fireEvent.click(screen.getByRole("button"));
+      const body = screen.getByText("Sliding content").closest(".sbk-collapse")!;
+      expect(body).toBeTruthy();
+      fireEvent.transitionEnd(body, { propertyName: "height" });
+      expect(screen.queryByText("Sliding content")).toBeNull();
+    } finally {
+      style.remove();
+    }
+  });
+
   it("starts collapsed when default_collapsed is true", () => {
     const block = {
       type: "container",
