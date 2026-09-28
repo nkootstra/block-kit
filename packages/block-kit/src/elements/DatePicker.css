@@ -10,12 +10,14 @@
   position: relative;
 }
 
+/* Slack's glyph sits on an 18px text line centred in the 28px field; the line's baseline rounds
+   to a whole pixel, which drops the icon 0.45px below its 13px em box's true centre. */
 .sbk-datepicker__icon {
   position: absolute;
   left: 8px;
-  top: 4px;
+  top: 7.95px;
   width: 13px;
-  height: 20px;
+  height: 13px;
   color: var(--sbk-badge-text);
 }
 

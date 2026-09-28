@@ -19,30 +19,18 @@ export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Slack's calendar: a 1.5-stroke rounded frame with a header rule over a grid of eight dots. */
+/**
+ * Slack's calendar, traced from its icon font's `calendar` glyph (2000 units to the em, 1700 above
+ * the baseline), so it lands in a square box exactly where the glyph sits in an em.
+ */
 export function CalendarIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true" {...props}>
-      <rect
-        x="1.75"
-        y="1.75"
-        width="16.5"
-        height="16.5"
-        rx="2.25"
-        stroke="currentColor"
-        strokeWidth="1.5"
+    <svg viewBox="0 0 2000 2000" width="20" height="20" aria-hidden="true" {...props}>
+      <path
+        transform="matrix(1 0 0 -1 0 1700)"
+        fill="currentColor"
+        d="M350 1600C212 1600 100 1487 100 1349V51C100 -87 212 -200 350 -200H1649C1787 -200 1900 -87 1900 51V1349C1900 1487 1787 1600 1649 1600ZM1649 1450C1705 1450 1750 1405 1750 1349V1200H250V1349C250 1405 295 1450 350 1450ZM350 -50C295 -50 250 -5 250 51V1050H1750V51C1750 -5 1705 -50 1649 -50ZM1001 900C945 900 901 855 901 800C901 744 945 700 1001 700C1056 700 1101 745 1101 800C1101 856 1056 900 1001 900ZM1401 900C1345 900 1301 855 1301 800C1301 744 1345 700 1401 700C1456 700 1501 745 1501 800C1501 856 1456 900 1401 900ZM601 600C545 600 501 555 501 500C501 444 545 400 601 400C656 400 701 445 701 500C701 556 656 600 601 600ZM1001 600C945 600 901 555 901 500C901 444 945 400 1001 400C1056 400 1101 445 1101 500C1101 556 1056 600 1001 600ZM1401 600C1345 600 1301 555 1301 500C1301 444 1345 400 1401 400C1456 400 1501 445 1501 500C1501 556 1456 600 1401 600ZM601 300C545 300 501 255 501 200C501 144 545 100 601 100C656 100 701 145 701 200C701 256 656 300 601 300ZM1001 300C945 300 901 255 901 200C901 144 945 100 1001 100C1056 100 1101 145 1101 200C1101 256 1056 300 1001 300ZM1401 300C1345 300 1301 255 1301 200C1301 144 1345 100 1401 100C1456 100 1501 145 1501 200C1501 256 1456 300 1401 300Z"
       />
-      <path d="M1.75 5.75H18.25" stroke="currentColor" strokeWidth="1.5" />
-      <g fill="currentColor">
-        <circle cx="10" cy="9" r="1" />
-        <circle cx="14" cy="9" r="1" />
-        <circle cx="6" cy="12" r="1" />
-        <circle cx="10" cy="12" r="1" />
-        <circle cx="14" cy="12" r="1" />
-        <circle cx="6" cy="15" r="1" />
-        <circle cx="10" cy="15" r="1" />
-        <circle cx="14" cy="15" r="1" />
-      </g>
     </svg>
   );
 }
