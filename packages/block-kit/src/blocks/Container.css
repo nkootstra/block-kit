@@ -40,9 +40,10 @@
   border-bottom: 1px solid var(--sbk-outline-ter);
 }
 
+/* Slack centres the icon against the title and subtitle. */
 .sbk-container__titles {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   flex: 1 1 0;
   min-width: 0;
