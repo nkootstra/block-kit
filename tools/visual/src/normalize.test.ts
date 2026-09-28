@@ -114,4 +114,14 @@ describe("normalize", () => {
       out.split(".dataTableBlockContainer__JT5Zf::-webkit-scrollbar{width:8px;height:8px}"),
     ).toHaveLength(2);
   });
+
+  it("keeps a link Slack doesn't underline free of the browser's default underline", () => {
+    const html =
+      '<a class="c-link" href="https://a.test" style="color:blue">a</a>' +
+      '<a class="c-link c-link--underline" href="https://a.test" style="text-decoration:underline">b</a>';
+    expect(normalize(html)).toBe(
+      '<a class="c-link" href="https://a.test" style="text-decoration:none;color:blue">a</a>' +
+        '<a class="c-link c-link--underline" href="https://a.test" style="text-decoration:underline">b</a>',
+    );
+  });
 });

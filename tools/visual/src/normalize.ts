@@ -17,6 +17,8 @@
  * - An inherited property reset to its default was dropped too: Slack's gallery scroller is
  *   `nowrap` and its carousel cards set `wrap` again, so card bodies rendered as one clipped line.
  * - The same goes for a data table's scroller, whose 8px scrollbar Slack also keeps idle-invisible.
+ * - Links were diffed against an <a> without an href, which isn't underlined, so a link Slack
+ *   leaves plain never got `text-decoration:none` and picks up the browser's underline here.
  */
 export function normalize(html: string): string {
   return uprightPseudos(
@@ -36,6 +38,9 @@ export function normalize(html: string): string {
             return `style="${kept.join(";")}"`;
           })
         : tag,
+    )
+    .replace(/<a\b[^>]*\bhref="[^>]*>/g, (tag) =>
+      /text-decoration:/.test(tag) ? tag : tag.replace(/style="/, 'style="text-decoration:none;'),
     )
     .replace(/<div\b[^>]*\bclass="dragWrapper[^>]*>/g, (tag) =>
       tag.replace(/box-shadow:[^;"]*;?/, ""),
