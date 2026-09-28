@@ -63,7 +63,19 @@
   color: var(--blume-muted-foreground);
 }
 
+.bkd-preview__log-count {
+  font-weight: 400;
+  color: var(--blume-muted-foreground);
+}
+
+/* Only the latest call is shown, so repeated clicks never grow the page. */
+.bkd-preview__log pre {
+  margin: 0;
+  max-height: 16rem;
+  overflow: auto;
+}
+
 .bkd-preview__log code {
   font-family: var(--blume-font-mono);
-  overflow-wrap: anywhere;
+  white-space: pre;
 }

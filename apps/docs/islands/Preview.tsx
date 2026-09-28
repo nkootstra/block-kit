@@ -77,7 +77,7 @@ export default function Preview({
   ephemeral = false,
 }: PreviewProps) {
   const [tab, setTab] = useState<"preview" | "json">(code ? "json" : "preview");
-  const [log, setLog] = useState<BlockAction[]>([]);
+  const [last, setLast] = useState<{ action: BlockAction; count: number } | null>(null);
   const view = asView(payload);
   const blocks = view ? undefined : asBlocks(payload);
   const message = view ? undefined : asMessage(payload);
@@ -106,7 +106,7 @@ export default function Preview({
             resolvers={resolvers}
             onOptions={onOptions}
             onAction={(action, { views }) => {
-              if (actions) setLog((l) => [action, ...l].slice(0, 5));
+              if (actions) setLast((prev) => ({ action, count: (prev?.count ?? 0) + 1 }));
               if (opens && action.type === "button") views.open(opens as ModalView);
             }}
           >
@@ -131,11 +131,18 @@ export default function Preview({
       )}
       {actions && tab === "preview" && (
         <div className="bkd-preview__log">
-          <span className="bkd-preview__log-title">onAction</span>
-          {log.length === 0 ? (
-            <span className="bkd-preview__log-empty">Interact with the preview.</span>
+          <span className="bkd-preview__log-title">
+            onAction
+            {last && last.count > 1 && (
+              <span className="bkd-preview__log-count"> · called {last.count} times, latest:</span>
+            )}
+          </span>
+          {last ? (
+            <pre>
+              <code>{JSON.stringify(summarize(last.action), null, 2)}</code>
+            </pre>
           ) : (
-            log.map((action, i) => <code key={i}>{JSON.stringify(summarize(action))}</code>)
+            <span className="bkd-preview__log-empty">Interact with the preview.</span>
           )}
         </div>
       )}
