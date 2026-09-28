@@ -23,9 +23,11 @@ function segmentPath(startAngle: number, endAngle: number): string {
   const end = pointAt(endAngle);
   const largeArc = sweep > 180 ? 1 : 0;
   if (sweep >= 359.999) {
-    // full circle: draw as two half-arcs since a single arc command can't close on itself
-    const mid = pointAt(startAngle + 180);
-    return `M${CENTER.x} ${CENTER.y}L${start.x} ${start.y}A${RADIUS} ${RADIUS} 0 1 1 ${mid.x} ${mid.y}A${RADIUS} ${RADIUS} 0 1 1 ${start.x} ${start.y}Z`;
+    // A full circle, drawn as Slack's chart library does: one arc stopping 1e-4 rad short of its
+    // start, with no edge to the centre (which would show as a white seam under the stroke).
+    const stop = pointAt(startAngle + 360 - (1e-4 * 180) / Math.PI);
+    const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
+    return `M${r4(start.x)} ${r4(start.y)}A${RADIUS} ${RADIUS} 0 1 1 ${r4(stop.x)} ${r4(stop.y)}Z`;
   }
   return `M${CENTER.x} ${CENTER.y}L${start.x} ${start.y}A${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${end.x} ${end.y}Z`;
 }
