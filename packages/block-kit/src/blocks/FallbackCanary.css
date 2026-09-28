@@ -1,0 +1,11 @@
+/* Slack drops every fallback block into the single (flex-row) wrapper of the unknown block. */
+.sbk-fallback-canary {
+  display: flex;
+}
+
+/* Slack's header and section blocks are `width: 100%` there while a context block sizes to its
+   content, so the row shrinks them in that proportion (174/174/84px of 432 in the reference). */
+.sbk-fallback-canary > .sbk-block--header,
+.sbk-fallback-canary > .sbk-block--section {
+  width: 100%;
+}

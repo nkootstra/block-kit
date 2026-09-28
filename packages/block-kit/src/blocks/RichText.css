@@ -1,0 +1,125 @@
+.sbk-rich-text {
+  font-family: var(--sbk-font);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sbk-text);
+  overflow-wrap: anywhere;
+}
+
+.sbk-rich-text__section {
+  display: block;
+}
+
+.sbk-rich-text__br {
+  display: block;
+  height: 8px;
+}
+
+.sbk-rich-text__jumbo-emoji {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sbk-rich-text__quote {
+  margin: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.sbk-rich-text__quote::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 8px;
+  background: var(--sbk-quote-bar);
+}
+
+.sbk-rich-text__pre {
+  display: block;
+  position: relative;
+  margin: 4px 0;
+  padding: 8px;
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  line-height: 1.50001;
+  color: var(--sbk-text);
+  background: var(--sbk-code-bg);
+  border: 1px solid var(--sbk-code-border);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.sbk-rich-text__pre-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  color: rgb(69, 68, 71);
+  background: rgba(29, 28, 29, 0.04);
+  border-radius: 4px;
+  /* Slack's copy control (`container__nrkPh`) is invisible until the code block is hovered. */
+  opacity: 0;
+}
+
+.sbk-rich-text__pre:hover .sbk-rich-text__pre-copy,
+.sbk-rich-text__pre:focus-within .sbk-rich-text__pre-copy {
+  opacity: 1;
+}
+
+.sbk-rich-text__color-swatch {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 -1px 2px;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--sbk-muted);
+  border-radius: 3px;
+}
+
+.sbk-rich-list {
+  margin: 0;
+  list-style-position: outside;
+}
+
+.sbk-rich-list--ordered {
+  padding: 0 0 0 11px;
+}
+
+.sbk-rich-list--bullet {
+  padding: 0;
+}
+
+.sbk-rich-list__item {
+  display: list-item;
+}
+
+.sbk-rich-list--ordered > .sbk-rich-list__item {
+  margin: 0 0 0 20px;
+  padding-left: 8px;
+}
+
+.sbk-rich-list--bullet > .sbk-rich-list__item {
+  margin: 0 0 0 28px;
+}
+
+/* A list with `border: 1` carries the same left bar as a quote, so the two join visually. */
+.sbk-rich-list--bordered {
+  position: relative;
+  margin-left: 0;
+}
+
+.sbk-rich-list--bordered::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 8px;
+  background: var(--sbk-quote-bar);
+}

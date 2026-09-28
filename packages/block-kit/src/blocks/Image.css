@@ -1,0 +1,59 @@
+.sbk-image {
+  margin: 8px 0;
+}
+
+.sbk-image__title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-muted);
+  /* Slack's row is always 22px tall (caption text + caret), even when we have no byte-count
+     text to show — without an explicit height the flex row collapses to the caret's own 15px,
+     pulling the image up out of alignment with the reference. */
+  min-height: 22px;
+}
+
+.sbk-image__title-text {
+  color: var(--sbk-text);
+}
+
+.sbk-image__caret {
+  color: var(--sbk-link);
+  flex: 0 0 auto;
+}
+
+.sbk-image__frame {
+  position: relative;
+  /* Slack always leaves a 5px gap above the image itself (the image container's own
+     margin-top), independent of whether the title row above it has content or is hidden/0-height
+     — so this lives on the frame rather than as the title row's margin-bottom, which would
+     disappear along with the row when Container.css hides it for a direct-child image. */
+  margin-top: 5px;
+  /* Slack scales large images down to the message width but never upscales a small one. */
+  max-width: 100%;
+  width: fit-content;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.sbk-image__img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.sbk-image__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  width: 100%;
+  background: var(--sbk-badge-bg);
+  color: var(--sbk-muted);
+  font-size: 13px;
+  padding: 16px;
+  text-align: center;
+}
