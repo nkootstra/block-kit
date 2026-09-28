@@ -123,8 +123,9 @@
   flex: 0 0 6px;
 }
 
+/* Slack's first step sits 11px below the toggle, not 12. */
 .sbk-plan__task:first-child .sbk-plan__line--top {
-  flex-basis: 12px;
+  flex-basis: 11px;
 }
 
 .sbk-plan__line--bottom {
