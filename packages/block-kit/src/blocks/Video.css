@@ -35,8 +35,13 @@
   color: var(--sbk-link);
 }
 
+/* A plain `c-link`: underlined only on hover. */
 .sbk-video__title a {
   color: inherit;
+  text-decoration: none;
+}
+
+.sbk-video__title a:hover {
   text-decoration: underline;
 }
 
