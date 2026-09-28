@@ -1,7 +1,9 @@
 /**
  * Smooth line through points, matching Slack's series curves: each point's tangent runs parallel to
  * its neighbours (flattened at peaks and troughs) and its handles are split in proportion to the
- * adjacent chord lengths, at a tension of 0.5. The end points use themselves as their outer handle.
+ * adjacent chord lengths, at a tension of 0.5. A handle that would rise or fall past its neighbour
+ * has the tangent flattened until it stops level with it, so the curve never overshoots a point.
+ * The end points use themselves as their outer handle.
  */
 export function smoothLinePath(points: { x: number; y: number }[]): string {
   const first = points[0];
@@ -17,7 +19,14 @@ export function smoothLinePath(points: { x: number; y: number }[]): string {
     const fb = (0.5 * d12) / total;
     const extremum = (p.y - prev.y) * (next.y - p.y) <= 0;
     const dx = next.x - prev.x;
-    const dy = extremum ? 0 : next.y - prev.y;
+    let dy = extremum ? 0 : next.y - prev.y;
+    if (dy !== 0) {
+      const room = Math.min(
+        Math.abs(p.y - prev.y) / Math.abs(fa * dy),
+        Math.abs(next.y - p.y) / Math.abs(fb * dy),
+      );
+      if (room < 1) dy *= room;
+    }
     return {
       in: { x: p.x - fa * dx, y: p.y - fa * dy },
       out: { x: p.x + fb * dx, y: p.y + fb * dy },
