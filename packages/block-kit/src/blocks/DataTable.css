@@ -1,0 +1,260 @@
+/* Values measured from Slack's Block Kit Builder for the `data_table` block. */
+:root {
+  --sbk-data-table-bg: rgba(29, 28, 29, 0.06);
+  --sbk-data-table-sep: rgba(94, 93, 96, 0.13);
+  --sbk-data-table-active: #007a5a;
+}
+
+.sbk-data-table {
+  margin: 4px 0;
+}
+
+.sbk-data-table__header {
+  display: flex;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 8px;
+}
+
+.sbk-data-table__caption {
+  flex: 1 1 auto;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sbk-data-table__toolbar {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.sbk-data-table__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: var(--sbk-badge-text);
+  background: none;
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Slack's grey frame holds both the grid and the pagination footer below it. */
+.sbk-data-table__frame {
+  display: flow-root;
+  padding: 0 4px;
+  background-color: var(--sbk-data-table-bg);
+  border-radius: 12px;
+}
+
+.sbk-data-table__rows {
+  position: relative;
+  overflow: auto;
+}
+
+/* Without pagination Slack's footer shrinks to a 4px strip. */
+.sbk-data-table__rows:last-child {
+  margin-bottom: 4px;
+}
+
+.sbk-data-table__grid-header,
+.sbk-data-table__row {
+  display: grid;
+}
+
+.sbk-data-table__col-header {
+  display: flex;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-data-table__col-header button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4px;
+  padding: 0 12px;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Slack hides the unsorted caret until the header is hovered or focused, and tints the header
+   with the same 6% overlay as its other hoverable table chrome. */
+.sbk-data-table__col-header button:hover,
+.sbk-data-table__col-header button:focus-visible {
+  background-color: var(--sbk-hover-overlay);
+}
+
+.sbk-data-table__sort-caret {
+  display: flex;
+  opacity: 0;
+}
+
+.sbk-data-table__col-header button:hover .sbk-data-table__sort-caret,
+.sbk-data-table__col-header button:focus-visible .sbk-data-table__sort-caret {
+  opacity: 1;
+}
+
+.sbk-data-table__col-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-data-table__cell {
+  position: relative;
+  min-width: 0;
+  height: 48px;
+  overflow: hidden;
+  background-color: var(--sbk-bg);
+}
+
+/* The body's outline is drawn by its edge cells, inside the 48px rows as in Slack. */
+.sbk-data-table__row:first-child .sbk-data-table__cell {
+  border-top: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__row:last-child .sbk-data-table__cell {
+  border-bottom: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__cell:first-child {
+  border-left: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__cell:last-child {
+  border-right: 1px solid var(--sbk-button-border);
+}
+
+.sbk-data-table__row:hover .sbk-data-table__cell {
+  background-color: var(--sbk-row-hover-bg);
+}
+
+.sbk-data-table__row:not(:first-child) .sbk-data-table__cell {
+  box-shadow: inset 0 1px 0 var(--sbk-data-table-sep);
+}
+
+.sbk-data-table__row:first-child .sbk-data-table__cell:first-child {
+  border-top-left-radius: 8px;
+}
+
+.sbk-data-table__row:first-child .sbk-data-table__cell:last-child {
+  border-top-right-radius: 8px;
+}
+
+.sbk-data-table__row:last-child .sbk-data-table__cell:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.sbk-data-table__row:last-child .sbk-data-table__cell:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.sbk-data-table__cell-content {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 12px;
+}
+
+/* Slack clips overlong cell text without an ellipsis. */
+.sbk-data-table__truncate {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sbk-data-table__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-badge-text);
+}
+
+.sbk-data-table__page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sbk-data-table__page-nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sbk-data-table__page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sbk-data-table__page-btn--active {
+  color: #fff;
+  background-color: var(--sbk-data-table-active);
+}
+
+.sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):hover,
+.sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):focus-visible {
+  color: var(--sbk-text);
+  background-color: var(--sbk-button-hover-bg);
+}
+
+/* Same multiply darkening as a primary button: hover ≈ rgb(20,133,103), pressed ≈ rgb(0,110,81). */
+.sbk-data-table__page-btn--active:hover {
+  background-color: rgb(20, 133, 103);
+}
+
+.sbk-data-table__page-btn--active:active {
+  background-color: rgb(0, 110, 81);
+}
+
+.sbk-rtmini__link {
+  color: var(--sbk-link);
+  text-decoration: none;
+}
+
+.sbk-rtmini__link:hover {
+  text-decoration: underline;
+}
+
+.sbk-rtmini__code {
+  font-family: var(--sbk-font-mono);
+  font-size: 12px;
+  background: var(--sbk-code-bg);
+  border: 1px solid var(--sbk-code-border);
+  border-radius: 3px;
+  padding: 1px 3px;
+}

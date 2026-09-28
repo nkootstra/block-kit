@@ -1,0 +1,113 @@
+:root {
+  --sbk-dataviz-border: rgba(94, 93, 96, 0.13);
+  --sbk-dataviz-tick: #5e5d60;
+}
+
+.sbk-dataviz {
+  display: flex;
+  flex-direction: column;
+  /* Slack insets the chart card 8px from the block edges. */
+  margin: 8px 0;
+  padding: 12px;
+  background-color: var(--sbk-container-bg);
+  border: 1px solid var(--sbk-dataviz-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sbk-dataviz__title {
+  /* Only the title is spaced off; the plot, axis label and legend stack flush. */
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 24.0001px;
+}
+
+.sbk-dataviz__body {
+  display: flex;
+  align-items: stretch;
+  /* The y-axis label is absolutely positioned (see below) so it doesn't steal width from the
+     chart — Slack renders the chart at the container's full width and overlays the label. */
+  position: relative;
+}
+
+.sbk-dataviz__body--pie {
+  justify-content: center;
+}
+
+.sbk-dataviz__y-label {
+  position: absolute;
+  left: 0;
+  /* Matches the reference: the label spans the plot area, not the tick/legend gutters below it. */
+  top: 8px;
+  bottom: 26px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+
+.sbk-dataviz__body > .sbk-chart {
+  flex: 1;
+  min-width: 0;
+}
+
+.sbk-chart {
+  width: 100%;
+}
+
+.sbk-chart__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sbk-chart__tick {
+  fill: var(--sbk-dataviz-tick);
+  font-size: 13px;
+}
+
+.sbk-dataviz__x-label {
+  padding: 8px 0 0 74px;
+  font-size: 13px;
+  font-weight: 700;
+  /* The label is centred within the remaining (post-gutter) width, not left-aligned. */
+  line-height: 18px;
+  text-align: center;
+}
+
+.sbk-dataviz__legend {
+  display: flex;
+  padding: 8px 0 0 74px;
+  gap: 8px;
+  flex-wrap: wrap;
+  /* Centred under the plot area, like the x-axis label above it. */
+  justify-content: center;
+  line-height: 18px;
+}
+
+.sbk-dataviz__legend--pie {
+  padding-left: 0;
+  justify-content: center;
+}
+
+.sbk-dataviz__legend-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.sbk-dataviz__legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  display: inline-block;
+  flex-shrink: 0;
+}
