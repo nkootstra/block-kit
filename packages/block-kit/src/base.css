@@ -408,3 +408,10 @@
   font-weight: 400;
   color: rgba(255, 255, 255, 0.7);
 }
+
+/* The layer menus and calendars open in (elements/Popover.tsx), portalled to <body> and pinned to
+   the control that opened them. */
+.sbk-popover {
+  position: fixed;
+  z-index: 1000;
+}

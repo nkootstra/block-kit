@@ -8,6 +8,7 @@ import { Calendar } from "./calendar/Calendar";
 import { ordinal } from "./dateFormat";
 import { useInInputBlock } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { Popover } from "./Popover";
 
 /**
  * Formats `YYYY-MM-DD` the way Slack's closed datepicker control shows it: "04/28/1990" in an
@@ -41,15 +42,6 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
     if (date) setValue(blockId, actionId, { type: "datepicker", selected_date: date });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [open]);
 
   async function pick(next: string) {
     if (!(await ask())) return;
@@ -91,9 +83,11 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
         <ChevronDownIcon className="sbk-datepicker__chevron" />
       </div>
       {open && (
-        <div className="sbk-datepicker__popup">
-          <Calendar value={date} onSelect={pick} onClear={clear} />
-        </div>
+        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
+          <div className="sbk-datepicker__popup">
+            <Calendar value={date} onSelect={pick} onClear={clear} />
+          </div>
+        </Popover>
       )}
       {dialog}
     </div>

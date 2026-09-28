@@ -30,7 +30,7 @@
 .sbk-overflow__menu {
   position: absolute;
   z-index: 10;
-  top: calc(100% + 4px);
+  top: 0;
   right: 0;
   /* Slack's `c-menu`: 200-300px wide, hairline ring plus drop shadow, 12px list padding. */
   min-width: 200px;

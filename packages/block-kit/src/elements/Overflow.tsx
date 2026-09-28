@@ -1,10 +1,11 @@
 import type { Overflow as OverflowElement, PlainTextOption } from "@slack/types";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { KebabIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { useMenuNavigation } from "./useMenuNavigation";
+import { Popover } from "./Popover";
 
 export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
   const { dispatch } = useBlockKit();
@@ -14,15 +15,6 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [open]);
 
   async function choose(option: PlainTextOption) {
     if (!(await ask())) return;
@@ -65,19 +57,21 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
         <KebabIcon />
       </button>
       {open && (
-        <div className="sbk-overflow__menu" role="menu" ref={listRef}>
-          {element.options.map((option, i) => (
-            <div
-              key={option.value ?? i}
-              role="menuitem"
-              className="sbk-overflow__option"
-              onClick={() => choose(option)}
-              {...nav.itemProps(i)}
-            >
-              {option.text.text}
-            </div>
-          ))}
-        </div>
+        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
+          <div className="sbk-overflow__menu" role="menu" ref={listRef}>
+            {element.options.map((option, i) => (
+              <div
+                key={option.value ?? i}
+                role="menuitem"
+                className="sbk-overflow__option"
+                onClick={() => choose(option)}
+                {...nav.itemProps(i)}
+              >
+                {option.text.text}
+              </div>
+            ))}
+          </div>
+        </Popover>
       )}
       {dialog}
     </div>

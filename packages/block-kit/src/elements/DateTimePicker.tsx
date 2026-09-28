@@ -7,6 +7,7 @@ import type { ElementProps } from "../types";
 import { Calendar } from "./calendar/Calendar";
 import { ordinal, timeZoneLabel } from "./dateFormat";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { Popover } from "./Popover";
 
 function toISODate(ts: number): string {
   return new Date(ts * 1000).toISOString().slice(0, 10);
@@ -66,15 +67,6 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [open]);
 
   async function apply() {
     if (!draftDate) return;
@@ -138,25 +130,27 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
         </div>
       </div>
       {open && (
-        <div className="sbk-datetimepicker__popup">
-          <Calendar value={draftDate} onSelect={setDraftDate} />
-          <div className="sbk-datetimepicker__time-row">
-            <input
-              type="time"
-              className="sbk-datetimepicker__time-input"
-              value={draftTime}
-              onChange={(e) => setDraftTime(e.target.value)}
-            />
-            <button
-              type="button"
-              className="sbk-datetimepicker__apply"
-              onClick={apply}
-              disabled={!draftDate}
-            >
-              Apply
-            </button>
+        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
+          <div className="sbk-datetimepicker__popup">
+            <Calendar value={draftDate} onSelect={setDraftDate} />
+            <div className="sbk-datetimepicker__time-row">
+              <input
+                type="time"
+                className="sbk-datetimepicker__time-input"
+                value={draftTime}
+                onChange={(e) => setDraftTime(e.target.value)}
+              />
+              <button
+                type="button"
+                className="sbk-datetimepicker__apply"
+                onClick={apply}
+                disabled={!draftDate}
+              >
+                Apply
+              </button>
+            </div>
           </div>
-        </div>
+        </Popover>
       )}
       {dialog}
     </div>

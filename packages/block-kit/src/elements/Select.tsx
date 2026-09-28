@@ -8,6 +8,7 @@ import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useMenuNavigation } from "./useMenuNavigation";
+import { Popover } from "./Popover";
 
 /**
  * One component renders every `*_select` element. The 5 data sources (static, external, users,
@@ -222,15 +223,6 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [open]);
-
   function buildState() {
     const field = fieldName(source, multi);
     const first = items[0];
@@ -387,71 +379,73 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         <ChevronDownIcon className="sbk-select__chevron" />
       </button>
       {open && (
-        <div className="sbk-select__menu" role="listbox" ref={listRef}>
-          {(showSearchOnly || allOptions(element).length > 8) && (
-            <div className="sbk-select__search">
-              <SearchIcon />
-              <input
-                autoFocus
-                className="sbk-select__search-input"
-                placeholder={
-                  source === "static" || source === "external"
-                    ? "Search options"
-                    : `Search ${source}`
-                }
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && query.trim() && showSearchOnly && !remote) {
-                    // No live directory to search against: typing an id/value and pressing
-                    // enter selects it directly. This is our approximation for
-                    // external/users/conversations/channels selects, documented in the brief.
-                    selectItem({ id: query.trim(), label: resolveLabel(query.trim()) });
+        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
+          <div className="sbk-select__menu" role="listbox" ref={listRef}>
+            {(showSearchOnly || allOptions(element).length > 8) && (
+              <div className="sbk-select__search">
+                <SearchIcon />
+                <input
+                  autoFocus
+                  className="sbk-select__search-input"
+                  placeholder={
+                    source === "static" || source === "external"
+                      ? "Search options"
+                      : `Search ${source}`
                   }
-                }}
-              />
-            </div>
-          )}
-          {(() => {
-            let index = 0;
-            return visibleGroups.map((group, gi) => {
-              const rows = group.options.map((option) => {
-                const i = index++;
-                return (
-                  <SelectOption
-                    key={option.value ?? i}
-                    option={option}
-                    selected={isSelected(option)}
-                    onSelect={() => selectItem(optionToItem(option))}
-                    navProps={nav.itemProps(i)}
-                  />
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && query.trim() && showSearchOnly && !remote) {
+                      // No live directory to search against: typing an id/value and pressing
+                      // enter selects it directly. This is our approximation for
+                      // external/users/conversations/channels selects, documented in the brief.
+                      selectItem({ id: query.trim(), label: resolveLabel(query.trim()) });
+                    }
+                  }}
+                />
+              </div>
+            )}
+            {(() => {
+              let index = 0;
+              return visibleGroups.map((group, gi) => {
+                const rows = group.options.map((option) => {
+                  const i = index++;
+                  return (
+                    <SelectOption
+                      key={option.value ?? i}
+                      option={option}
+                      selected={isSelected(option)}
+                      onSelect={() => selectItem(optionToItem(option))}
+                      navProps={nav.itemProps(i)}
+                    />
+                  );
+                });
+                return group.label === undefined ? (
+                  rows
+                ) : (
+                  <div className="sbk-select__group" key={gi}>
+                    <div className="sbk-select__group-label">{group.label}</div>
+                    {rows}
+                  </div>
                 );
               });
-              return group.label === undefined ? (
-                rows
-              ) : (
-                <div className="sbk-select__group" key={gi}>
-                  <div className="sbk-select__group-label">{group.label}</div>
-                  {rows}
+            })()}
+            {remote && loading && <div className="sbk-select__status">Loading…</div>}
+            {remote && !loading && remoteGroups !== undefined && flatOptions.length === 0 && (
+              <div className="sbk-select__status">No results</div>
+            )}
+            {showSearchOnly && items.length > 0 && multi && (
+              <div className="sbk-select__group-label">Selected</div>
+            )}
+            {showSearchOnly &&
+              multi &&
+              items.map((item) => (
+                <div className="sbk-select__option sbk-select__option--selected" key={item.id}>
+                  {item.label || resolveLabel(item.id)}
                 </div>
-              );
-            });
-          })()}
-          {remote && loading && <div className="sbk-select__status">Loading…</div>}
-          {remote && !loading && remoteGroups !== undefined && flatOptions.length === 0 && (
-            <div className="sbk-select__status">No results</div>
-          )}
-          {showSearchOnly && items.length > 0 && multi && (
-            <div className="sbk-select__group-label">Selected</div>
-          )}
-          {showSearchOnly &&
-            multi &&
-            items.map((item) => (
-              <div className="sbk-select__option sbk-select__option--selected" key={item.id}>
-                {item.label || resolveLabel(item.id)}
-              </div>
-            ))}
-        </div>
+              ))}
+          </div>
+        </Popover>
       )}
       {dialog}
     </div>

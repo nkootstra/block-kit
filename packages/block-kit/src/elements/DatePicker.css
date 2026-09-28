@@ -50,7 +50,7 @@
 .sbk-datepicker__popup {
   position: absolute;
   z-index: 10;
-  top: calc(100% + 4px);
+  top: 0;
   left: 0;
   /* Slack's datepicker dropdown: 16px padding, hairline ring plus a soft drop shadow. */
   padding: 16px;

@@ -6,6 +6,7 @@ import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useMenuNavigation } from "./useMenuNavigation";
+import { Popover } from "./Popover";
 
 /** Formats `HH:mm` the way Slack's closed timepicker shows it, e.g. "1:37 PM". */
 function formatTime(time: string): string {
@@ -40,15 +41,6 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
     if (time) setValue(blockId, actionId, { type: "timepicker", selected_time: time });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [open]);
 
   async function pick(next: string) {
     if (!(await ask())) return;
@@ -92,20 +84,22 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
         <ChevronDownIcon className="sbk-timepicker__chevron" />
       </button>
       {open && (
-        <div className="sbk-timepicker__menu" role="listbox" ref={listRef}>
-          {times.map((t, i) => (
-            <div
-              key={t}
-              role="option"
-              aria-selected={t === time}
-              className={`sbk-timepicker__option${t === time ? " sbk-timepicker__option--selected" : ""}`}
-              onClick={() => pick(t)}
-              {...nav.itemProps(i)}
-            >
-              {formatTime(t)}
-            </div>
-          ))}
-        </div>
+        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
+          <div className="sbk-timepicker__menu" role="listbox" ref={listRef}>
+            {times.map((t, i) => (
+              <div
+                key={t}
+                role="option"
+                aria-selected={t === time}
+                className={`sbk-timepicker__option${t === time ? " sbk-timepicker__option--selected" : ""}`}
+                onClick={() => pick(t)}
+                {...nav.itemProps(i)}
+              >
+                {formatTime(t)}
+              </div>
+            ))}
+          </div>
+        </Popover>
       )}
       {element.timezone && <div className="sbk-timepicker__hint">Timezone: {element.timezone}</div>}
       {dialog}

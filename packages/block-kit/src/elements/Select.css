@@ -246,7 +246,7 @@
 .sbk-select__menu {
   position: absolute;
   z-index: 10;
-  top: calc(100% + 4px);
+  top: 0;
   left: 0;
   width: max(100%, 240px);
   max-height: 280px;
