@@ -22,16 +22,20 @@ export interface PopoverProps {
 /**
  * The layer a menu or calendar opens in. Slack mounts its popovers at the top of the page, so a
  * message list, a modal body or a carousel never clips them; this portals to `<body>` the same way
- * and keeps the popover pinned to its anchor while the page scrolls or resizes. The layer is as
- * wide as the anchor, so a child sized `width: 100%` matches the control it opened from.
+ * and keeps the popover pinned to its anchor as the page scrolls or resizes, or its content does.
+ * The layer is as wide as the anchor, so a child sized `width: 100%` matches the control it opened
+ * from.
  */
 export function Popover({ anchorRef, onDismiss, children }: PopoverProps) {
   const layerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(
     null,
   );
+  // The latest onDismiss, for the document listener below without re-adding it on every render.
   const dismiss = useRef(onDismiss);
-  dismiss.current = onDismiss;
+  useLayoutEffect(() => {
+    dismiss.current = onDismiss;
+  });
 
   useLayoutEffect(() => {
     function place() {
@@ -54,9 +58,15 @@ export function Popover({ anchorRef, onDismiss, children }: PopoverProps) {
     place();
     window.addEventListener("scroll", place, true);
     window.addEventListener("resize", place);
+    // Its content can change size while open (a select filtering its options), which moves a popover
+    // placed above its anchor.
+    const content = layerRef.current?.firstElementChild;
+    const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(place);
+    if (content) resize?.observe(content);
     return () => {
       window.removeEventListener("scroll", place, true);
       window.removeEventListener("resize", place);
+      resize?.disconnect();
     };
   }, [anchorRef]);
 
