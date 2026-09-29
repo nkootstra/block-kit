@@ -8,6 +8,12 @@ Bun + Turborepo; `docs/README.md` describes the layout.
 - Merge gates: `bun run lint`, `bun run format:check`, `bun run type-check`, `bun run test` and
   `bun run references:check`. Pull requests also run the visual comparison against Slack
   (`tools/visual/README.md`).
+- CI on a pull request runs only what the change can affect: Turbo's `--affected` picks the
+  workspaces to build, type-check and test (root `package.json`, `bun.lock`, `tsconfig.base.json`
+  and `turbo.json` affect all of them), and the visual comparison runs only when the package, the
+  playground, `fixtures/`, `tools/visual/` or the dependencies change. `main` always runs
+  everything. When a new file outside the workspaces starts feeding a build, add it to
+  `globalDependencies` in `turbo.json`.
 - **Docs change with the code.** A change to anything a user sees (components, props, hooks, entry
   points, rendering) updates `apps/docs` and, where it applies, `docs/README.md` and
   `packages/block-kit/README.md` in the same PR. `packages/block-kit/README.md` is the npm page: it
@@ -27,6 +33,10 @@ Never edit them by hand or to make a check pass; `tools/visual/README.md` explai
   package with `scripts/set-version.ts`. Docs use `latest`.
 - There is no changelog file. Each GitHub release's notes are generated from the titles of the PRs
   it contains, so a PR title is its changelog line: write it for the people using the package.
+  Only PRs that change the package (not just its tests) are listed, grouped into breaking changes,
+  features and fixes by their title; `.github/workflows/labeler.yml` applies the labels that
+  `.github/release.yml` groups by. Docs, playground and CI PRs stay out of the notes.
+- A release fails when nothing in `packages/block-kit` changed since the last tag.
 - Releases run from Actions → Release → Run workflow on `main`, choosing `patch`, `minor` or
   `major`. The workflow requires green CI for the commit, publishes to npm through trusted
   publishing (no npm token exists; never run `npm publish` locally), then tags `vX.Y.Z` and creates

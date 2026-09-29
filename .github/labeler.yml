@@ -1,0 +1,22 @@
+# Path labels for actions/labeler (.github/workflows/labeler.yml). `package` decides whether a PR
+# appears in the release notes (.github/release.yml), so it marks changes that reach npm: anything
+# in the package except tests alone.
+package:
+  - changed-files:
+      - all-globs-to-any-file: ["packages/block-kit/**", "!packages/block-kit/**/*.test.*"]
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: ["apps/docs/**", "docs/**"]
+
+playground:
+  - changed-files:
+      - any-glob-to-any-file: ["apps/playground/**"]
+
+visual:
+  - changed-files:
+      - any-glob-to-any-file: ["fixtures/**", "tools/visual/**"]
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/**"]

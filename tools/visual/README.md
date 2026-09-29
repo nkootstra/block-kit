@@ -61,13 +61,17 @@ references in Block Kit Builder.
 
 The Visual workflow keeps the Linux baseline without anyone editing it by hand:
 
+- A pull request is compared only when it touches something the comparison renders: the package,
+  the playground, `fixtures/`, `tools/visual/` or the dependencies. Otherwise the `compare` job is
+  skipped, which counts as passing.
 - A pull request is checked against the **base branch's** baseline, so it can't loosen its own
   check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
   regression with the `visual-baseline-increase` label.
 - After a merge, the workflow records the new numbers on `main` and commits them: new fixtures and
   improvements beyond the tolerance always, increases only when the merged PR carried the label.
   It pushes with the `VISUAL_DEPLOY_KEY` deploy key, which the `protect main` ruleset lets bypass
-  the pull request requirement.
+  the pull request requirement. CI runs on that commit, so a release can be cut from it; the Visual
+  workflow ignores it, since only the baseline changed.
 - Running the workflow manually with `update_baseline` regenerates the whole file as an artifact.
 
 `visual-baseline.darwin.json` is for local runs only; keep it current with

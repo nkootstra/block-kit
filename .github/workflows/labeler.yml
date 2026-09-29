@@ -1,0 +1,55 @@
+name: Labeler
+
+# Labels every PR by what it touches (.github/labeler.yml) and, when it changes the package, by the
+# type in its title: `feat` → feature, `fix` → fix, a `!` → breaking. The labels drive the release
+# notes (.github/release.yml): only PRs labeled `package` are listed, grouped by type. Type labels
+# go only on `package` PRs because a release category matches any of its labels.
+#
+# pull_request_target, because a fork's pull_request token can't write labels. It's safe: nothing
+# here checks out or runs the PR's code; labeler reads the changed paths through the API.
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  label:
+    name: Label by paths and title
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
+        with:
+          sync-labels: true
+
+      - name: Label by title
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Read the title and the labels labeler just synced from the API, so a re-run sees the
+          # current ones.
+          pr=$(gh api "repos/$REPO/pulls/$PR_NUMBER")
+          title=$(jq -r .title <<< "$pr")
+          want=()
+          if ! jq -e '.labels | any(.name == "package")' <<< "$pr" > /dev/null; then
+            title=""
+          fi
+          case "$title" in
+            feat\(*) want+=(feature) ;;
+            fix\(*) want+=(fix) ;;
+          esac
+          [[ "$title" =~ ^[a-z]+\([a-z0-9-]+\)!: ]] && want+=(breaking)
+
+          for label in feature fix breaking; do
+            if printf '%s\n' "${want[@]}" | grep -qx "$label"; then
+              gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "$label"
+            else
+              gh pr edit "$PR_NUMBER" --repo "$REPO" --remove-label "$label" 2> /dev/null || true
+            fi
+          done
