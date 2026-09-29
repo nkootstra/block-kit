@@ -18,6 +18,7 @@
     "format:check": "oxfmt --check",
     "compare": "bun tools/visual/src/compare.ts",
     "compare:check": "bun tools/visual/src/compare.ts --check",
+    "references:check": "bun tools/visual/src/references.ts --check",
     "emoji": "bun tools/emoji-data/generate.ts"
   },
   "devDependencies": {
