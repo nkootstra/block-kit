@@ -46,7 +46,7 @@ jobs:
       # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git and
       # ssh come first so checkout makes a real clone that the baseline commit can push from.
       - run: apt-get update && apt-get install -y --no-install-recommends unzip git openssh-client
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Only a push to main commits; pull requests, forks included, never see the key.
           ssh-key: ${{ github.event_name == 'push' && secrets.VISUAL_DEPLOY_KEY || '' }}
@@ -66,7 +66,7 @@ jobs:
 
       - name: Check out the base branch's baseline
         if: github.event_name == 'pull_request'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.base_ref }}
           path: base
