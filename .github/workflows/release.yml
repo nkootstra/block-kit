@@ -1,0 +1,98 @@
+name: Release
+
+# Run from Actions → Release → Run workflow on main. Raises the latest vX.Y.Z tag by the chosen
+# part (the first release goes from nothing to 0.1.0 with `minor`), stamps that version on
+# @nkootstra/block-kit, publishes it to npm, then tags the commit and creates a GitHub release
+# whose generated notes are the changelog.
+#
+# npm trusts this workflow file in the `npm` environment (trusted publishing), so no npm token
+# exists: the job trades its OIDC token for a short-lived publish credential, and npm attaches a
+# provenance attestation to the version.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Part of the version to raise
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+# Nothing by default; the release job asks for what it needs.
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      # Tags the commit and creates the GitHub release.
+      contents: write
+      # Reads CI's result for this commit.
+      actions: read
+      # Trades the job's OIDC token for npm's publish credential and provenance.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Require a green CI run for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          conclusion=$(gh run list --workflow ci.yml --commit "$GITHUB_SHA" --event push \
+            --json conclusion --jq '.[0].conclusion // ""')
+          if [ "$conclusion" != success ]; then
+            echo "::error::CI for $GITHUB_SHA is '${conclusion:-not run}', not success. Wait for it, or fix main."
+            exit 1
+          fi
+
+      - name: Next version
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          latest=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+          IFS=. read -r major minor patch <<< "${latest:-v0.0.0}"
+          major=${major#v}
+          case "$BUMP" in
+            major) next="$((major + 1)).0.0" ;;
+            minor) next="$major.$((minor + 1)).0" ;;
+            patch) next="$major.$minor.$((patch + 1))" ;;
+          esac
+          echo "${latest:-no release yet} -> v$next"
+          echo "version=$next" >> "$GITHUB_OUTPUT"
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@latest
+      - run: bun install --frozen-lockfile
+
+      - name: Stamp the version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: bun scripts/set-version.ts "$VERSION"
+      - run: bunx turbo run build type-check test --filter=@nkootstra/block-kit
+      - name: Publish to npm
+        working-directory: packages/block-kit
+        run: npm publish
+
+      - name: Tag and create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
