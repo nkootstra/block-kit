@@ -8,11 +8,19 @@ name: Visual
 #   increases only when the merged PR carried the label. The commit is pushed with the
 #   VISUAL_DEPLOY_KEY deploy key, the one actor the main ruleset lets push without a pull request.
 # - Run manually with `update_baseline` to regenerate the whole file as an artifact.
+#
+# A pull request only compares when it touches something the comparison renders: the package, the
+# playground that renders it, the fixtures, the harness, or the dependencies. Otherwise `compare` is
+# skipped, which a required check counts as passing (a workflow-level `paths` filter would leave the
+# check pending instead).
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches: [main]
+    # The baseline commit this workflow pushes needs no comparison of its own.
+    paths-ignore:
+      - fixtures/visual-baseline.*.json
   workflow_dispatch:
     inputs:
       update_baseline:
@@ -32,11 +40,41 @@ env:
   LABEL: visual-baseline-increase
 
 jobs:
+  changes:
+    name: Decide whether to compare
+    runs-on: ubuntu-latest
+    outputs:
+      visual: ${{ steps.diff.outputs.visual }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request'
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != pull_request ]; then
+            echo "visual=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          inputs='^(packages/block-kit/|apps/playground/|fixtures/|tools/visual/|bun\.lock$|package\.json$|turbo\.json$|tsconfig\.base\.json$|\.github/workflows/visual\.yml$)'
+          if git diff --name-only "$BASE_SHA"..."$HEAD_SHA" | grep -qE "$inputs"; then
+            echo "visual=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nothing the comparison renders changed; skipping it."
+            echo "visual=false" >> "$GITHUB_OUTPUT"
+          fi
+
   compare:
+    needs: changes
     # Of the label events, only this workflow's label changes the outcome.
     if: >-
-      !contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
-      github.event.label.name == 'visual-baseline-increase'
+      needs.changes.outputs.visual == 'true' &&
+      (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
+      github.event.label.name == 'visual-baseline-increase')
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     permissions:
@@ -46,11 +84,11 @@ jobs:
       # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git and
       # ssh come first so checkout makes a real clone that the baseline commit can push from.
       - run: apt-get update && apt-get install -y --no-install-recommends unzip git openssh-client
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Only a push to main commits; pull requests, forks included, never see the key.
           ssh-key: ${{ github.event_name == 'push' && secrets.VISUAL_DEPLOY_KEY || '' }}
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
@@ -66,7 +104,7 @@ jobs:
 
       - name: Check out the base branch's baseline
         if: github.event_name == 'pull_request'
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.base_ref }}
           path: base
@@ -103,8 +141,9 @@ jobs:
           git diff --quiet fixtures/visual-baseline.linux.json && exit 0
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # A deploy key's push triggers workflows, unlike GITHUB_TOKEN's; the baseline alone needs none.
-          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7} [skip ci]" fixtures/visual-baseline.linux.json
+          # CI runs on this commit (a deploy key's push triggers workflows), so a release can be cut
+          # from it; the push trigger's paths-ignore keeps this workflow from comparing it again.
+          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" fixtures/visual-baseline.linux.json
           git pull --rebase origin main
           git push origin HEAD:main
 
@@ -115,7 +154,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && !inputs.update_baseline
         run: bun tools/visual/src/compare.ts --check
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: visual

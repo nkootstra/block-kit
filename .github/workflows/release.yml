@@ -70,6 +70,17 @@ jobs:
           esac
           echo "${latest:-no release yet} -> v$next"
           echo "version=$next" >> "$GITHUB_OUTPUT"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Require a change to the package
+        env:
+          LATEST: ${{ steps.version.outputs.latest }}
+        run: |
+          # Docs, playground and CI changes don't reach npm; don't publish a copy of the last version.
+          if [ -n "$LATEST" ] && git diff --quiet "$LATEST" HEAD -- packages/block-kit; then
+            echo "::error::Nothing in packages/block-kit changed since $LATEST; there is nothing to release."
+            exit 1
+          fi
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:

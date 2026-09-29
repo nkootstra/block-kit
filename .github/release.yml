@@ -1,0 +1,17 @@
+# Generated release notes (the Release workflow's `gh release create --generate-notes`). Only PRs
+# labeled `package` by .github/workflows/labeler.yml are listed: docs, playground and CI changes
+# don't reach npm. Type labels only ever go on `package` PRs, so every category below holds
+# package changes.
+changelog:
+  exclude:
+    authors:
+      - dependabot[bot]
+  categories:
+    - title: Breaking changes
+      labels: [breaking]
+    - title: Features
+      labels: [feature]
+    - title: Fixes
+      labels: [fix]
+    - title: Other changes
+      labels: [package]
