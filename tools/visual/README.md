@@ -19,7 +19,8 @@ bun run compare
 
 - `bun run compare -- catalog/container` compares only fixtures under a prefix.
 - `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
-- `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`.
+- `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`;
+  `--update-baseline=lower` only adds new fixtures and lowers improved ones.
 
 Open `test-results/visual/index.html` for side-by-side reference / ours / diff images.
 
@@ -36,4 +37,36 @@ way to read the exact paddings, line heights and colours Slack uses.
    `pbpaste | bun tools/visual/src/import.ts`.
 
 Snapshots are normalized (`normalize.ts`) so timestamps, avatars and generated ids don't produce
-noise.
+noise. After adding a normalize rule, run `bun tools/visual/src/renormalize.ts` to rewrite the
+committed references.
+
+## Keeping references factual
+
+A reference is only worth comparing against while it shows what Slack renders for the fixture's
+current payload. `fixtures/references.lock.json` records, for each reference, a hash of the payload
+it was captured from, a hash of its HTML and the capture date. `import.ts` and `renormalize.ts` keep
+it up to date, and `bun run references:check` (part of CI) fails when:
+
+- a fixture's payload changed since its reference was captured: recapture it;
+- a reference's HTML was edited by hand: express the change as a normalize rule instead;
+- a reference isn't in the lock file, or the lock file lists one that no longer exists.
+
+A fixture without a reference is listed but doesn't fail; it just isn't compared yet.
+
+References, the lock file and the baselines are owned by the maintainers (`.github/CODEOWNERS`).
+Contributors add or edit fixture payloads and leave the rest to a maintainer, who captures the
+references in Block Kit Builder.
+
+## Baselines in CI
+
+The Visual workflow keeps the Linux baseline without anyone editing it by hand:
+
+- A pull request is checked against the **base branch's** baseline, so it can't loosen its own
+  check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
+  regression with the `visual-baseline-increase` label.
+- After a merge, the workflow records the new numbers on `main` and commits them: new fixtures and
+  improvements beyond the tolerance always, increases only when the merged PR carried the label.
+- Running the workflow manually with `update_baseline` regenerates the whole file as an artifact.
+
+`visual-baseline.darwin.json` is for local runs only; keep it current with
+`bun run compare -- --update-baseline`.
