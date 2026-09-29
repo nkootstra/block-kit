@@ -1,0 +1,87 @@
+name: Signed Commits
+
+# Branch protection on main requires every commit to be signed and verified,
+# but that only shows up as a blocked merge button. This job reports which
+# commit is unsigned, and why, as soon as the PR is opened.
+#
+# It asks the GitHub API for each commit's `verification` field instead of
+# running `git verify-commit`: the runner trusts nobody's keys, while GitHub
+# matches the signature against the key on the author's account. That is the
+# same verdict the merge gate uses.
+#
+# An API failure fails the job. Branch protection enforces signing at merge
+# anyway, so failing closed only costs a re-run.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  check-signatures:
+    name: Commits are signed and verified
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check commit signatures
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          FAILED=0
+          UNSIGNED=0
+
+          # One paginated call covers up to 250 commits. Anything it misses falls
+          # back to a per-commit lookup below.
+          pr_commits=$(gh api "repos/$REPO/pulls/$PR_NUMBER/commits" --paginate --jq '.[] | {sha: .sha, verification: .commit.verification}') || pr_commits=''
+
+          # Merge commits are skipped: GitHub signs the ones it creates, and a
+          # local merge of main is not new work.
+          for sha in $(git log --no-merges --format=%H "$BASE_SHA".."$HEAD_SHA"); do
+            subject=$(git show -s --format=%s "$sha")
+
+            verification=$(echo "$pr_commits" | jq -c --arg sha "$sha" 'select(.sha == $sha) | .verification')
+
+            if [ -z "$verification" ] && ! verification=$(gh api "repos/$REPO/commits/$sha" --jq '.commit.verification'); then
+              echo "::error::Could not check verification status for commit: $sha $subject (GitHub API call failed, not a signature failure: re-run the job)"
+              FAILED=1
+              continue
+            fi
+
+            verified=$(echo "$verification" | jq -r '.verified')
+            reason=$(echo "$verification" | jq -r '.reason')
+
+            if [ "$verified" = "true" ]; then
+              echo "ok: $sha $subject"
+            else
+              echo "::error::Commit is not signed/verified: $sha $subject ($reason)"
+              UNSIGNED=1
+              FAILED=1
+            fi
+          done
+
+          if [ "$UNSIGNED" -ne 0 ]; then
+            echo ""
+            echo "  Every commit must be SSH or GPG signed, with the key added to your"
+            echo "  GitHub account as a signing key. The commit(s) flagged above aren't."
+            echo ""
+            echo "  Set up commit signing:"
+            echo "    https://docs.github.com/en/authentication/managing-commit-signature-verification"
+            echo ""
+            echo "  Then re-sign this PR's commits and force-push:"
+            echo "    git rebase --exec 'git commit --amend --no-edit -S' origin/main"
+            echo "    git push --force-with-lease"
+          fi
+
+          exit $FAILED

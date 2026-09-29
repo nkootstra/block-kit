@@ -1,0 +1,164 @@
+name: AI Attribution
+
+# AGENTS.md: commits carry no AI attribution. Attribution is for people.
+#
+# A co-author is not judged by name. Names are no signal either way: Claude
+# and Devin are human given names too, and any list of product names is stale
+# the day a new agent ships. A Co-authored-by trailer is rejected only on
+# evidence that the identity is not a person:
+#
+#   1. Its GitHub privacy address belongs to an account of type Bot. Agents
+#      commit through GitHub Apps, so this also catches tools that don't
+#      exist yet.
+#   2. Its address is a noreply@ mailbox on some other domain. No person's
+#      git identity is uncontactable.
+#
+# A false positive blocks a real contributor, a false negative only leaves
+# untidy attribution. So anything this can't resolve passes, and a GitHub API
+# failure never fails the job.
+#
+# Generator footers and AI-only trailer keys are rejected outright: no person
+# writes those.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  lint-trailers:
+    name: Commits omit AI attribution trailers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check commit trailers
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Bot accounts that may legitimately co-author. Keep this short.
+          ALLOWED_BOTS='dependabot[bot]'
+
+          AI_ONLY_TRAILER='^(claude-session|codex-session|chatgpt-session):'
+          AI_MARKER='(Generated with \[Claude Code\]|🤖 Generated with|^Generated with .* via |Compound_Engineering|compound-engineering-plugin)'
+
+          CACHE=$(mktemp)
+          FAILED=0
+
+          # Prints "bot <login>" for a bot account, "noreply" for a fabricated
+          # noreply mailbox, and nothing for anything else.
+          classify() {
+            local email="$1" local_part login id cached type
+            local_part=${email%@*}
+
+            case "$email" in
+              *@users.noreply.github.com)
+                case "$local_part" in
+                  *+*) id=${local_part%%+*}; login=${local_part#*+} ;;
+                  *)   id=""; login=$local_part ;;
+                esac
+
+                # A [bot] suffix is GitHub's own convention; no lookup needed.
+                case "$login" in
+                  *'[bot]'*) printf 'bot %s' "$login"; return ;;
+                esac
+
+                cached=$(grep -m1 -F "${id}|${login} " "$CACHE" 2>/dev/null || true)
+                if [ -n "$cached" ]; then
+                  type=${cached##* }
+                else
+                  if [ -n "$id" ]; then
+                    type=$(gh api "user/$id" --jq .type 2>/dev/null || echo "")
+                  else
+                    type=$(gh api "users/$login" --jq .type 2>/dev/null || echo "")
+                  fi
+                  # Unresolvable (deleted account, API trouble) is not evidence.
+                  [ -z "$type" ] && type="Unknown"
+                  printf '%s|%s %s\n' "$id" "$login" "$type" >> "$CACHE"
+                fi
+
+                if [ "$type" = "Bot" ]; then
+                  printf 'bot %s' "$login"
+                fi
+                ;;
+              *)
+                # noreply@example.com, but not GitHub's own privacy domain.
+                case "$local_part" in
+                  noreply|no-reply) printf 'noreply' ;;
+                esac
+                ;;
+            esac
+            # The job runs under set -e and this is called in a $( ): a person
+            # must not look like a failure.
+            return 0
+          }
+
+          # Merge commits are skipped: they carry no authored message.
+          for sha in $(git log --no-merges --format=%H "$BASE_SHA".."$HEAD_SHA"); do
+            subject=$(git show -s --format=%s "$sha")
+            offending=""
+
+            while IFS= read -r line; do
+              lower=$(printf '%s' "$line" | tr '[:upper:]' '[:lower:]')
+
+              case "$lower" in
+                co-authored-by:*)
+                  email=$(printf '%s' "$lower" | sed -n 's/.*<\(.*\)>.*/\1/p')
+                  [ -z "$email" ] && continue
+
+                  verdict=$(classify "$email")
+                  case "$verdict" in
+                    bot\ *)
+                      login=${verdict#bot }
+                      # -F because a login like dependabot[bot] is not a pattern.
+                      if ! printf '%s\n' "$ALLOWED_BOTS" | grep -Fxq "$login"; then
+                        offending="${offending}${line}    <- ${login} is a bot account"$'\n'
+                      fi
+                      ;;
+                    noreply)
+                      offending="${offending}${line}    <- noreply address, not a contactable person"$'\n'
+                      ;;
+                  esac
+                  ;;
+                *)
+                  offending="${offending}${line}"$'\n'
+                  ;;
+              esac
+            done < <(git show -s --format=%B "$sha" | grep -iE "^co-authored-by:|$AI_ONLY_TRAILER|$AI_MARKER" || true)
+
+            if [ -n "$offending" ]; then
+              echo "::error::Commit carries AI attribution: $sha $subject"
+              echo ""
+              echo "  Offending line(s):"
+              printf '%s' "$offending" | sed 's/^/    /'
+              echo ""
+              FAILED=1
+            else
+              echo "ok: $sha $subject"
+            fi
+          done
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo ""
+            echo "  AGENTS.md: commits carry no AI co-author trailers or \"Generated with\""
+            echo "  footers. Co-authoring a person is fine and never rejected."
+            echo ""
+            echo "  To fix the last commit:"
+            echo "    git commit --amend            # delete the lines, save"
+            echo "    git push --force-with-lease"
+            echo ""
+            echo "  To fix several, reword them in a rebase onto origin/main."
+            echo ""
+            echo "  To stop Claude Code adding them, this repo's .claude/settings.json"
+            echo "  sets attribution.commit and attribution.pr to \"\"."
+          fi
+
+          exit $FAILED

@@ -10,6 +10,8 @@
     "renderer",
     "slack"
   ],
+  "homepage": "https://block-kit.kootstra.io",
+  "bugs": "https://github.com/nkootstra/block-kit/issues",
   "license": "MIT",
   "author": "Niels Kootstra",
   "repository": {
@@ -33,11 +35,15 @@
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
     "test": "vitest run",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "tsdown"
   },
   "dependencies": {
     "@slack/types": "3.1.0",
