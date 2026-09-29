@@ -1,0 +1,50 @@
+name: PR Title
+
+# PR titles must read `type(scope): subject`, e.g.
+# `fix(select): keep the chosen option after a re-render`. A squash merge lands the title as
+# the commit subject on main. conventional-commits.yml checks the commits.
+#
+# The title is read from the API rather than the event payload, so a re-run
+# checks the current title instead of the one the run was triggered with.
+#
+# Keep TYPES and PATTERN identical to conventional-commits.yml.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  pr-title:
+    name: PR title follows type(scope) subject
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    if: github.event.pull_request.user.type != 'Bot'
+    steps:
+      - name: Check PR title
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          TYPES='feat|fix|perf|refactor|test|docs|chore|ci|build|revert'
+          PATTERN="^($TYPES)\([a-z0-9][a-z0-9-]*\)!?: [^[:space:]].*\$"
+
+          title=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .title)
+
+          if [[ "$title" =~ $PATTERN ]]; then
+            echo "ok: $title"
+            exit 0
+          fi
+
+          echo "::error::PR title does not follow type(scope): subject: $title"
+          echo ""
+          echo "  Allowed types: ${TYPES//|/, }"
+          echo "  Scope is required: any lowercase word, e.g. select, visual, docs."
+          echo "  Example: fix(select): keep the chosen option after a re-render"
+          echo "  Breaking: feat(provider)!: rename the onAction prop"
+          echo ""
+          echo "  Edit the title on GitHub; this check re-runs on its own."
+          exit 1

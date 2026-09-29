@@ -1,0 +1,73 @@
+name: PR Template
+
+# Fails a PR whose description dropped the pull request template, or stripped
+# one of its required sections, instead of filling it in. It only checks that
+# the section headers survive; what a contributor wrote under them is a review
+# call, not something CI can score.
+#
+# "Slack reference" is optional: most PRs don't change how a block renders.
+#
+# Keep REQUIRED_HEADERS in sync with .github/pull_request_template.md.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  check-template:
+    name: PR body keeps the required template sections
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.type != 'Bot'
+    steps:
+      - name: Check required sections are present
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          REQUIRED_HEADERS=(
+            "## Summary"
+            "## Type of change"
+            "## Checklist"
+          )
+
+          # Headers inside fenced code blocks don't count. Indentation is limited
+          # to 0-3 spaces: CommonMark reads a tab or 4+ spaces as a code block,
+          # not a heading.
+          declare -A FOUND
+          for header in "${REQUIRED_HEADERS[@]}"; do FOUND["$header"]=0; done
+          FENCE_RE='^[[:space:]]{0,3}(```|~~~)'
+          in_fence=0
+
+          while IFS= read -r line; do
+            line=${line%$'\r'}
+            if [[ "$line" =~ $FENCE_RE ]]; then
+              in_fence=$((1 - in_fence))
+              continue
+            fi
+            [ "$in_fence" -eq 1 ] && continue
+
+            for header in "${REQUIRED_HEADERS[@]}"; do
+              header_re="^[ ]{0,3}${header}[[:space:]]*\$"
+              [[ "$line" =~ $header_re ]] && FOUND["$header"]=1
+            done
+          done <<< "$PR_BODY"
+
+          MISSING=()
+          for header in "${REQUIRED_HEADERS[@]}"; do
+            [ "${FOUND[$header]}" -eq 0 ] && MISSING+=("$header")
+          done
+
+          if [ "${#MISSING[@]}" -eq 0 ]; then
+            echo "ok: all required template sections present"
+            exit 0
+          fi
+
+          echo "::error::PR description is missing required template section(s):"
+          for header in "${MISSING[@]}"; do
+            echo "::error::  - $header"
+          done
+          echo ""
+          echo "  Restore the missing section(s) from .github/pull_request_template.md"
+          echo "  and fill them in. You can edit the PR description on GitHub."
+          exit 1
