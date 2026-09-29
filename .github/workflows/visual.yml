@@ -5,7 +5,8 @@ name: Visual
 #   fixtures/visual-baseline.linux.json, so a PR can't loosen its own check. A maintainer can accept
 #   a deliberate regression with the visual-baseline-increase label.
 # - Pushes to main record the new baseline and commit it: new fixtures and improvements always,
-#   increases only when the merged PR carried the label.
+#   increases only when the merged PR carried the label. The commit is pushed with the
+#   VISUAL_DEPLOY_KEY deploy key, the one actor the main ruleset lets push without a pull request.
 # - Run manually with `update_baseline` to regenerate the whole file as an artifact.
 on:
   pull_request:
@@ -39,13 +40,16 @@ jobs:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     permissions:
-      contents: write
+      contents: read
       pull-requests: read
     steps:
-      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git comes
-      # first so checkout makes a real clone that the baseline commit can push from.
-      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
+      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git and
+      # ssh come first so checkout makes a real clone that the baseline commit can push from.
+      - run: apt-get update && apt-get install -y --no-install-recommends unzip git openssh-client
       - uses: actions/checkout@v4
+        with:
+          # Only a push to main commits; pull requests, forks included, never see the key.
+          ssh-key: ${{ github.event_name == 'push' && secrets.VISUAL_DEPLOY_KEY || '' }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
@@ -99,7 +103,8 @@ jobs:
           git diff --quiet fixtures/visual-baseline.linux.json && exit 0
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" fixtures/visual-baseline.linux.json
+          # A deploy key's push triggers workflows, unlike GITHUB_TOKEN's; the baseline alone needs none.
+          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7} [skip ci]" fixtures/visual-baseline.linux.json
           git pull --rebase origin main
           git push origin HEAD:main
 

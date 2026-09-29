@@ -66,6 +66,8 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
   regression with the `visual-baseline-increase` label.
 - After a merge, the workflow records the new numbers on `main` and commits them: new fixtures and
   improvements beyond the tolerance always, increases only when the merged PR carried the label.
+  It pushes with the `VISUAL_DEPLOY_KEY` deploy key, which the `protect main` ruleset lets bypass
+  the pull request requirement.
 - Running the workflow manually with `update_baseline` regenerates the whole file as an artifact.
 
 `visual-baseline.darwin.json` is for local runs only; keep it current with
