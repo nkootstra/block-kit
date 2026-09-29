@@ -3,7 +3,8 @@
  * Needs the playground dev server (`bun run --cwd apps/playground dev`).
  *
  *   bun tools/visual/src/compare.ts [fixture-prefix...] [--base=http://localhost:5180]
- *     [--check [--tolerance=0.5]] [--update-baseline]
+ *     [--check [--tolerance=0.5] [--baseline=<file>] [--allow-increase]]
+ *     [--update-baseline[=lower]]
  *
  * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
  * expanded, a table sorted); STATES replays the same interaction on our rendering first.
@@ -11,10 +12,15 @@
  * Writes reference/actual/diff/compare PNGs to test-results/visual/, plus report.json and
  * index.html on a full (unfiltered) run.
  *
- * --update-baseline records each fixture's mismatch in fixtures/visual-baseline.<platform>.json.
+ * --update-baseline records each fixture's mismatch in fixtures/visual-baseline.<platform>.json;
+ * --update-baseline=lower only adds new fixtures and lowers the ones that improved beyond the
+ * tolerance, so it can't hide a regression.
  * --check fails when a fixture fails to render or its mismatch exceeds its baseline by more than
- * the tolerance (in percentage points). Baselines are per platform because font rasterization
- * differs between operating systems; a platform without one is reported, not failed.
+ * the tolerance (in percentage points). --baseline compares against another file (CI passes the
+ * base branch's, so a pull request can't loosen its own check) and --allow-increase reports
+ * regressions instead of failing. A fixture without a baseline entry is reported, not failed.
+ * Baselines are per platform because font rasterization differs between operating systems; a
+ * platform without one is reported, not failed.
  */
 import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -32,9 +38,13 @@ const args = process.argv.slice(2);
 const base = args.find((a) => a.startsWith("--base="))?.slice(7) ?? "http://localhost:5180";
 const prefixes = args.filter((a) => !a.startsWith("--"));
 const check = args.includes("--check");
-const updateBaseline = args.includes("--update-baseline");
+const updateBaseline = args.find((a) => /^--update-baseline(=lower)?$/.test(a));
+const lowerOnly = updateBaseline === "--update-baseline=lower";
+const allowIncrease = args.includes("--allow-increase");
 const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? 0.5);
 const BASELINE = join(FIXTURES, `visual-baseline.${process.platform}.json`);
+const checkBaselineArg = args.find((a) => a.startsWith("--baseline="))?.slice(11);
+const CHECK_BASELINE = checkBaselineArg ? resolve(checkBaselineArg) : BASELINE;
 
 interface Meta {
   width: number;
@@ -301,37 +311,50 @@ console.log(`\n${results.length} fixtures, mean mismatch ${(mean * 100).toFixed(
 if (prefixes.length === 0) console.log(`report: ${join(OUT, "index.html")}`);
 
 const percent = (r: Result) => Math.round(r.ratio * 10_000) / 100;
-const baseline: Record<string, number> = existsSync(BASELINE)
-  ? await Bun.file(BASELINE).json()
-  : {};
+const readBaseline = async (file: string): Promise<Record<string, number>> =>
+  existsSync(file) ? await Bun.file(file).json() : {};
 
 if (updateBaseline) {
-  // A filtered run only updates the fixtures it ran.
-  const next = { ...baseline };
-  for (const r of results) if (!r.error) next[r.name] = percent(r);
+  // A filtered run only updates the fixtures it ran, and only a full run drops removed fixtures.
+  const before = await readBaseline(BASELINE);
+  const next = prefixes.length === 0 && !lowerOnly ? {} : { ...before };
+  for (const r of results) {
+    if (r.error) continue;
+    const previous = before[r.name];
+    if (lowerOnly && previous !== undefined && percent(r) >= previous - tolerance) continue;
+    next[r.name] = percent(r);
+  }
   const sorted = Object.fromEntries(Object.entries(next).sort(([a], [b]) => a.localeCompare(b)));
   await writeFile(BASELINE, `${JSON.stringify(sorted, null, 2)}\n`);
   console.log(`baseline: ${BASELINE}`);
 }
 
 if (check) {
-  if (!existsSync(BASELINE)) {
-    console.log(`\nNo baseline for ${process.platform}; run with --update-baseline to create one.`);
+  if (!existsSync(CHECK_BASELINE)) {
+    console.log(`\nNo baseline at ${CHECK_BASELINE}; run with --update-baseline to create one.`);
   } else {
+    const baseline = await readBaseline(CHECK_BASELINE);
     const failures: string[] = [];
+    const increased: string[] = [];
     const improved: string[] = [];
+    const unrecorded: string[] = [];
     for (const r of results) {
       const before = baseline[r.name];
       if (r.error) failures.push(`${r.name}: render failed: ${r.error}`);
-      else if (before === undefined) failures.push(`${r.name}: no baseline entry`);
-      else if (percent(r) > before + tolerance)
-        failures.push(`${r.name}: ${percent(r).toFixed(2)}% (baseline ${before.toFixed(2)}%)`);
-      else if (percent(r) < before - tolerance) improved.push(r.name);
+      else if (before === undefined) unrecorded.push(`${r.name}: ${percent(r).toFixed(2)}%`);
+      else if (percent(r) > before + tolerance) {
+        const line = `${r.name}: ${percent(r).toFixed(2)}% (baseline ${before.toFixed(2)}%)`;
+        (allowIncrease ? increased : failures).push(line);
+      } else if (percent(r) < before - tolerance) improved.push(r.name);
+    }
+    if (unrecorded.length > 0) {
+      console.log(`\nNo baseline entry yet:\n  ${unrecorded.join("\n  ")}`);
     }
     if (improved.length > 0) {
-      console.log(
-        `\nImproved beyond tolerance; consider --update-baseline:\n  ${improved.join("\n  ")}`,
-      );
+      console.log(`\nImproved beyond tolerance:\n  ${improved.join("\n  ")}`);
+    }
+    if (increased.length > 0) {
+      console.log(`\nAllowed to regress:\n  ${increased.join("\n  ")}`);
     }
     if (failures.length > 0) {
       console.error(

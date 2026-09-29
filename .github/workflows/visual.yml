@@ -1,10 +1,17 @@
 name: Visual
 
-# Pixel-compares every fixture against its Block Kit Builder reference and fails when a fixture
-# regresses past fixtures/visual-baseline.linux.json. Run manually with `update_baseline` to
-# regenerate that file; it's uploaded as an artifact to commit.
+# Pixel-compares every fixture against its Block Kit Builder reference.
+# - Pull requests fail when a fixture regresses past the base branch's
+#   fixtures/visual-baseline.linux.json, so a PR can't loosen its own check. A maintainer can accept
+#   a deliberate regression with the visual-baseline-increase label.
+# - Pushes to main record the new baseline and commit it: new fixtures and improvements always,
+#   increases only when the merged PR carried the label.
+# - Run manually with `update_baseline` to regenerate the whole file as an artifact.
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       update_baseline:
@@ -12,14 +19,33 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
+concurrency:
+  # Baseline commits to main queue up; a pull request only needs its latest run.
+  group: visual-${{ github.event_name == 'push' && 'main' || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  LABEL: visual-baseline-increase
+
 jobs:
   compare:
+    # Of the label events, only this workflow's label changes the outcome.
+    if: >-
+      !contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
+      github.event.label.name == 'visual-baseline-increase'
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.63.0-noble
+    permissions:
+      contents: write
+      pull-requests: read
     steps:
+      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git comes
+      # first so checkout makes a real clone that the baseline commit can push from.
+      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
       - uses: actions/checkout@v4
-      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip.
-      - run: apt-get update && apt-get install -y --no-install-recommends unzip
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
@@ -33,12 +59,57 @@ jobs:
           done
           cat /tmp/vite.log
           exit 1
+
+      - name: Check out the base branch's baseline
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+          sparse-checkout: fixtures/visual-baseline.linux.json
+          sparse-checkout-cone-mode: false
       - name: Compare
-        if: ${{ !inputs.update_baseline }}
-        run: bun tools/visual/src/compare.ts --check
+        if: github.event_name == 'pull_request'
+        env:
+          ALLOW_INCREASE: ${{ contains(github.event.pull_request.labels.*.name, 'visual-baseline-increase') && '--allow-increase' || '' }}
+        run: bun tools/visual/src/compare.ts --check --baseline=base/fixtures/visual-baseline.linux.json $ALLOW_INCREASE
+
+      - name: Record the baseline
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          labels=$(bun -e '
+            const res = await fetch(
+              `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/commits/${process.env.GITHUB_SHA}/pulls`,
+              { headers: { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: "application/vnd.github+json" } },
+            );
+            if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
+            const pulls = await res.json();
+            console.log(pulls.flatMap((p) => p.labels.map((l) => l.name)).join("\n"));
+          ')
+          if grep -qx "$LABEL" <<< "$labels"; then mode=--update-baseline; else mode=--update-baseline=lower; fi
+          bun tools/visual/src/compare.ts $mode
+      - name: Commit the baseline
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git diff --quiet fixtures/visual-baseline.linux.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" fixtures/visual-baseline.linux.json
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Update baseline
-        if: ${{ inputs.update_baseline }}
+        if: github.event_name == 'workflow_dispatch' && inputs.update_baseline
         run: bun tools/visual/src/compare.ts --update-baseline
+      - name: Compare
+        if: github.event_name == 'workflow_dispatch' && !inputs.update_baseline
+        run: bun tools/visual/src/compare.ts --check
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
