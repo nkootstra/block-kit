@@ -77,16 +77,16 @@ cd apps/docs && bun run dev
 
 ## Docs deployment
 
-The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `block-kit.kootstra.io`. No Worker script runs: Cloudflare serves the built files directly, including the `_headers` file Blume writes for the raw Markdown endpoints.
+The docs are a Blume [Cloudflare server build](https://useblume.dev/docs/deployment#server-rendering) on Cloudflare Workers, served at `block-kit.kootstra.io`. The pages are prerendered and served from [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), along with the `_headers` file Blume writes. Blume's Worker runs first on page routes so a request with `Accept: text/markdown` gets the page's Markdown at the same URL.
 
 Every push to `main` deploys:
 
 1. The `check` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) builds the whole workspace, docs included, and uploads `apps/docs/dist` as an artifact.
-2. Once every check passes, the `deploy-docs` job downloads that build and runs `wrangler deploy` in `apps/docs`.
+2. Once every check passes, the `deploy-docs` job downloads that build and runs `wrangler deploy` with the Worker config the build wrote to `apps/docs/dist/server/wrangler.json`.
 
 Pull requests build the docs but never deploy them.
 
-[`apps/docs/wrangler.jsonc`](../apps/docs/wrangler.jsonc) names the Worker `block-kit-docs`, serves `dist/`, answers unknown paths with the built `404.html`, and attaches the custom domain. `deployment.site` in [`apps/docs/blume.config.ts`](../apps/docs/blume.config.ts) holds the same URL, because Blume builds canonical links, the sitemap and Open Graph images from it. Change both if the domain moves.
+[`apps/docs/wrangler.jsonc`](../apps/docs/wrangler.jsonc) names the Worker `block-kit-docs`, answers unknown paths with the built `404.html`, and attaches the custom domain; Blume merges it into the config it generates. `deployment` in [`apps/docs/blume.config.ts`](../apps/docs/blume.config.ts) holds the same URL, because Blume builds canonical links, the sitemap and Open Graph images from it. Change both if the domain moves.
 
 ### One-time Cloudflare setup
 

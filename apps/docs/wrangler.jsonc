@@ -1,10 +1,11 @@
-// Serves the static `blume build` output from Workers Static Assets, which also reads the
-// `_headers` and `_redirects` files the build writes. No Worker script runs.
+// Settings Blume merges into the Worker config it generates for its Cloudflare server build
+// (`dist/server/wrangler.json`), which `wrangler deploy` reads. Blume sets the Worker script, the
+// asset directory and which paths run the Worker; the prerendered pages and raw files are still
+// served from Workers Static Assets, which also reads the `_headers` file the build writes.
 {
   "name": "block-kit-docs",
   "compatibility_date": "2026-09-28",
   "assets": {
-    "directory": "./dist",
     "not_found_handling": "404-page",
     // Serve `/blocks/section` directly instead of redirecting to `/blocks/section/`, so the URLs
     // Blume writes into the sitemap and canonical links don't redirect.
