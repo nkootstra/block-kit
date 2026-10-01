@@ -15,9 +15,10 @@ Bun + Turborepo; `docs/README.md` describes the layout.
   everything. When a new file outside the workspaces starts feeding a build, add it to
   `globalDependencies` in `turbo.json`.
 - **Docs change with the code.** A change to anything a user sees (components, props, hooks, entry
-  points, rendering) updates `apps/docs` and, where it applies, `docs/README.md` and
-  `packages/block-kit/README.md` in the same PR. `packages/block-kit/README.md` is the npm page: it
-  repeats the install and entry-point sections of `docs/README.md`, so change them together.
+  points, rendering) updates `apps/docs` and, where it applies, `docs/README.md`,
+  `packages/block-kit/README.md` and the agent skill in `apps/docs/skills/block-kit/SKILL.md` in
+  the same PR. `packages/block-kit/README.md` is the npm page: it repeats the install and
+  entry-point sections of `docs/README.md`, so change them together.
   `packages/block-kit/LICENSE` is a copy of the root `LICENSE`.
 
 ## Visual references
