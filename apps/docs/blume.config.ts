@@ -1,4 +1,5 @@
 import { defineConfig } from "blume";
+import { cloudflare } from "blume/deploy";
 
 export default defineConfig({
   title: "Block Kit for React",
@@ -11,7 +12,9 @@ export default defineConfig({
   // Dates each page from its last commit; CI checks out the full history for it.
   lastModified: "git",
   github: { owner: "nkootstra", repo: "block-kit", dir: "apps/docs" },
-  // Workers doesn't expose the site's URL at build time the way Pages did, so name it for the
-  // sitemap, canonical links and Open Graph images.
-  deployment: { site: "https://block-kit.kootstra.io" },
+  // A Cloudflare server build puts Blume's Worker in front of the pages, so a request with
+  // `Accept: text/markdown` gets the page's Markdown at the same URL. Workers doesn't expose the
+  // site's URL at build time the way Pages did, so name it for the sitemap, canonical links and
+  // Open Graph images.
+  deployment: cloudflare({ site: "https://block-kit.kootstra.io" }),
 });
