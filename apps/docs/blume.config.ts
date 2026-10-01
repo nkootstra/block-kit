@@ -12,6 +12,17 @@ export default defineConfig({
   lastModified: "git",
   // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
   agents: { skills: "./skills" },
+  // Tells search engines and agents what the site documents: a free, MIT-licensed library.
+  seo: {
+    software: {
+      license: "MIT",
+      price: 0,
+      sameAs: [
+        "https://www.npmjs.com/package/@nkootstra/block-kit",
+        "https://github.com/nkootstra/block-kit",
+      ],
+    },
+  },
   github: { owner: "nkootstra", repo: "block-kit", dir: "apps/docs" },
   // Workers doesn't expose the site's URL at build time the way Pages did, so name it for the
   // sitemap, canonical links and Open Graph images.
