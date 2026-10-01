@@ -10,6 +10,8 @@ export default defineConfig({
   feedback: false,
   // Dates each page from its last commit; CI checks out the full history for it.
   lastModified: "git",
+  // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
+  agents: { skills: "./skills" },
   github: { owner: "nkootstra", repo: "block-kit", dir: "apps/docs" },
   // Workers doesn't expose the site's URL at build time the way Pages did, so name it for the
   // sitemap, canonical links and Open Graph images.
