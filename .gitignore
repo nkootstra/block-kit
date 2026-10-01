@@ -16,4 +16,6 @@ tools/visual/.auth/
 .env*.local
 # Blume docs build output
 .blume/
+# Local wrangler dev state
+.wrangler/
 .blume-verify/

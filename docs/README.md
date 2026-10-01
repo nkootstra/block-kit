@@ -77,7 +77,7 @@ cd apps/docs && bun run dev
 
 ## Docs deployment
 
-The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `block-kit.kootstra.io`. No Worker script runs: Cloudflare serves the built files directly, including the `_headers` file Blume writes for the raw Markdown endpoints.
+The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `block-kit.kootstra.io`, with the `_headers` file Blume writes for the raw Markdown endpoints. A small Worker, [`apps/docs/worker/index.ts`](../apps/docs/worker/index.ts), runs first on page routes, the `.md` copies and the docs API to negotiate with agents: `Accept: text/markdown` gets a page's Markdown copy, a missing page or `.md` URL gets `/404.md` with a 404 when Markdown was asked for, and JSON requests and the docs API get the `/404.json` problem document. Build assets and the other raw files skip the Worker.
 
 Every push to `main` deploys:
 
