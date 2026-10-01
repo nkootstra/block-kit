@@ -65,9 +65,7 @@ jobs:
           path: apps/docs/dist
       - name: Deploy to Cloudflare Workers
         working-directory: apps/docs
-        # Blume's server build writes the full Worker config into dist; the redirect file that points
-        # `wrangler deploy` at it lives outside dist, so name the config directly.
-        run: bunx wrangler@4 deploy --config dist/server/wrangler.json
+        run: bunx wrangler@4 deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
