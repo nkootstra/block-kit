@@ -1,14 +1,29 @@
 // Serves the static `blume build` output from Workers Static Assets, which also reads the
-// `_headers` and `_redirects` files the build writes. No Worker script runs.
+// `_headers` and `_redirects` files the build writes. Page routes and the docs API run
+// `worker/index.ts` first, which answers agents with Markdown or JSON (pages and 404s); build
+// assets and raw files skip the Worker.
 {
   "name": "block-kit-docs",
   "compatibility_date": "2026-09-28",
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
     // Serve `/blocks/section` directly instead of redirecting to `/blocks/section/`, so the URLs
     // Blume writes into the sitemap and canonical links don't redirect.
     "html_handling": "drop-trailing-slash",
+    "run_worker_first": [
+      "/*",
+      "!/_astro/*",
+      "!/og/*",
+      "!/.well-known/*",
+      "!/*.mdx",
+      "!/*.txt",
+      "!/*.xml",
+      "!/*.png",
+      "!/*.svg",
+    ],
   },
   "routes": [{ "pattern": "block-kit.kootstra.io", "custom_domain": true }],
 }
