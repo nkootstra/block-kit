@@ -84,7 +84,16 @@ Every push to `main` deploys:
 1. The `check` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) builds the whole workspace, docs included, and uploads `apps/docs/dist` as an artifact.
 2. Once every check passes, the `deploy-docs` job downloads that build and runs `wrangler deploy` in `apps/docs`.
 
-Pull requests build the docs but never deploy them.
+### Pull request previews
+
+A pull request that affects the docs gets a preview on a `workers.dev` URL, deployed only once a maintainer approves it ([`.github/workflows/docs-preview.yml`](../.github/workflows/docs-preview.yml)):
+
+1. CI builds the docs when the change affects them and uploads the build as `docs-preview`. That run has no secrets, also for pull requests from forks.
+2. When CI passes, the workflow comments on the pull request that a preview is waiting, linking to the run, and waits for a required reviewer of the `docs-preview` environment.
+3. After approval it deploys the build as the [Workers Preview](https://developers.cloudflare.com/workers/previews/) `pr-<number>` with `wrangler preview`, and updates the comment with the URL. Every push needs a new approval, and a commit that is no longer the pull request's head is skipped.
+4. Closing the pull request deletes the Preview.
+
+The deploy takes only the built files from the pull request; the Worker and `wrangler.jsonc` come from `main`, so a pull request can't change what runs with the Cloudflare token. Changes to the Worker therefore show up in previews once they merge. Previews set `ROBOTS` (`previews.vars` in `wrangler.jsonc`), which makes the Worker send `X-Robots-Tag: noindex`.
 
 [`apps/docs/wrangler.jsonc`](../apps/docs/wrangler.jsonc) names the Worker `block-kit-docs`, serves `dist/`, answers unknown paths with the built `404.html`, and attaches the custom domain. `deployment.site` in [`apps/docs/blume.config.ts`](../apps/docs/blume.config.ts) holds the same URL, because Blume builds canonical links, the sitemap and Open Graph images from it. Change both if the domain moves.
 
@@ -98,6 +107,8 @@ Pull requests build the docs but never deploy them.
    | ----------------------- | ------------------------------------------------------------------ |
    | `CLOUDFLARE_API_TOKEN`  | The token from step 2                                              |
    | `CLOUDFLARE_ACCOUNT_ID` | The account ID shown on the account's **Workers & Pages** overview |
+
+4. Create the `docs-preview` environment under **Settings → Environments** and add the maintainers as **Required reviewers**. Previews use the same repository secrets; the environment is what makes them wait for approval.
 
 To deploy by hand from a local build instead, log in once with `bunx wrangler login`, then:
 

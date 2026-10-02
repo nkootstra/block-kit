@@ -26,4 +26,8 @@
     ],
   },
   "routes": [{ "pattern": "block-kit.kootstra.io", "custom_domain": true }],
+  // Pull requests get a Preview (`wrangler preview`, see .github/workflows/docs-preview.yml) on a
+  // workers.dev URL, which the Worker marks noindex.
+  "preview_urls": true,
+  "previews": { "vars": { "ROBOTS": "noindex" } },
 }

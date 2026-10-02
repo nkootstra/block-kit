@@ -151,3 +151,25 @@ test("leaves non-GET requests to the assets", async () => {
   const response = await get("/blocks/section", "text/markdown", "POST");
   expect(response.headers.get("Content-Type")).toBe("text/html");
 });
+
+describe("Previews", () => {
+  test("tell search engines not to index any response", async () => {
+    for (const [path, accept] of [
+      ["/", browser],
+      ["/nope", "text/markdown"],
+    ] as const) {
+      const response = await worker.fetch(
+        new Request(`${site}${path}`, { headers: { Accept: accept } }),
+        {
+          ...env,
+          ROBOTS: "noindex",
+        },
+      );
+      expect(response.headers.get("X-Robots-Tag")).toBe("noindex");
+    }
+  });
+
+  test("leave production indexable", async () => {
+    expect((await get("/", browser)).headers.get("X-Robots-Tag")).toBeNull();
+  });
+});

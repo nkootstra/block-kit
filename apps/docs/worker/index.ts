@@ -7,37 +7,48 @@
 //   calls the docs API. That's what the `openapi.json` Blume publishes promises for both.
 // Browsers keep getting the HTML pages and 404 page. `run_worker_first` in wrangler.jsonc keeps
 // the Worker off the build assets and raw files, which are served straight from the assets.
+// Pull request Previews set `ROBOTS` (`previews.vars` in wrangler.jsonc) to keep search engines off
+// their pages.
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
+  ROBOTS?: string;
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      return env.ASSETS.fetch(request);
-    }
-    const accept = request.headers.get("Accept");
-    const markdownUrl = markdownUrlFor(request);
-    const wantsMarkdown = markdownUrl !== null && prefers("text/markdown", accept);
-
-    if (wantsMarkdown) {
-      const markdown = await env.ASSETS.fetch(new Request(markdownUrl, request));
-      if (markdown.ok) return withVaryAccept(markdown);
-    }
-
-    const response = await env.ASSETS.fetch(request);
-    if (response.status !== 404) return withVaryAccept(response);
-
-    if (wantsJsonError(request, accept)) {
-      return notFound(env, request, "/404.json", "application/problem+json");
-    }
-    if (wantsMarkdown || new URL(request.url).pathname.endsWith(".md")) {
-      return notFound(env, request, "/404.md", "text/markdown; charset=utf-8");
-    }
-    return withVaryAccept(response);
+    const response = await respond(request, env);
+    if (!env.ROBOTS) return response;
+    const result = new Response(response.body, response);
+    result.headers.set("X-Robots-Tag", env.ROBOTS);
+    return result;
   },
 };
+
+async function respond(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return env.ASSETS.fetch(request);
+  }
+  const accept = request.headers.get("Accept");
+  const markdownUrl = markdownUrlFor(request);
+  const wantsMarkdown = markdownUrl !== null && prefers("text/markdown", accept);
+
+  if (wantsMarkdown) {
+    const markdown = await env.ASSETS.fetch(new Request(markdownUrl, request));
+    if (markdown.ok) return withVaryAccept(markdown);
+  }
+
+  const response = await env.ASSETS.fetch(request);
+  if (response.status !== 404) return withVaryAccept(response);
+
+  if (wantsJsonError(request, accept)) {
+    return notFound(env, request, "/404.json", "application/problem+json");
+  }
+  if (wantsMarkdown || new URL(request.url).pathname.endsWith(".md")) {
+    return notFound(env, request, "/404.md", "text/markdown; charset=utf-8");
+  }
+  return withVaryAccept(response);
+}
 
 /** The `.md` twin of a page URL, or `null` for a URL that names a file. */
 export function markdownUrlFor(request: Request): URL | null {
