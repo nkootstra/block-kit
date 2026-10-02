@@ -89,8 +89,9 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      # Trusted publishing needs npm 11.5.1 or later.
-      - run: npm install -g npm@latest
+      # Trusted publishing needs npm 11.5.1 or later. Pinned, as the actions are: this job can
+      # publish, so nothing in it moves under us. Take a newer npm once it has had a week out.
+      - run: npm install -g npm@12.1.0
       - run: bun install --frozen-lockfile
 
       - name: Stamp the version
@@ -98,9 +99,11 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: bun scripts/set-version.ts "$VERSION"
       - run: bunx turbo run build type-check test --filter=@nkootstra/block-kit
+      # The build above is what the tests passed, so publish it as it is: no lifecycle script
+      # runs in the job that holds the publish credential.
       - name: Publish to npm
         working-directory: packages/block-kit
-        run: npm publish
+        run: npm publish --ignore-scripts
 
       - name: Tag and create the GitHub release
         env:
