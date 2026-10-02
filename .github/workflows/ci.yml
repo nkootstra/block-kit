@@ -11,9 +11,13 @@ on:
     branches: [main]
   pull_request:
 
+permissions: {}
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,6 +47,9 @@ jobs:
 
   deploy-docs:
     needs: check
+    # Checks out the repository; the deploy authenticates with the Cloudflare secret, not this token.
+    permissions:
+      contents: read
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
