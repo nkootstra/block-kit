@@ -20,6 +20,7 @@ Bun + Turborepo; `docs/README.md` describes the layout.
   the same PR. `packages/block-kit/README.md` is the npm page: it repeats the install and
   entry-point sections of `docs/README.md`, so change them together.
   `packages/block-kit/LICENSE` is a copy of the root `LICENSE`.
+- `CONTRIBUTING.md` repeats these rules for people. A change to the rules here changes it too.
 
 ## Visual references
 

@@ -68,6 +68,8 @@ bun run test
 
 `bun run lint`, `bun run format:check` and `bun run type-check` run the remaining checks CI runs. `bun run compare` renders every fixture in the playground and reports how far each one drifts from Slack; see [`tools/visual`](../tools/visual/README.md).
 
+[`CONTRIBUTING.md`](../CONTRIBUTING.md) covers the rules a pull request has to follow.
+
 To work on the docs, build the package once and start Blume's dev server:
 
 ```sh
