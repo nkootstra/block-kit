@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability
+    url: https://github.com/nkootstra/block-kit/security/advisories/new
+    about: Report security issues privately, not in a public issue.
+  - name: Documentation
+    url: https://block-kit.kootstra.io
+    about: Installation, components and guides.

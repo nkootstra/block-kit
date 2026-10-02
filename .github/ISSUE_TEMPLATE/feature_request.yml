@@ -1,0 +1,22 @@
+name: Feature request
+description: Support a Block Kit feature, or change the package's API.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you're trying to do
+      description: The problem this solves, not only the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The component, prop, hook or behaviour you have in mind.
+  - type: input
+    id: slack-docs
+    attributes:
+      label: Slack docs
+      description: For a Block Kit feature the package doesn't render yet, a link to Slack's documentation of it.
+      placeholder: "https://docs.slack.dev/reference/block-kit/blocks/..."
