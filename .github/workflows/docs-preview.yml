@@ -126,13 +126,24 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
+      # The build comes from the pull request, so it lands outside the workspace, where it can't
+      # replace a file this job runs. Wrangler uploads every file under dist/, so a symlink could
+      # publish a file from the runner; refuse any.
       - if: steps.current.outputs.deploy
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: docs-preview
-          path: apps/docs/dist
+          path: ${{ runner.temp }}/docs-preview
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
+      - if: steps.current.outputs.deploy
+        run: |
+          build="$RUNNER_TEMP/docs-preview"
+          if [ -n "$(find "$build" ! -type f ! -type d -print -quit)" ]; then
+            echo "::error::The docs build contains something other than files and directories."
+            exit 1
+          fi
+          cp -R "$build" apps/docs/dist
 
       - id: deploy
         if: steps.current.outputs.deploy
