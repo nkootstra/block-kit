@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useBlockKit } from "./context";
 
 /** How long the pointer rests on an anchor before its tooltip shows. */
 const SHOW_DELAY_MS = 300;
@@ -40,6 +41,7 @@ export interface TooltipProps {
  * Slack. Portalled to `<body>` so scroll containers and `overflow: hidden` can't clip it.
  */
 export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
+  const { theme } = useBlockKit();
   const id = useId();
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<{
@@ -123,6 +125,7 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
             ref={tipRef}
             id={id}
             role="tooltip"
+            data-theme={theme}
             className={`sbk-tooltip sbk-tooltip--${position?.side ?? placement}`}
             style={
               position

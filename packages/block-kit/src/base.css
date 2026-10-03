@@ -1,6 +1,7 @@
 /* Values measured from Slack's Block Kit Builder (light theme, desktop). */
 :root,
 [data-theme="light"] {
+  --sbk-hover-actions-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 1px 3px 0 #00000014;
   --sbk-font: "Slack-Lato", Lato, appleLogo, sans-serif;
   --sbk-font-mono:
     "Slack-Roboto-Mono", "Roboto Mono", Monaco, Menlo, Consolas, "Courier New", monospace;

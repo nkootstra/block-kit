@@ -161,6 +161,8 @@ export type SubmitResult = ViewResponseAction | undefined | void;
 
 export interface BlockKitContextValue {
   surface: Surface;
+  /** The provider's `theme`. Popovers, tooltips and dialogs render outside its wrapper, so they set it themselves. */
+  theme?: "light" | "dark";
   onAction?: (action: BlockAction, context: ActionContext) => void;
   /** Same actions as `onAction`, wrapped in the full Slack `block_actions` payload (team/user/container/...). */
   onPayload?: (
@@ -494,6 +496,7 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
   const value = useMemo<BlockKitContextValue>(
     () => ({
       surface,
+      theme,
       onAction,
       onPayload,
       onSubmit,
@@ -514,6 +517,7 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
     }),
     [
       surface,
+      theme,
       onAction,
       onPayload,
       onSubmit,

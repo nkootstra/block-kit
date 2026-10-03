@@ -6,6 +6,7 @@ import { readPayload } from "./payload";
 import { imageSize, placeholderSvg } from "./placeholder";
 
 export type Theme = "light" | "dark";
+export type ThemeVia = "provider" | "html";
 
 export interface Renderer {
   /** Renders a fixture payload to a PNG. Rejects when the payload isn't valid Block Kit. */
@@ -20,8 +21,15 @@ export interface Renderer {
  */
 export async function createRenderer(
   libRoot: string,
-  /** The operating system's color scheme the page sees; renders don't depend on it. */
-  { systemColorScheme = "light" }: { systemColorScheme?: Theme } = {},
+  {
+    systemColorScheme = "light",
+    themeVia = "provider",
+  }: {
+    /** The operating system's color scheme the page sees; renders don't depend on it. */
+    systemColorScheme?: Theme;
+    /** How the page applies the theme: the provider's `theme` prop, or `data-theme` on <html>. */
+    themeVia?: ThemeVia;
+  } = {},
 ): Promise<Renderer> {
   const [script, style] = await Promise.all([
     bundle(join(import.meta.dir, "page.tsx"), libRoot),
@@ -29,7 +37,8 @@ export async function createRenderer(
   ]);
   const browser = await chromium.launch();
   return {
-    render: (json, theme) => render(browser, script, style, json, theme, systemColorScheme),
+    render: (json, theme) =>
+      render(browser, script, style, json, theme, systemColorScheme, themeVia),
     close: () => browser.close(),
   };
 }
@@ -41,6 +50,7 @@ async function render(
   json: string,
   theme: Theme,
   systemColorScheme: Theme,
+  themeVia: ThemeVia,
 ): Promise<Buffer> {
   const payload = readPayload(json);
   if (!payload.ok) throw new Error(payload.error);
@@ -57,7 +67,11 @@ async function render(
     const page = await context.newPage();
     await page.setContent(`<!doctype html><style>${style}</style><div id="root"></div>`);
     await page.addScriptTag({ content: script });
-    await page.evaluate(([p, t]) => window.renderBlockKit(p, t), [payload, theme] as const);
+    await page.evaluate(([p, t, via]) => window.renderBlockKit(p, t, via), [
+      payload,
+      theme,
+      themeVia,
+    ] as const);
     const failedFonts = await page.evaluate(async () => {
       await document.fonts.ready;
       return [...document.fonts].filter((f) => f.status === "error").map((f) => f.family);

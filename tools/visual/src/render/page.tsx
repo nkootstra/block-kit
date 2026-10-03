@@ -3,19 +3,25 @@
 import { BlockKitProvider, Message, View } from "@nkootstra/block-kit";
 import { createRoot } from "react-dom/client";
 import type { Payload } from "./payload";
-import type { Theme } from "./renderer";
+import type { Theme, ThemeVia } from "./renderer";
 
 const MESSAGE_WIDTH = 600;
 
 declare global {
   interface Window {
-    renderBlockKit(payload: Extract<Payload, { ok: true }>, theme: Theme): Promise<void>;
+    renderBlockKit(
+      payload: Extract<Payload, { ok: true }>,
+      theme: Theme,
+      themeVia: ThemeVia,
+    ): Promise<void>;
   }
 }
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-window.renderBlockKit = (payload, theme) => {
+window.renderBlockKit = (payload, pageTheme, themeVia) => {
+  const theme = themeVia === "provider" ? pageTheme : undefined;
+  if (themeVia === "html") document.documentElement.dataset.theme = pageTheme;
   // Pinned like the playground's render page (apps/playground/src/RenderOnly.tsx), so a render
   // doesn't depend on the clock or the machine.
   root.render(

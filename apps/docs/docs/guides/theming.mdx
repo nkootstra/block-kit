@@ -39,7 +39,8 @@ the OS prefers it.
 ### The theme prop
 
 `<BlockKitProvider theme="light" | "dark">` sets `data-theme` on a wrapper `<div>` around its children,
-useful for previewing both themes side by side on the same page, independent of the OS setting:
+and on the menus, tooltips and dialogs it opens outside that wrapper. It's useful for previewing both
+themes side by side on the same page, independent of the OS setting:
 
 ```tsx
 <div style={{ display: "flex", gap: 16 }}>

@@ -7,14 +7,16 @@ import { createRenderer, type Renderer } from "./renderer";
 
 const ROOT = resolve(import.meta.dir, "../../../..");
 
-let renderer: Renderer;
+const renderers: Record<string, Renderer> = {};
 beforeAll(async () => {
-  renderer = await createRenderer(join(ROOT, "packages/block-kit"));
+  for (const themeVia of ["provider", "html"] as const) {
+    renderers[themeVia] = await createRenderer(join(ROOT, "packages/block-kit"), { themeVia });
+  }
 });
-afterAll(() => renderer.close());
+afterAll(() => Promise.all(Object.values(renderers).map((r) => r.close())));
 
 /** Share of a render's pixels that are near-white: light surfaces, or text on a dark one. */
-async function lightShare(json: string): Promise<number> {
+async function lightShare(renderer: Renderer, json: string): Promise<number> {
   const png = PNG.sync.read(await renderer.render(json, "dark"));
   let light = 0;
   for (let i = 0; i < png.data.length; i += 4) {
@@ -23,7 +25,8 @@ async function lightShare(json: string): Promise<number> {
   return light / (png.width * png.height);
 }
 
-describe("dark theme", () => {
+// The theme can come from the provider's `theme` prop or from `data-theme` on <html>.
+describe.each(["provider", "html"])("dark theme set through the %s", (themeVia) => {
   for (const color of ["green", "blue", "red", "yellow", "purple", "gray"]) {
     it(`gives a ${color} callout a dark background`, async () => {
       const callout = JSON.stringify([
@@ -33,7 +36,7 @@ describe("dark theme", () => {
           child_blocks: [{ type: "section", text: { type: "plain_text", text: "Heads up" } }],
         },
       ]);
-      expect(await lightShare(callout)).toBeLessThan(0.05);
+      expect(await lightShare(renderers[themeVia]!, callout)).toBeLessThan(0.05);
     });
   }
 
@@ -41,6 +44,6 @@ describe("dark theme", () => {
     const chart = await Bun.file(
       join(ROOT, "fixtures/catalog/data-visualization/area-multi-series.json"),
     ).text();
-    expect(await lightShare(chart)).toBeLessThan(0.05);
+    expect(await lightShare(renderers[themeVia]!, chart)).toBeLessThan(0.05);
   });
 });
