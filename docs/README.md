@@ -6,7 +6,7 @@ Documentation: **<https://docs.block-kit.dev>**
 
 ## Install
 
-The package needs React 19 or later.
+The package needs React 18 or later.
 
 ```sh
 bun add @nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono
@@ -57,6 +57,7 @@ This is a Bun workspace run with Turborepo.
 | `apps/playground`    | A Block Kit playground for trying payloads against the renderer           |
 | `fixtures`           | Block Kit Builder payloads with Slack's reference renders                 |
 | `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference |
+| `tools/react-18`     | Runs the package's tests and type-check against React 18                  |
 
 ## Develop
 

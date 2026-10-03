@@ -6,12 +6,12 @@ import {
   type ReactNode,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
 import { useBlockKit } from "./context";
+import { useClientLayoutEffect } from "./useClientLayoutEffect";
 
 /** How long the pointer rests on an anchor before its tooltip shows. */
 const SHOW_DELAY_MS = 300;
@@ -55,7 +55,7 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  useLayoutEffect(() => {
+  useClientLayoutEffect(() => {
     if (!open) {
       setPosition(null);
       return;

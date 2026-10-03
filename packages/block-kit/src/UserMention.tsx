@@ -1,7 +1,8 @@
-import { type KeyboardEvent, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
+import { useClientLayoutEffect } from "./useClientLayoutEffect";
 
 export interface UserMentionProps {
   /** Slack user id, e.g. `U0123ABC`. */
@@ -31,7 +32,7 @@ export function UserMention({ id, name }: UserMentionProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const cardId = useId();
 
-  useLayoutEffect(() => {
+  useClientLayoutEffect(() => {
     if (!open) {
       setPosition(null);
       return;

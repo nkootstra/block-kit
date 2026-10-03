@@ -1,13 +1,7 @@
-import {
-  type ReactNode,
-  type RefObject,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBlockKit } from "../context";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
 
 /** Space between the anchor and the popover, as in Slack's menus. */
 const DEFAULT_GAP = 4;
@@ -37,11 +31,11 @@ export function Popover({ anchorRef, onDismiss, gap = DEFAULT_GAP, children }: P
   );
   // The latest onDismiss, for the document listener below without re-adding it on every render.
   const dismiss = useRef(onDismiss);
-  useLayoutEffect(() => {
+  useClientLayoutEffect(() => {
     dismiss.current = onDismiss;
   });
 
-  useLayoutEffect(() => {
+  useClientLayoutEffect(() => {
     function place() {
       const anchor = anchorRef.current;
       const layer = layerRef.current;

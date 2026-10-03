@@ -1,4 +1,5 @@
-import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
 
 /**
  * Slack's toggle-bar blocks (plan, task_card) slide open and shut: the block's height transitions
@@ -23,7 +24,9 @@ export function Collapse({
   // What `open` was last time, so only a toggle animates (not the first render).
   const was = useRef(open);
 
-  useLayoutEffect(() => {
+  useClientLayoutEffect(() => {
+    // Set on the node, not as a prop: React 18 doesn't know `inert` and drops a boolean value.
+    ref.current?.toggleAttribute("inert", !open);
     if (was.current === open) return;
     was.current = open;
     const el = ref.current;
@@ -46,7 +49,6 @@ export function Collapse({
     <div
       ref={ref}
       className={className ? `sbk-collapse ${className}` : "sbk-collapse"}
-      inert={!open}
       onTransitionEnd={(e) => {
         if (e.target !== e.currentTarget || e.propertyName !== "height") return;
         if (open) e.currentTarget.style.height = "";

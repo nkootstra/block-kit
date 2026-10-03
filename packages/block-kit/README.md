@@ -6,7 +6,7 @@ Documentation: **<https://docs.block-kit.dev>**
 
 ## Install
 
-The package needs React 19 or later.
+The package needs React 18 or later.
 
 ```sh
 bun add @nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono
