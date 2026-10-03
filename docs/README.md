@@ -119,6 +119,32 @@ bunx turbo run build --filter=@nkootstra/block-kit-docs
 cd apps/docs && bunx wrangler@4 deploy
 ```
 
+## Visual previews
+
+A pull request whose changes alter how a fixture renders gets a comment with before, after and the
+changes, in light and dark. Nothing is posted or updated when no rendering changed.
+
+1. The `render-diff` job in [`.github/workflows/visual.yml`](../.github/workflows/visual.yml)
+   renders every fixture with the base branch's build and the pull request's, and uploads the renders
+   that differ as the `render-diff` artifact. It has no secrets, also for pull requests from forks.
+2. [`.github/workflows/visual-preview.yml`](../.github/workflows/visual-preview.yml) runs main's code
+   on `workflow_run`. It refuses an artifact with anything but the PNG renders its manifest lists,
+   uploads the renders the comment shows (at most 40) to R2 and keeps one comment up to date. Like
+   every `workflow_run` workflow, it only runs once it is on `main`.
+
+Renders replace a payload's images with placeholders, so a pull request can't publish other images
+through a fixture. [`tools/visual`](../tools/visual/README.md#render-diff) covers running it locally.
+
+### One-time R2 setup
+
+1. Create the `block-kit-visual` R2 bucket, attach the custom domain `cdn.block-kit.dev` and add a
+   lifecycle rule that deletes objects after 30 days.
+2. Create an API token with **Workers R2 Storage Bucket Item Write** and **Read**, limited to that
+   bucket. R2's S3 API authenticates with it: the access key ID is the token's ID, the secret is the
+   SHA-256 hash of its value.
+3. Add `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` as repository secrets. The workflow also uses
+   `CLOUDFLARE_ACCOUNT_ID`.
+
 ## License
 
 [MIT](../LICENSE)
