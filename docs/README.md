@@ -90,6 +90,8 @@ The Worker also serves the docs' MCP server at `/mcp`. Blume only generates its 
 
 The Worker bundles the snapshot and answers with Blume's MCP handler, so a deploy needs the dependencies installed.
 
+Blume gives every page but the home page a machine-readable date, so search engines dated the home page from whatever `<time>` they found on it. Until Blume does this itself, [`apps/docs/scripts/home-date.ts`](../apps/docs/scripts/home-date.ts) runs last in the build and gives the home page its git date: a `WebPage` node with `dateModified` in its JSON-LD, and a `<time datetime>` around its "Last updated on" date. It fails the build when Blume's markup changes, which is the sign to remove it.
+
 Every push to `main` deploys:
 
 1. The `check` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) builds the whole workspace, docs included, and uploads `apps/docs/dist` as an artifact.

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "blume dev",
-    "build": "blume build && bun scripts/mcp.ts",
+    "build": "blume build && bun scripts/mcp.ts && bun scripts/home-date.ts",
     "preview": "blume preview",
     "type-check": "blume check && tsc -p worker && tsc -p scripts",
     "validate": "blume validate",
