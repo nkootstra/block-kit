@@ -8,7 +8,8 @@ description: Render Slack Block Kit JSON in a React app with @nkootstra/block-ki
 `@nkootstra/block-kit` renders the Block Kit JSON a Slack app sends (messages, modals and Home tabs)
 as React components that look and behave the way they do in Slack. Full docs:
 https://block-kit.kootstra.io. Every page has a Markdown copy at the same path plus `.md`, and
-https://block-kit.kootstra.io/llms.txt lists them all.
+https://block-kit.kootstra.io/llms.txt lists them all. The docs' MCP server at
+https://block-kit.kootstra.io/mcp searches them and returns any page as Markdown.
 
 ## Install
 

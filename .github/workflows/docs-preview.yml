@@ -126,6 +126,10 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
+      # main's lockfile: the Worker bundles Blume's MCP handler and its dependencies. No lifecycle
+      # scripts run here.
+      - if: steps.current.outputs.deploy
+        run: bun install --frozen-lockfile --ignore-scripts
       # The build comes from the pull request, so it lands outside the workspace, where it can't
       # replace a file this job runs. Wrangler uploads every file under dist/, so a symlink could
       # publish a file from the runner; refuse any.

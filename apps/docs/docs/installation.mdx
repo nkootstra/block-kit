@@ -93,6 +93,16 @@ export function App() {
 | `@nkootstra/block-kit/server`     | Signs and relays interactions to your app from your server.                                                            |
 | `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API.                                                                                 |
 
+## Give your coding agent the docs
+
+These docs run an [MCP](https://modelcontextprotocol.io) server at `https://block-kit.kootstra.io/mcp`. It lets an agent search the docs and read any page as Markdown. To add it to Claude Code:
+
+```sh
+claude mcp add --transport http block-kit https://block-kit.kootstra.io/mcp
+```
+
+Other agents take the same URL as a Streamable HTTP server. Agents that don't use MCP can read [`llms.txt`](/llms.txt), which lists every page's Markdown copy.
+
 ## Next steps
 
 <CardGroup cols={2}>

@@ -81,10 +81,17 @@ cd apps/docs && bun run dev
 
 The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `block-kit.kootstra.io`, with the `_headers` file Blume writes for the raw Markdown endpoints. A small Worker, [`apps/docs/worker/index.ts`](../apps/docs/worker/index.ts), runs first on page routes, the `.md` copies and the docs API to negotiate with agents: `Accept: text/markdown` gets a page's Markdown copy, a missing page or `.md` URL gets `/404.md` with a 404 when Markdown was asked for, and JSON requests and the docs API get the `/404.json` problem document. Build assets and the other raw files skip the Worker.
 
+The Worker also serves the docs' MCP server at `/mcp`. Blume only generates its MCP server on a server build, and its Cloudflare server build is too large to deploy ([haydenbleasel/blume#322](https://github.com/haydenbleasel/blume/issues/322)). So after `blume build`, [`apps/docs/scripts/mcp.ts`](../apps/docs/scripts/mcp.ts) uses Blume's own builders to do two things:
+
+- Write the snapshot the server answers from to `dist/mcp-data.json`, which `.assetsignore` keeps out of the public files.
+- Add the server to the discovery files: `/.well-known/mcp.json`, `/.well-known/mcp/server-card.json`, `llms.txt`, `agent-readability.json` and the API and AI catalogs.
+
+The Worker bundles the snapshot and answers with Blume's MCP handler, so a deploy needs the dependencies installed.
+
 Every push to `main` deploys:
 
 1. The `check` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) builds the whole workspace, docs included, and uploads `apps/docs/dist` as an artifact.
-2. Once every check passes, the `deploy-docs` job downloads that build and runs `wrangler deploy` in `apps/docs`.
+2. Once every check passes, the `deploy-docs` job downloads that build, installs the dependencies the Worker bundles, and runs `wrangler deploy` in `apps/docs`.
 
 ### Pull request previews
 
