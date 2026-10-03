@@ -20,6 +20,10 @@ export default defineConfig({
       githubReleases({ prefix: "changelog", owner: "nkootstra", repo: "block-kit" }),
     ],
   },
+  changelog: {
+    title: "Changelog",
+    description: "What changed in each release of @nkootstra/block-kit, newest first.",
+  },
   navigation: { actions: [{ href: "/changelog", label: "Changelog" }] },
   // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
   agents: { skills: "./skills" },

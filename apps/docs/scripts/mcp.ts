@@ -5,8 +5,8 @@
 // - `dist/mcp-data.json`: the snapshot the handler serves (search documents, page Markdown,
 //   routes, navigation). `.assetsignore` keeps it out of the public assets; the Worker bundles it.
 // - `/.well-known/mcp.json` and `/.well-known/mcp/server-card.json`, served with CORS.
-// - `llms.txt`, `agent-readability.json` and the API and AI catalogs, rebuilt so they list the
-//   server.
+// - `llms.txt`, `agent-readability.json`, the API and AI catalogs, and the site skill Blume
+//   generates (`/skill.md`, with the skills index and its digests), rebuilt so they list the server.
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { buildAgentReadability } from "blume/ai/agent-readability.ts";
@@ -20,7 +20,13 @@ import { API_CATALOG_PATH, buildApiCatalog } from "blume/ai/api-catalog.ts";
 import { buildLlmsIndex } from "blume/ai/llms.ts";
 import { buildMcpData } from "blume/ai/mcp/data.ts";
 import { buildMcpDiscovery, buildMcpServerCard } from "blume/ai/mcp/discovery.ts";
-import { collectSkills } from "blume/ai/skills.ts";
+import { buildSiteSkill } from "blume/ai/site-skill.ts";
+import {
+  AGENT_SKILLS_DIR,
+  AGENT_SKILLS_INDEX_PATH,
+  buildSkillsIndex,
+  collectSkills,
+} from "blume/ai/skills.ts";
 import { scanProject } from "blume/core/project-graph.ts";
 
 const root = resolve(import.meta.dir, "..");
@@ -33,10 +39,10 @@ const config = {
 };
 const project = { ...scanned, config };
 
-async function write(path: string, content: string) {
+async function write(path: string, content: string | Uint8Array) {
   const target = join(dist, path);
   await mkdir(dirname(target), { recursive: true });
-  await writeFile(target, content, "utf-8");
+  await writeFile(target, content);
 }
 
 const data = await buildMcpData(project);
@@ -56,9 +62,18 @@ await write(
   `${JSON.stringify(buildMcpServerCard(discovery), null, 2)}\n`,
 );
 
-const { skills } = config.agents.skills
+// The skills Blume publishes: ours, and the site skill it generates, which now mentions the server.
+const { skills: ours } = config.agents.skills
   ? await collectSkills(resolve(root, config.agents.skills))
   : { skills: [] };
+const siteSkill = buildSiteSkill(project);
+const skills =
+  siteSkill && !ours.some((skill) => skill.name === siteSkill.name) ? [siteSkill, ...ours] : ours;
+if (siteSkill && skills.includes(siteSkill)) {
+  await write(`${AGENT_SKILLS_DIR}/${siteSkill.path}`, siteSkill.content);
+  if (config.agents.skillMd) await write("skill.md", siteSkill.content);
+  await write(AGENT_SKILLS_INDEX_PATH, buildSkillsIndex(skills, config));
+}
 await write("llms.txt", buildLlmsIndex(project, { skills }));
 await write(
   "agent-readability.json",
