@@ -113,7 +113,9 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
   Next.js Server Component. Always pass `ts` (the message's Slack timestamp) to a server-rendered
   `<Message>`; without it the component stamps the current time and hydration mismatches.
 - **Theme:** `theme="light" | "dark"` on the provider forces a colour scheme; otherwise the page's
-  `data-theme` or the system preference applies. Colours are `--sbk-*` CSS custom properties.
+  `data-theme` or the system preference applies. Colours are `--sbk-*` CSS custom properties,
+  including callout backgrounds (`--sbk-callout-<color>-bg`) and area chart fills
+  (`--sbk-chart-area-1` to `-4`).
 - **Unknown block types** render the block's `fallback` array in their place when it has one.
 
 ## Entry points

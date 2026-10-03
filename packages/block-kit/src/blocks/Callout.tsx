@@ -1,25 +1,14 @@
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
 
-/**
- * Measured from Builder references (`callout` background_color: "green" → #f4ffdb, "blue" →
- * #e3f8ff). The remaining keys aren't covered by a fixture; they're extrapolated to the same
- * pastel-tint style and may not match Slack's exact values.
- */
-const BACKGROUND_COLORS: Record<string, string> = {
-  green: "#f4ffdb",
-  blue: "#e3f8ff",
-  red: "#ffeceb",
-  yellow: "#fff8db",
-  purple: "#f3ecff",
-  gray: "#f4f4f4",
-  grey: "#f4f4f4",
-};
+/** Callout colours; each has a token per theme (Callout.css, and Message.css for dark). */
+const BACKGROUND_COLORS = new Set(["green", "blue", "red", "yellow", "purple", "gray"]);
 
 export function Callout({ block }: BlockProps) {
   const json = block as Json;
   const color = typeof json.background_color === "string" ? json.background_color : undefined;
-  const background = (color && BACKGROUND_COLORS[color]) ?? BACKGROUND_COLORS.gray;
+  const key = color === "grey" ? "gray" : color;
+  const background = `var(--sbk-callout-${key && BACKGROUND_COLORS.has(key) ? key : "gray"}-bg)`;
   const children = (json.child_blocks as Json[] | undefined) ?? [];
 
   return (

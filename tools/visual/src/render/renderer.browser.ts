@@ -34,6 +34,19 @@ describe("renderer", () => {
     expect([...png.data.subarray(i, i + 3)]).toEqual([0x1a, 0x1d, 0x21]);
   });
 
+  it("keeps the light theme light on a system set to dark mode", async () => {
+    const dark = await createRenderer(join(ROOT, "packages/block-kit"), {
+      systemColorScheme: "dark",
+    });
+    try {
+      const png = PNG.sync.read(await dark.render(approval, "light"));
+      const i = ((png.height - 2) * png.width + (png.width - 2)) * 4;
+      expect([...png.data.subarray(i, i + 3)]).toEqual([0xff, 0xff, 0xff]);
+    } finally {
+      await dark.close();
+    }
+  });
+
   it("gives two renderers the same remote images, even from a host that randomizes them", async () => {
     // picsum.photos answers every request with a different photo.
     const card = await fixture("catalog/card-and-carousel/card");

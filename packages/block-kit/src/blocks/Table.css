@@ -1,5 +1,6 @@
 /* Values measured from Slack's Block Kit Builder for the `table` block. */
-:root {
+:root,
+[data-theme="light"] {
   --sbk-table-border: rgba(94, 93, 96, 0.13);
 }
 

@@ -18,14 +18,18 @@ export interface Renderer {
  * checkout or another one), bundled from its source. The page is built once per renderer: the
  * library, React and the fonts in one script and one stylesheet, so a render needs no server.
  */
-export async function createRenderer(libRoot: string): Promise<Renderer> {
+export async function createRenderer(
+  libRoot: string,
+  /** The operating system's color scheme the page sees; renders don't depend on it. */
+  { systemColorScheme = "light" }: { systemColorScheme?: Theme } = {},
+): Promise<Renderer> {
   const [script, style] = await Promise.all([
     bundle(join(import.meta.dir, "page.tsx"), libRoot),
     bundle(join(import.meta.dir, "page.css"), libRoot).then(inlineFonts),
   ]);
   const browser = await chromium.launch();
   return {
-    render: (json, theme) => render(browser, script, style, json, theme),
+    render: (json, theme) => render(browser, script, style, json, theme, systemColorScheme),
     close: () => browser.close(),
   };
 }
@@ -36,13 +40,15 @@ async function render(
   style: string,
   json: string,
   theme: Theme,
+  systemColorScheme: Theme,
 ): Promise<Buffer> {
   const payload = readPayload(json);
   if (!payload.ok) throw new Error(payload.error);
   const context = await browser.newContext({
     viewport: { width: 1200, height: 900 },
     deviceScaleFactor: 1,
-    colorScheme: theme,
+    // The theme comes from the provider's `theme` prop, whatever the system prefers.
+    colorScheme: systemColorScheme,
     locale: "en-US",
     timezoneId: "UTC",
   });
@@ -51,7 +57,7 @@ async function render(
     const page = await context.newPage();
     await page.setContent(`<!doctype html><style>${style}</style><div id="root"></div>`);
     await page.addScriptTag({ content: script });
-    await page.evaluate((p) => window.renderBlockKit(p), payload);
+    await page.evaluate(([p, t]) => window.renderBlockKit(p, t), [payload, theme] as const);
     const failedFonts = await page.evaluate(async () => {
       await document.fonts.ready;
       return [...document.fonts].filter((f) => f.status === "error").map((f) => f.family);
