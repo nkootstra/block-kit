@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "blume dev",
-    "build": "blume build",
+    "build": "blume build && bun scripts/mcp.ts",
     "preview": "blume preview",
-    "type-check": "blume check && tsc -p worker",
+    "type-check": "blume check && tsc -p worker && tsc -p scripts",
     "validate": "blume validate",
     "test": "bun test worker"
   },

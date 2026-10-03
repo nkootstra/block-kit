@@ -7,8 +7,13 @@
 //   calls the docs API. That's what the `openapi.json` Blume publishes promises for both.
 // Browsers keep getting the HTML pages and 404 page. `run_worker_first` in wrangler.jsonc keeps
 // the Worker off the build assets and raw files, which are served straight from the assets.
+// `/mcp` is the docs' MCP server, Blume's own handler over the snapshot `scripts/mcp.ts` writes
+// next to the build (Blume generates the server only on a server build).
 // Pull request Previews set `ROBOTS` (`previews.vars` in wrangler.jsonc) to keep search engines off
 // their pages.
+
+import type { McpData } from "blume/ai/mcp/data.ts";
+import { createMcpFetchHandler } from "blume/ai/mcp/server.ts";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -25,7 +30,16 @@ export default {
   },
 };
 
+let mcp: Promise<(request: Request) => Promise<Response>> | undefined;
+
 async function respond(request: Request, env: Env): Promise<Response> {
+  if (new URL(request.url).pathname === "/mcp") {
+    // Loaded on the first call, so page requests don't parse the snapshot.
+    mcp ??= import("../dist/mcp-data.json").then(({ default: data }) =>
+      createMcpFetchHandler(data as McpData),
+    );
+    return (await mcp)(request);
+  }
   if (request.method !== "GET" && request.method !== "HEAD") {
     return env.ASSETS.fetch(request);
   }

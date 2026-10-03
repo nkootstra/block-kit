@@ -36,6 +36,22 @@ function get(path: string, accept?: string, method = "GET") {
   );
 }
 
+// A JSON-RPC call to the MCP server, which answers from the snapshot `scripts/mcp.ts` writes
+// into the build.
+function call(method: string, params: object = {}) {
+  return worker.fetch(
+    new Request(`${site}/mcp`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/event-stream",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+    }),
+    env,
+  );
+}
+
 const browser = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
 describe("prefers", () => {
@@ -150,6 +166,37 @@ describe("missing pages", () => {
 test("leaves non-GET requests to the assets", async () => {
   const response = await get("/blocks/section", "text/markdown", "POST");
   expect(response.headers.get("Content-Type")).toBe("text/html");
+});
+
+describe("MCP server", () => {
+  test("lists the docs tools", async () => {
+    const { result } = await (await call("tools/list")).json();
+    expect(result.tools.map((tool: { name: string }) => tool.name)).toEqual([
+      "search_docs",
+      "get_page",
+      "list_pages",
+      "get_navigation",
+    ]);
+  });
+
+  test("returns a page's Markdown", async () => {
+    const response = await call("tools/call", {
+      name: "get_page",
+      arguments: { route: "/quickstart" },
+    });
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+    const { result } = await response.json();
+    expect(result.content[0].text).toStartWith("---\ntitle: Quickstart");
+  });
+
+  test("searches the docs", async () => {
+    const { result } = await (
+      await call("tools/call", { name: "search_docs", arguments: { query: "button" } })
+    ).json();
+    expect(JSON.parse(result.content[0].text)).toContainEqual(
+      expect.objectContaining({ route: "/elements/button" }),
+    );
+  });
 });
 
 describe("Previews", () => {

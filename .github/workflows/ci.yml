@@ -84,6 +84,8 @@ jobs:
         with:
           name: docs-dist
           path: apps/docs/dist
+      # The Worker bundles Blume's MCP handler and its dependencies. No lifecycle scripts run here.
+      - run: bun install --frozen-lockfile --ignore-scripts
       - name: Deploy to Cloudflare Workers
         working-directory: apps/docs
         run: bunx wrangler@4 deploy

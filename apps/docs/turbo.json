@@ -4,6 +4,9 @@
   "tasks": {
     "type-check": {
       "dependsOn": ["^build", "build"]
+    },
+    "test": {
+      "dependsOn": ["^build", "build"]
     }
   }
 }

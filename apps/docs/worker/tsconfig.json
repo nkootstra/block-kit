@@ -1,5 +1,6 @@
 {
   "extends": "../../../tsconfig.base.json",
-  "compilerOptions": { "types": ["bun"] },
+  // Blume's modules are TypeScript sources imported with their `.ts` extension.
+  "compilerOptions": { "types": ["bun"], "allowImportingTsExtensions": true },
   "include": ["."]
 }
