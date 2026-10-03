@@ -11,8 +11,8 @@ name: Docs preview
 # - `deploy` takes only the built files from the pull request. The Worker, wrangler.jsonc and
 #   Wrangler come from main, so a pull request can't change what runs with the Cloudflare token or
 #   where it deploys. Changes to the Worker show up in previews once they merge.
-# - Closing the pull request deletes its Preview. That runs on pull_request_target, which never
-#   checks out the pull request's code.
+# - Closing the pull request deletes its Preview and marks its docs-preview deployments inactive.
+#   That runs on pull_request_target, which never checks out the pull request's code.
 on:
   workflow_run:
     workflows: [CI]
@@ -187,6 +187,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      deployments: write
       pull-requests: write
     env:
       GH_TOKEN: ${{ github.token }}
@@ -214,6 +215,22 @@ jobs:
             --skip-confirmation 2>&1 | tee "$RUNNER_TEMP/delete.log"; then
             grep -q "code: 10025" "$RUNNER_TEMP/delete.log" || exit 1
           fi
+
+      # Every deployment runs from main, so only its Preview URL tells which pull request it was.
+      - if: steps.comment.outputs.id
+        name: Mark the pull request's deployments inactive
+        # bash with pipefail, so a failed listing fails the step.
+        shell: bash
+        run: |
+          gh api --paginate "repos/$REPO/deployments?environment=docs-preview" --jq '.[].id' |
+            while read -r id; do
+              url=$(gh api "repos/$REPO/deployments/$id/statuses?per_page=1" \
+                --jq '.[0] | select(.state == "success") | .environment_url')
+              case "$url" in
+                "https://pr-$PR-$WORKER."*)
+                  gh api "repos/$REPO/deployments/$id/statuses" -f state=inactive > /dev/null ;;
+              esac
+            done
 
       - if: steps.comment.outputs.id
         env:
