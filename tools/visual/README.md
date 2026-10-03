@@ -76,3 +76,33 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
 
 `visual-baseline.darwin.json` is for local runs only; keep it current with
 `bun run compare -- --update-baseline`.
+
+## Render diff
+
+`src/render/` renders fixtures with a build of the library and compares two builds, so a pull
+request shows how it changes what users see. Unlike `compare`, it needs no playground: it bundles
+the library's source into a blank Chromium page.
+
+```bash
+git worktree add --detach ../block-kit-main origin/main
+(cd ../block-kit-main && bun install)
+bun run --cwd tools/visual render:diff --base=../block-kit-main/packages/block-kit [prefix...]
+```
+
+Every fixture renders in light and dark with both builds. Only the renders that differ are written
+to `test-results/render-diff/` as `<fixture>.<theme>.{before,after,diff}.png`, listed in
+`manifest.json`. The diff aligns rows first, the way a text diff aligns lines, so content that only
+moved doesn't count as changed.
+
+Renders are deterministic: the message time, time zone and locale are pinned, the fonts are
+embedded, and a fixture's images are replaced by striped placeholders of the same size. The real
+images never show, because renders end up public; only their size is read. Emoji are the exception:
+the library draws them from a fixed, version-pinned set, so a payload can't choose what they show.
+
+`bun run --cwd tools/visual test:browser` runs the tests that need Chromium
+(`bunx playwright install chromium`); `bun run test` runs the rest.
+
+In CI, the Visual workflow's `render-diff` job runs this for every pull request the comparison
+covers and uploads the result. The Visual preview workflow then checks the artifact
+(`src/render/publish.ts`), uploads the renders to R2 and comments on the pull request, only when
+something changed. [`docs/README.md`](../../docs/README.md#visual-previews) describes the setup.
