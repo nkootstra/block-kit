@@ -69,6 +69,7 @@ in the same pull request:
   `refactor`, `test`, `docs`, `chore`, `ci`, `build`, `revert`. The scope is required and can be any
   lowercase word. Add `!` after it for a breaking change: `feat(provider)!: …`.
 - The PR title becomes the line in the release notes, so write it for the people using the package.
+  The docs' changelog at `/changelog` shows those notes.
 - Sign every commit with an SSH or GPG key added to your GitHub account as a signing key; `main`
   rejects unverified commits. GitHub's
   [guide to signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
