@@ -24,6 +24,13 @@ export default defineConfig({
     title: "Changelog",
     description: "What changed in each release of @nkootstra/block-kit, newest first.",
   },
+  // Shown only on the old block-kit.kootstra.io domain: the Worker removes it elsewhere and points
+  // the link at the same page on docs.block-kit.dev.
+  banner: {
+    content: "These docs moved to docs.block-kit.dev.",
+    link: { href: "https://docs.block-kit.dev", text: "Go to the new docs" },
+    dismissible: true,
+  },
   navigation: { actions: [{ href: "/changelog", label: "Changelog" }] },
   // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
   agents: { skills: "./skills" },
