@@ -13,7 +13,7 @@ https://docs.block-kit.dev/mcp searches them and returns any page as Markdown.
 
 ## Install
 
-Requires React 19 or later.
+Requires React 18 or later.
 
 ```sh
 npm install @nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono

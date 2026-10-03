@@ -1,5 +1,6 @@
+// @vitest-environment node
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider } from "./context";
 import { Message } from "./Message";
 import { HomeTab } from "./surfaces/HomeTab";
@@ -8,9 +9,20 @@ import { Modal } from "./surfaces/Modal";
 /**
  * Slack emulators (and anything server-rendering an emulated channel/modal) render these
  * components on the server, where `window`/`document` don't exist. Confirms none of the three
- * surfaces reach for browser globals during render.
+ * surfaces reach for browser globals during render, or make React warn: React 18 warns about
+ * every `useLayoutEffect` it meets on the server.
  */
 describe("SSR", () => {
+  let consoleError: ReturnType<typeof vi.spyOn>;
+  beforeEach(() => {
+    consoleError = vi.spyOn(console, "error");
+  });
+  afterEach(() => {
+    const calls = [...consoleError.mock.calls];
+    consoleError.mockRestore();
+    if (calls.length > 0) throw new Error(`React warned: ${String(calls[0]?.[0])}`);
+  });
+
   it("renders <Message> to static markup without touching window", () => {
     const html = renderToStaticMarkup(
       <BlockKitProvider>
