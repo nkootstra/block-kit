@@ -68,8 +68,11 @@ function onOptions({ value }: { value: string }): OptionsResponse {
   };
 }
 
-/** Midday UTC, so the server-rendered time matches the hydrated one. */
-const TS = 43_200;
+/**
+ * 2026-10-01 at midday UTC, so the server-rendered time matches the hydrated one. A recent date,
+ * because search engines take the message's `<time dateTime>` as the page's date.
+ */
+const TS = 1_790_856_000;
 
 export default function Preview({
   payload: original,
