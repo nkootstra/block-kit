@@ -7,9 +7,9 @@ description: Render Slack Block Kit JSON in a React app with @nkootstra/block-ki
 
 `@nkootstra/block-kit` renders the Block Kit JSON a Slack app sends (messages, modals and Home tabs)
 as React components that look and behave the way they do in Slack. Full docs:
-https://block-kit.kootstra.io. Every page has a Markdown copy at the same path plus `.md`, and
-https://block-kit.kootstra.io/llms.txt lists them all. The docs' MCP server at
-https://block-kit.kootstra.io/mcp searches them and returns any page as Markdown.
+https://docs.block-kit.dev. Every page has a Markdown copy at the same path plus `.md`, and
+https://docs.block-kit.dev/llms.txt lists them all. The docs' MCP server at
+https://docs.block-kit.dev/mcp searches them and returns any page as Markdown.
 
 ## Install
 
@@ -89,7 +89,7 @@ function handleAction(action: BlockAction, { message }: ActionContext) {
 ```
 
 Modal submissions arrive through `onSubmit`. To send interactions to a real Slack app's request URL
-instead, see https://block-kit.kootstra.io/guides/connecting-your-app.md.
+instead, see https://docs.block-kit.dev/guides/connecting-your-app.md.
 
 ## Mentions
 
@@ -132,8 +132,8 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 
 ## Where to look next
 
-- Every block: https://block-kit.kootstra.io/blocks.md
-- Every element: https://block-kit.kootstra.io/elements.md
-- Provider props: https://block-kit.kootstra.io/reference/block-kit-provider.md
-- Modals: https://block-kit.kootstra.io/guides/modals.md
-- Theming: https://block-kit.kootstra.io/guides/theming.md
+- Every block: https://docs.block-kit.dev/blocks.md
+- Every element: https://docs.block-kit.dev/elements.md
+- Provider props: https://docs.block-kit.dev/reference/block-kit-provider.md
+- Modals: https://docs.block-kit.dev/guides/modals.md
+- Theming: https://docs.block-kit.dev/guides/theming.md

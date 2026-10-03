@@ -10,7 +10,7 @@
     "renderer",
     "slack"
   ],
-  "homepage": "https://block-kit.kootstra.io",
+  "homepage": "https://docs.block-kit.dev",
   "bugs": "https://github.com/nkootstra/block-kit/issues",
   "license": "MIT",
   "author": "Niels Kootstra",

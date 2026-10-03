@@ -95,10 +95,10 @@ export function App() {
 
 ## Give your coding agent the docs
 
-These docs run an [MCP](https://modelcontextprotocol.io) server at `https://block-kit.kootstra.io/mcp`. It lets an agent search the docs and read any page as Markdown. To add it to Claude Code:
+These docs run an [MCP](https://modelcontextprotocol.io) server at `https://docs.block-kit.dev/mcp`. It lets an agent search the docs and read any page as Markdown. To add it to Claude Code:
 
 ```sh
-claude mcp add --transport http block-kit https://block-kit.kootstra.io/mcp
+claude mcp add --transport http block-kit https://docs.block-kit.dev/mcp
 ```
 
 Other agents take the same URL as a Streamable HTTP server. Agents that don't use MCP can read [`llms.txt`](/llms.txt), which lists every page's Markdown copy.
