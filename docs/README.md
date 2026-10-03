@@ -2,7 +2,7 @@
 
 `@nkootstra/block-kit` renders Slack [Block Kit](https://docs.slack.dev/block-kit/) JSON in React, pixel-for-pixel the way Slack does. Pass it the `blocks` your app sends to `chat.postMessage` or `views.open` and it draws the message, modal or Home tab, with working buttons, menus, date pickers and inputs.
 
-Documentation: **<https://block-kit.kootstra.io>**
+Documentation: **<https://docs.block-kit.dev>**
 
 ## Install
 
@@ -33,7 +33,7 @@ export function App() {
 }
 ```
 
-The [installation guide](https://block-kit.kootstra.io/installation) lists the remaining font weights and the entry points, and the [quickstart](https://block-kit.kootstra.io/quickstart) wires up an interactive approval message.
+The [installation guide](https://docs.block-kit.dev/installation) lists the remaining font weights and the entry points, and the [quickstart](https://docs.block-kit.dev/quickstart) wires up an interactive approval message.
 
 ## Entry points
 
@@ -79,7 +79,7 @@ cd apps/docs && bun run dev
 
 ## Docs deployment
 
-The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `block-kit.kootstra.io`, with the `_headers` file Blume writes for the raw Markdown endpoints. A small Worker, [`apps/docs/worker/index.ts`](../apps/docs/worker/index.ts), runs first on page routes, the `.md` copies and the docs API to negotiate with agents: `Accept: text/markdown` gets a page's Markdown copy, a missing page or `.md` URL gets `/404.md` with a 404 when Markdown was asked for, and JSON requests and the docs API get the `/404.json` problem document. Build assets and the other raw files skip the Worker.
+The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `docs.block-kit.dev`, with the `_headers` file Blume writes for the raw Markdown endpoints. A small Worker, [`apps/docs/worker/index.ts`](../apps/docs/worker/index.ts), runs first on page routes, the `.md` copies and the docs API to negotiate with agents: `Accept: text/markdown` gets a page's Markdown copy, a missing page or `.md` URL gets `/404.md` with a 404 when Markdown was asked for, and JSON requests and the docs API get the `/404.json` problem document. Build assets and the other raw files skip the Worker.
 
 The changelog at `/changelog` comes from the GitHub releases: Blume's `githubReleases()` source in `blume.config.ts` turns each release into a page when the docs build. CI passes its token as `GITHUB_TOKEN`, because GitHub rate-limits anonymous requests. Without the token, a failed request falls back to Blume's cache, or to an empty changelog and a warning when there is none. After publishing, the Release workflow runs CI on `main` again, so the docs rebuild with the new release.
 
@@ -106,12 +106,12 @@ A pull request that affects the docs gets a preview on a `workers.dev` URL, depl
 
 The deploy takes only the built files from the pull request; the Worker and `wrangler.jsonc` come from `main`, so a pull request can't change what runs with the Cloudflare token. Changes to the Worker therefore show up in previews once they merge. Previews set `ROBOTS` (`previews.vars` in `wrangler.jsonc`), which makes the Worker send `X-Robots-Tag: noindex`.
 
-[`apps/docs/wrangler.jsonc`](../apps/docs/wrangler.jsonc) names the Worker `block-kit-docs`, serves `dist/`, answers unknown paths with the built `404.html`, and attaches the custom domain. `deployment.site` in [`apps/docs/blume.config.ts`](../apps/docs/blume.config.ts) holds the same URL, because Blume builds canonical links, the sitemap and Open Graph images from it. Change both if the domain moves.
+[`apps/docs/wrangler.jsonc`](../apps/docs/wrangler.jsonc) names the Worker `block-kit-docs`, serves `dist/`, answers unknown paths with the built `404.html`, and attaches the custom domains: `docs.block-kit.dev`, and the old `block-kit.kootstra.io`, which serves the same site until its visitors are moved over. `deployment.site` in [`apps/docs/blume.config.ts`](../apps/docs/blume.config.ts) holds `https://docs.block-kit.dev`, because Blume builds canonical links, the sitemap and Open Graph images from it, so pages on the old domain name the new one as canonical. Change both if the domain moves.
 
 ### One-time Cloudflare setup
 
-1. Make sure the `kootstra.io` zone is on the Cloudflare account you deploy to. The first deploy creates the `block-kit.kootstra.io` DNS record and certificate itself.
-2. Create an API token under **My Profile → API Tokens** from the **Edit Cloudflare Workers** template. Limit **Account Resources** to your account and **Zone Resources** to `kootstra.io`.
+1. Make sure the `block-kit.dev` and `kootstra.io` zones are on the Cloudflare account you deploy to. The first deploy creates the `docs.block-kit.dev` and `block-kit.kootstra.io` DNS records and certificates itself.
+2. Create an API token under **My Profile → API Tokens** from the **Edit Cloudflare Workers** template. Limit **Account Resources** to your account and **Zone Resources** to `block-kit.dev` and `kootstra.io`.
 3. Add two repository secrets under **Settings → Secrets and variables → Actions**:
 
    | Secret                  | Value                                                              |

@@ -25,7 +25,12 @@
       "!/*.svg",
     ],
   },
-  "routes": [{ "pattern": "block-kit.kootstra.io", "custom_domain": true }],
+  // `docs.block-kit.dev` is the docs' domain. The old `block-kit.kootstra.io` serves the same site
+  // until its visitors are moved over; canonical links already point at the new domain.
+  "routes": [
+    { "pattern": "docs.block-kit.dev", "custom_domain": true },
+    { "pattern": "block-kit.kootstra.io", "custom_domain": true },
+  ],
   // Pull requests get a Preview (`wrangler preview`, see .github/workflows/docs-preview.yml) on a
   // workers.dev URL, which the Worker marks noindex.
   "preview_urls": true,

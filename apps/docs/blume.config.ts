@@ -41,5 +41,5 @@ export default defineConfig({
   github: { owner: "nkootstra", repo: "block-kit", dir: "apps/docs" },
   // Workers doesn't expose the site's URL at build time the way Pages did, so name it for the
   // sitemap, canonical links and Open Graph images.
-  deployment: { site: "https://block-kit.kootstra.io" },
+  deployment: { site: "https://docs.block-kit.dev" },
 });

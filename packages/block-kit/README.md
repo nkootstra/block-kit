@@ -2,7 +2,7 @@
 
 `@nkootstra/block-kit` renders Slack [Block Kit](https://docs.slack.dev/block-kit/) JSON in React, pixel-for-pixel the way Slack does. Pass it the `blocks` your app sends to `chat.postMessage` or `views.open` and it draws the message, modal or Home tab, with working buttons, menus, date pickers and inputs.
 
-Documentation: **<https://block-kit.kootstra.io>**
+Documentation: **<https://docs.block-kit.dev>**
 
 ## Install
 
@@ -33,7 +33,7 @@ export function App() {
 }
 ```
 
-The [installation guide](https://block-kit.kootstra.io/installation) lists the remaining font weights and the entry points, and the [quickstart](https://block-kit.kootstra.io/quickstart) wires up an interactive approval message.
+The [installation guide](https://docs.block-kit.dev/installation) lists the remaining font weights and the entry points, and the [quickstart](https://docs.block-kit.dev/quickstart) wires up an interactive approval message.
 
 ## Entry points
 

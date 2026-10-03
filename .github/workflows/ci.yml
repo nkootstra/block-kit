@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: docs
-      url: https://block-kit.kootstra.io
+      url: https://docs.block-kit.dev
     # Let a deploy finish rather than cancel it half-uploaded; the next one queues behind it.
     concurrency:
       group: deploy-docs

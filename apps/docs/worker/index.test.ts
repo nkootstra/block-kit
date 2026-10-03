@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import worker, { markdownUrlFor, prefers } from "./index";
 
-const site = "https://block-kit.kootstra.io";
+const site = "https://docs.block-kit.dev";
 
 const files: Record<string, [body: string, contentType: string]> = {
   "/": ["<!doctype html>home", "text/html"],
