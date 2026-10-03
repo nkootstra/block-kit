@@ -1,5 +1,6 @@
 /* Values measured from Slack's Block Kit Builder for the `data_table` block. */
-:root {
+:root,
+[data-theme="light"] {
   --sbk-data-table-bg: rgba(29, 28, 29, 0.06);
   --sbk-data-table-sep: rgba(94, 93, 96, 0.13);
   --sbk-data-table-active: #007a5a;

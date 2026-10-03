@@ -1,4 +1,12 @@
-:root {
+:root,
+[data-theme="light"] {
+  /* Area fills: measured for the first two series colours, tinted 88% toward white for the
+     others. Dark values (Message.css) aren't measured: the series colour at 30% over the dark
+     background. */
+  --sbk-chart-area-1: rgb(255, 237, 229);
+  --sbk-chart-area-2: rgb(227, 255, 243);
+  --sbk-chart-area-3: rgb(248, 238, 250);
+  --sbk-chart-area-4: rgb(226, 243, 250);
   --sbk-dataviz-border: rgba(94, 93, 96, 0.13);
   --sbk-dataviz-tick: #5e5d60;
 }

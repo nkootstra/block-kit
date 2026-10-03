@@ -1,4 +1,5 @@
-:root {
+:root,
+[data-theme="light"] {
   --sbk-plan-text: rgb(94, 93, 96);
 }
 

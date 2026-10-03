@@ -24,7 +24,7 @@ function localTime(timeZone: string): string | undefined {
  * `resolvers.userProfile` and falling back to the display name alone.
  */
 export function UserMention({ id, name }: UserMentionProps) {
-  const { resolvers } = useBlockKit();
+  const { resolvers, theme } = useBlockKit();
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const anchorRef = useRef<HTMLSpanElement>(null);
@@ -104,6 +104,7 @@ export function UserMention({ id, name }: UserMentionProps) {
             role="dialog"
             aria-label={profile.name}
             className="sbk-root sbk-profile-card"
+            data-theme={theme}
             style={
               position
                 ? { top: position.top, left: position.left }

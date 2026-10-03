@@ -1,4 +1,5 @@
-:root {
+:root,
+[data-theme="light"] {
   --sbk-task-card-text: rgb(94, 93, 96);
 }
 

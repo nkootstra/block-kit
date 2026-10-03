@@ -1,6 +1,7 @@
 /* Measured from the Builder's modal preview (`c-alert--boxed`). Dark values aren't measured; they
    reuse the dark palette's matching hues. */
-:root {
+:root,
+[data-theme="light"] {
   --sbk-alert-default-bg: rgb(234, 234, 234);
   --sbk-alert-default-icon: rgb(94, 93, 96);
   --sbk-alert-info-bg: rgba(54, 197, 240, 0.13);

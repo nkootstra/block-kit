@@ -1,4 +1,4 @@
-import { areaFillFor, colorForIndex } from "./palette";
+import { areaFillForIndex, colorForIndex } from "./palette";
 import { roundedBarPath, smoothLinePath } from "./paths";
 import { crispLine, formatTick, niceLinearScale } from "./scale";
 import { useContainerWidth } from "./useContainerWidth";
@@ -141,7 +141,7 @@ export function CartesianChart({
                     {type === "area" ? (
                       <path
                         d={`${smoothLinePath(points)}L${points[points.length - 1]?.x ?? 0} ${zeroY}L${points[0]?.x ?? 0} ${zeroY}Z`}
-                        fill={areaFillFor(color)}
+                        style={{ fill: areaFillForIndex(si) }}
                         fillOpacity={0.7}
                       />
                     ) : null}

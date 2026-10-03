@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useBlockKit } from "../context";
 
 /** Space between the anchor and the popover, as in Slack's menus. */
 const DEFAULT_GAP = 4;
@@ -29,6 +30,7 @@ export interface PopoverProps {
  * from.
  */
 export function Popover({ anchorRef, onDismiss, gap = DEFAULT_GAP, children }: PopoverProps) {
+  const { theme } = useBlockKit();
   const layerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(
     null,
@@ -87,6 +89,7 @@ export function Popover({ anchorRef, onDismiss, gap = DEFAULT_GAP, children }: P
     <div
       ref={layerRef}
       className="sbk-root sbk-popover"
+      data-theme={theme}
       style={position ?? { top: 0, left: 0, visibility: "hidden" }}
     >
       {children}

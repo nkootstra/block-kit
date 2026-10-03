@@ -3,29 +3,36 @@
 import { BlockKitProvider, Message, View } from "@nkootstra/block-kit";
 import { createRoot } from "react-dom/client";
 import type { Payload } from "./payload";
+import type { Theme, ThemeVia } from "./renderer";
 
 const MESSAGE_WIDTH = 600;
 
 declare global {
   interface Window {
-    renderBlockKit(payload: Extract<Payload, { ok: true }>): Promise<void>;
+    renderBlockKit(
+      payload: Extract<Payload, { ok: true }>,
+      theme: Theme,
+      themeVia: ThemeVia,
+    ): Promise<void>;
   }
 }
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-window.renderBlockKit = (payload) => {
+window.renderBlockKit = (payload, pageTheme, themeVia) => {
+  const theme = themeVia === "provider" ? pageTheme : undefined;
+  if (themeVia === "html") document.documentElement.dataset.theme = pageTheme;
   // Pinned like the playground's render page (apps/playground/src/RenderOnly.tsx), so a render
   // doesn't depend on the clock or the machine.
   root.render(
     payload.surface === "message" ? (
-      <BlockKitProvider timeZone="Europe/Amsterdam">
+      <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme}>
         <div id="sbk-render" style={{ width: MESSAGE_WIDTH }}>
           <Message blocks={payload.blocks} app={{ name: "Your App" }} ts={43_200} timeZone="UTC" />
         </div>
       </BlockKitProvider>
     ) : (
-      <BlockKitProvider timeZone="Europe/Amsterdam" surface={payload.surface}>
+      <BlockKitProvider timeZone="Europe/Amsterdam" surface={payload.surface} theme={theme}>
         <div id="sbk-render">
           <View view={payload.view} />
         </div>

@@ -39,7 +39,8 @@ the OS prefers it.
 ### The theme prop
 
 `<BlockKitProvider theme="light" | "dark">` sets `data-theme` on a wrapper `<div>` around its children,
-useful for previewing both themes side by side on the same page, independent of the OS setting:
+and on the menus, tooltips and dialogs it opens outside that wrapper. It's useful for previewing both
+themes side by side on the same page, independent of the OS setting:
 
 ```tsx
 <div style={{ display: "flex", gap: 16 }}>
@@ -53,6 +54,19 @@ useful for previewing both themes side by side on the same page, independent of 
 ```
 
 Leave `theme` unset to follow the page's own `data-theme`/`prefers-color-scheme` instead.
+
+### Slack's other dark themes
+
+Slack offers several dark themes; the dark values follow its default one. Callout backgrounds and
+area chart fills in dark mode are derived from that palette rather than measured. To match another
+theme, override the tokens under `[data-theme="dark"]`:
+
+```css
+[data-theme="dark"] {
+  --sbk-callout-green-bg: #1f3a2c;
+  --sbk-chart-area-1: #5c3320;
+}
+```
 
 :::note
 A modal opened through `views.open`/`views.push` renders in a nested provider that doesn't inherit
@@ -100,6 +114,15 @@ stylesheet to restyle without touching the components. The main tokens:
     },
     "--sbk-menu-bg": { type: "color", description: "Dropdown/select menu background." },
     "--sbk-tooltip-bg": { type: "color", description: "Tooltip background." },
+    "--sbk-callout-green-bg": {
+      type: "color",
+      description:
+        "Callout background, one per `background_color`: green, blue, red, yellow, purple, gray.",
+    },
+    "--sbk-chart-area-1": {
+      type: "color",
+      description: "Area chart fill, one per series color: `--sbk-chart-area-1` to `-4`.",
+    },
   }}
 />
 

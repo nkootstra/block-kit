@@ -214,9 +214,11 @@
 
 /* Dark theme: Slack's `.sk-client-theme--dark` design tokens (base-pry #1a1d21, content-pry
    #f8f8f8, content-hgl-1 #2ba5ce, ...), with hover/press overlays blended with `lighten` as Slack
-   does. Applies under `prefers-color-scheme: dark` unless an ancestor sets `data-theme="light"`,
-   or always with `data-theme="dark"` on the root. Component tokens are remapped here too so the
-   whole dark palette lives in one place. */
+   does. Applies under `prefers-color-scheme: dark` unless the root sets `data-theme="light"`, and
+   always inside an element with `data-theme="dark"` (BlockKitProvider's `theme` prop sets it on its
+   wrapper). Inside `data-theme="light"` the light tokens apply again (base.css). Component tokens
+   are remapped here too so the whole dark palette lives in one place. `:root[data-theme="dark"]`
+   outranks the `:root` light tokens of the block stylesheets loaded after this one. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --sbk-text: #f8f8f8;
@@ -288,22 +290,29 @@
     --sbk-data-table-sep: #797c814d;
     --sbk-data-table-active: #3daa7c;
     --sbk-plan-text: #9a9b9e;
-    --sbk-plan-complete: #3daa7c;
-    --sbk-plan-in-progress: #2ba5ce;
-    --sbk-plan-pending: #9a9b9e;
-    --sbk-plan-sep: #797c814d;
     --sbk-task-card-text: #9a9b9e;
-    --sbk-task-card-in-progress: #2ba5ce;
     --sbk-alert-default-bg: #f8f8f81a;
     --sbk-alert-default-icon: #b9babd;
     --sbk-alert-info-icon: #2ba5ce;
     --sbk-alert-warning-icon: #e8a723;
     --sbk-alert-error-icon: #d94c75;
     --sbk-alert-success-icon: #3daa7c;
+    --sbk-callout-border: #797c814d;
+    --sbk-callout-green-bg: #203430;
+    --sbk-callout-blue-bg: #1d333d;
+    --sbk-callout-red-bg: #39252e;
+    --sbk-callout-yellow-bg: #3b3321;
+    --sbk-callout-purple-bg: #312c3f;
+    --sbk-callout-gray-bg: #272a2e;
+    --sbk-chart-area-1: #583422;
+    --sbk-chart-area-2: #1c4539;
+    --sbk-chart-area-3: #4d3756;
+    --sbk-chart-area-4: #164356;
   }
 }
 
-:root[data-theme="dark"] {
+:root[data-theme="dark"],
+[data-theme="dark"] {
   --sbk-text: #f8f8f8;
   --sbk-link: #2ba5ce;
   --sbk-code-text: #de678a;
@@ -373,16 +382,22 @@
   --sbk-data-table-sep: #797c814d;
   --sbk-data-table-active: #3daa7c;
   --sbk-plan-text: #9a9b9e;
-  --sbk-plan-complete: #3daa7c;
-  --sbk-plan-in-progress: #2ba5ce;
-  --sbk-plan-pending: #9a9b9e;
-  --sbk-plan-sep: #797c814d;
   --sbk-task-card-text: #9a9b9e;
-  --sbk-task-card-in-progress: #2ba5ce;
   --sbk-alert-default-bg: #f8f8f81a;
   --sbk-alert-default-icon: #b9babd;
   --sbk-alert-info-icon: #2ba5ce;
   --sbk-alert-warning-icon: #e8a723;
   --sbk-alert-error-icon: #d94c75;
   --sbk-alert-success-icon: #3daa7c;
+  --sbk-callout-border: #797c814d;
+  --sbk-callout-green-bg: #203430;
+  --sbk-callout-blue-bg: #1d333d;
+  --sbk-callout-red-bg: #39252e;
+  --sbk-callout-yellow-bg: #3b3321;
+  --sbk-callout-purple-bg: #312c3f;
+  --sbk-callout-gray-bg: #272a2e;
+  --sbk-chart-area-1: #583422;
+  --sbk-chart-area-2: #1c4539;
+  --sbk-chart-area-3: #4d3756;
+  --sbk-chart-area-4: #164356;
 }

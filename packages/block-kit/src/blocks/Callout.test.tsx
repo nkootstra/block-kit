@@ -23,18 +23,25 @@ describe("<Callout>", () => {
     expect(screen.getByText("Second line")).toBeTruthy();
   });
 
-  it("uses the measured background for a known color", () => {
+  it("uses its color's background token, so the theme decides the shade", () => {
     const block = { type: "callout", background_color: "green", child_blocks: [] };
     const { container } = render(<Callout block={block as never} blockId="b1" index={0} />);
     const callout = container.querySelector(".sbk-callout") as HTMLElement;
-    expect(callout.style.backgroundColor).toBe("rgb(244, 255, 219)");
+    expect(callout.style.backgroundColor).toBe("var(--sbk-callout-green-bg)");
   });
 
-  it("falls back to the gray tint for an unrecognized color", () => {
+  it("falls back to the gray background for an unrecognized color", () => {
     const block = { type: "callout", background_color: "not-a-real-color", child_blocks: [] };
     const { container } = render(<Callout block={block as never} blockId="b1" index={0} />);
     const callout = container.querySelector(".sbk-callout") as HTMLElement;
-    expect(callout.style.backgroundColor).toBe("rgb(244, 244, 244)");
+    expect(callout.style.backgroundColor).toBe("var(--sbk-callout-gray-bg)");
+  });
+
+  it('accepts the "grey" spelling', () => {
+    const block = { type: "callout", background_color: "grey", child_blocks: [] };
+    const { container } = render(<Callout block={block as never} blockId="b1" index={0} />);
+    const callout = container.querySelector(".sbk-callout") as HTMLElement;
+    expect(callout.style.backgroundColor).toBe("var(--sbk-callout-gray-bg)");
   });
 
   it("renders nothing extra when there are no child blocks", () => {

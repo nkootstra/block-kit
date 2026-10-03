@@ -1,6 +1,20 @@
+/* Light values measured from Builder references (green, blue); the other light values are
+   extrapolated. Dark values (Message.css) aren't measured: each is its hue from the dark palette
+   at 16% over the dark background (gray: 6% white), like the alert colours. */
+:root,
+[data-theme="light"] {
+  --sbk-callout-border: rgba(94, 93, 96, 0.13);
+  --sbk-callout-green-bg: #f4ffdb;
+  --sbk-callout-blue-bg: #e3f8ff;
+  --sbk-callout-red-bg: #ffeceb;
+  --sbk-callout-yellow-bg: #fff8db;
+  --sbk-callout-purple-bg: #f3ecff;
+  --sbk-callout-gray-bg: #f4f4f4;
+}
+
 .sbk-callout {
   padding: 12px;
-  border: 1px solid rgba(94, 93, 96, 0.13);
+  border: 1px solid var(--sbk-callout-border);
   border-radius: 12px;
   overflow: hidden;
 }

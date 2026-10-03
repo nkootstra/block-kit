@@ -1,5 +1,6 @@
 import type { ConfirmationDialog } from "@slack/types";
 import { createPortal } from "react-dom";
+import { useBlockKit } from "../context";
 import { Text } from "../Text";
 
 export interface ConfirmDialogProps {
@@ -10,9 +11,10 @@ export interface ConfirmDialogProps {
 
 /** Slack's confirmation dialog: blocks the triggering action until the user picks confirm/deny. */
 export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps) {
+  const { theme } = useBlockKit();
   const confirmStyle = confirm.style ?? "primary";
   const node = (
-    <div className="sbk-confirm__overlay" role="presentation" onClick={onDeny}>
+    <div className="sbk-confirm__overlay" role="presentation" data-theme={theme} onClick={onDeny}>
       <div
         className="sbk-confirm"
         role="alertdialog"
