@@ -75,9 +75,18 @@ type Response = { status: number; body: string | Buffer; contentType: string };
 const NOT_FOUND: Response = { status: 404, body: "", contentType: "text/plain" };
 
 /**
- * A render loads nothing from the network as is. An image is replaced by a placeholder of the same
- * size (placeholder.ts); the real image is only fetched to read that size, once per process, so
- * every renderer gets the same answer. Anything else, and an image whose size is unknown, is a 404.
+ * Emoji images: the library builds these URLs itself from a fixed, version-pinned set
+ * (packages/block-kit/src/emoji/lookup.ts), so a payload can only choose which emoji, not what an
+ * image shows. They are the one image a render shows as it is.
+ */
+const EMOJI =
+  /^https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple@[\d.]+\/img\/apple\/64\/[0-9a-f-]+\.png$/;
+
+/**
+ * A render loads nothing from the network as is, emoji aside. An image is replaced by a placeholder
+ * of the same size (placeholder.ts); the real image is only fetched to read that size. Every
+ * response is fetched once per process, so every renderer gets the same answer. Anything else, and
+ * an image whose size is unknown, is a 404.
  */
 const responses = new Map<string, Promise<Response>>();
 
@@ -88,7 +97,11 @@ const serveFromCache: Parameters<BrowserContext["route"]>[1] = async (route) => 
   if (!response) {
     response = fetch(url)
       .then(async (res) => {
-        const size = res.ok ? imageSize(new Uint8Array(await res.arrayBuffer())) : undefined;
+        if (!res.ok) return NOT_FOUND;
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        if (EMOJI.test(url))
+          return { status: 200, body: Buffer.from(bytes), contentType: "image/png" };
+        const size = imageSize(bytes);
         return size
           ? { status: 200, body: placeholderSvg(size), contentType: "image/svg+xml" }
           : NOT_FOUND;

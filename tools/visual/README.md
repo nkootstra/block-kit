@@ -96,7 +96,8 @@ moved doesn't count as changed.
 
 Renders are deterministic: the message time, time zone and locale are pinned, the fonts are
 embedded, and a fixture's images are replaced by striped placeholders of the same size. The real
-images never show, because renders end up public; only their size is read.
+images never show, because renders end up public; only their size is read. Emoji are the exception:
+the library draws them from a fixed, version-pinned set, so a payload can't choose what they show.
 
 `bun run --cwd tools/visual test:browser` runs the tests that need Chromium
 (`bunx playwright install chromium`); `bun run test` runs the rest.

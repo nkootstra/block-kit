@@ -73,6 +73,18 @@ describe("renderer", () => {
       expect(red).toBe(0);
     });
 
+    it("shows emoji as themselves: the library draws them from a fixed set, not the payload", async () => {
+      const tada = JSON.stringify([{ type: "section", text: { type: "mrkdwn", text: ":tada:" } }]);
+      const png = PNG.sync.read(await renderer.render(tada, "light"));
+      // Text is near-black and placeholders are gray: only the emoji has saturated colors.
+      let colorful = 0;
+      for (let i = 0; i < png.data.length; i += 4) {
+        const [r, g, b] = [png.data[i]!, png.data[i + 1]!, png.data[i + 2]!];
+        if (Math.max(r, g, b) - Math.min(r, g, b) > 100) colorful++;
+      }
+      expect(colorful).toBeGreaterThan(50);
+    });
+
     it("keeps their size, so the layout is the same as with the real image", async () => {
       const wide = PNG.sync.read(await renderer.render(imageBlock("400x100"), "light"));
       const tall = PNG.sync.read(await renderer.render(imageBlock("100x400"), "light"));

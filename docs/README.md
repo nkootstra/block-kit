@@ -133,7 +133,7 @@ changes, in light and dark. Nothing is posted or updated when no rendering chang
    every `workflow_run` workflow, it only runs once it is on `main`.
 
 Renders replace a payload's images with placeholders, so a pull request can't publish other images
-through a fixture. [`tools/visual`](../tools/visual/README.md#render-diff) covers running it locally.
+through a fixture. Emoji still show: the library draws them from a fixed set. [`tools/visual`](../tools/visual/README.md#render-diff) covers running it locally.
 
 ### One-time R2 setup
 
