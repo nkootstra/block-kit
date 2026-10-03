@@ -1,4 +1,5 @@
 import { defineConfig } from "blume";
+import { filesystem, githubReleases } from "blume/sources";
 
 export default defineConfig({
   title: "Block Kit for React",
@@ -10,6 +11,16 @@ export default defineConfig({
   feedback: false,
   // Dates each page from its last commit; CI checks out the full history for it.
   lastModified: "git",
+  // Each GitHub release becomes a page under /changelog, listed newest first at /changelog with an
+  // RSS feed. The notes come from the release's PR titles; set GITHUB_TOKEN to avoid GitHub's
+  // anonymous rate limit.
+  content: {
+    sources: [
+      filesystem(),
+      githubReleases({ prefix: "changelog", owner: "nkootstra", repo: "block-kit" }),
+    ],
+  },
+  navigation: { actions: [{ href: "/changelog", label: "Changelog" }] },
   // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
   agents: { skills: "./skills" },
   // Tells search engines and agents what the site documents: a free, MIT-licensed library.

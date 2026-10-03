@@ -34,8 +34,8 @@ jobs:
     permissions:
       # Tags the commit and creates the GitHub release.
       contents: write
-      # Reads CI's result for this commit.
-      actions: read
+      # Reads CI's result for this commit, and runs CI again to rebuild the docs' changelog.
+      actions: write
       # Trades the job's OIDC token for npm's publish credential and provenance.
       id-token: write
     steps:
@@ -110,3 +110,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
         run: gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
+
+      # A release made with this job's token starts no workflow, so ask for the docs rebuild.
+      - name: Rebuild the docs with the new release in their changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref main

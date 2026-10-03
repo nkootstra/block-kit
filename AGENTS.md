@@ -37,12 +37,14 @@ Never edit them by hand or to make a check pass; `tools/visual/README.md` explai
   it contains, so a PR title is its changelog line: write it for the people using the package.
   Only PRs that change the package (not just its tests) are listed, grouped into breaking changes,
   features and fixes by their title; `.github/workflows/labeler.yml` applies the labels that
-  `.github/release.yml` groups by. Docs, playground and CI PRs stay out of the notes.
+  `.github/release.yml` groups by. Docs, playground and CI PRs stay out of the notes. The docs show
+  every release's notes at `/changelog`, read from GitHub when they build.
 - A release fails when nothing in `packages/block-kit` changed since the last tag.
 - Releases run from Actions → Release → Run workflow on `main`, choosing `patch`, `minor` or
   `major`. The workflow requires green CI for the commit, publishes to npm through trusted
   publishing (no npm token exists; never run `npm publish` locally), then tags `vX.Y.Z` and creates
-  the GitHub release. While the version is 0.x, a breaking change is a `minor` release.
+  the GitHub release, and runs CI on `main` again so the docs rebuild with it. While the version is
+  0.x, a breaking change is a `minor` release.
 
 ## Commits & PRs
 

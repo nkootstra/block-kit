@@ -81,6 +81,8 @@ cd apps/docs && bun run dev
 
 The docs are a static site on [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), served at `block-kit.kootstra.io`, with the `_headers` file Blume writes for the raw Markdown endpoints. A small Worker, [`apps/docs/worker/index.ts`](../apps/docs/worker/index.ts), runs first on page routes, the `.md` copies and the docs API to negotiate with agents: `Accept: text/markdown` gets a page's Markdown copy, a missing page or `.md` URL gets `/404.md` with a 404 when Markdown was asked for, and JSON requests and the docs API get the `/404.json` problem document. Build assets and the other raw files skip the Worker.
 
+The changelog at `/changelog` comes from the GitHub releases: Blume's `githubReleases()` source in `blume.config.ts` turns each release into a page when the docs build. CI passes its token as `GITHUB_TOKEN`, because GitHub rate-limits anonymous requests. Without the token, a failed request falls back to Blume's cache, or to an empty changelog and a warning when there is none. After publishing, the Release workflow runs CI on `main` again, so the docs rebuild with the new release.
+
 The Worker also serves the docs' MCP server at `/mcp`. Blume only generates its MCP server on a server build, and its Cloudflare server build is too large to deploy ([haydenbleasel/blume#322](https://github.com/haydenbleasel/blume/issues/322)). So after `blume build`, [`apps/docs/scripts/mcp.ts`](../apps/docs/scripts/mcp.ts) uses Blume's own builders to do two things:
 
 - Write the snapshot the server answers from to `dist/mcp-data.json`, which `.assetsignore` keeps out of the public files.
