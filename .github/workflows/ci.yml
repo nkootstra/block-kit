@@ -32,6 +32,9 @@ jobs:
       - run: bunx turbo run build type-check test $AFFECTED
         env:
           AFFECTED: ${{ github.event_name == 'pull_request' && '--affected' || '' }}
+          # The checkout has origin/main but no local main, so Turbo can't find the base on its own
+          # and would treat every workspace as affected.
+          TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
       # Every reference snapshot must still show Slack's rendering of its fixture's payload.
       - run: bun run references:check
       # Hand the docs build to deploy-docs, so it ships exactly what passed the checks.
