@@ -111,8 +111,12 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
 
-      # A release made with this job's token starts no workflow, so ask for the docs rebuild.
+      # A release made with this job's token starts no workflow, so ask for the docs rebuild. The
+      # package is out by now, so a failure here warns rather than failing the release.
       - name: Rebuild the docs with the new release in their changelog
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run ci.yml --ref main
+        run: |
+          if ! gh workflow run ci.yml --ref main; then
+            echo "::warning::Couldn't start CI to rebuild the docs. Run Actions → CI → Run workflow on main, so /changelog shows this release."
+          fi
