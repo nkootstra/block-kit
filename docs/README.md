@@ -86,7 +86,7 @@ The changelog at `/changelog` comes from the GitHub releases: Blume's `githubRel
 The Worker also serves the docs' MCP server at `/mcp`. Blume only generates its MCP server on a server build, and its Cloudflare server build is too large to deploy ([haydenbleasel/blume#322](https://github.com/haydenbleasel/blume/issues/322)). So after `blume build`, [`apps/docs/scripts/mcp.ts`](../apps/docs/scripts/mcp.ts) uses Blume's own builders to do two things:
 
 - Write the snapshot the server answers from to `dist/mcp-data.json`, which `.assetsignore` keeps out of the public files.
-- Add the server to the discovery files: `/.well-known/mcp.json`, `/.well-known/mcp/server-card.json`, `llms.txt`, `agent-readability.json` and the API and AI catalogs.
+- Add the server to the discovery files: `/.well-known/mcp.json`, `/.well-known/mcp/server-card.json`, `llms.txt`, `agent-readability.json`, the API and AI catalogs, and the site skill Blume generates at `/skill.md`, with the skills index and its digests.
 
 The Worker bundles the snapshot and answers with Blume's MCP handler, so a deploy needs the dependencies installed.
 
