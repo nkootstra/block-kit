@@ -11,6 +11,9 @@
 // next to the build (Blume generates the server only on a server build).
 // Pull request Previews set `ROBOTS` (`previews.vars` in wrangler.jsonc) to keep search engines off
 // their pages.
+// The banner in blume.config.ts tells visitors of the old domain that the docs moved. Every
+// build has it, so the Worker keeps it only on `block-kit.kootstra.io`, pointing its link at the
+// same page on the new domain, and removes it everywhere else.
 
 import type { McpData } from "blume/ai/mcp/data.ts";
 import { createMcpFetchHandler } from "blume/ai/mcp/server.ts";
@@ -20,9 +23,12 @@ interface Env {
   ROBOTS?: string;
 }
 
+const site = "https://docs.block-kit.dev";
+const oldHost = "block-kit.kootstra.io";
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const response = await respond(request, env);
+    const response = withMoveBanner(request, await respond(request, env));
     if (!env.ROBOTS) return response;
     const result = new Response(response.body, response);
     result.headers.set("X-Robots-Tag", env.ROBOTS);
@@ -62,6 +68,27 @@ async function respond(request: Request, env: Env): Promise<Response> {
     return notFound(env, request, "/404.md", "text/markdown; charset=utf-8");
   }
   return withVaryAccept(response);
+}
+
+/** Keeps the moved-docs banner on the old domain, linked to the same page, and drops it elsewhere. */
+function withMoveBanner(request: Request, response: Response): Response {
+  if (!response.headers.get("Content-Type")?.startsWith("text/html")) return response;
+  const url = new URL(request.url);
+  const rewriter = new HTMLRewriter();
+  if (url.hostname === oldHost) {
+    rewriter.on("[data-blume-banner] a", {
+      element(link) {
+        link.setAttribute("href", `${site}${url.pathname}${url.search}`);
+      },
+    });
+  } else {
+    rewriter.on("[data-blume-banner]", {
+      element(banner) {
+        banner.remove();
+      },
+    });
+  }
+  return rewriter.transform(response);
 }
 
 /** The `.md` twin of a page URL, or `null` for a URL that names a file. */

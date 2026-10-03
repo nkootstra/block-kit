@@ -9,6 +9,10 @@ const files: Record<string, [body: string, contentType: string]> = {
   "/blocks/section": ["<!doctype html>section", "text/html"],
   "/blocks/section.md": ["# Section", "text/markdown; charset=utf-8"],
   "/no-twin": ["<!doctype html>no twin", "text/html"],
+  "/guides/theming": [
+    '<!doctype html><header><div data-blume-banner><span>Moved</span><a href="https://docs.block-kit.dev">Go</a></div></header>theming',
+    "text/html",
+  ],
   "/api/docs/pages.json": ['{"pages":[]}', "application/json"],
   "/404.md": ["# Page not found", "text/markdown; charset=utf-8"],
   "/404.json": ['{"status":404,"code":"PAGE_NOT_FOUND"}', "application/json"],
@@ -218,5 +222,24 @@ describe("Previews", () => {
 
   test("leave production indexable", async () => {
     expect((await get("/", browser)).headers.get("X-Robots-Tag")).toBeNull();
+  });
+});
+
+describe("Moved-docs banner", () => {
+  const page = (host: string) =>
+    worker.fetch(new Request(`https://${host}/guides/theming?tab=dark`), env).then((r) => r.text());
+
+  test("links the old domain's banner to the same page on the new domain", async () => {
+    const html = await page("block-kit.kootstra.io");
+    expect(html).toContain("data-blume-banner");
+    expect(html).toContain('href="https://docs.block-kit.dev/guides/theming?tab=dark"');
+  });
+
+  test("removes the banner on the new domain and on Previews", async () => {
+    for (const host of ["docs.block-kit.dev", "pr-1-block-kit-docs.example.workers.dev"]) {
+      const html = await page(host);
+      expect(html).not.toContain("data-blume-banner");
+      expect(html).toContain("theming");
+    }
   });
 });
