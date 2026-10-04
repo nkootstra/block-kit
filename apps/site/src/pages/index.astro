@@ -1,4 +1,5 @@
 ---
+import { execFileSync } from "node:child_process";
 import { Font, Image } from "astro:assets";
 import "@nkootstra/block-kit/styles.css";
 import "../styles/site.css";
@@ -28,16 +29,47 @@ const INSTALL = [
 // The social card, drawn at build time by pages/og.png.ts.
 const ogImage = new URL("/og.png", Astro.site).toString();
 
-/** What search engines and agents read about the project. */
+/**
+ * When the page's content last changed: the last commit to the site's source. The demo messages
+ * carry `<time>` stamps, and without a date of its own a search engine takes one of those as the
+ * page's. Undefined outside a git checkout.
+ */
+function lastModified(): string | undefined {
+  try {
+    return execFileSync("git", ["log", "-1", "--format=%cI", "--", "src"], { encoding: "utf8" }).trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** What search engines and agents read about the site, the page and the package. */
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "SoftwareSourceCode",
-  name: "@nkootstra/block-kit",
-  description,
-  url: "https://block-kit.dev",
-  codeRepository: GITHUB,
-  license: "https://opensource.org/licenses/MIT",
-  programmingLanguage: ["TypeScript", "React"],
+  "@graph": [
+    { "@type": "WebSite", "@id": "https://block-kit.dev/#website", url: "https://block-kit.dev/", name: "block-kit" },
+    {
+      "@type": "WebPage",
+      "@id": "https://block-kit.dev/#webpage",
+      url: "https://block-kit.dev/",
+      name: title,
+      description,
+      isPartOf: { "@id": "https://block-kit.dev/#website" },
+      about: { "@id": "https://block-kit.dev/#software" },
+      dateModified: lastModified(),
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": "https://block-kit.dev/#software",
+      name: "@nkootstra/block-kit",
+      description,
+      url: "https://block-kit.dev/",
+      codeRepository: GITHUB,
+      license: "https://opensource.org/licenses/MIT",
+      programmingLanguage: ["TypeScript", "React"],
+      author: { "@type": "Person", name: "Niels Kootstra" },
+      sameAs: [NPM, GITHUB, DOCS],
+    },
+  ],
 };
 
 /** Every block with a docs page, by its Block Kit `type`. */
@@ -155,8 +187,8 @@ const BLOCKS = [
     <main id="main" class="column">
       <h1>{headline}</h1>
       <p class="lede">
-        Pass it the Block Kit JSON your Slack app sends and it draws the message, modal or Home tab
-        the way Slack does, with the same spacing, fonts and colours. Buttons and menus work, and hand
+        @nkootstra/block-kit takes the Block Kit JSON your Slack app sends and draws the message, modal
+        or Home tab the way Slack does, with the same spacing, fonts and colours. Buttons and menus work, and hand
         you the payloads Slack would.
       </p>
       <p class="lede">
