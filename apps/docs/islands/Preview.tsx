@@ -9,6 +9,7 @@ import {
   type BlockAction,
   BlockKitProvider,
   type HomeTabView,
+  type LinkProps,
   Message,
   type ModalView,
   type OptionsResponse,
@@ -20,7 +21,7 @@ import {
 import { Editor } from "@pierre/diffs/edit";
 import { File as DiffsFile, type EditorFactory, EditProvider } from "@pierre/diffs/react";
 import type { AnyBlock } from "@slack/types";
-import { useId, useState, useSyncExternalStore } from "react";
+import { createContext, useContext, useId, useState, useSyncExternalStore } from "react";
 
 export interface PreviewProps {
   /** What Block Kit Builder accepts: `{ blocks }`, a bare array of blocks, or a modal/home view. */
@@ -33,7 +34,36 @@ export interface PreviewProps {
   opens?: unknown;
   /** Render the message as ephemeral ("Only visible to you"). */
   ephemeral?: boolean;
+  /**
+   * Link mentions with `mentionHref` and render links with a `linkComponent` that, instead of
+   * leaving the docs, shows under the preview what an app's router would get.
+   */
+  links?: boolean;
 }
+
+/** What `DemoLink` was last asked to open, reported to the preview that renders it. */
+const OpenLink = createContext<(link: { href: string; target?: string }) => void>(() => {});
+
+/** A stand-in for a router's link: records the click instead of navigating away from the docs. */
+function DemoLink({ href, className, target, rel, children }: LinkProps) {
+  const open = useContext(OpenLink);
+  return (
+    <a
+      href={href}
+      className={className}
+      target={target}
+      rel={rel}
+      onClick={(event) => {
+        event.preventDefault();
+        open({ href, target });
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+const demoMentionHref = ({ type, id }: { type: string; id: string }) => `/${type}s/${id}`;
 
 /**
  * A small sample workspace, so mentions and user/channel selects in examples show names. Docs
@@ -110,9 +140,11 @@ export default function Preview({
   actions = false,
   opens,
   ephemeral = false,
+  links = false,
 }: PreviewProps) {
   const [tab, setTab] = useState<"preview" | "json">(code ? "json" : "preview");
   const [last, setLast] = useState<{ action: BlockAction; count: number } | null>(null);
+  const [opened, setOpened] = useState<{ href: string; target?: string } | null>(null);
   const colorMode = useColorMode();
   const mounted = useMounted();
   const editKey = useId();
@@ -155,29 +187,33 @@ export default function Preview({
       </div>
       {tab === "preview" ? (
         <div className="bkd-preview__stage">
-          <BlockKitProvider
-            timeZone="UTC"
-            surface={view?.type ?? "message"}
-            resolvers={resolvers}
-            onOptions={onOptions}
-            onAction={(action, { views }) => {
-              if (actions) setLast((prev) => ({ action, count: (prev?.count ?? 0) + 1 }));
-              if (opens && action.type === "button") views.open(opens as ModalView);
-            }}
-          >
-            {view ? (
-              <View view={view} />
-            ) : (
-              <Message
-                blocks={blocks}
-                message={message}
-                app={{ name: "Your App" }}
-                ts={TS}
-                timeZone="UTC"
-                isEphemeral={ephemeral}
-              />
-            )}
-          </BlockKitProvider>
+          <OpenLink.Provider value={setOpened}>
+            <BlockKitProvider
+              timeZone="UTC"
+              surface={view?.type ?? "message"}
+              resolvers={resolvers}
+              mentionHref={links ? demoMentionHref : undefined}
+              linkComponent={links ? DemoLink : undefined}
+              onOptions={onOptions}
+              onAction={(action, { views }) => {
+                if (actions) setLast((prev) => ({ action, count: (prev?.count ?? 0) + 1 }));
+                if (opens && action.type === "button") views.open(opens as ModalView);
+              }}
+            >
+              {view ? (
+                <View view={view} />
+              ) : (
+                <Message
+                  blocks={blocks}
+                  message={message}
+                  app={{ name: "Your App" }}
+                  ts={TS}
+                  timeZone="UTC"
+                  isEphemeral={ephemeral}
+                />
+              )}
+            </BlockKitProvider>
+          </OpenLink.Provider>
         </div>
       ) : (
         <div className="bkd-preview__json">
@@ -220,6 +256,28 @@ export default function Preview({
                 Reset
               </button>
             </div>
+          )}
+        </div>
+      )}
+      {links && tab === "preview" && (
+        <div className="bkd-preview__log">
+          <span className="bkd-preview__log-title">linkComponent</span>
+          {opened ? (
+            <span>
+              Got <code>href="{opened.href}"</code>
+              {opened.target ? (
+                <>
+                  {" "}
+                  with <code>target="{opened.target}"</code>: a link out of the app.
+                </>
+              ) : (
+                ": your router navigates here."
+              )}
+            </span>
+          ) : (
+            <span className="bkd-preview__log-empty">
+              Click a mention, or the name in a user's profile card.
+            </span>
           )}
         </div>
       )}

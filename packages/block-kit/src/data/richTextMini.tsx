@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Json } from "../types";
+import { Link } from "../Link";
 
 /**
  * Minimal renderer for the `rich_text` objects embedded as table/plan/task_card cell values
@@ -34,14 +35,14 @@ function RichTextMiniLeaf({ element }: { element: Json }) {
   if (element.type === "link") {
     const text = typeof element.text === "string" ? element.text : String(element.url ?? "");
     return (
-      <a
+      <Link
         className="sbk-rtmini__link"
         href={typeof element.url === "string" ? element.url : undefined}
         target="_blank"
         rel="noreferrer noopener"
       >
         {text}
-      </a>
+      </Link>
     );
   }
   if (element.type !== "text") return null;

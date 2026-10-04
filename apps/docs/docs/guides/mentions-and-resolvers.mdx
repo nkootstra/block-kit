@@ -109,6 +109,11 @@ Clicking a resolved user mention opens a popover (Slack's `p-member_profile_card
 they differ from the display name, a custom status with its emoji, and local time when `timeZone` is
 set. Without a `userProfile` resolver it still opens, showing just the name from `user`.
 
+## Linking mentions to your app
+
+`mentionHref` turns resolved mentions into links to your own pages, and `linkComponent` sends every
+link in a message through your router. See [Linking to your app](/guides/linking-to-your-app).
+
 ## createWebApiResolvers
 
 `@nkootstra/block-kit/web-api` builds `Resolvers` backed by a real `@slack/web-api` `WebClient` (or an
@@ -168,6 +173,9 @@ the profile card to show more than a name.
 ## Related
 
 <CardGroup cols={2}>
+  <Card title="Linking to your app" href="/guides/linking-to-your-app" icon="at-sign">
+    Link mentions to your own pages and route links through your router.
+  </Card>
   <Card title="mrkdwn" href="/guides/mrkdwn" icon="hash">
     Every mention syntax the parser understands.
   </Card>

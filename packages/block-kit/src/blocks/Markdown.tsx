@@ -23,6 +23,8 @@ import { gfm } from "micromark-extension-gfm";
 import { Fragment, type ReactNode, useRef } from "react";
 import { TableActions } from "../data/HoverActions";
 import { Emoji } from "../emoji";
+// mdast has its own `Link` type.
+import { Link as TextLink } from "../Link";
 import type { BlockProps } from "../types";
 import { CodeBlock } from "./CodeBlock";
 
@@ -237,9 +239,9 @@ function renderInlineNode(node: PhrasingContent): ReactNode {
     case "link": {
       const link = node as Link;
       return (
-        <a className="sbk-link" href={link.url} target="_blank" rel="noopener noreferrer">
+        <TextLink className="sbk-link" href={link.url} target="_blank" rel="noopener noreferrer">
           {renderInline(link.children)}
-        </a>
+        </TextLink>
       );
     }
     case "break":

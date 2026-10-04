@@ -108,6 +108,35 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 
 `@nkootstra/block-kit/web-api` builds resolvers from the Slack Web API (needs `@slack/web-api`).
 
+To link mentions to the app's own pages and route links through its router (full examples per
+framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
+
+- `mentionHref={({ type, id }) => url | undefined}`, `type` being `"user"`, `"channel"` or
+  `"usergroup"`: channel and user group mentions become links; a user mention keeps opening its
+  profile card, whose name links to the URL. Unresolved mentions stay unlinked.
+- `linkComponent` renders every link from the payload (and linked mentions). It receives
+  `LinkProps` (`href`, `className`, `children`, `target`, `rel`); pass `className` on.
+
+```tsx
+import { Link } from "react-router"; // TanStack: "@tanstack/react-router". Next.js: next/link, with href.
+import type { LinkProps } from "@nkootstra/block-kit";
+
+function AppLink({ href, className, target, rel, children }: LinkProps) {
+  const props = { className, target, rel, children };
+  return href.startsWith("/") ? <Link to={href} {...props} /> : <a href={href} {...props} />;
+}
+```
+
+These props, and `resolvers`, are functions:
+
+- **Next.js App Router:** put `<BlockKitProvider>` in a `"use client"` file and wrap the page in it;
+  `<Message>` can still be imported into the Server Component. Passing a function from a Server
+  Component fails with "Functions cannot be passed directly to Client Components".
+- **Astro:** render your own React component that owns the provider as an island (`client:load`) and
+  pass it only data. A function passed from `.astro` is silently dropped (the mentions render
+  unlinked, no error).
+- **React Router, TanStack Start, Vite:** pass them to the provider directly.
+
 ## Things that trip people up
 
 - **Server rendering:** the main entry ships `"use client"`, so import components straight into a
@@ -135,5 +164,6 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 - Every block: https://docs.block-kit.dev/blocks.md
 - Every element: https://docs.block-kit.dev/elements.md
 - Provider props: https://docs.block-kit.dev/reference/block-kit-provider.md
+- Linking mentions and links into your app: https://docs.block-kit.dev/guides/linking-to-your-app.md
 - Modals: https://docs.block-kit.dev/guides/modals.md
 - Theming: https://docs.block-kit.dev/guides/theming.md
