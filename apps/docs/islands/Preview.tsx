@@ -14,6 +14,7 @@ import {
   type OptionsResponse,
   type Resolvers,
   type SlackMessageLike,
+  type UserProfile,
   View,
 } from "@nkootstra/block-kit";
 import { Editor } from "@pierre/diffs/edit";
@@ -50,8 +51,37 @@ const CHANNELS: Record<string, string> = {
 };
 const USERGROUPS: Record<string, string> = { S0ENG: "engineering" };
 
+/**
+ * What a user mention's profile card shows. Ada's matches the `userProfile` example in the Mentions
+ * and resolvers guide, so the card under it shows what the code above it describes.
+ */
+const AVATARS = "https://api.slack.com/img/blocks/bkb_template_images";
+const PROFILES: Record<string, UserProfile> = {
+  U0ADA: {
+    name: "Ada Lovelace",
+    title: "Staff Engineer",
+    pronouns: "she/her",
+    avatarUrl: `${AVATARS}/beagle.png`,
+    status: { emoji: "palm_tree", text: "On vacation" },
+    timeZone: "Europe/Amsterdam",
+  },
+  U0GRACE: {
+    name: "Grace Hopper",
+    title: "Engineering Manager",
+    avatarUrl: `${AVATARS}/profile_1.png`,
+    timeZone: "America/New_York",
+  },
+  U0ALAN: {
+    name: "Alan Turing",
+    title: "Principal Engineer",
+    avatarUrl: `${AVATARS}/profile_2.png`,
+    timeZone: "Europe/London",
+  },
+};
+
 const resolvers: Resolvers = {
   user: (id) => USERS[id],
+  userProfile: (id) => PROFILES[id],
   channel: (id) => CHANNELS[id],
   usergroup: (id) => USERGROUPS[id],
 };
