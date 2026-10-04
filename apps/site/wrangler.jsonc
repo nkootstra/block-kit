@@ -1,13 +1,17 @@
-// Serves the static `astro build` output for block-kit.dev from Workers Static Assets. There is no
-// Worker script: every request is a file in `dist/`, unknown paths get `404.html`, and `_headers`
-// (from `public/`) sets the cache headers.
+// Serves the static `astro build` output for block-kit.dev from Workers Static Assets.
+// `worker/index.ts` runs first on page routes to answer agents with Markdown or JSON (the home
+// page and 404s); built assets, images and text files skip it. Unknown paths get `404.html`, and
+// `_headers` (from `public/`) sets the cache headers.
 {
   "name": "block-kit-site",
   "compatibility_date": "2026-09-28",
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
+    "run_worker_first": ["/*", "!/_astro/*", "!/*.png", "!/*.svg", "!/*.txt", "!/*.xml"],
   },
   "routes": [{ "pattern": "block-kit.dev", "custom_domain": true }],
 }

@@ -110,7 +110,7 @@ Every push to `main` deploys:
 
 ### Landing page deployment
 
-`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets, with no Worker script ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). It deploys less often than the docs: the `check` job compares the push with the commit before it, and only when `apps/site` or `packages/block-kit` (which its live demos render with) changed does it upload the build and run the `deploy-site` job. A manual CI run always deploys it. It uses the same Cloudflare secrets as the docs.
+`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). A small Worker, [`apps/site/worker/index.ts`](../apps/site/worker/index.ts), runs first on page routes for agents, as the docs' does: `Accept: text/markdown` on the home page gets `/index.md`, and a missing page answers 404 with `/404.md` to Markdown requests and an RFC 9457 problem document (`/404.json`) to JSON ones. All three are built from `src/lib/markdown.ts`. Browsers get the HTML, and every page response varies on `Accept`. It deploys less often than the docs: the `check` job compares the push with the commit before it, and only when `apps/site` or `packages/block-kit` (which its live demos render with) changed does it upload the build and run the `deploy-site` job. A manual CI run always deploys it. It uses the same Cloudflare secrets as the docs.
 
 ### Pull request previews
 
