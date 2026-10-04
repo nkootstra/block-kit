@@ -135,7 +135,7 @@ A plan's tasks share the same shape as a standalone [task card](/blocks/task-car
     status: {
       type: '"pending" | "in_progress" | "complete" | "error"',
       description:
-        "The task's state. The status icon distinguishes `complete` and `in_progress`; `pending` and `error` currently render the same dashed-circle icon.",
+        "The task's state. On the timeline, `in_progress` shows a blue spinner, `error` a red warning, and `complete` and `pending` a grey dot, lighter while pending.",
       required: true,
     },
     details: {
@@ -153,8 +153,9 @@ A plan's tasks share the same shape as a standalone [task card](/blocks/task-car
   }}
 />
 
-The plan's own collapsed pill shows one aggregate icon: `in_progress` if any task is in progress, else
-`pending` if any task is pending, else `complete`.
+The plan's own collapsed pill shows one status for the whole plan: in progress (a spinner) while any
+task is still pending or in progress, then failed (a warning) if any task failed, else complete (a
+check).
 
 ## Examples
 
