@@ -9,6 +9,10 @@ const files: Record<string, [body: string, contentType: string]> = {
   "/blocks/section": ["<!doctype html>section", "text/html"],
   "/blocks/section.md": ["# Section", "text/markdown; charset=utf-8"],
   "/no-twin": ["<!doctype html>no twin", "text/html"],
+  "/with-head": [
+    '<!doctype html><html><head><link rel="icon" href="/icon.svg"></head><body>page</body></html>',
+    "text/html",
+  ],
   "/guides/theming": [
     '<!doctype html><header><div data-blume-banner><span>Moved</span><a href="https://docs.block-kit.dev">Go</a></div></header>theming',
     "text/html",
@@ -222,6 +226,25 @@ describe("Previews", () => {
 
   test("leave production indexable", async () => {
     expect((await get("/", browser)).headers.get("X-Robots-Tag")).toBeNull();
+  });
+});
+
+describe("Favicons", () => {
+  test("adds the PNG and ICO favicons to a page's head, keeping the SVG", async () => {
+    const html = await worker
+      .fetch(new Request("https://docs.block-kit.dev/with-head"), env)
+      .then((r) => r.text());
+    expect(html).toContain('href="/icon.svg"');
+    expect(html).toContain(
+      '<link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">',
+    );
+    expect(html).toContain('<link rel="icon" href="/favicon.ico" sizes="32x32">');
+    expect(html.indexOf("favicon-96x96.png")).toBeLessThan(html.indexOf("</head>"));
+  });
+
+  test("leaves Markdown untouched", async () => {
+    const md = await get("/blocks/section", "text/markdown").then((r) => r.text());
+    expect(md).not.toContain("favicon");
   });
 });
 
