@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "types": ["node"],
+    "allowImportingTsExtensions": true,
     // block-kit's source resolves "react" to the workspace's React 19 types; check it against 18's.
     "paths": {
       "react": ["./node_modules/@types/react"],

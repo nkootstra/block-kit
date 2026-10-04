@@ -1,5 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "types": ["node"] },
-  "include": ["src", "*.config.ts"]
+  "compilerOptions": { "types": ["node"], "allowImportingTsExtensions": true },
+  "include": ["src", "build", "*.config.ts"]
 }

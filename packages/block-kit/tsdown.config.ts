@@ -1,17 +1,12 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { writeFile } from "node:fs/promises";
 import { defineConfig } from "tsdown";
+import { collectCss, minifyCss } from "./build/css.ts";
 
-/** Inlines `@import "./x.css"` recursively so consumers get one stylesheet. */
-async function bundleCss(file: string): Promise<string> {
-  const css = await readFile(file, "utf8");
-  const parts = await Promise.all(
-    css.split("\n").map((line) => {
-      const match = /^@import "(\.[^"]+)";$/.exec(line.trim());
-      return match ? bundleCss(join(dirname(file), match[1] as string)) : line;
-    }),
-  );
-  return parts.join("\n");
+/** Inlines the `@import`s into one minified stylesheet, with a source map back to src/. */
+async function bundleCss(entry: string, out: string): Promise<void> {
+  const { code, map } = minifyCss(await collectCss(entry), "dist");
+  await writeFile(out, `${code}\n/*# sourceMappingURL=styles.css.map */\n`);
+  await writeFile(`${out}.map`, JSON.stringify(map));
 }
 
 export default defineConfig({
@@ -31,6 +26,6 @@ export default defineConfig({
   // code. The parser, relay and Web API entries stay importable from server code.
   banner: ({ fileName }) => (fileName === "index.js" ? '"use client";' : undefined),
   async onSuccess() {
-    await writeFile("dist/styles.css", await bundleCss("src/styles.css"));
+    await bundleCss("src/styles.css", "dist/styles.css");
   },
 });
