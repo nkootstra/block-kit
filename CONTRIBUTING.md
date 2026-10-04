@@ -62,11 +62,6 @@ in the same pull request:
   share the install and entry-point sections, so change them together;
 - `apps/docs/skills/block-kit/SKILL.md`, the agent skill, where it applies.
 
-The landing page's social card is the `<template data-og-template>` in
-`apps/site/src/pages/index.astro`, rendered by [OG Kit](https://ogkit.dev). After editing it, bump
-the `OGKIT_CACHE_VERSION` repository variable so links already shared get the new image. Preview it
-with `?ogkit-render` on the dev server, and don't set `og:image` anywhere else.
-
 ## Commits and pull requests
 
 - Write PR titles and commit subjects as `type(scope): subject`, for example

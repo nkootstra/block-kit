@@ -41,10 +41,6 @@ jobs:
           TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
           # The docs' changelog reads the GitHub releases; anonymous requests are rate limited.
           GITHUB_TOKEN: ${{ github.token }}
-          # The landing page's social card (apps/site/.env.example). Repository variables, not
-          # secrets: the key is public and locked to block-kit.dev. Unset, the page keeps og.png.
-          OGKIT_API_KEY: ${{ vars.OGKIT_API_KEY }}
-          OGKIT_CACHE_VERSION: ${{ vars.OGKIT_CACHE_VERSION }}
       # Every reference snapshot must still show Slack's rendering of its fixture's payload.
       - run: bun run references:check
       # Hand the docs build to deploy-docs, so it ships exactly what passed the checks.

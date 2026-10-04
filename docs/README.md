@@ -79,7 +79,7 @@ bunx turbo run build --filter=@nkootstra/block-kit
 cd apps/site && bun run dev
 ```
 
-Its live demos render with the package, and its theme toggle sets `data-theme` on `<html>`, which the package's stylesheet follows too. The "Check it against Slack" images in `apps/site/src/assets/proof` are the `message/approval` output of `bun run compare -- message/approval --scale=2`; the page quotes how many pixels differ, so recount it when they're recaptured. Its social card is rendered by [OG Kit](https://ogkit.dev) from the page's `<template data-og-template>` when the build has `OGKIT_API_KEY` (a repository variable CI passes in; see `apps/site/.env.example`), and is `public/og.png` otherwise.
+Its live demos render with the package, and its theme toggle sets `data-theme` on `<html>`, which the package's stylesheet follows too. The "Check it against Slack" images in `apps/site/src/assets/proof` are the `message/approval` output of `bun run compare -- message/approval --scale=2`; the page quotes how many pixels differ, so recount it when they're recaptured. Its social card, `/og.png`, is drawn at build time by `src/pages/og.png.ts` (Satori and resvg) from the same headline and description as the page, in `src/lib/site.ts`; open it in the dev server to preview it.
 
 To work on the docs, build the package once and start Blume's dev server:
 

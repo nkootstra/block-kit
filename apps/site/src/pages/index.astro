@@ -10,9 +10,7 @@ import AgentDemo from "../islands/AgentDemo";
 import proofOurs from "../assets/proof/approval.actual.png";
 import proofDiff from "../assets/proof/approval.diff.png";
 import proofSlack from "../assets/proof/approval.reference.png";
-import { ogkitImageUrl, subline } from "../lib/ogkit";
-// The logo, inlined into the social card so it never depends on how OG Kit resolves a path.
-import logoSvg from "../../public/icon.svg?raw";
+import { description, headline, title } from "../lib/site";
 
 const DOCS = "https://docs.block-kit.dev";
 const GITHUB = "https://github.com/nkootstra/block-kit";
@@ -26,21 +24,9 @@ const INSTALL = [
   { manager: "bun", command: `bun add ${PACKAGES}` },
 ];
 
-const title = "Slack Block Kit for React";
-const description =
-  "Render Slack Block Kit messages, modals and Home tabs in React, the way Slack does, with working buttons and menus.";
 
-const headline = "Slack messages, rendered in React.";
-
-// The social card: OG Kit renders the template at the end of <body> when the build has a key
-// (`OGKIT_API_KEY`, see .env.example); without one the static og.png is used.
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogkitImage = ogkitImageUrl(canonical, {
-  key: import.meta.env.OGKIT_API_KEY,
-  version: import.meta.env.OGKIT_CACHE_VERSION,
-});
-const ogImage = ogkitImage ?? new URL("/og.png", Astro.site).toString();
-const cardLogo = logoSvg.replace("<svg ", '<svg width="44" height="44" ');
+// The social card, drawn at build time by pages/og.png.ts.
+const ogImage = new URL("/og.png", Astro.site).toString();
 
 /** What search engines and agents read about the project. */
 const structuredData = {
@@ -100,7 +86,7 @@ const BLOCKS = [
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={Astro.site} />
-    <!-- The only place the social image is set. -->
+    <!-- The only place the social image is set; the card is drawn by pages/og.png.ts. -->
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -301,31 +287,6 @@ const BLOCKS = [
         </nav>
       </div>
     </footer>
-
-    {
-      (ogkitImage || import.meta.env.DEV) && (
-        <template data-og-template>
-          <div style="width:1200px;height:630px;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding:72px 80px 0;background:#fff;color:#0a0a0a;font-family:var(--font-geist)">
-            <div style="display:flex;align-items:center;gap:16px;font-size:30px;font-weight:600;letter-spacing:-0.01em">
-              <Fragment set:html={cardLogo} />
-              block-kit
-            </div>
-            <div style="margin-top:72px;max-width:1000px;max-height:160px;overflow:hidden;font-size:72px;line-height:1.08;font-weight:600;letter-spacing:-0.03em;text-wrap:balance">
-              {headline}
-            </div>
-            <div style="margin-top:28px;max-width:940px;max-height:82px;overflow:hidden;font-size:29px;line-height:1.4;color:#404040">
-              {subline(description)}
-            </div>
-            <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding:28px 0 36px;border-top:1px solid #e5e5e5;font-family:var(--font-geist-mono);font-size:22px;color:#6b6b6b">
-              <span>npm install @nkootstra/block-kit</span>
-              <span>block-kit.dev</span>
-            </div>
-          </div>
-        </template>
-      )
-    }
-    {/* Shows the card at ?ogkit-render while developing; OG Kit brings its own in production. */}
-    {import.meta.env.DEV && <script is:inline defer src="https://cdn.jsdelivr.net/npm/ogkit@1" />}
 
     <script>
       const root = document.documentElement;
