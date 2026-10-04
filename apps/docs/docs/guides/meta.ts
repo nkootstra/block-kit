@@ -10,6 +10,7 @@ export default defineMeta({
     "external-data",
     "connecting-your-app",
     "mentions-and-resolvers",
+    "linking-to-your-app",
     "emoji",
     "theming",
     "mrkdwn",

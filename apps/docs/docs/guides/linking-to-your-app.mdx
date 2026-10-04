@@ -1,0 +1,399 @@
+---
+title: Linking to your app
+description: Send mentions to your own pages and route every link in a message through your router, with examples for Next.js, React Router, TanStack Start, Astro and Vite.
+seo:
+  title: "Link Slack mentions and links into your React app"
+---
+
+In Slack, clicking `#general` opens the channel. Outside Slack, in a help desk, an archive or an
+agent dashboard, a mention has nowhere to go unless you say where. Two props on
+`<BlockKitProvider>` connect a message to your app:
+
+- `mentionHref` gives a mention a page in your app.
+- `linkComponent` renders every link in the message, so your router handles it.
+
+Neither changes how anything looks. Click the mentions and the link below to see what your app
+would get:
+
+<Preview
+  links
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Ask <#C0GENERAL> or <!subteam^S0ENG> about the release, thanks <@U0ADA>. Read <https://api.slack.com/block-kit|the Block Kit docs>.",
+        },
+      },
+    ],
+  }}
+/>
+
+The `@Ada Lovelace` mention opens the profile card, as in Slack; its name links to your page.
+
+## Link mentions to your pages
+
+`mentionHref` gets a resolved mention's `type` (`"user"`, `"channel"` or `"usergroup"`) and Slack
+`id`, and returns a URL in your app, or `undefined` to leave that mention as it is:
+
+```tsx
+<BlockKitProvider
+  resolvers={resolvers}
+  mentionHref={({ type, id }) => `/${type}s/${id}`}
+>
+```
+
+- Channel and user group mentions become links to that URL, in the same tab.
+- A user mention still opens the profile card when clicked, as in Slack, and the name in the card
+  links to that URL.
+- Mentions that `resolvers` can't name, and broadcasts like `@here`, stay as they are: Slack shows
+  them without a link too.
+
+A linked mention looks exactly like one without a link; only the cursor changes.
+
+### Only some mentions
+
+Return `undefined` for anything your app has no page for. Here only people have pages:
+
+```tsx
+const mentionHref = ({ type, id }: MentionRef) => (type === "user" ? `/people/${id}` : undefined);
+```
+
+## Route links through your router
+
+Without `linkComponent`, every link is a plain `<a>`. Give it your router's link component to keep
+navigation inside your app. It renders every link that comes from the payload:
+
+- links in mrkdwn, rich text and the markdown block, and dates with a link
+- links in data tables, and plan and task card sources
+- video titles, attachment authors and titles
+- mentions linked by `mentionHref`
+
+It gets `LinkProps`: `href`, `className`, `children`, and `target` and `rel` for links that open
+a new tab, as Slack's do. Pass `className` on: it carries block-kit's styling. Route your own
+paths and leave everything else a plain `<a>`:
+
+```tsx
+import { Link } from "react-router";
+import type { LinkProps } from "@nkootstra/block-kit";
+
+export function AppLink({ href, className, target, rel, children }: LinkProps) {
+  if (href.startsWith("/")) {
+    return (
+      <Link to={href} className={className} target={target} rel={rel}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} className={className} target={target} rel={rel}>
+      {children}
+    </a>
+  );
+}
+```
+
+React Router's and TanStack Router's `Link` take `to`; Next.js's `next/link` takes `href`.
+
+## In your framework
+
+`mentionHref`, `linkComponent` and `resolvers` are functions, so they have to be created where React
+runs in the browser. Each example below ran in a production build of that framework, with the links
+navigating client-side where the framework routes on the client.
+
+<Tabs>
+<Tab title="Next.js">
+
+Put the provider in a `"use client"` file. Your page can stay a Server Component and import
+`<Message>` directly.
+
+```tsx
+// app/providers.tsx
+"use client";
+
+import Link from "next/link";
+import { BlockKitProvider, type LinkProps, type Resolvers } from "@nkootstra/block-kit";
+import type { ReactNode } from "react";
+
+function AppLink({ href, className, target, rel, children }: LinkProps) {
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={className} target={target} rel={rel}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} className={className} target={target} rel={rel}>
+      {children}
+    </a>
+  );
+}
+
+const resolvers: Resolvers = {
+  user: (id) => users.get(id),
+  channel: (id) => channels.get(id),
+};
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <BlockKitProvider
+      resolvers={resolvers}
+      mentionHref={({ type, id }) => `/${type}s/${id}`}
+      linkComponent={AppLink}
+    >
+      {children}
+    </BlockKitProvider>
+  );
+}
+```
+
+```tsx
+// app/page.tsx (a Server Component)
+import { Message } from "@nkootstra/block-kit";
+import { Providers } from "./providers";
+
+export default async function Page() {
+  const message = await getMessage();
+  return (
+    <Providers>
+      <Message message={message} timeZone="UTC" />
+    </Providers>
+  );
+}
+```
+
+Import `@nkootstra/block-kit/styles.css` in `app/layout.tsx`.
+
+:::warning
+Passing a function from a Server Component, like `<BlockKitProvider mentionHref={...}>` in
+`page.tsx`, type-checks but fails when the page renders: "Functions cannot be passed directly to
+Client Components". The same goes for `resolvers`.
+:::
+
+</Tab>
+<Tab title="React Router">
+
+In framework mode and in a single-page app alike, pass the props to the provider in your route.
+React Router's `Link` takes `to`.
+
+```tsx
+// app/AppLink.tsx
+import { Link } from "react-router";
+import type { LinkProps } from "@nkootstra/block-kit";
+
+export function AppLink({ href, className, target, rel, children }: LinkProps) {
+  if (href.startsWith("/")) {
+    return (
+      <Link to={href} className={className} target={target} rel={rel}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} className={className} target={target} rel={rel}>
+      {children}
+    </a>
+  );
+}
+```
+
+```tsx
+// app/routes/message.tsx
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import { AppLink } from "../AppLink";
+
+export default function MessageRoute({ loaderData }: Route.ComponentProps) {
+  return (
+    <BlockKitProvider
+      resolvers={resolvers}
+      mentionHref={({ type, id }) => `/${type}s/${id}`}
+      linkComponent={AppLink}
+    >
+      <Message message={loaderData.message} timeZone="UTC" />
+    </BlockKitProvider>
+  );
+}
+```
+
+Import `@nkootstra/block-kit/styles.css` in `app/root.tsx`.
+
+</Tab>
+<Tab title="TanStack Start">
+
+Pass the props to the provider in your route component. TanStack Router's `Link` takes `to`; a
+`string` href type-checks without a cast, and matches your `$id` routes at runtime.
+
+```tsx
+// src/AppLink.tsx
+import { Link } from "@tanstack/react-router";
+import type { LinkProps } from "@nkootstra/block-kit";
+
+export function AppLink({ href, className, target, rel, children }: LinkProps) {
+  if (href.startsWith("/")) {
+    return (
+      <Link to={href} className={className} target={target} rel={rel}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} className={className} target={target} rel={rel}>
+      {children}
+    </a>
+  );
+}
+```
+
+```tsx
+// src/routes/messages.$ts.tsx
+import { createFileRoute } from "@tanstack/react-router";
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import { AppLink } from "../AppLink";
+
+export const Route = createFileRoute("/messages/$ts")({ component: MessagePage });
+
+function MessagePage() {
+  const message = Route.useLoaderData();
+  return (
+    <BlockKitProvider
+      resolvers={resolvers}
+      mentionHref={({ type, id }) => `/${type}s/${id}`}
+      linkComponent={AppLink}
+    >
+      <Message message={message} timeZone="UTC" />
+    </BlockKitProvider>
+  );
+}
+```
+
+Import `@nkootstra/block-kit/styles.css` in `src/routes/__root.tsx`.
+
+</Tab>
+<Tab title="Astro">
+
+Write a React component that owns the provider, and render it as an island. Astro has no
+client-side router link for React, so links are plain anchors: without `<ClientRouter />` they
+load a new page, and with it they navigate client-side.
+
+```tsx
+// src/components/SlackMessage.tsx
+import {
+  BlockKitProvider,
+  type LinkProps,
+  Message,
+  type SlackMessageLike,
+} from "@nkootstra/block-kit";
+import "@nkootstra/block-kit/styles.css";
+
+function AppLink({ href, className, target, rel, children }: LinkProps) {
+  return (
+    <a href={href} className={className} target={target} rel={rel}>
+      {children}
+    </a>
+  );
+}
+
+export default function SlackMessage({ message }: { message: SlackMessageLike }) {
+  return (
+    <BlockKitProvider
+      resolvers={resolvers}
+      mentionHref={({ type, id }) => `/${type}s/${id}`}
+      linkComponent={AppLink}
+    >
+      <Message message={message} timeZone="UTC" />
+    </BlockKitProvider>
+  );
+}
+```
+
+```astro
+---
+// src/pages/messages/[ts].astro
+import SlackMessage from "../../components/SlackMessage";
+const message = await getMessage(Astro.params.ts);
+---
+<SlackMessage client:load message={message} />
+```
+
+:::warning
+Don't pass `mentionHref`, `linkComponent` or `resolvers` from an `.astro` file. Astro serializes
+island props and silently turns a function into `null`: no error, the mentions just render without
+links. Only data, like the message, can cross into the island.
+:::
+
+</Tab>
+<Tab title="Vite">
+
+A single-page app has no server boundary: pass the props straight to the provider. With React
+Router as the router, `AppLink` is the one from the React Router tab.
+
+```tsx
+// src/main.tsx
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router";
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import "@nkootstra/block-kit/styles.css";
+import { AppLink } from "./AppLink";
+
+function MessagePage() {
+  return (
+    <BlockKitProvider
+      resolvers={resolvers}
+      mentionHref={({ type, id }) => `/${type}s/${id}`}
+      linkComponent={AppLink}
+    >
+      <Message message={message} />
+    </BlockKitProvider>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<MessagePage />} />
+      <Route path="/channels/:id" element={<ChannelPage />} />
+    </Routes>
+  </BrowserRouter>,
+);
+```
+
+</Tab>
+</Tabs>
+
+In the server-rendered examples, `timeZone` keeps the message's time the same on the server and in
+the browser; see [Server rendering](/guides/server-rendering#hydration-stable-timestamps).
+
+## Rewrite external links
+
+`linkComponent` sees every URL before it renders, so it can change it. For example, send links that
+leave your app through a redirect page:
+
+```tsx
+function AppLink({ href, className, target, rel, children }: LinkProps) {
+  const url = href.startsWith("/") ? href : `/out?to=${encodeURIComponent(href)}`;
+  return (
+    <a href={url} className={className} target={target} rel={rel}>
+      {children}
+    </a>
+  );
+}
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Mentions and resolvers" href="/guides/mentions-and-resolvers" icon="at-sign">
+    Names for the ids in mentions, and the profile card.
+  </Card>
+  <Card title="BlockKitProvider" href="/reference/block-kit-provider" icon="file-text">
+    Every prop of the provider.
+  </Card>
+  <Card title="Server rendering" href="/guides/server-rendering" icon="server">
+    Rendering messages on the server without hydration mismatches.
+  </Card>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="plug">
+    Send interactions to a real Slack app.
+  </Card>
+</CardGroup>
