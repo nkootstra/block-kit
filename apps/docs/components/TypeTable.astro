@@ -1,0 +1,131 @@
+---
+// Blume's <TypeTable> (blume/src/components/content/TypeTable.astro), with one change: descriptions
+// and defaults render their inline Markdown (`code`, [links](/path), **bold**). Blume prints them as
+// plain text, so a description's backticks and links showed as typed. Markup and classes are Blume's,
+// so the table looks the same. Registered in components.ts.
+import { inlineMarkdown } from "./inline-markdown";
+
+interface TypeEntry {
+  default?: string;
+  description?: string;
+  required?: boolean;
+  type: string;
+  typeDescription?: string;
+  typeDescriptionLink?: string;
+}
+
+interface Props {
+  type?: Record<string, TypeEntry>;
+}
+
+const { type = {} } = Astro.props;
+const entries = Object.entries(type);
+
+// Shared column track so the header, every summary, and the detail grid align.
+const columns = "grid grid-cols-[1fr_2fr_auto] items-center gap-4";
+// A default that is a single code value stays in a code cell, as in Blume; prose renders inline.
+const codeOnly = (text: string) => /^`[^`]+`$/.test(text) || !/[`[*]/.test(text);
+---
+
+{
+  entries.length > 0 && (
+    <div
+      class="not-prose my-6 rounded-blume border border-border bg-muted/30 p-1.5"
+      data-blume-narration="skip"
+    >
+      <div class={`${columns} px-3 py-2 font-medium text-muted-foreground text-xs`}>
+        <span>Prop</span>
+        <span>Type</span>
+        <span aria-hidden="true" class="size-3.5" />
+      </div>
+
+      <div class="mt-1 flex flex-col gap-1">
+        {entries.map(([name, info]) => (
+          <details class="group/tt border-border border-t [[open]+&]:border-t-transparent open:rounded-blume open:border-transparent open:bg-background open:shadow-sm open:ring-1 open:ring-border">
+            <summary
+              class={`${columns} cursor-pointer list-none px-3 py-2.5 [&::-webkit-details-marker]:hidden`}
+            >
+              <code class="break-words font-mono text-accent text-xs">
+                {name}
+                {info.required ? "" : "?"}
+              </code>
+              {info.typeDescriptionLink ? (
+                <a
+                  class="break-words font-mono text-foreground text-xs underline-offset-2 hover:underline"
+                  href={info.typeDescriptionLink}
+                >
+                  {info.type}
+                </a>
+              ) : (
+                <code class="break-words font-mono text-foreground text-xs">{info.type}</code>
+              )}
+              <svg
+                aria-hidden="true"
+                class="size-3.5 shrink-0 text-muted-foreground transition-transform group-open/tt:rotate-180"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+
+            <div class="bkd-type-table__details border-border border-t px-3 py-3 text-xs">
+              {info.description && (
+                <p class="mt-0! mb-2! text-foreground" set:html={inlineMarkdown(info.description)} />
+              )}
+              {info.typeDescription && (
+                <p
+                  class="mt-0! mb-2! text-muted-foreground"
+                  set:html={inlineMarkdown(info.typeDescription)}
+                />
+              )}
+              <div class="space-y-1.5">
+                <div class={columns}>
+                  <span class="text-muted-foreground">Type</span>
+                  <code class="break-words font-mono text-foreground">{info.type}</code>
+                  <span aria-hidden="true" class="size-3.5" />
+                </div>
+                {info.default && (
+                  <div class={columns}>
+                    <span class="text-muted-foreground">Default</span>
+                    {codeOnly(info.default) ? (
+                      <code class="break-words font-mono text-foreground">
+                        {info.default.replace(/^`|`$/g, "")}
+                      </code>
+                    ) : (
+                      <span class="break-words text-foreground" set:html={inlineMarkdown(info.default)} />
+                    )}
+                    <span aria-hidden="true" class="size-3.5" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  )
+}
+<slot />
+
+<style is:global>
+  /* Code and links inside a description, in the site's own inline styles. */
+  .bkd-type-table__details :where(p, span) code {
+    font-family: var(--blume-font-mono, ui-monospace, monospace);
+    font-size: 0.95em;
+    padding: 0.1em 0.3em;
+    border-radius: 0.25rem;
+    background: var(--blume-muted);
+  }
+  .bkd-type-table__details a {
+    color: var(--blume-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

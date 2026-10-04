@@ -9,7 +9,7 @@
     "preview": "blume preview",
     "type-check": "blume check && tsc -p worker && tsc -p scripts",
     "validate": "blume validate",
-    "test": "bun test worker"
+    "test": "bun test worker components"
   },
   "dependencies": {
     "@fontsource/lato": "^5.3.0",
