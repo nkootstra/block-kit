@@ -9,6 +9,7 @@ import { formatSlackDate } from "../parser";
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "../context";
 import { Emoji } from "../emoji";
+import { Link, MentionLink } from "../Link";
 import { LockIcon } from "../Mrkdwn";
 import type { BlockProps } from "../types";
 import { UserMention } from "../UserMention";
@@ -133,9 +134,9 @@ function renderLeaf(
       break;
     case "link":
       content = (
-        <a className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
+        <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
           {el.text || el.url}
-        </a>
+        </Link>
       );
       break;
     case "emoji": {
@@ -155,7 +156,9 @@ function renderLeaf(
     case "usergroup": {
       const name = ctx.resolvers.usergroup?.(el.usergroup_id);
       content = name ? (
-        <span className="sbk-mention">@{name}</span>
+        <MentionLink type="usergroup" id={el.usergroup_id}>
+          @{name}
+        </MentionLink>
       ) : (
         <span className="sbk-mention--loading" aria-label="Loading user group" />
       );
@@ -164,7 +167,9 @@ function renderLeaf(
     case "channel": {
       const name = ctx.resolvers.channel?.(el.channel_id);
       content = name ? (
-        <span className="sbk-mention">#{name}</span>
+        <MentionLink type="channel" id={el.channel_id}>
+          #{name}
+        </MentionLink>
       ) : (
         <span className="sbk-mention--private">
           <LockIcon />
@@ -179,9 +184,9 @@ function renderLeaf(
     case "date": {
       const text = formatSlackDate(el.timestamp, el.format, { timeZone: ctx.timeZone });
       content = el.url ? (
-        <a className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
+        <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
           {text}
-        </a>
+        </Link>
       ) : (
         <span className="sbk-mrkdwn__date">{text}</span>
       );
@@ -261,9 +266,9 @@ function renderPreformattedLines(
       return (
         <Fragment key={i}>
           {applyStyle(
-            <a className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
+            <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
               {el.text || el.url}
-            </a>,
+            </Link>,
             el.style,
           )}
         </Fragment>

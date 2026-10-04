@@ -1,5 +1,6 @@
 import { Text, type TextObject } from "../Text";
 import type { BlockProps, Json } from "../types";
+import { Link } from "../Link";
 
 function PlayIcon() {
   return (
@@ -55,9 +56,9 @@ export function Video({ block }: BlockProps) {
       {title && (
         <div className="sbk-video__title">
           {titleUrl ? (
-            <a href={titleUrl} target="_blank" rel="noreferrer">
+            <Link href={titleUrl} target="_blank" rel="noreferrer">
               <Text text={title} />
-            </a>
+            </Link>
           ) : (
             <Text text={title} />
           )}
@@ -66,7 +67,7 @@ export function Video({ block }: BlockProps) {
           </span>
         </div>
       )}
-      <a
+      <Link
         className="sbk-video__frame"
         href={typeof json.video_url === "string" ? (json.video_url as string) : titleUrl}
         target="_blank"
@@ -78,7 +79,7 @@ export function Video({ block }: BlockProps) {
           <PlayIcon />
           <span className="sbk-video__play-label">Video</span>
         </span>
-      </a>
+      </Link>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
 import { aggregateStatus, StatusIcon, type TaskStatus, TimelineIcon } from "../data/statusIcon";
 import type { BlockProps, Json } from "../types";
+import { Link } from "../Link";
 
 interface PlanSource extends Json {
   type: "url";
@@ -78,14 +79,14 @@ function TaskRow({ task }: { task: PlanTask }) {
               <ul className="sbk-plan__task-sources">
                 {sources.map((source, i) => (
                   <li key={source.url ?? i}>
-                    <a
+                    <Link
                       className="sbk-plan__task-source-link"
                       href={source.url}
                       target="_blank"
                       rel="noreferrer noopener"
                     >
                       {source.text ?? source.url}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

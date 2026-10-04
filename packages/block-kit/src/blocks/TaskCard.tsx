@@ -4,6 +4,7 @@ import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
 import { DotIcon, StatusIcon, type TaskStatus } from "../data/statusIcon";
 import type { BlockProps, Json } from "../types";
+import { Link } from "../Link";
 
 interface TaskCardSource extends Json {
   type: "url";
@@ -75,14 +76,14 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
                   <ul className="sbk-task-card__sources">
                     {sources.map((source, i) => (
                       <li key={source.url ?? i}>
-                        <a
+                        <Link
                           className="sbk-task-card__source-link"
                           href={source.url}
                           target="_blank"
                           rel="noreferrer noopener"
                         >
                           {source.text ?? source.url}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>

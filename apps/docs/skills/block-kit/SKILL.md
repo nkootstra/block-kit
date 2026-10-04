@@ -108,6 +108,15 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 
 `@nkootstra/block-kit/web-api` builds resolvers from the Slack Web API (needs `@slack/web-api`).
 
+To link mentions to the app's own pages, pass `mentionHref={({ type, id }) => url | undefined}`
+(`type` is `"user"`, `"channel"` or `"usergroup"`): channel and user group mentions become links, and
+a user mention's profile card links its name. `linkComponent` renders every link from the payload,
+including those, e.g. a router's `<Link>`; it receives `LinkProps` (`href`, `className`, `children`,
+`target`, `rel`) to spread; React Router's and TanStack Router's `Link` take `to`, so map `href` to
+`to` for paths starting with `/`. These props are functions: in Next.js put the provider in a
+`"use client"` file; in Astro wrap it in your own React island, since Astro silently drops functions
+passed from `.astro`.
+
 ## Things that trip people up
 
 - **Server rendering:** the main entry ships `"use client"`, so import components straight into a

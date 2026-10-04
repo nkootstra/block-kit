@@ -2,6 +2,7 @@ import { formatSlackDate, type InlineNode, type MrkdwnNode, parse } from "./pars
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
+import { Link, MentionLink } from "./Link";
 import { UserMention } from "./UserMention";
 
 export interface MrkdwnProps {
@@ -59,9 +60,9 @@ function renderNode(
       );
     case "link":
       return (
-        <a className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
+        <Link className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
           {node.children ? renderNodes(node.children, resolvers, timeZone, emojiSize) : node.url}
-        </a>
+        </Link>
       );
     case "user": {
       const name = resolvers.user?.(node.id);
@@ -72,7 +73,9 @@ function renderNode(
       // when the message carries a `|label` fallback — the label is ignored for display.
       const name = resolvers.usergroup?.(node.id);
       return name ? (
-        <span className="sbk-mention">@{name}</span>
+        <MentionLink type="usergroup" id={node.id}>
+          @{name}
+        </MentionLink>
       ) : (
         <span className="sbk-mention--loading" aria-label="Loading user group" />
       );
@@ -80,7 +83,9 @@ function renderNode(
     case "channel": {
       const name = resolvers.channel?.(node.id) ?? node.label;
       return name ? (
-        <span className="sbk-mention">#{name}</span>
+        <MentionLink type="channel" id={node.id}>
+          #{name}
+        </MentionLink>
       ) : (
         <span className="sbk-mention--private">
           <LockIcon />
@@ -93,9 +98,9 @@ function renderNode(
     case "date": {
       const text = formatSlackDate(node.timestamp, node.format, { timeZone });
       return node.url ? (
-        <a className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
+        <Link className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
           {text}
-        </a>
+        </Link>
       ) : (
         <span className="sbk-mrkdwn__date">{text}</span>
       );

@@ -188,6 +188,11 @@
   background: var(--sbk-mention-hover-bg);
 }
 
+/* A mention linked through `mentionHref` keeps the pill's look, without a link's underline. */
+a.sbk-mention {
+  text-decoration: none;
+}
+
 .sbk-mention--unresolved {
   display: inline-block;
   vertical-align: middle;

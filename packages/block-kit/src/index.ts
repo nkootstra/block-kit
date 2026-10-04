@@ -9,6 +9,8 @@ export {
   type BlockKitProviderProps,
   type ElementState,
   type EmojiOptions,
+  type LinkProps,
+  type MentionRef,
   type MessageApi,
   type MessageUpdate,
   type PayloadContext,

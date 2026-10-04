@@ -1,5 +1,6 @@
 import type { AnyBlock } from "@slack/types";
 import {
+  type ComponentType,
   createContext,
   type ReactNode,
   useCallback,
@@ -159,6 +160,22 @@ export interface PayloadContext {
 /** What `onSubmit` may return: Slack's `response_action` ack, or nothing to just close the modal. */
 export type SubmitResult = ViewResponseAction | undefined | void;
 
+/** What block-kit passes to a `linkComponent`: an anchor's props, ready to spread. */
+export interface LinkProps {
+  href: string;
+  className?: string;
+  target?: string;
+  rel?: string;
+  children?: ReactNode;
+}
+
+/** A resolved mention, as `mentionHref` gets it. */
+export interface MentionRef {
+  type: "user" | "channel" | "usergroup";
+  /** Slack id, e.g. `U0123ABC`, `C0123ABC` or `S0123ABC`. */
+  id: string;
+}
+
 export interface BlockKitContextValue {
   surface: Surface;
   /** The provider's `theme`. Popovers, tooltips and dialogs render outside its wrapper, so they set it themselves. */
@@ -177,6 +194,10 @@ export interface BlockKitContextValue {
   /** Called with a `view_closed` payload when a `<Modal>`'s close (X) button is pressed. */
   onClose?: (payload: ReturnType<typeof buildViewClosedPayload>) => void;
   resolvers: Resolvers;
+  /** Renders links from the payload; an `<a>` unless the provider's `linkComponent` says otherwise. */
+  linkComponent?: ComponentType<LinkProps>;
+  /** The app's page for a mention, if it has one. */
+  mentionHref?: (mention: MentionRef) => string | undefined;
   emoji: EmojiOptions;
   /** Validation errors keyed by block_id, as returned in `response_action: "errors"`. */
   errors: Record<string, string>;
@@ -276,6 +297,20 @@ export interface BlockKitProviderProps {
   /** Called whenever an input value changes, with the full `state.values`. */
   onStateChange?: (state: StateValues) => void;
   resolvers?: Resolvers;
+  /**
+   * Renders every link that comes from the payload, e.g. a router's `<Link>` for client-side
+   * navigation or a component that rewrites URLs: links in mrkdwn, rich text, markdown and dates,
+   * data tables, plan and task card sources, video titles, attachment authors and titles, and
+   * mentions linked by `mentionHref`. It gets an anchor's props to spread: `href`, `className`,
+   * `children`, and `target`/`rel` for links that open a new tab, as Slack's do.
+   */
+  linkComponent?: ComponentType<LinkProps>;
+  /**
+   * Links resolved mentions to the app's own pages: return a URL for a user, channel or user
+   * group, or `undefined` to leave it unlinked. Mention links open in the same tab and render
+   * through `linkComponent`.
+   */
+  mentionHref?: (mention: MentionRef) => string | undefined;
   emoji?: EmojiOptions;
   errors?: Record<string, string>;
   timeZone?: string;
@@ -307,6 +342,8 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
     onOptions,
     onStateChange,
     resolvers,
+    linkComponent,
+    mentionHref,
     emoji,
     errors,
     timeZone,
@@ -502,6 +539,8 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       onSubmit,
       onClose,
       resolvers: resolvers ?? {},
+      linkComponent,
+      mentionHref,
       emoji: emoji ?? {},
       errors: stackedView?.errors ?? errors ?? {},
       timeZone,
@@ -523,6 +562,8 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       onSubmit,
       onClose,
       resolvers,
+      linkComponent,
+      mentionHref,
       emoji,
       errors,
       timeZone,

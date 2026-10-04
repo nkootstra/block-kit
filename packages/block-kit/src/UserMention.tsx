@@ -2,6 +2,7 @@ import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
+import { Link } from "./Link";
 import { useClientLayoutEffect } from "./useClientLayoutEffect";
 
 export interface UserMentionProps {
@@ -25,7 +26,7 @@ function localTime(timeZone: string): string | undefined {
  * `resolvers.userProfile` and falling back to the display name alone.
  */
 export function UserMention({ id, name }: UserMentionProps) {
-  const { resolvers, theme } = useBlockKit();
+  const { resolvers, theme, mentionHref } = useBlockKit();
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const anchorRef = useRef<HTMLSpanElement>(null);
@@ -80,6 +81,7 @@ export function UserMention({ id, name }: UserMentionProps) {
 
   const profile = open ? (resolvers.userProfile?.(id) ?? { name }) : undefined;
   const time = profile?.timeZone ? localTime(profile.timeZone) : undefined;
+  const href = profile ? mentionHref?.({ type: "user", id }) : undefined;
 
   return (
     <>
@@ -124,7 +126,13 @@ export function UserMention({ id, name }: UserMentionProps) {
             )}
             <div className="sbk-profile-card__body">
               <div className="sbk-profile-card__name">
-                {profile.name}
+                {href === undefined ? (
+                  profile.name
+                ) : (
+                  <Link className="sbk-profile-card__name-link" href={href}>
+                    {profile.name}
+                  </Link>
+                )}
                 {profile.pronouns && (
                   <span className="sbk-profile-card__pronouns">{profile.pronouns}</span>
                 )}

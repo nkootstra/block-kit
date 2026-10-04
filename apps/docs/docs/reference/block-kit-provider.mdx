@@ -68,6 +68,17 @@ One provider can hold several surfaces. Each action still carries the message or
       description:
         "Look up names for user, channel and usergroup ids, and profiles for the card a user mention opens. See [Mentions and resolvers](/guides/mentions-and-resolvers).",
     },
+    mentionHref: {
+      type: "(mention: MentionRef) => string | undefined",
+      description:
+        'Your app\'s page for a resolved mention (`{ type: "user" | "channel" | "usergroup", id }`). Channel and user group mentions become links to it; a user mention\'s profile card links its name. See [Linking to your app](/guides/mentions-and-resolvers#linking-to-your-app).',
+    },
+    linkComponent: {
+      type: "ComponentType<LinkProps>",
+      description:
+        "Renders every link from the payload, e.g. your router's `<Link>`. It gets `href`, `className`, `children`, and `target`/`rel` for links that open a new tab. See [Linking to your app](/guides/mentions-and-resolvers#linking-to-your-app).",
+      default: "`<a>`",
+    },
     emoji: {
       type: "EmojiOptions",
       description:

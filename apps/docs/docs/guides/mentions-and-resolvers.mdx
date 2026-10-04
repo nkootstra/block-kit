@@ -109,6 +109,61 @@ Clicking a resolved user mention opens a popover (Slack's `p-member_profile_card
 they differ from the display name, a custom status with its emoji, and local time when `timeZone` is
 set. Without a `userProfile` resolver it still opens, showing just the name from `user`.
 
+## Linking to your app
+
+Outside Slack, a mention has nowhere to go on its own: a help desk or an archive has its own page
+for each person and channel. `mentionHref` returns that page for a resolved mention, or `undefined`
+to leave it as it is:
+
+```tsx
+<BlockKitProvider
+  resolvers={resolvers}
+  mentionHref={({ type, id }) => (type === "user" ? `/people/${id}` : `/channels/${id}`)}
+>
+```
+
+- Channel and user group mentions become links to it, in the same tab.
+- A user mention still opens the profile card, as in Slack; the name in the card links to the page.
+- Mentions it can't resolve, and broadcasts like `@here`, stay as they are.
+
+A linked mention looks exactly like one without a link; only the cursor changes.
+
+To keep navigation inside your app, pass your router's link component as `linkComponent`. Every
+link from the payload renders through it: links in mrkdwn, rich text, markdown and dates, data
+tables, plan and task card sources, video titles, attachment authors and titles, and linked
+mentions. It gets an anchor's props (`LinkProps`) to pass on, including `className`, which carries
+the styling. Route your own paths and leave the rest a plain `<a>`:
+
+```tsx
+import { Link } from "react-router"; // or "@tanstack/react-router"
+import type { LinkProps } from "@nkootstra/block-kit";
+
+function AppLink({ href, className, target, rel, children }: LinkProps) {
+  const props = { className, target, rel, children };
+  // React Router's and TanStack Router's links take `to`; Next.js's `next/link` takes `href`.
+  return href.startsWith("/") ? <Link to={href} {...props} /> : <a href={href} {...props} />;
+}
+
+<BlockKitProvider resolvers={resolvers} mentionHref={mentionHref} linkComponent={AppLink}>
+```
+
+Links from the payload open in a new tab (`target="_blank"`), as Slack's do; mention links don't. Your
+component can rewrite `href`, for example to send external links through a redirect page.
+
+`mentionHref`, `linkComponent` and `resolvers` are functions, so they have to be created where React
+runs in the browser:
+
+- **Next.js App Router:** put the provider in a `"use client"` file (e.g. `app/providers.tsx`) and wrap
+  your page in it. `<Message>` itself can still be imported into a Server Component. Passing a
+  function from a Server Component fails with "Functions cannot be passed directly to Client
+  Components".
+- **Astro:** render a React component of your own that owns the provider, as an island
+  (`client:load`). Astro silently drops a function passed from an `.astro` file, and the mentions
+  render unlinked. Without `<ClientRouter />`, `AppLink` is a plain `<a>` and links load a new page;
+  with it, they navigate client-side.
+- **React Router (framework mode), TanStack Start and single-page apps:** pass them to the provider
+  directly.
+
 ## createWebApiResolvers
 
 `@nkootstra/block-kit/web-api` builds `Resolvers` backed by a real `@slack/web-api` `WebClient` (or an

@@ -4,6 +4,7 @@ import { Blocks } from "./Blocks";
 import { actionTs, type MessageApi, type MessageUpdate, SurfaceScope } from "./context";
 import { Mrkdwn } from "./Mrkdwn";
 import { Tooltip } from "./Tooltip";
+import { Link } from "./Link";
 
 function ordinal(n: number): string {
   const v = n % 100;
@@ -256,14 +257,14 @@ function Attachment({ attachment }: { attachment: SlackAttachment }) {
               <img className="sbk-attachment__author-icon" src={attachment.author_icon} alt="" />
             )}
             {attachment.author_link ? (
-              <a
+              <Link
                 className="sbk-link"
                 href={attachment.author_link}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {attachment.author_name}
-              </a>
+              </Link>
             ) : (
               attachment.author_name
             )}
@@ -272,14 +273,14 @@ function Attachment({ attachment }: { attachment: SlackAttachment }) {
         {attachment.title && (
           <div className="sbk-attachment__title">
             {attachment.title_link ? (
-              <a
+              <Link
                 className="sbk-link"
                 href={attachment.title_link}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {attachment.title}
-              </a>
+              </Link>
             ) : (
               attachment.title
             )}

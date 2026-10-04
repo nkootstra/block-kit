@@ -80,3 +80,14 @@
   font-size: 13px;
   line-height: 18px;
 }
+
+/* With `mentionHref`, the name links to the app's profile page, like Slack's link to the full
+   profile: the name's own look, underlined on hover. */
+.sbk-profile-card__name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sbk-profile-card__name-link:hover {
+  text-decoration: underline;
+}
