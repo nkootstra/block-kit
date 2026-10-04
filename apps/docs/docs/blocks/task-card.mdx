@@ -90,7 +90,7 @@ Click the pill to expand the card and see its details, output, and sources.
     status: {
       type: '"pending" | "in_progress" | "complete" | "error"',
       description:
-        "The task's state. The status icon distinguishes `complete` and `in_progress`; `pending` and `error` currently render the same dashed-circle icon.",
+        "The task's state. On the pill, `complete` shows a grey check, `error` a red warning, and `pending` and `in_progress` a blue spinner.",
       required: true,
     },
     details: {
@@ -151,6 +151,9 @@ section.
 />
 
 `details`, `output`, and `sources` are all optional. A bare task card shows just its status and title.
+With nothing to expand, its pill is plain text rather than a button, so it isn't a stop when tabbing
+through the page. Either way, screen readers hear the status after the title: "complete",
+"in progress", "pending" or "failed".
 
 ## Related
 

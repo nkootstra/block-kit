@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
-import { aggregateStatus, StatusIcon, type TaskStatus, TimelineIcon } from "../data/statusIcon";
+import {
+  aggregateStatus,
+  StatusIcon,
+  StatusText,
+  type TaskStatus,
+  TimelineIcon,
+} from "../data/statusIcon";
 import type { BlockProps, Json } from "../types";
 import { Link } from "../Link";
 
@@ -30,7 +36,8 @@ interface PlanBlock extends Json {
 /**
  * One step of the plan. As in Slack, a thin line joins each step's icon to the next, its details
  * start open, and the title is a button that hides and shows them instantly; a task with nothing
- * to reveal gets a disabled header and no caret.
+ * to reveal gets the same header as plain text, with no caret. The status, shown as an icon, is
+ * also in the header as text for screen readers.
  */
 function TaskRow({ task }: { task: PlanTask }) {
   const [open, setOpen] = useState(true);
@@ -47,22 +54,25 @@ function TaskRow({ task }: { task: PlanTask }) {
         <span className="sbk-plan__line sbk-plan__line--bottom" />
       </span>
       <div className="sbk-plan__task-content">
-        <button
-          type="button"
-          className="sbk-plan__task-header"
-          aria-expanded={open}
-          aria-disabled={expandable ? undefined : true}
-          onClick={() => {
-            if (expandable) setOpen((value) => !value);
-          }}
-        >
-          <span className="sbk-plan__task-title">{task.title}</span>
-          {expandable ? (
+        {expandable ? (
+          <button
+            type="button"
+            className="sbk-plan__task-header"
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <span className="sbk-plan__task-title">{task.title}</span>
+            <StatusText status={task.status} />
             <span className="sbk-plan__task-caret">
               <CaretIcon direction={open ? "down" : "right"} />
             </span>
-          ) : null}
-        </button>
+          </button>
+        ) : (
+          <div className="sbk-plan__task-header">
+            <span className="sbk-plan__task-title">{task.title}</span>
+            <StatusText status={task.status} />
+          </div>
+        )}
         {open && expandable ? (
           <div className="sbk-plan__task-body">
             {task.details ? (
@@ -116,6 +126,7 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
             <StatusIcon status={status} />
           </span>
           <span className="sbk-plan__pill-title">{block.title}</span>
+          <StatusText status={status} />
           <span className="sbk-plan__pill-chevron">
             <CaretIcon direction={expanded ? "down" : "right"} />
           </span>

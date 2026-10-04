@@ -140,9 +140,7 @@ const STATES: Record<
   "catalog/agents/plan@tasks-collapsed": {
     ours: async (p) => {
       await p.click(".sbk-plan__pill");
-      for (const header of await p
-        .locator('.sbk-plan__task-header:not([aria-disabled="true"])')
-        .all()) {
+      for (const header of await p.locator("button.sbk-plan__task-header").all()) {
         await header.click();
       }
     },

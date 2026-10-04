@@ -115,6 +115,20 @@
   box-sizing: border-box;
 }
 
+/* Text for screen readers only, such as a task's status, which the page shows as an icon. Taken
+   out of the flow, so it never moves what is on screen. */
+.sbk-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .sbk-unsupported {
   display: inline-block;
   padding: 2px 6px;
