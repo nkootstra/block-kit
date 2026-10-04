@@ -21,6 +21,10 @@ Bun + Turborepo; `docs/README.md` describes the layout.
   entry-point sections of `docs/README.md`, so change them together.
   `packages/block-kit/LICENSE` is a copy of the root `LICENSE`.
 - `CONTRIBUTING.md` repeats these rules for people. A change to the rules here changes it too.
+- The landing page's social card is the `<template data-og-template>` in
+  `apps/site/src/pages/index.astro`, rendered by OG Kit. After editing it, bump the
+  `OGKIT_CACHE_VERSION` repository variable; preview it with `?ogkit-render` on the dev server; never
+  set `og:image` anywhere else.
 
 ## Visual references
 

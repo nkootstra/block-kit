@@ -1,0 +1,9 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["OGKIT_API_KEY", "OGKIT_CACHE_VERSION"]
+    }
+  }
+}

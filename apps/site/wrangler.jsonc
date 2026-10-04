@@ -1,0 +1,13 @@
+// Serves the static `astro build` output for block-kit.dev from Workers Static Assets. There is no
+// Worker script: every request is a file in `dist/`, unknown paths get `404.html`, and `_headers`
+// (from `public/`) sets the cache headers.
+{
+  "name": "block-kit-site",
+  "compatibility_date": "2026-09-28",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+  "routes": [{ "pattern": "block-kit.dev", "custom_domain": true }],
+}

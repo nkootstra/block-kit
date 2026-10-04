@@ -50,14 +50,15 @@ The [installation guide](https://docs.block-kit.dev/installation) lists the rema
 
 This is a Bun workspace run with Turborepo.
 
-| Path                 | What it is                                                                |
-| -------------------- | ------------------------------------------------------------------------- |
-| `packages/block-kit` | The published package                                                     |
-| `apps/docs`          | The documentation site, built with [Blume](https://blume.dev)             |
-| `apps/playground`    | A Block Kit playground for trying payloads against the renderer           |
-| `fixtures`           | Block Kit Builder payloads with Slack's reference renders                 |
-| `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference |
-| `tools/react-18`     | Runs the package's tests and type-check against React 18                  |
+| Path                 | What it is                                                                    |
+| -------------------- | ----------------------------------------------------------------------------- |
+| `packages/block-kit` | The published package                                                         |
+| `apps/docs`          | The documentation site, built with [Blume](https://blume.dev)                 |
+| `apps/site`          | The landing page for `block-kit.dev`, built with [Astro](https://astro.build) |
+| `apps/playground`    | A Block Kit playground for trying payloads against the renderer               |
+| `fixtures`           | Block Kit Builder payloads with Slack's reference renders                     |
+| `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference     |
+| `tools/react-18`     | Runs the package's tests and type-check against React 18                      |
 
 ## Develop
 
@@ -70,6 +71,15 @@ bun run test
 `bun run lint`, `bun run format:check` and `bun run type-check` run the remaining checks CI runs. `bun run compare` renders every fixture in the playground and reports how far each one drifts from Slack; see [`tools/visual`](../tools/visual/README.md).
 
 [`CONTRIBUTING.md`](../CONTRIBUTING.md) covers the rules a pull request has to follow.
+
+To work on the landing page, build the package once and start Astro's dev server:
+
+```sh
+bunx turbo run build --filter=@nkootstra/block-kit
+cd apps/site && bun run dev
+```
+
+Its live demos render with the package, and its theme toggle sets `data-theme` on `<html>`, which the package's stylesheet follows too. The "Check it against Slack" images in `apps/site/src/assets/proof` are the `message/approval` output of `bun run compare -- message/approval --scale=2`; the page quotes how many pixels differ, so recount it when they're recaptured. Its social card is rendered by [OG Kit](https://ogkit.dev) from the page's `<template data-og-template>` when the build has `OGKIT_API_KEY` (a repository variable CI passes in; see `apps/site/.env.example`), and is `public/og.png` otherwise.
 
 To work on the docs, build the package once and start Blume's dev server:
 
@@ -97,6 +107,10 @@ Every push to `main` deploys:
 
 1. The `check` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) builds the whole workspace, docs included, and uploads `apps/docs/dist` as an artifact.
 2. Once every check passes, the `deploy-docs` job downloads that build, installs the dependencies the Worker bundles, and runs `wrangler deploy` in `apps/docs`.
+
+### Landing page deployment
+
+`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets, with no Worker script ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). It deploys less often than the docs: the `check` job compares the push with the commit before it, and only when `apps/site` changed does it upload the build and run the `deploy-site` job. A manual CI run always deploys it. It uses the same Cloudflare secrets as the docs.
 
 ### Pull request previews
 

@@ -1,0 +1,829 @@
+/* block-kit.dev: one column, two themes. The package's own stylesheet follows `data-theme` on
+   <html> too, so the live messages switch with the page. */
+
+:root {
+  --bg: #fff;
+  --surface: #fafafa;
+  --line: #e5e5e5;
+  --line-soft: #f0f0f0;
+  --ink: #0a0a0a;
+  --body: #404040;
+  --muted: #6b6b6b;
+  --accent: #2f5be0;
+  --frame-bg: #fff;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
+  --gutter: 20px;
+  /* Astro's <Font> defines these, each with a metric-matched fallback (astro.config.mjs). */
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
+  --sbk-font: var(--font-lato);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --line: #2e2e2e;
+  --line-soft: #1f1f1f;
+  --ink: #fafafa;
+  --body: #d4d4d4;
+  --muted: #a3a3a3;
+  --accent: #8aa5ff;
+  /* Slack's dark message background, so the messages sit on what they'd sit on in Slack. */
+  --frame-bg: #1a1d21;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No double-tap zoom delay on controls. */
+a,
+button,
+input,
+label {
+  touch-action: manipulation;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: -100px;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.column {
+  max-width: calc(640px + 2 * var(--gutter));
+  margin: 0 auto;
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+
+/* Navigation */
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 14px;
+}
+
+.brand {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.nav__links,
+.nav__main {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 8px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .nav__link:hover {
+    color: var(--ink);
+  }
+}
+
+/* The changelog is in the footer too; on a phone the nav keeps the two links people come for. */
+@media (max-width: 479px) {
+  .nav__link--wide {
+    display: none;
+  }
+}
+
+/* The narrowest phones (320px) need the room for the theme toggle. */
+@media (max-width: 359px) {
+  .nav {
+    gap: 8px;
+  }
+
+  .nav__links,
+  .nav__main {
+    gap: 0;
+  }
+
+  .nav__link {
+    padding: 0 6px;
+  }
+
+  .theme {
+    margin-left: 2px;
+  }
+}
+
+.theme {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  margin-left: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.theme button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* 28px to look at, 44px to hit. */
+.theme button::after {
+  content: "";
+  position: absolute;
+  inset: -8px -1px;
+}
+
+[data-theme-choice="light"] [data-theme-option="light"],
+[data-theme-choice="dark"] [data-theme-option="dark"],
+[data-theme-choice="system"] [data-theme-option="system"] {
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+@media (hover: hover) {
+  .theme button:hover {
+    color: var(--ink);
+  }
+}
+
+/* Intro */
+
+main {
+  padding-top: 64px;
+  padding-bottom: 96px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(28px, 6vw, 32px);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 16px 0 0;
+  max-width: 36em;
+  color: var(--body);
+  text-wrap: pretty;
+}
+
+.lede + .lede {
+  margin-top: 12px;
+}
+
+.install {
+  margin-top: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.install__managers {
+  display: flex;
+  gap: 2px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.install__managers button {
+  position: relative;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: 500 12px/1 var(--font-mono);
+  cursor: pointer;
+}
+
+/* The chosen manager, from <html data-pm> (set before first paint), is underlined where the tab
+   meets the command. Without the attribute (no JS), npm is. */
+:root:not([data-pm]) [data-manager="npm"],
+[data-pm="npm"] [data-manager="npm"],
+[data-pm="pnpm"] [data-manager="pnpm"],
+[data-pm="yarn"] [data-manager="yarn"],
+[data-pm="bun"] [data-manager="bun"] {
+  color: var(--ink);
+}
+
+:root:not([data-pm]) [data-manager="npm"]::after,
+[data-pm="npm"] [data-manager="npm"]::after,
+[data-pm="pnpm"] [data-manager="pnpm"]::after,
+[data-pm="yarn"] [data-manager="yarn"]::after,
+[data-pm="bun"] [data-manager="bun"]::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 1px;
+  background: var(--accent);
+}
+
+@media (hover: hover) {
+  .install__managers button:hover {
+    color: var(--ink);
+  }
+}
+
+/* Short enough to fit four on a phone, so the hit area grows upward instead of sideways. */
+@media (pointer: coarse) {
+  .install__managers button {
+    min-height: 44px;
+  }
+}
+
+.install__command {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 6px 6px 6px 14px;
+}
+
+/* The whole command stays visible: it wraps between packages rather than scrolling out of view. */
+.install code {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* Every command is in the HTML; only the chosen one shows. */
+.install__line {
+  display: none;
+}
+
+:root:not([data-pm]) [data-command-for="npm"],
+[data-pm="npm"] [data-command-for="npm"],
+[data-pm="pnpm"] [data-command-for="pnpm"],
+[data-pm="yarn"] [data-command-for="yarn"],
+[data-pm="bun"] [data-command-for="bun"] {
+  display: inline;
+}
+
+/* One span per word, so a line breaks between packages, never at a package's hyphen. */
+.install__line > span {
+  white-space: nowrap;
+}
+
+/* Fixed width, so "Copied" doesn't move the command; radius nested in the box's (12 - 6). */
+.install__copy {
+  min-width: 76px;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.install__prompt {
+  color: var(--muted);
+  user-select: none;
+}
+
+.next {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: 15px;
+}
+
+.next a {
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .next a:hover {
+    text-decoration: underline;
+  }
+}
+
+.next__hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.next--end {
+  margin-top: 72px;
+  display: block;
+  color: var(--body);
+}
+
+/* Buttons that belong to the site, not to Slack */
+
+.ghost {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 13px/1 var(--font-sans);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@media (hover: hover) {
+  .ghost:hover {
+    background: var(--surface);
+  }
+}
+
+.ghost:active {
+  transform: scale(0.97);
+}
+
+/* Pressed reads like the theme toggle's selected pill, without fading through grey. */
+.ghost[aria-pressed="true"] {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+@media (pointer: coarse) {
+  .ghost {
+    height: 44px;
+  }
+}
+
+/* A Slack message on the page */
+
+.frame {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--frame-bg);
+  overflow: hidden;
+}
+
+.frame--raised {
+  box-shadow: var(--shadow);
+}
+
+.frame__stage {
+  padding: 12px;
+}
+
+@media (min-width: 480px) {
+  .frame__stage {
+    padding: 16px;
+  }
+}
+
+/* The figure and its caption, with Replay beside the caption but outside the figure, so the
+   figure's name is just the caption. */
+.demo {
+  position: relative;
+  margin: 48px 0 0;
+}
+
+.demo__figure {
+  margin: 0;
+}
+
+/* The hero message grows as its plan opens, its tasks report back and its buttons appear. Its
+   final height is held from the start, so nothing below it moves while it plays. */
+.demo .frame {
+  min-height: 353px;
+}
+
+/* Measured: the frame's padding shrinks below 480px, and the last task's output wraps below 360px. */
+@media (max-width: 479px) {
+  .demo .frame {
+    min-height: 345px;
+  }
+}
+
+@media (max-width: 359px) {
+  .demo .frame {
+    min-height: 367px;
+  }
+}
+
+.demo__caption {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin-top: 12px;
+  padding-right: 104px;
+  font-size: 13px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.demo__replay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.demo__caption code {
+  color: var(--body);
+}
+
+/* Sections */
+
+section {
+  margin-top: 80px;
+  scroll-margin-top: 24px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.section__text {
+  margin: 8px 0 0;
+  max-width: 36em;
+  color: var(--body);
+  text-wrap: pretty;
+}
+
+.section__text code {
+  font-size: 13px;
+}
+
+.section__body {
+  margin-top: 20px;
+}
+
+.log {
+  margin: 0;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--body);
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow: auto;
+  /* Fixed, so the first payload scrolls inside it instead of pushing the page down. */
+  height: 200px;
+}
+
+.log__title {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+/* Compare */
+
+.compare {
+  position: relative;
+  max-width: 512px;
+  margin: 0 auto;
+  background: #fff;
+  touch-action: pan-y;
+  cursor: ew-resize;
+  user-select: none;
+}
+
+.compare img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.compare img[hidden] {
+  display: none;
+}
+
+.compare__top {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 var(--split, 50%));
+}
+
+.compare__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split, 50%);
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.15);
+}
+
+/* A handle on the divider, so it reads as something to drag. */
+.compare__handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  translate: -50% -50%;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.1),
+    0 2px 6px rgb(0 0 0 / 0.15);
+}
+
+.compare__handle::before,
+.compare__handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border: solid #6b6b6b;
+  border-width: 0 0 1.5px 1.5px;
+}
+
+.compare__handle::before {
+  left: 7px;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.compare__handle::after {
+  right: 7px;
+  transform: translateY(-50%) rotate(-135deg);
+}
+
+/* The captures are Slack's light theme at 512px: shown at that size on white inside a frame that
+   follows the page's theme. */
+.compare__frame {
+  padding: 12px;
+}
+
+.compare__frame .compare {
+  border-radius: 6px;
+  overflow: hidden;
+  outline: 1px solid var(--line);
+}
+
+.compare__legend {
+  display: flex;
+  justify-content: space-between;
+  max-width: 512px;
+  margin: 0 auto 8px;
+  font: 12px/1.4 var(--font-mono);
+  color: var(--muted);
+}
+
+.compare__caption {
+  max-width: 512px;
+  margin: 8px auto 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.compare__controls {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.compare__controls input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.compare__note {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Block list */
+
+.blocks {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+@media (max-width: 479px) {
+  .blocks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.blocks a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--line-soft);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .blocks a:hover {
+    color: var(--accent);
+  }
+}
+
+.blocks__arrow {
+  color: var(--muted);
+}
+
+.section__text code {
+  overflow-wrap: anywhere;
+}
+
+/* Footer */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding-top: 24px;
+  padding-bottom: max(48px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-soft);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.footer > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+@media (hover: hover) {
+  .footer a:hover {
+    color: var(--ink);
+  }
+}
+
+@media (max-width: 479px) {
+  main {
+    padding-top: 40px;
+  }
+
+  section {
+    margin-top: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Colour still fades; only the press motion goes. */
+  .ghost {
+    transition: background-color 0.15s ease;
+  }
+
+  .ghost:active {
+    transform: none;
+  }
+}
+
+/* High-contrast modes drop backgrounds and shadows, so mark the selected options with outlines. */
+@media (forced-colors: active) {
+  [data-theme-choice="light"] [data-theme-option="light"],
+  [data-theme-choice="dark"] [data-theme-option="dark"],
+  [data-theme-choice="system"] [data-theme-option="system"],
+  .ghost[aria-pressed="true"] {
+    outline: 2px solid CanvasText;
+    outline-offset: -2px;
+  }
+
+  .install__managers button[aria-pressed="true"] {
+    text-decoration: underline 2px;
+    text-underline-offset: 6px;
+  }
+}

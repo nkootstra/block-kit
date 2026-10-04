@@ -16,6 +16,8 @@ tools/visual/.auth/
 .env*.local
 # Blume docs build output
 .blume/
+# Astro types generated for the landing site
+.astro/
 # Local wrangler dev state
 .wrangler/
 .blume-verify/

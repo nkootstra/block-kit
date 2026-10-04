@@ -1,0 +1,450 @@
+---
+import { Font, Image } from "astro:assets";
+import "@nkootstra/block-kit/styles.css";
+import "../styles/site.css";
+import ActionDemo from "../islands/ActionDemo";
+import AgentDemo from "../islands/AgentDemo";
+// `bun run compare -- message/approval --scale=2`: Slack's capture, ours and their pixel diff, at 2x
+// so they're sharp on high-density screens. The copy below quotes their difference; recount it if
+// they're recaptured.
+import proofOurs from "../assets/proof/approval.actual.png";
+import proofDiff from "../assets/proof/approval.diff.png";
+import proofSlack from "../assets/proof/approval.reference.png";
+import { ogkitImageUrl, subline } from "../lib/ogkit";
+// The logo, inlined into the social card so it never depends on how OG Kit resolves a path.
+import logoSvg from "../../public/icon.svg?raw";
+
+const DOCS = "https://docs.block-kit.dev";
+const GITHUB = "https://github.com/nkootstra/block-kit";
+const NPM = "https://www.npmjs.com/package/@nkootstra/block-kit";
+const PACKAGES = "@nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono";
+/** The install command per package manager; npm first, as the one everyone has. */
+const INSTALL = [
+  { manager: "npm", command: `npm install ${PACKAGES}` },
+  { manager: "pnpm", command: `pnpm add ${PACKAGES}` },
+  { manager: "yarn", command: `yarn add ${PACKAGES}` },
+  { manager: "bun", command: `bun add ${PACKAGES}` },
+];
+
+const title = "Slack Block Kit for React";
+const description =
+  "Render Slack Block Kit messages, modals and Home tabs in React, the way Slack does, with working buttons and menus.";
+
+const headline = "Slack messages, rendered in React.";
+
+// The social card: OG Kit renders the template at the end of <body> when the build has a key
+// (`OGKIT_API_KEY`, see .env.example); without one the static og.png is used.
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogkitImage = ogkitImageUrl(canonical, {
+  key: import.meta.env.OGKIT_API_KEY,
+  version: import.meta.env.OGKIT_CACHE_VERSION,
+});
+const ogImage = ogkitImage ?? new URL("/og.png", Astro.site).toString();
+const cardLogo = logoSvg.replace("<svg ", '<svg width="44" height="44" ');
+
+/** What search engines and agents read about the project. */
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  name: "@nkootstra/block-kit",
+  description,
+  url: "https://block-kit.dev",
+  codeRepository: GITHUB,
+  license: "https://opensource.org/licenses/MIT",
+  programmingLanguage: ["TypeScript", "React"],
+};
+
+/** Every block with a docs page, by its Block Kit `type`. */
+const BLOCKS = [
+  "actions",
+  "alert",
+  "callout",
+  "card",
+  "carousel",
+  "condition",
+  "contact_card",
+  "container",
+  "context",
+  "context_actions",
+  "data_table",
+  "data_visualization",
+  "divider",
+  "file",
+  "header",
+  "image",
+  "input",
+  "markdown",
+  "plan",
+  "rich_text",
+  "section",
+  "table",
+  "task_card",
+  "video",
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.site} />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <!-- Follows the chosen theme, not just the system's: the head script below sets it. -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="block-kit" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={Astro.site} />
+    <!-- The only place the social image is set. -->
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={headline} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <!-- Emoji in the messages load from here. -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <!-- Preloaded, with fallbacks sized to match, so text doesn't move when the fonts arrive. -->
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" preload />
+    <Font cssVariable="--font-lato" preload={[{ style: "normal" }]} />
+    <!--
+      The visitor's theme and package manager, put on <html> before the first paint. The page is
+      the same static file for everyone (so it caches), and CSS shows their choices from these
+      attributes, so nothing switches after it appears.
+    -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        let theme = "system";
+        let manager = "npm";
+        try {
+          theme = localStorage.getItem("theme") || theme;
+          manager = localStorage.getItem("package-manager") || manager;
+        } catch {}
+        const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+        root.dataset.themeChoice = theme;
+        root.dataset.theme = theme === "system" ? (dark ? "dark" : "light") : theme;
+        root.dataset.pm = manager;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", root.dataset.theme === "dark" ? "#0a0a0a" : "#ffffff");
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="column nav">
+      <a class="brand" href="/">
+        <img src="/icon.svg" alt="" width="22" height="22" />
+        block-kit
+      </a>
+      <div class="nav__links">
+        <nav aria-label="Main" class="nav__main">
+          <a class="nav__link" href={DOCS}>Docs</a>
+          <a class="nav__link nav__link--wide" href={`${DOCS}/changelog`}>Changelog</a>
+          <a class="nav__link" href={GITHUB}>GitHub</a>
+        </nav>
+        <div class="theme" role="group" aria-label="Theme">
+          <button type="button" data-theme-option="light" aria-label="Light theme" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+          </button>
+          <button type="button" data-theme-option="dark" aria-label="Dark theme" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg>
+          </button>
+          <button type="button" data-theme-option="system" aria-label="Match system theme" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="column">
+      <h1>{headline}</h1>
+      <p class="lede">
+        Pass it the Block Kit JSON your Slack app sends and it draws the message, modal or Home tab
+        the way Slack does, with the same spacing, fonts and colours. Buttons and menus work, and hand
+        you the payloads Slack would.
+      </p>
+      <p class="lede">
+        Block Kit Builder only runs inside Slack. This is for everywhere else: an admin panel, a
+        template gallery, an approval queue, a test harness for your bot.
+      </p>
+
+      <div class="install" data-install>
+        <div class="install__managers" role="group" aria-label="Package manager">
+          {
+            INSTALL.map(({ manager, command }, i) => (
+              <button type="button" data-manager={manager} data-command={command} aria-pressed={i === 0 ? "true" : "false"}>
+                {manager}
+              </button>
+            ))
+          }
+        </div>
+        <div class="install__command">
+          <code
+            ><span class="install__prompt">$ </span>{
+              INSTALL.map(({ manager, command }) => (
+                <span class="install__line" data-command-for={manager}>
+                  {command.split(" ").map((word, i) => (i === 0 ? <span>{word}</span> : <> <span>{word}</span></>))}
+                </span>
+              ))
+            }</code
+          >
+          <button type="button" class="ghost install__copy" data-copy>
+            <span data-copy-label>Copy</span><span class="sr-only"> install command</span>
+          </button>
+          <span class="sr-only" role="status" data-copy-status></span>
+        </div>
+      </div>
+      <p class="next">
+        <a href={`${DOCS}/quickstart`}>Read the quickstart <span aria-hidden="true">→</span></a>
+        <span class="next__hint">Add the stylesheet, render a message, handle a click.</span>
+      </p>
+
+      <AgentDemo client:load />
+
+      <section id="interactive" aria-labelledby="interactive-title">
+        <h2 id="interactive-title">Buttons that work</h2>
+        <p class="section__text">
+          Buttons, menus, pickers and inputs work. <code>onPayload</code> receives the <code
+            >block_actions</code
+          > payload Slack would send your app, and a signed relay can forward it to your Bolt app.
+        </p>
+        <div class="section__body">
+          <ActionDemo client:load />
+        </div>
+      </section>
+
+      <section id="compare" aria-labelledby="compare-title">
+        <h2 id="compare-title">Check it against Slack</h2>
+        <p class="section__text">
+          Each block is checked, pixel by pixel, against a capture of Slack's own rendering. In this
+          one, 266 of 684,032 pixels differ, in the timestamp and the "y" of Deny. Drag across it, or
+          show the difference.
+        </p>
+        <div class="section__body">
+          <div class="frame compare__frame">
+            <div class="compare__legend" aria-hidden="true"><span>Slack</span><span>block-kit</span></div>
+            <div class="compare" data-compare>
+              <!-- PNG, never a lossy format: this section is about matching pixels. -->
+              <Image src={proofSlack} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a device request approval message" />
+              <div class="compare__top">
+                <Image src={proofOurs} width={512} densities={[1, 2]} format="png" alt="The same message rendered by block-kit" data-compare-ours />
+                <Image src={proofDiff} width={512} densities={[1, 2]} format="png" alt="Pixel difference between the two renderings" data-compare-diff-image hidden />
+              </div>
+              <div class="compare__line" aria-hidden="true"><span class="compare__handle"></span></div>
+            </div>
+            <p class="compare__caption">Captured in Slack's light theme.</p>
+          </div>
+          <div class="compare__controls">
+            <label for="split">Divider</label>
+            <input
+              id="split"
+              type="range"
+              min="0"
+              max="100"
+              value="50"
+              aria-valuetext="50% Slack, 50% block-kit"
+              data-compare-range
+            />
+            <button type="button" class="ghost" aria-pressed="false" aria-describedby="compare-note" data-compare-diff>
+              Difference
+            </button>
+          </div>
+          <p class="compare__note" id="compare-note" data-compare-note hidden>
+            Red marks pixels that differ from Slack, yellow the ones that differ only in anti-aliasing.
+          </p>
+        </div>
+      </section>
+
+      <section id="blocks" aria-labelledby="blocks-title">
+        <h2 id="blocks-title">Blocks</h2>
+        <p class="section__text">
+          Each one links to its docs page and live examples, including the newer agent blocks such
+          as <code>plan</code> and <code>task_card</code>.
+        </p>
+        <ul class="blocks">
+          {
+            BLOCKS.map((type) => (
+              <li>
+                <a href={`${DOCS}/blocks/${type.replaceAll("_", "-")}`}>
+                  <span set:html={type.replaceAll("_", "_<wbr>")} />
+                  <span class="blocks__arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <p class="next next--end">
+        Render your first message and handle a click: <a href={`${DOCS}/quickstart`}>read the quickstart</a>.
+      </p>
+    </main>
+
+    <footer class="column">
+      <div class="footer">
+        <span>MIT licensed. Not affiliated with Slack.</span>
+        <nav aria-label="Footer">
+          <a href={DOCS}>Docs</a>
+          <a href={`${DOCS}/changelog`}>Changelog</a>
+          <a href={GITHUB}>GitHub</a>
+          <a href={NPM}>npm</a>
+        </nav>
+      </div>
+    </footer>
+
+    {
+      (ogkitImage || import.meta.env.DEV) && (
+        <template data-og-template>
+          <div style="width:1200px;height:630px;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding:72px 80px 0;background:#fff;color:#0a0a0a;font-family:var(--font-geist)">
+            <div style="display:flex;align-items:center;gap:16px;font-size:30px;font-weight:600;letter-spacing:-0.01em">
+              <Fragment set:html={cardLogo} />
+              block-kit
+            </div>
+            <div style="margin-top:72px;max-width:1000px;max-height:160px;overflow:hidden;font-size:72px;line-height:1.08;font-weight:600;letter-spacing:-0.03em;text-wrap:balance">
+              {headline}
+            </div>
+            <div style="margin-top:28px;max-width:940px;max-height:82px;overflow:hidden;font-size:29px;line-height:1.4;color:#404040">
+              {subline(description)}
+            </div>
+            <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding:28px 0 36px;border-top:1px solid #e5e5e5;font-family:var(--font-geist-mono);font-size:22px;color:#6b6b6b">
+              <span>npm install @nkootstra/block-kit</span>
+              <span>block-kit.dev</span>
+            </div>
+          </div>
+        </template>
+      )
+    }
+    {/* Shows the card at ?ogkit-render while developing; OG Kit brings its own in production. */}
+    {import.meta.env.DEV && <script is:inline defer src="https://cdn.jsdelivr.net/npm/ogkit@1" />}
+
+    <script>
+      const root = document.documentElement;
+      const media = matchMedia("(prefers-color-scheme: dark)");
+
+      // The head script already applied both choices; these keep aria-pressed in step with them.
+      function syncPressed(selector: string, key: string, value: string) {
+        for (const button of document.querySelectorAll<HTMLButtonElement>(selector)) {
+          button.setAttribute("aria-pressed", String(button.dataset[key] === value));
+        }
+      }
+
+      function applyTheme(choice: string) {
+        root.dataset.themeChoice = choice;
+        root.dataset.theme = choice === "system" ? (media.matches ? "dark" : "light") : choice;
+        syncPressed("[data-theme-option]", "themeOption", choice);
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", root.dataset.theme === "dark" ? "#0a0a0a" : "#ffffff");
+      }
+
+      function applyManager(manager: string) {
+        root.dataset.pm = manager;
+        syncPressed("[data-manager]", "manager", manager);
+      }
+
+      applyTheme(root.dataset.themeChoice ?? "system");
+      applyManager(root.dataset.pm ?? "npm");
+      media.addEventListener("change", () => {
+        if (root.dataset.themeChoice === "system") applyTheme("system");
+      });
+
+      function remember(key: string, value: string) {
+        try {
+          localStorage.setItem(key, value);
+        } catch {}
+      }
+
+      for (const button of document.querySelectorAll<HTMLButtonElement>("[data-theme-option]")) {
+        button.addEventListener("click", () => {
+          const choice = button.dataset.themeOption ?? "system";
+          remember("theme", choice);
+          applyTheme(choice);
+        });
+      }
+
+      for (const button of document.querySelectorAll<HTMLButtonElement>("[data-manager]")) {
+        button.addEventListener("click", () => {
+          const manager = button.dataset.manager ?? "npm";
+          remember("package-manager", manager);
+          applyManager(manager);
+        });
+      }
+
+      const copy = document.querySelector<HTMLButtonElement>("[data-copy]");
+      const copyLabel = document.querySelector<HTMLElement>("[data-copy-label]");
+      const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]");
+      let copyReset: number | undefined;
+      copy?.addEventListener("click", async () => {
+        // The command of the package manager showing right now.
+        const manager = root.dataset.pm ?? "npm";
+        const line = document.querySelector<HTMLElement>(`[data-command-for="${manager}"]`);
+        const command = document.querySelector<HTMLElement>(`[data-manager="${manager}"]`);
+        let copied = true;
+        try {
+          await navigator.clipboard.writeText(command?.dataset.command ?? "");
+        } catch {
+          copied = false;
+          // Select the command instead, so it can be copied by hand.
+          if (line) getSelection()?.selectAllChildren(line);
+        }
+        if (copyLabel) copyLabel.textContent = copied ? "Copied" : "Selected";
+        if (copyStatus) {
+          copyStatus.textContent = copied
+            ? "Install command copied."
+            : "Couldn't copy. The command is selected; copy it by hand.";
+        }
+        window.clearTimeout(copyReset);
+        copyReset = window.setTimeout(() => {
+          if (copyLabel) copyLabel.textContent = "Copy";
+          if (copyStatus) copyStatus.textContent = "";
+        }, 2000);
+      });
+
+      const compare = document.querySelector<HTMLElement>("[data-compare]");
+      const range = document.querySelector<HTMLInputElement>("[data-compare-range]");
+      const diff = document.querySelector<HTMLButtonElement>("[data-compare-diff]");
+      const ours = document.querySelector<HTMLImageElement>("[data-compare-ours]");
+      const diffImage = document.querySelector<HTMLImageElement>("[data-compare-diff-image]");
+      const note = document.querySelector<HTMLElement>("[data-compare-note]");
+      if (compare && range && diff && ours && diffImage && note) {
+        const setSplit = (percent: number) => {
+          const value = Math.round(Math.min(100, Math.max(0, percent)));
+          compare.style.setProperty("--split", `${value}%`);
+          range.value = String(value);
+          range.setAttribute("aria-valuetext", `${value}% Slack, ${100 - value}% block-kit`);
+        };
+        const fromPointer = (event: PointerEvent) => {
+          const rect = compare.getBoundingClientRect();
+          setSplit(((event.clientX - rect.left) / rect.width) * 100);
+        };
+        range.addEventListener("input", () => setSplit(Number(range.value)));
+        compare.addEventListener("pointerdown", (event) => {
+          compare.setPointerCapture(event.pointerId);
+          // A touch may be the start of a vertical scroll, which the browser cancels the pointer
+          // for (touch-action: pan-y), so only a move drags. A mouse or pen click jumps there.
+          if (event.pointerType !== "touch") fromPointer(event);
+        });
+        compare.addEventListener("pointermove", (event) => {
+          if (compare.hasPointerCapture(event.pointerId)) fromPointer(event);
+        });
+        diff.addEventListener("click", () => {
+          const on = diff.getAttribute("aria-pressed") !== "true";
+          diff.setAttribute("aria-pressed", String(on));
+          ours.hidden = on;
+          diffImage.hidden = !on;
+          note.hidden = !on;
+        });
+      }
+    </script>
+  </body>
+</html>
