@@ -110,7 +110,7 @@ Every push to `main` deploys:
 
 ### Landing page deployment
 
-`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets, with no Worker script ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). It deploys less often than the docs: the `check` job compares the push with the commit before it, and only when `apps/site` changed does it upload the build and run the `deploy-site` job. A manual CI run always deploys it. It uses the same Cloudflare secrets as the docs.
+`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets, with no Worker script ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). It deploys less often than the docs: the `check` job compares the push with the commit before it, and only when `apps/site` or `packages/block-kit` (which its live demos render with) changed does it upload the build and run the `deploy-site` job. A manual CI run always deploys it. It uses the same Cloudflare secrets as the docs.
 
 ### Pull request previews
 

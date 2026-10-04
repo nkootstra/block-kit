@@ -53,13 +53,14 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
-      # The landing page deploys only when a push to main changed apps/site. A manual run, or a push
-      # whose previous commit isn't in the history (a force push), deploys it regardless.
+      # The landing page deploys only when a push to main changed apps/site or the package its demos
+      # render with. A manual run, or a push whose previous commit isn't in the history (a force
+      # push), deploys it regardless.
       - id: site
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: |
           if [ "$EVENT" = push ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null \
-            && git diff --quiet "$BEFORE" "$GITHUB_SHA" -- apps/site; then
+            && git diff --quiet "$BEFORE" "$GITHUB_SHA" -- apps/site packages/block-kit; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
