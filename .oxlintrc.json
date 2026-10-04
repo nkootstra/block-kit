@@ -36,6 +36,7 @@
     "**/.turbo/**",
     "**/*.generated.ts",
     "fixtures/**",
-    "apps/docs/.blume/**"
+    "apps/docs/.blume/**",
+    "apps/site/.astro/**"
   ]
 }

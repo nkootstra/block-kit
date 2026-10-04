@@ -1,0 +1,44 @@
+---
+import { Font } from "astro:assets";
+import "../styles/site.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Page not found · block-kit</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-geist" preload />
+    <!-- The visitor's theme, before first paint; see index.astro. -->
+    <script is:inline>
+      (() => {
+        let theme = "system";
+        try {
+          theme = localStorage.getItem("theme") || theme;
+        } catch {}
+        const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme =
+          theme === "system" ? (dark ? "dark" : "light") : theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="column nav">
+      <a class="brand" href="/">
+        <img src="/icon.svg" alt="" width="22" height="22" />
+        block-kit
+      </a>
+    </header>
+    <main class="column">
+      <h1>Page not found</h1>
+      <p class="lede">There's nothing at this address. The docs probably have what you're after.</p>
+      <p class="next">
+        <a href="https://docs.block-kit.dev">Go to the docs <span aria-hidden="true">→</span></a>
+        <a href="/">Back to block-kit.dev</a>
+      </p>
+    </main>
+  </body>
+</html>

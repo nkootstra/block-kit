@@ -4,7 +4,7 @@
  *
  *   bun tools/visual/src/compare.ts [fixture-prefix...] [--base=http://localhost:5180]
  *     [--check [--tolerance=0.5] [--baseline=<file>] [--allow-increase]]
- *     [--update-baseline[=lower]]
+ *     [--update-baseline[=lower]] [--scale=2]
  *
  * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
  * expanded, a table sorted); STATES replays the same interaction on our rendering first.
@@ -15,6 +15,10 @@
  * --update-baseline records each fixture's mismatch in fixtures/visual-baseline.<platform>.json;
  * --update-baseline=lower only adds new fixtures and lowers the ones that improved beyond the
  * tolerance, so it can't hide a regression.
+ * --scale renders both sides at that device pixel ratio (default 1), for sharp images such as the
+ * landing page's comparison. Baselines are recorded at 1, so don't combine it with --check or
+ * --update-baseline.
+ *
  * --check fails when a fixture fails to render or its mismatch exceeds its baseline by more than
  * the tolerance (in percentage points). --baseline compares against another file (CI passes the
  * base branch's, so a pull request can't loosen its own check) and --allow-increase reports
@@ -41,6 +45,12 @@ const check = args.includes("--check");
 const updateBaseline = args.find((a) => /^--update-baseline(=lower)?$/.test(a));
 const lowerOnly = updateBaseline === "--update-baseline=lower";
 const allowIncrease = args.includes("--allow-increase");
+const scale = Number(args.find((a) => a.startsWith("--scale="))?.slice(8) ?? 1);
+if (scale !== 1 && (check || updateBaseline)) {
+  throw new Error(
+    "--scale renders at a different size than the baselines; drop --check/--update-baseline",
+  );
+}
 const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? 0.5);
 const BASELINE = join(FIXTURES, `visual-baseline.${process.platform}.json`);
 const checkBaselineArg = args.find((a) => a.startsWith("--baseline="))?.slice(11);
@@ -71,7 +81,7 @@ names.sort();
 const browser = await chromium.launch({ ignoreDefaultArgs: ["--hide-scrollbars"] });
 const context = await browser.newContext({
   viewport: { width: 1200, height: 900 },
-  deviceScaleFactor: 1,
+  deviceScaleFactor: scale,
   locale: "en-US",
   timezoneId: "UTC",
 });
