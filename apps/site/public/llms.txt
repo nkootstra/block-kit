@@ -1,0 +1,18 @@
+# block-kit
+
+> @nkootstra/block-kit renders Slack Block Kit JSON (messages, modals and Home tabs) as React components that look and behave the way they do in Slack, with working buttons, menus, pickers and inputs. MIT licensed. Not affiliated with Slack.
+
+Install: `npm install @nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono` (React 18 or later).
+
+## Docs
+
+- [Documentation](https://docs.block-kit.dev): every block and element, with live examples
+- [Quickstart](https://docs.block-kit.dev/quickstart): render a message and handle a button click
+- [Installation](https://docs.block-kit.dev/installation): the package, its stylesheet and fonts
+- [Docs for agents](https://docs.block-kit.dev/llms.txt): the full docs index in this format
+
+## Project
+
+- [npm](https://www.npmjs.com/package/@nkootstra/block-kit)
+- [GitHub](https://github.com/nkootstra/block-kit)
+- [Changelog](https://docs.block-kit.dev/changelog)
