@@ -51,6 +51,11 @@ const block = {
   ],
 };
 
+/** The text of the header holding a task's title, hidden status text included. */
+function headerText(title: string) {
+  return screen.getByText(title).closest(".sbk-plan__task-header")!.textContent;
+}
+
 afterEach(cleanup);
 
 describe("<Plan>", () => {
@@ -101,7 +106,7 @@ describe("<Plan>", () => {
   it("shows each task's details open, and hides them instantly when its header is pressed", () => {
     render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
     fireEvent.click(screen.getByRole("button", { name: /Demonstrating Plan/ }));
-    const header = screen.getByRole("button", { name: "Fetching data" });
+    const header = screen.getByRole("button", { name: /^Fetching data/ });
     expect(header.getAttribute("aria-expanded")).toBe("true");
 
     fireEvent.click(header);
@@ -113,15 +118,59 @@ describe("<Plan>", () => {
     expect(screen.getByText("Retrieving data")).toBeTruthy();
   });
 
-  it("disables the header of a task with nothing to show, like Slack", () => {
+  it("shows a task with nothing to reveal as a plain header, not a button, like Slack", () => {
     render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
     fireEvent.click(screen.getByRole("button", { name: /Demonstrating Plan/ }));
-    const bare = screen.getByRole("button", { name: "Organizing tasks" });
-    expect(bare.getAttribute("aria-disabled")).toBe("true");
+    expect(screen.queryByRole("button", { name: /Organizing tasks/ })).toBeNull();
+    const bare = screen.getByText("Organizing tasks").closest(".sbk-plan__task-header")!;
+    expect(bare.tagName).toBe("DIV");
+    expect(bare.hasAttribute("tabindex")).toBe(false);
+    expect(bare.hasAttribute("aria-expanded")).toBe(false);
+    expect(bare.hasAttribute("aria-disabled")).toBe(false);
     expect(bare.querySelector(".sbk-plan__task-caret")).toBeNull();
     expect(
-      screen.getByRole("button", { name: "Fetching data" }).querySelector(".sbk-plan__task-caret"),
+      screen.getByRole("button", { name: /^Fetching data/ }).querySelector(".sbk-plan__task-caret"),
     ).toBeTruthy();
+  });
+
+  it("announces each task's status, which the timeline only shows as an icon", () => {
+    render(
+      <Plan
+        block={asPlanBlock({
+          ...block,
+          tasks: [
+            ...block.tasks,
+            { task_id: "task_4", title: "Publish", status: "error", details: richText("Oops") },
+          ],
+        })}
+        blockId="b1"
+        index={0}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Demonstrating Plan/ }));
+    expect(screen.getByRole("button", { name: "Fetching data, complete" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Publish, failed" })).toBeTruthy();
+    expect(headerText("Organizing tasks")).toBe("Organizing tasks, in progress");
+    expect(headerText("Display progress")).toBe("Display progress, pending");
+  });
+
+  it("announces the plan's overall status on its pill", () => {
+    render(<Plan block={planOf("complete", "error")} blockId="b1" index={0} />);
+    expect(screen.getByRole("button", { name: "Plan, failed" })).toBeTruthy();
+    cleanup();
+    render(<Plan block={planOf("complete", "pending")} blockId="b1" index={0} />);
+    expect(screen.getByRole("button", { name: "Plan, in progress" })).toBeTruthy();
+    cleanup();
+    render(<Plan block={planOf("complete")} blockId="b1" index={0} />);
+    expect(screen.getByRole("button", { name: "Plan, complete" })).toBeTruthy();
+  });
+
+  it("keeps the status text out of sight, so the plan looks the same", () => {
+    const { container } = render(<Plan block={planOf("complete")} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: /Plan/ }));
+    const hidden = container.querySelectorAll(".sbk-visually-hidden");
+    expect(hidden).toHaveLength(2);
+    for (const el of hidden) expect(el.textContent).toBe(", complete");
   });
 
   it("treats the plan as in progress overall when any task is still running", () => {

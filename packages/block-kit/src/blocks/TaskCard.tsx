@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
-import { DotIcon, StatusIcon, type TaskStatus } from "../data/statusIcon";
+import { DotIcon, StatusIcon, StatusText, type TaskStatus } from "../data/statusIcon";
 import type { BlockProps, Json } from "../types";
 import { Link } from "../Link";
 
@@ -25,32 +25,38 @@ interface TaskCardBlock extends Json {
 export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
   const [expanded, setExpanded] = useState(false);
   const sources = Array.isArray(block.sources) ? block.sources : [];
-  // Slack disables the toggle, and drops its caret, when the card has nothing to reveal.
+  // Slack disables the toggle, and drops its caret, when the card has nothing to reveal. Here it is
+  // plain text then, so it isn't a tab stop that controls nothing.
   const expandable = Boolean(block.details || block.output || sources.length > 0);
+  const pillContent = (
+    <span className="sbk-task-card__pill-content">
+      <span className="sbk-task-card__pill-icon">
+        <StatusIcon status={block.status} />
+      </span>
+      <span className="sbk-task-card__pill-title">{block.title}</span>
+      <StatusText status={block.status} />
+      {expandable ? (
+        <span className="sbk-task-card__pill-chevron">
+          <CaretIcon direction={expanded ? "down" : "right"} />
+        </span>
+      ) : null}
+    </span>
+  );
 
   return (
     <div className="sbk-task-card">
-      <button
-        type="button"
-        className="sbk-task-card__pill"
-        aria-expanded={expanded}
-        aria-disabled={expandable ? undefined : true}
-        onClick={() => {
-          if (expandable) setExpanded((value) => !value);
-        }}
-      >
-        <span className="sbk-task-card__pill-content">
-          <span className="sbk-task-card__pill-icon">
-            <StatusIcon status={block.status} />
-          </span>
-          <span className="sbk-task-card__pill-title">{block.title}</span>
-          {expandable ? (
-            <span className="sbk-task-card__pill-chevron">
-              <CaretIcon direction={expanded ? "down" : "right"} />
-            </span>
-          ) : null}
-        </span>
-      </button>
+      {expandable ? (
+        <button
+          type="button"
+          className="sbk-task-card__pill"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {pillContent}
+        </button>
+      ) : (
+        <div className="sbk-task-card__pill">{pillContent}</div>
+      )}
       <Collapse open={expanded}>
         <div className="sbk-task-card__body">
           {block.details ? (

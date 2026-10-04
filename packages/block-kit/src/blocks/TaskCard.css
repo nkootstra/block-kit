@@ -33,12 +33,13 @@
   line-height: 22px;
 }
 
-/* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. */
-.sbk-task-card__pill[aria-disabled="true"] {
+/* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. A card with
+   nothing to reveal gets the same pill as a div, without either. */
+div.sbk-task-card__pill {
   cursor: default;
 }
 
-.sbk-task-card__pill:not([aria-disabled="true"]):hover {
+button.sbk-task-card__pill:hover {
   background-color: var(--sbk-hover-overlay);
 }
 

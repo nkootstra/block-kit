@@ -158,7 +158,8 @@
   padding-top: 6px;
 }
 
-/* Slack's `taskHeaderSlim`: an unstyled button, the title and a 13px caret 4px apart. */
+/* Slack's `taskHeaderSlim`: an unstyled button, the title and a 13px caret 4px apart. A task with
+   nothing to reveal gets the same header as a div, sized to its content like the button. */
 .sbk-plan__task-header {
   display: flex;
   align-items: center;
@@ -172,7 +173,8 @@
   cursor: pointer;
 }
 
-.sbk-plan__task-header[aria-disabled="true"] {
+div.sbk-plan__task-header {
+  width: fit-content;
   cursor: default;
 }
 

@@ -52,14 +52,34 @@ describe("<TaskCard>", () => {
     );
   });
 
-  it("disables the toggle and drops the caret when there is nothing to expand, like Slack", () => {
+  it("shows a plain pill, not a button, and no caret when there is nothing to expand", () => {
     const bare = { type: "task_card", task_id: "t", title: "Bare task", status: "complete" };
     const { container } = render(<TaskCard block={asTaskCardBlock(bare)} blockId="b1" index={0} />);
-    const toggle = screen.getByRole("button");
-    expect(toggle.getAttribute("aria-disabled")).toBe("true");
+    expect(screen.queryByRole("button")).toBeNull();
+    const pill = container.querySelector(".sbk-task-card__pill")!;
+    expect(pill.tagName).toBe("DIV");
+    expect(pill.hasAttribute("tabindex")).toBe(false);
+    expect(pill.hasAttribute("aria-expanded")).toBe(false);
+    expect(pill.hasAttribute("aria-disabled")).toBe(false);
+    expect(pill.textContent).toBe("Bare task, complete");
     expect(container.querySelector(".sbk-task-card__pill-chevron")).toBeNull();
-    fireEvent.click(toggle);
-    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("announces the task's status, which the pill only shows as an icon", () => {
+    render(<TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />);
+    expect(
+      screen.getByRole("button", { name: "Demonstrating Task Card Block Features, in progress" }),
+    ).toBeTruthy();
+    cleanup();
+    render(
+      <TaskCard block={asTaskCardBlock({ ...block, status: "error" })} blockId="b1" index={0} />,
+    );
+    expect(screen.getByRole("button", { name: /, failed$/ })).toBeTruthy();
+    cleanup();
+    render(
+      <TaskCard block={asTaskCardBlock({ ...block, status: "pending" })} blockId="b1" index={0} />,
+    );
+    expect(screen.getByRole("button", { name: /, pending$/ })).toBeTruthy();
   });
 
   it("shows a spinner icon while the task is in progress", () => {

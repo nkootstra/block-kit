@@ -79,6 +79,23 @@ export function DotIcon({ status }: { status: TaskStatus }) {
   );
 }
 
+/** How a status reads aloud. The icons are hidden from assistive technology, so this stands in. */
+const STATUS_LABELS: Record<string, string> = {
+  complete: "complete",
+  in_progress: "in progress",
+  pending: "pending",
+  error: "failed",
+};
+
+/**
+ * A status as text that only screen readers get, set after a title (", in progress"), so a toggle
+ * or task header is announced with the state its icon shows. An unknown status says nothing.
+ */
+export function StatusText({ status }: { status: TaskStatus }) {
+  const label = STATUS_LABELS[status];
+  return label ? <span className="sbk-visually-hidden">{`, ${label}`}</span> : null;
+}
+
 /** The glyph on a toggle bar (the plan's or a task_card's): check, warning or spinner. */
 export function StatusIcon({ status }: { status: TaskStatus }) {
   if (status === "complete") return <CheckCircleIcon />;
