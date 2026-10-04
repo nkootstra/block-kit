@@ -11,6 +11,7 @@
 // next to the build (Blume generates the server only on a server build).
 // Pull request Previews set `ROBOTS` (`previews.vars` in wrangler.jsonc) to keep search engines off
 // their pages.
+// Every page also links the raster favicons Google Search needs (see RASTER_ICONS below).
 // The banner in blume.config.ts tells visitors of the old domain that the docs moved. Every
 // build has it, so the Worker keeps it only on `block-kit.kootstra.io`, pointing its link at the
 // same page on the new domain, and removes it everywhere else.
@@ -70,11 +71,26 @@ async function respond(request: Request, env: Env): Promise<Response> {
   return withVaryAccept(response);
 }
 
-/** Keeps the moved-docs banner on the old domain, linked to the same page, and drops it elsewhere. */
+/**
+ * Google Search shows only raster favicons, and Blume links one favicon (`icon.svg`), so pages also
+ * link the PNG and ICO in public/, converted from icon.svg.
+ */
+const RASTER_ICONS =
+  '<link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">' +
+  '<link rel="icon" href="/favicon.ico" sizes="32x32">';
+
+/**
+ * Keeps the moved-docs banner on the old domain, linked to the same page, and drops it elsewhere,
+ * and adds the raster favicons to every page.
+ */
 function withMoveBanner(request: Request, response: Response): Response {
   if (!response.headers.get("Content-Type")?.startsWith("text/html")) return response;
   const url = new URL(request.url);
-  const rewriter = new HTMLRewriter();
+  const rewriter = new HTMLRewriter().on("head", {
+    element(head) {
+      head.append(RASTER_ICONS, { html: true });
+    },
+  });
   if (url.hostname === oldHost) {
     rewriter.on("[data-blume-banner] a", {
       element(link) {

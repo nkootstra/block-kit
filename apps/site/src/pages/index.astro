@@ -69,7 +69,10 @@ const structuredData = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={Astro.site} />
+    <!-- SVG for browsers; Google Search shows only raster favicons, converted from icon.svg. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
     <!-- Follows the chosen theme, not just the system's: the head script below sets it. -->
     <meta name="theme-color" content="#ffffff" />
