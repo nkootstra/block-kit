@@ -7,8 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "type-check": "astro check",
-    "test": "bun test src"
+    "type-check": "astro check && tsc -p worker",
+    "test": "bun test src worker"
   },
   "dependencies": {
     "@astrojs/react": "7.0.0",

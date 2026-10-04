@@ -11,20 +11,7 @@ import AgentDemo from "../islands/AgentDemo";
 import proofOurs from "../assets/proof/approval.actual.png";
 import proofDiff from "../assets/proof/approval.diff.png";
 import proofSlack from "../assets/proof/approval.reference.png";
-import { description, headline, title } from "../lib/site";
-
-const DOCS = "https://docs.block-kit.dev";
-const GITHUB = "https://github.com/nkootstra/block-kit";
-const NPM = "https://www.npmjs.com/package/@nkootstra/block-kit";
-const PACKAGES = "@nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono";
-/** The install command per package manager; npm first, as the one everyone has. */
-const INSTALL = [
-  { manager: "npm", command: `npm install ${PACKAGES}` },
-  { manager: "pnpm", command: `pnpm add ${PACKAGES}` },
-  { manager: "yarn", command: `yarn add ${PACKAGES}` },
-  { manager: "bun", command: `bun add ${PACKAGES}` },
-];
-
+import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, description, headline, title } from "../lib/site";
 
 // The social card, drawn at build time by pages/og.png.ts.
 const ogImage = new URL("/og.png", Astro.site).toString();
@@ -72,33 +59,6 @@ const structuredData = {
   ],
 };
 
-/** Every block with a docs page, by its Block Kit `type`. */
-const BLOCKS = [
-  "actions",
-  "alert",
-  "callout",
-  "card",
-  "carousel",
-  "condition",
-  "contact_card",
-  "container",
-  "context",
-  "context_actions",
-  "data_table",
-  "data_visualization",
-  "divider",
-  "file",
-  "header",
-  "image",
-  "input",
-  "markdown",
-  "plan",
-  "rich_text",
-  "section",
-  "table",
-  "task_card",
-  "video",
-];
 ---
 
 <!doctype html>
@@ -293,7 +253,7 @@ const BLOCKS = [
           {
             BLOCKS.map((type) => (
               <li>
-                <a href={`${DOCS}/blocks/${type.replaceAll("_", "-")}`}>
+                <a href={blockDocs(type)}>
                   <span set:html={type.replaceAll("_", "_<wbr>")} />
                   <span class="blocks__arrow" aria-hidden="true">→</span>
                 </a>
