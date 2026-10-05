@@ -24,7 +24,7 @@
   width: 14px;
   height: 14px;
   margin: 6px 4px 2px 4px;
-  border: 1px solid var(--sbk-button-border);
+  border: 1.5px solid var(--sbk-button-border);
   border-radius: 4px;
   background: var(--sbk-bg);
   cursor: pointer;
@@ -32,11 +32,16 @@
   transition: 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
-/* Slack's `.p-checkboxes_element .c-input_checkbox`: darker border plus a faint overlay on hover,
-   a stronger overlay while pressed, and a 2px blue ring for keyboard focus. */
-.sbk-checkboxes__option:hover .sbk-checkboxes__input:not(:checked) {
-  border-color: var(--sbk-outline-pry);
+/* Slack's `.p-checkboxes_element .c-input_checkbox`: a faint overlay while the box is hovered or
+   focused, a darker border on hover, a stronger overlay while pressed, and a 2px blue ring for
+   keyboard focus. The box sits in its label, so hovering the option's text hovers it too, as in
+   Slack. */
+.sbk-checkboxes__input:not(:checked):is(:hover, :focus) {
   background-image: linear-gradient(var(--sbk-interaction-hover), var(--sbk-interaction-hover));
+}
+
+.sbk-checkboxes__input:not(:checked):hover {
+  border-color: var(--sbk-outline-pry);
 }
 
 .sbk-checkboxes__input:not(:checked):active {
@@ -48,15 +53,14 @@
   outline-offset: 1px;
 }
 
-/* Slack's checked box is solid blue with no border; hover/focus and press darken it with the same
-   multiply overlays Slack's blue buttons use. */
+/* Slack's checked box is solid blue with no border; hover, any focus and press darken it with the
+   same multiply overlays Slack's blue buttons use. */
 .sbk-checkboxes__input:checked {
   border-color: transparent;
   background-color: var(--sbk-checkbox-checked);
 }
 
-.sbk-checkboxes__option:hover .sbk-checkboxes__input:checked,
-.sbk-checkboxes__input:checked:focus-visible {
+.sbk-checkboxes__input:checked:is(:hover, :focus) {
   background-image: linear-gradient(
     var(--sbk-checkbox-checked-hover),
     var(--sbk-checkbox-checked-hover)
@@ -75,8 +79,10 @@
 .sbk-checkboxes__input:checked::after {
   content: "";
   position: absolute;
-  left: 4px;
-  top: 1px;
+  /* Offsets start inside the 1.5px border, so the check paints 5px from the box's left edge and
+     2px from its top. */
+  left: 3.5px;
+  top: 0.5px;
   width: 4px;
   height: 8px;
   border: solid var(--sbk-on-highlight);
