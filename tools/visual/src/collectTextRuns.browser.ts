@@ -48,6 +48,17 @@ describe("collectTextRuns", () => {
     expect(run?.background).toBe("rgb(128, 128, 128)");
   });
 
+  it("measures a run from its first visible character to its last, not its spaces", async () => {
+    // Slack's dispatch hint is `<i>icon</i> Press…` (the space in the text node); React renders
+    // `<i>icon</i>{" "}Press…` as a separate space node. The glyphs sit in the same place.
+    const icon = '<i style="display:inline-block;width:13px"></i>';
+    const [inNode] = await runs(`${icon}<span> Press enter </span>`);
+    const [separate] = await runs(`${icon} <span>Press enter</span> `);
+    // Shaping across separate nodes can land on a neighbouring 1/64px layout unit.
+    expect(inNode?.x).toBeCloseTo(separate?.x ?? Number.NaN, 1);
+    expect(inNode?.width).toBeCloseTo(separate?.width ?? Number.NaN, 1);
+  });
+
   it("skips whitespace, hidden and collapsed text", async () => {
     const result = await runs(
       '<span> </span><span style="visibility:hidden">Hidden</span><span style="display:none">Gone</span><span>Shown</span>',
