@@ -78,7 +78,14 @@ for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
 }
 names.sort();
 
-const browser = await chromium.launch({ ignoreDefaultArgs: ["--hide-scrollbars"] });
+// The references were laid out on macOS, which places glyphs at fractional advances, and inline
+// those widths (a sender name is `width: 61.8594px`). Linux Chromium hints fonts by default, which
+// rounds the advances so the same text no longer fits its box and wraps. Turning hinting off gives
+// Linux macOS's metrics; without it every fixture in the Linux baseline was off by about 1%.
+const browser = await chromium.launch({
+  args: ["--font-render-hinting=none"],
+  ignoreDefaultArgs: ["--hide-scrollbars"],
+});
 const context = await browser.newContext({
   viewport: { width: 1200, height: 900 },
   deviceScaleFactor: scale,
