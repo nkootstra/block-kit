@@ -532,4 +532,49 @@ describe("<Select> multi-select chips", () => {
     );
     expect(screen.getByText("You can select up to 3 items.")).toBeTruthy();
   });
+
+  function renderChips(onAction = vi.fn()) {
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Select
+          element={
+            {
+              type: "multi_static_select",
+              action_id: "a1",
+              options: [opt("a", "Alpha"), opt("b", "Bravo"), opt("c", "Charlie")],
+              initial_options: [opt("a", "Alpha"), opt("b", "Bravo")],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    return onAction;
+  }
+
+  it.each(["Enter", " "])("removes a chip with %j on its remove button", async (key) => {
+    const onAction = renderChips();
+    await keyDownAsync(screen.getByRole("button", { name: "Remove Alpha" }), key);
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "multi_static_select",
+        selected_options: [opt("b", "Bravo")],
+      }),
+      expect.anything(),
+    );
+    expect(screen.queryByRole("button", { name: "Remove Alpha" })).toBeNull();
+  });
+
+  it("removes only the chip when Enter is pressed on it while the menu has a highlighted option", async () => {
+    const onAction = renderChips();
+    fireEvent.click(screen.getByRole("button", { expanded: false }));
+    // Highlight Charlie, the one option not yet chosen, so Enter would pick it if it got there.
+    fireEvent.keyDown(screen.getByRole("listbox"), { key: "End" });
+    await keyDownAsync(screen.getByRole("button", { name: "Remove Alpha" }), "Enter");
+    expect(onAction).toHaveBeenCalledTimes(1);
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ selected_options: [opt("b", "Bravo")] }),
+      expect.anything(),
+    );
+  });
 });

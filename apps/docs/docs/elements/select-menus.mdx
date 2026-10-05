@@ -147,7 +147,8 @@ the other, never both.
 />
 
 As an `input` block, a multi-static-select shows selected options as removable chips inside the
-field, and grows to fit them:
+field, and grows to fit them. A chip's "x" removes it on click, or with Enter or Space once it has
+keyboard focus; either way the action fires with the remaining `selected_options`:
 
 <Preview
   payload={{

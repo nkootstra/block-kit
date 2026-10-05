@@ -358,6 +358,14 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                       e.stopPropagation();
                       removeItem(item.id);
                     }}
+                    // A role="button" span only gets clicks from the pointer; Enter and Space
+                    // remove the chip too, and stop there so the select doesn't open.
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter" && e.key !== " ") return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeItem(item.id);
+                    }}
                   >
                     <CloseIcon />
                   </span>
