@@ -1,7 +1,8 @@
 import type { InputBlock } from "@slack/types";
+import { useId } from "react";
 import { SuppressActions, useBlockKit } from "../context";
 import { Element } from "../elements/Element";
-import { InputBlockContext } from "../elements/inputBlockContext";
+import { InputBlockContext, InputErrorContext } from "../elements/inputBlockContext";
 import { ReturnIcon } from "../icons";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
@@ -38,6 +39,7 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
   const { errors, surface } = useBlockKit();
   const element = { ...(block.element as Json), __dispatchAction: block.dispatch_action === true };
   const error = errors[blockId];
+  const errorId = useId();
   const showDispatchHint = dispatchHint(block);
   // Slack's Builder preview never shows the "(optional)" suffix on the message-surface preview
   // (an `input` block there only ever appears inside a workflow step, where it's implied); it
@@ -52,13 +54,15 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
       </div>
       <div className="sbk-input__element">
         <InputBlockContext.Provider value={true}>
-          {block.dispatch_action === true ? (
-            <Element element={element} blockId={blockId} />
-          ) : (
-            <SuppressActions>
+          <InputErrorContext.Provider value={error ? errorId : undefined}>
+            {block.dispatch_action === true ? (
               <Element element={element} blockId={blockId} />
-            </SuppressActions>
-          )}
+            ) : (
+              <SuppressActions>
+                <Element element={element} blockId={blockId} />
+              </SuppressActions>
+            )}
+          </InputErrorContext.Provider>
         </InputBlockContext.Provider>
       </div>
       {block.hint && (
@@ -78,7 +82,11 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
           </span>
         </div>
       )}
-      {error && <div className="sbk-input__error">{error}</div>}
+      {error && (
+        <div className="sbk-input__error" id={errorId}>
+          {error}
+        </div>
+      )}
     </div>
   );
 }

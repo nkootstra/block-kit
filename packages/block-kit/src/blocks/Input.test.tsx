@@ -15,6 +15,15 @@ function block(extra: Record<string, unknown>): InputBlock {
   } as unknown as InputBlock;
 }
 
+const plain = (text: string) => ({ type: "plain_text", text });
+
+function control(role: "textbox" | "button") {
+  // The select and time picker triggers are the only buttons that open a popup.
+  return role === "textbox"
+    ? screen.getByRole("textbox")
+    : screen.getByRole("button", { expanded: false });
+}
+
 describe("<Input> block", () => {
   it("renders the label and, when optional, an '(optional)' suffix on a modal surface", () => {
     render(
@@ -128,6 +137,60 @@ describe("<Input> block", () => {
       </BlockKitProvider>,
     );
     expect(screen.getByText("This field is required")).toBeTruthy();
+  });
+
+  describe("an invalid field", () => {
+    const controls = [
+      ["a text input", { type: "plain_text_input", action_id: "a1" }, "textbox"],
+      ["a textarea", { type: "plain_text_input", action_id: "a1", multiline: true }, "textbox"],
+      ["an email input", { type: "email_text_input", action_id: "a1" }, "textbox"],
+      ["a date picker", { type: "datepicker", action_id: "a1" }, "textbox"],
+      ["a rich text input", { type: "rich_text_input", action_id: "a1" }, "textbox"],
+      [
+        "a select",
+        {
+          type: "static_select",
+          action_id: "a1",
+          placeholder: plain("Pick one"),
+          options: [{ text: plain("One"), value: "1" }],
+        },
+        "button",
+      ],
+      [
+        "a multi-select",
+        {
+          type: "multi_static_select",
+          action_id: "a1",
+          placeholder: plain("Pick some"),
+          options: [{ text: plain("One"), value: "1" }],
+        },
+        "button",
+      ],
+      ["a time picker", { type: "timepicker", action_id: "a1" }, "button"],
+    ] as const;
+
+    it.each(controls)("marks %s invalid and describes it with the error", (_, element, role) => {
+      render(
+        <BlockKitProvider errors={{ b1: "That won't work" }}>
+          <Input block={block({ element })} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      const field = control(role);
+      expect(field.getAttribute("aria-invalid")).toBe("true");
+      const description = document.getElementById(field.getAttribute("aria-describedby") ?? "");
+      expect(description?.textContent).toBe("That won't work");
+    });
+
+    it.each(controls)("leaves %s unmarked without an error", (_, element, role) => {
+      render(
+        <BlockKitProvider>
+          <Input block={block({ element })} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      const field = control(role);
+      expect(field.hasAttribute("aria-invalid")).toBe(false);
+      expect(field.hasAttribute("aria-describedby")).toBe(false);
+    });
   });
 
   describe("dispatch_action", () => {

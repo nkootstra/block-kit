@@ -4,6 +4,7 @@ import { useBlockKit } from "../context";
 import type { ElementProps } from "../types";
 import { RichTextToolbar } from "./RichTextToolbar";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { useInvalidProps } from "./inputBlockContext";
 
 /** Wraps plain text into the `rich_text` block shape Slack uses for this element's value. A
  * full WYSIWYG (bold/lists/links) is out of scope; the brief allows a contentEditable here, under
@@ -38,6 +39,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
   const { setValue, dispatch } = useBlockKit();
   const ref = useRef<HTMLDivElement>(null);
   useFocusOnLoad(element, ref);
+  const invalid = useInvalidProps();
   const actionId = element.action_id ?? "";
   const initialText = fromRichText(element.initial_value);
 
@@ -73,6 +75,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
         suppressContentEditableWarning
         role="textbox"
         aria-multiline="true"
+        {...invalid}
         aria-label={element.placeholder?.text ?? actionId}
         data-placeholder={element.placeholder?.text}
         onInput={onInput}

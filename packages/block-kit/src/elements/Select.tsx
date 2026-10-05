@@ -7,6 +7,7 @@ import type { OptionsResponse } from "../payloads";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { useInvalidProps } from "./inputBlockContext";
 import { useMenuNavigation } from "./useMenuNavigation";
 import { Popover } from "./Popover";
 
@@ -136,6 +137,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   useFocusOnLoad(element as { focus_on_load?: boolean }, triggerRef);
+  const invalid = useInvalidProps();
   const listRef = useRef<HTMLDivElement>(null);
 
   // An `external_select` with an `onOptions` handler asks the app for options (a
@@ -334,6 +336,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
+        {...invalid}
       >
         {multi ? (
           items.length > 0 ? (
