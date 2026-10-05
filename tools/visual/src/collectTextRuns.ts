@@ -29,7 +29,11 @@ export function collectTextRuns(selector: string): TextRun[] {
     if (!text || !el) continue;
     const style = getComputedStyle(el);
     if (style.visibility !== "visible") continue;
-    range.selectNodeContents(node);
+    // Measure the glyphs, not the spaces around them: a space inside a text node or in a node of
+    // its own renders the same, but would move the run's edge by a space's width.
+    const raw = node.textContent ?? "";
+    range.setStart(node, raw.search(/\S/));
+    range.setEnd(node, raw.trimEnd().length);
     const rect = range.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) continue;
 
