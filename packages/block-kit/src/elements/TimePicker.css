@@ -20,6 +20,15 @@
   cursor: pointer;
 }
 
+/* The same `c-select_button` pressed fill and chevron hover as Select.css. */
+.sbk-timepicker__control:active {
+  background-color: var(--sbk-surface-sec);
+}
+
+.sbk-timepicker__control:hover .sbk-timepicker__chevron {
+  color: var(--sbk-text);
+}
+
 .sbk-timepicker__icon {
   flex: 0 0 auto;
   width: 13px;

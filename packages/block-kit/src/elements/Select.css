@@ -18,6 +18,16 @@
   cursor: pointer;
 }
 
+/* Slack's `c-select_button`: a pressed fill, and the chevron darkens while the pointer is over the
+   trigger. No focus ring is added: after a pick Slack moves focus off-screen, so none shows. */
+.sbk-select__control:active {
+  background-color: var(--sbk-surface-sec);
+}
+
+.sbk-select__control:hover .sbk-select__chevron {
+  color: var(--sbk-text);
+}
+
 /* In an input block, Slack's multi-select closed control uses a taller (36px) box than a
    single-select's (28px), to give its chip row breathing room, even with no chips selected yet.
    As a section/actions accessory it stays a 28px button. */
