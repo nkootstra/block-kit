@@ -15,7 +15,9 @@ const ours = args.includes("--ours");
 const depth = Number(args.find((a) => a.startsWith("--depth="))?.slice(8) ?? 40);
 const base = args.find((a) => a.startsWith("--base="))?.slice(7) ?? "http://localhost:5180";
 
-const browser = await chromium.launch();
+// Linux hints fonts unless told not to, which skews text widths away from the macOS-captured
+// references; see compare.ts.
+const browser = await chromium.launch({ args: ["--font-render-hinting=none"] });
 const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
 const html = await Bun.file(join(ROOT, "fixtures", `${name}.reference.html`)).text();
 const width = html.match(/"width":(\d+)/)?.[1] ?? "512";
