@@ -3,5 +3,6 @@
 /fixtures/**/*.reference.html @nkootstra
 /fixtures/references.lock.json @nkootstra
 /fixtures/visual-baseline.*.json @nkootstra
+/fixtures/text-baseline.*.json @nkootstra
 /tools/visual/ @nkootstra
 /.github/ @nkootstra

@@ -1,9 +1,10 @@
 name: Visual
 
-# Pixel-compares every fixture against its Block Kit Builder reference.
+# Pixel-compares every fixture against its Block Kit Builder reference, and compares its text runs.
 # - Pull requests fail when a fixture regresses past the base branch's
-#   fixtures/visual-baseline.linux.json, so a PR can't loosen its own check. A maintainer can accept
-#   a deliberate regression with the visual-baseline-increase label.
+#   fixtures/visual-baseline.linux.json or fixtures/text-baseline.linux.json, so a PR can't loosen
+#   its own check. A maintainer can accept a deliberate regression with the visual-baseline-increase
+#   label.
 # - Pushes to main record the new baseline and commit it: new fixtures and improvements always,
 #   increases only when the merged PR carried the label. The commit is pushed with the
 #   VISUAL_DEPLOY_KEY deploy key, the one actor the main ruleset lets push without a pull request.
@@ -25,10 +26,11 @@ on:
     # The baseline commit this workflow pushes needs no comparison of its own.
     paths-ignore:
       - fixtures/visual-baseline.*.json
+      - fixtures/text-baseline.*.json
   workflow_dispatch:
     inputs:
       update_baseline:
-        description: Regenerate fixtures/visual-baseline.linux.json
+        description: Regenerate fixtures/visual-baseline.linux.json and text-baseline.linux.json
         type: boolean
         default: false
 
@@ -112,13 +114,19 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
           path: base
-          sparse-checkout: fixtures/visual-baseline.linux.json
+          sparse-checkout: |
+            fixtures/visual-baseline.linux.json
+            fixtures/text-baseline.linux.json
           sparse-checkout-cone-mode: false
       - name: Compare
         if: github.event_name == 'pull_request'
         env:
           ALLOW_INCREASE: ${{ contains(github.event.pull_request.labels.*.name, 'visual-baseline-increase') && '--allow-increase' || '' }}
-        run: bun tools/visual/src/compare.ts --check --baseline=base/fixtures/visual-baseline.linux.json $ALLOW_INCREASE
+        run: >-
+          bun tools/visual/src/compare.ts --check
+          --baseline=base/fixtures/visual-baseline.linux.json
+          --text-baseline=base/fixtures/text-baseline.linux.json
+          $ALLOW_INCREASE
 
       - name: Record the baseline
         if: github.event_name == 'push'
@@ -142,12 +150,14 @@ jobs:
         shell: bash
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git diff --quiet fixtures/visual-baseline.linux.json && exit 0
+          baselines="fixtures/visual-baseline.linux.json fixtures/text-baseline.linux.json"
+          git add $baselines
+          git diff --cached --quiet -- $baselines && exit 0
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # CI runs on this commit (a deploy key's push triggers workflows), so a release can be cut
           # from it; the push trigger's paths-ignore keeps this workflow from comparing it again.
-          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" fixtures/visual-baseline.linux.json
+          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" -- $baselines
           git pull --rebase origin main
           git push origin HEAD:main
 
@@ -165,6 +175,7 @@ jobs:
           path: |
             test-results/visual/
             fixtures/visual-baseline.linux.json
+            fixtures/text-baseline.linux.json
           if-no-files-found: ignore
 
   render-diff:

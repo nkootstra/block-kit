@@ -49,7 +49,7 @@ Slack's rendering is the reference, not our opinion of it. For a change to how s
 - Say in the pull request's "Slack reference" section which fixtures show the change and how the
   visual comparison moved.
 - Leave `fixtures/**/*.reference.html`, `fixtures/references.lock.json` and
-  `fixtures/visual-baseline.*.json` alone. They record what Slack renders and are owned by the
+  the `fixtures/visual-baseline.*.json` and `fixtures/text-baseline.*.json` files alone. They record what Slack renders and are owned by the
   maintainers, who capture new references in Block Kit Builder. Never edit them to make a check pass.
 
 ## Docs change with the code
