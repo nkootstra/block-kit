@@ -6,7 +6,7 @@ import { CalendarIcon, ChevronDownIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { Calendar } from "./calendar/Calendar";
 import { ordinal } from "./dateFormat";
-import { useInInputBlock } from "./inputBlockContext";
+import { useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { Popover } from "./Popover";
 
@@ -34,6 +34,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useFocusOnLoad<HTMLInputElement>(element);
+  const invalid = useInvalidProps();
   // Focus given by `focus_on_load` shouldn't pop the calendar open; a user's focus does.
   const loadFocus = useRef(element.focus_on_load === true);
   const actionId = element.action_id ?? "";
@@ -70,6 +71,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
           placeholder={element.placeholder?.text ?? "Select a date"}
           aria-haspopup="dialog"
           aria-expanded={open}
+          {...invalid}
           ref={inputRef}
           onFocus={() => {
             if (loadFocus.current) loadFocus.current = false;

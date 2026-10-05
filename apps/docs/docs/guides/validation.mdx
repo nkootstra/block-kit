@@ -148,6 +148,13 @@ errors known before the user even touches the form, pass `errors` to `<BlockKitP
 `<Modal>`'s own client-side checks (required/length/format) and any `onSubmit` errors layer on top of
 the provider's `errors` rather than replacing them.
 
+## How an invalid field looks
+
+Whichever way an error arrives, the field's control (a text input or textarea, a select, a date or
+time picker, or a rich text input) gets `aria-invalid="true"` and an `aria-describedby` pointing at
+the error, so screen readers announce it. As in Slack, its focus ring turns red while the error
+shows. Both clear with the error.
+
 ## Related
 
 <CardGroup cols={2}>

@@ -357,8 +357,15 @@ a.sbk-mention {
   box-shadow: var(--sbk-focus-shadow);
 }
 
-.sbk-text-input[aria-invalid="true"],
-.sbk-text-input[aria-invalid="true"]:focus {
+/* Slack's `p-block_kit_input_block--invalid`: an input block with an error turns its element's
+   focus ring red. `Input` marks the element's control `aria-invalid` while the error shows. */
+.sbk-text-input[aria-invalid="true"]:focus,
+.sbk-rich-text-input:has([aria-invalid="true"]):focus-within,
+.sbk-datepicker__input[aria-invalid="true"]:focus,
+.sbk-select__control[aria-invalid="true"]:focus-visible,
+.sbk-select__control[aria-invalid="true"][aria-expanded="true"],
+.sbk-timepicker__control[aria-invalid="true"]:focus-visible,
+.sbk-timepicker__control[aria-invalid="true"][aria-expanded="true"] {
   border-color: transparent;
   box-shadow: var(--sbk-focus-shadow-invalid);
 }

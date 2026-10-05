@@ -5,6 +5,7 @@ import { useBlockKit } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { useInvalidProps } from "./inputBlockContext";
 import { useMenuNavigation } from "./useMenuNavigation";
 import { Popover } from "./Popover";
 
@@ -34,6 +35,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   useFocusOnLoad(element, triggerRef);
+  const invalid = useInvalidProps();
   const listRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
 
@@ -76,6 +78,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
+        {...invalid}
       >
         <ClockIcon className="sbk-timepicker__icon" />
         <span className={time ? "sbk-timepicker__value" : "sbk-timepicker__placeholder"}>

@@ -3,6 +3,7 @@ import { useBlockKit } from "../context";
 import { EmailIcon, LinkGlyphIcon } from "../icons";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { useInvalidProps } from "./inputBlockContext";
 
 export interface TextInputElement extends Json {
   type: "plain_text_input" | "email_text_input" | "url_text_input" | "number_input";
@@ -34,6 +35,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // or Home tab form; the message-surface preview uses a smaller 28px control.
   const sizeClass = surface === "message" ? "" : " sbk-text-input--medium";
   const [value, setLocalValue] = useState(element.initial_value ?? "");
+  const invalid = useInvalidProps();
   const focusRef = useFocusOnLoad<HTMLInputElement & HTMLTextAreaElement>(
     element as { focus_on_load?: boolean },
   );
@@ -88,6 +90,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
     onKeyDown,
     ref: focusRef,
     "aria-label": element.action_id,
+    ...invalid,
   };
 
   // Slack's Builder prefixes email/url inputs with a small leading glyph (envelope / link) inside

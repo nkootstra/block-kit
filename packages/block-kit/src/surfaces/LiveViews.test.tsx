@@ -160,6 +160,36 @@ describe("a standalone <Modal>", () => {
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "A" } });
     expect(screen.queryByText(VALIDATION_MESSAGES.required)).toBeNull();
   });
+
+  it("marks an empty required field invalid until it changes", async () => {
+    render(
+      <BlockKitProvider onSubmit={vi.fn()}>
+        <Modal view={nameModal() as never} />
+      </BlockKitProvider>,
+    );
+    const field = screen.getByRole("textbox");
+
+    await clickAsync(screen.getByRole("button", { name: "Save" }));
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+
+    fireEvent.change(field, { target: { value: "A" } });
+    expect(field.hasAttribute("aria-invalid")).toBe(false);
+  });
+
+  it("marks a field the app rejects invalid", async () => {
+    render(
+      <BlockKitProvider
+        onSubmit={() => ({ response_action: "errors", errors: { name: "That name is taken" } })}
+      >
+        <Modal view={nameModal() as never} />
+      </BlockKitProvider>,
+    );
+    const field = screen.getByRole("textbox");
+    fireEvent.change(field, { target: { value: "Ada" } });
+
+    await clickAsync(screen.getByRole("button", { name: "Save" }));
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+  });
 });
 
 describe("a failed submission", () => {
