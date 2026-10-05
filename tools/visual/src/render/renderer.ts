@@ -136,7 +136,7 @@ const serveFromCache: Parameters<BrowserContext["route"]>[1] = async (route) => 
  * Bundles a page entry for the browser with `@nkootstra/block-kit` pointing at `libRoot`'s source.
  * React always comes from this tool, so another checkout's source shares one copy with the page.
  */
-async function bundle(entry: string, libRoot: string): Promise<string> {
+export async function bundle(entry: string, libRoot: string): Promise<string> {
   const here = import.meta.dir;
   const plugin: BunPlugin = {
     name: "block-kit-source",
