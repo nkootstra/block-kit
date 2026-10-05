@@ -377,9 +377,15 @@ a.sbk-mention {
 .sbk-carousel__arrow:focus-visible,
 .sbk-calendar__nav:focus-visible,
 .sbk-calendar__cell:focus-visible,
-.sbk-calendar__clear:focus-visible {
+.sbk-calendar__clear:focus-visible,
+.sbk-link:focus-visible {
   outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Slack's `c-link--focus-visible:focus` drops the underline while the ring is up. */
+.sbk-link:focus-visible {
+  text-decoration: none;
 }
 
 /* Keyboard focus shouldn't also paint the pointer's hover shadow on outline buttons. */
