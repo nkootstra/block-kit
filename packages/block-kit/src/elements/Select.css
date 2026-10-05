@@ -267,8 +267,9 @@
   width: max(100%, 240px);
   max-height: 280px;
   overflow-y: auto;
-  /* Slack's `c-select_options_list`: a hairline ring plus a soft drop shadow, no border. */
-  background: var(--sbk-menu-bg);
+  /* Slack's `c-select_options_list__wrapper`: the secondary surface (grey, not the white of other
+     menus) with a hairline ring plus a soft drop shadow, no border. */
+  background: var(--sbk-surface-sec);
   border-radius: 4px;
   box-shadow:
     0 0 0 1px rgba(29, 28, 29, 0.13),
@@ -292,6 +293,8 @@
   outline: none;
   font: 13px var(--sbk-font);
   color: var(--sbk-text);
+  /* Show the menu's surface; an input's default fill is white in either theme. */
+  background: transparent;
 }
 
 /* Slack's `c-menu_item__header`. */
