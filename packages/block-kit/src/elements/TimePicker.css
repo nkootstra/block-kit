@@ -56,7 +56,8 @@
   max-height: 240px;
   overflow-y: auto;
   padding: 12px 0;
-  background: var(--sbk-menu-bg);
+  /* The grey `c-select_options_list__wrapper` surface, as in Select.css. */
+  background: var(--sbk-surface-sec);
   border-radius: 4px;
   box-shadow:
     0 0 0 1px rgba(29, 28, 29, 0.13),
