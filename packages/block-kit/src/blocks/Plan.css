@@ -33,11 +33,9 @@
   line-height: 22px;
 }
 
-/* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. */
-.sbk-plan__pill:hover {
-  background-color: var(--sbk-hover-overlay);
-}
-
+/* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
+   (`.toggleBarButtonSlim:hover { background-color: transparent }`), leaving only an inset blue ring
+   for keyboard focus. */
 .sbk-plan__pill:focus-visible {
   outline: 2px solid var(--sbk-focus-ring);
   outline-offset: -2px;
