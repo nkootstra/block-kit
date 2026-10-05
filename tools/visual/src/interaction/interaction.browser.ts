@@ -131,8 +131,9 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
   beforeAll(async () => {
     harness = await createHarness(engine);
   }, 120_000);
-  afterEach(() => harness.closePages());
-  afterAll(() => harness.close());
+  // Optional chaining: when the browser fails to launch, the launch error is the one to report.
+  afterEach(() => harness?.closePages());
+  afterAll(() => harness?.close());
 
   describe("plan and task_card toggle pill", () => {
     // Slack's `toggleBarButtonSlim` cancels the toggle bar's hover tint.

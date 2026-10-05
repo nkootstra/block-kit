@@ -188,6 +188,10 @@ jobs:
       !contains(fromJSON('["labeled","unlabeled"]'), github.event.action)
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.63.0-noble
+    # The container runs as root, but GitHub mounts HOME at /github/home owned by another user, and
+    # Firefox refuses to start under a HOME it doesn't own. Playwright's documented workaround.
+    env:
+      HOME: /root
     permissions:
       contents: read
     steps:
