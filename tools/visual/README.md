@@ -137,8 +137,28 @@ embedded, and a fixture's images are replaced by striped placeholders of the sam
 images never show, because renders end up public; only their size is read. Emoji are the exception:
 the library draws them from a fixed, version-pinned set, so a payload can't choose what they show.
 
-`bun run --cwd tools/visual test:browser` runs the tests that need Chromium
-(`bunx playwright install chromium`); `bun run test` runs the rest.
+`bun run --cwd tools/visual test:browser` runs the tests that need a browser, including the
+interaction tests below (`bunx playwright install chromium firefox webkit`); `bun run test` runs the
+rest.
+
+## Interaction styles
+
+jsdom doesn't load the stylesheet, so the package's unit tests can't see how a control looks while
+it's hovered, pressed, focused or animating. `src/interaction/interaction.browser.ts` checks that in
+Chromium, Firefox and WebKit: `src/interaction/harness.ts` bundles the library's source like the
+render diff does, draws a payload in a blank page, and drives it with a real pointer and keyboard.
+Each case asserts a computed style or a painted pixel against Slack's value, such as the grey of a
+pressed select, the red focus ring of an invalid input or the 80ms curve of a button.
+
+- Styles are read once transitions finish (`settle`); looping animations such as a status spinner
+  are left running.
+- Keyboard focus comes from pressing Tab, so `:focus-visible` matches as it would for a user.
+  WebKit, like Safari by default, skips links on Tab, so the harness presses Option+Tab there.
+- Where engines legitimately differ, the case says so. Chromium and Firefox snap a border narrower
+  than 2px to whole CSS pixels at any scale, so only WebKit on a 2x screen (Safari on a Retina
+  display) paints a checkbox's 1.5px border; the declared width is checked in every engine.
+
+CI runs them in the `render-diff` job, whose Playwright image has all three browsers.
 
 In CI, the Visual workflow's `render-diff` job runs this for every pull request the comparison
 covers and uploads the result. The Visual preview workflow then checks the artifact
