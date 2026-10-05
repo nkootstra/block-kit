@@ -259,6 +259,12 @@
   cursor: pointer;
 }
 
+/* Slack's `removeToken:hover`: the "x" darkens on a faint tint. */
+.sbk-select__chip-remove:hover {
+  color: var(--sbk-text);
+  background-color: var(--sbk-hover-overlay);
+}
+
 .sbk-select__menu {
   position: absolute;
   z-index: 10;
