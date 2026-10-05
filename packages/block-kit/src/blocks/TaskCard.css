@@ -33,14 +33,11 @@
   line-height: 22px;
 }
 
-/* Slack's `toggleBarButton`: a 6% tint on hover, an inset blue ring for keyboard focus. A card with
-   nothing to reveal gets the same pill as a div, without either. */
+/* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
+   (`.toggleBarButtonSlim:hover { background-color: transparent }`), leaving only an inset blue ring
+   for keyboard focus. A card with nothing to reveal gets the same pill as a div, without the ring. */
 div.sbk-task-card__pill {
   cursor: default;
-}
-
-button.sbk-task-card__pill:hover {
-  background-color: var(--sbk-hover-overlay);
 }
 
 .sbk-task-card__pill:focus-visible {
