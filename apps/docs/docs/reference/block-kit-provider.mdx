@@ -119,8 +119,9 @@ One provider can hold several surfaces. Each action still carries the message or
     },
     timeZone: {
       type: "string",
-      description: "IANA zone for `<!date>` tokens and date and time elements.",
-      default: "The viewer's zone",
+      description:
+        "IANA zone for `<!date>` tokens and date and time elements. The datetimepicker reads the picked date and time in it.",
+      default: "The viewer's zone; UTC for the datetimepicker",
     },
     children: { type: "ReactNode", description: "The surfaces to render.", required: true },
   }}

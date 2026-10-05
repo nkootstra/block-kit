@@ -178,11 +178,14 @@ before any interaction.
 
 ### Time zone
 
-`BlockKitProvider`'s `timeZone` prop (an IANA zone like `Europe/Amsterdam`) controls how the
-closed control _displays_ the date and time, and labels the hint text underneath it (e.g. "Time
-zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"). It doesn't change `selected_date_time`
-itself, which is always a UTC-based Unix timestamp, exactly as Slack sends it. Without a `timeZone`
-prop, the picker displays in UTC.
+`BlockKitProvider`'s `timeZone` prop (an IANA zone like `Europe/Amsterdam`) is the zone the picker
+works in. The closed control shows the date and time in it, the popup opens on that wall-clock date
+and time, and the date and time the user picks are read in it: picking 11:00 on 1 January 2026 with
+`Europe/Amsterdam` sends `1767261600` (10:00 UTC). The hint underneath names the zone (e.g. "Time
+zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"). `selected_date_time` itself is always a
+Unix timestamp, exactly as Slack sends it. On a daylight saving change, a time the clocks skip moves
+forward by the gap and a time they repeat takes its first occurrence. Without a `timeZone` prop, the
+picker works in UTC.
 
 ## Related
 
