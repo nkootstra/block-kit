@@ -22,10 +22,45 @@ bun run compare
   page's comparison (`apps/site/src/assets/proof`). Baselines are recorded at 1x, so it can't be
   combined with `--check` or `--update-baseline`.
 - `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
-- `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`;
+- `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`
+  and the flagged text runs in `fixtures/text-baseline.<platform>.json` ([Text runs](#text-runs));
   `--update-baseline=lower` only adds new fixtures and lowers improved ones.
 
 Open `test-results/visual/index.html` for side-by-side reference / ours / diff images.
+
+## Text runs
+
+The pixel diff scores a whole fixture with a per-pixel threshold, so it can't see a colour a few RGB
+steps off, a 0.5px border or a run that moved by a pixel or two. Every fixture therefore also gets a
+text-run check (`src/textRuns.ts`):
+
+1. Every visible text node on both sides becomes a run, positioned relative to the rendered root
+   (`src/collectTextRuns.ts`).
+2. Runs are matched in order by their text, with a longest common subsequence, so a run only one
+   side has doesn't shift the rest.
+3. Each pair is compared by position and width (±0.5px), font size, weight and style, and colour as
+   painted: the colour, faded by the opacity of the element and its ancestors, blended over the
+   background behind it. `rgba(29, 28, 29, 0.7)` on white and `#616061` count as the same colour.
+
+Each line of the output ends with `text <matched>/<reference runs> matched, <n> flagged`, where every
+differing property and every run only one side has counts once. A filtered run lists the flagged runs:
+
+```text
+  0.05%  extra/input/text-inputs  ref 510x304  ours 474x304  text 8/8 matched, 1 flagged
+         color "We'll only use this for receipts.": Slack rgb(94, 93, 96), ours rgb(97, 96, 97)
+```
+
+`fixtures/text-baseline.<platform>.json` records each fixture's findings next to the pixel baseline,
+one key per finding: `<property>|<text>|<occurrence>`, such as
+`color|We'll only use this for receipts.|0`. The occurrence counts earlier runs with the same text,
+and a run only one side has is keyed `missing` or `extra`.
+
+- `--check` fails on any finding a fixture's text baseline doesn't list, even when the fixture also
+  resolved another one, and reports the findings that disappeared. Layout is deterministic, so
+  there's no tolerance.
+- `--update-baseline` rewrites both baselines; `--update-baseline=lower` adds new fixtures and drops
+  resolved findings, but never adds a finding to a fixture it already lists.
+- `--text-baseline=<file>` checks against another file, as `--baseline` does for pixels.
 
 `bun tools/visual/src/inspect.ts <fixture> [--ours]` prints a box-model tree, which is the quickest
 way to read the exact paddings, line heights and colours Slack uses.

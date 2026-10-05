@@ -25,7 +25,7 @@ Bun + Turborepo; `docs/README.md` describes the layout.
 ## Visual references
 
 `fixtures/**/*.reference.html`, `fixtures/references.lock.json` and the
-`fixtures/visual-baseline.*.json` files record Slack's rendering and are owned by the maintainers.
+`fixtures/visual-baseline.*.json` and `fixtures/text-baseline.*.json` files record Slack's rendering and are owned by the maintainers.
 Never edit them by hand or to make a check pass; `tools/visual/README.md` explains how they change.
 
 ## Versions and releases

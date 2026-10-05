@@ -3,7 +3,7 @@
  * Needs the playground dev server (`bun run --cwd apps/playground dev`).
  *
  *   bun tools/visual/src/compare.ts [fixture-prefix...] [--base=http://localhost:5180]
- *     [--check [--tolerance=0.5] [--baseline=<file>] [--allow-increase]]
+ *     [--check [--tolerance=0.5] [--baseline=<file>] [--text-baseline=<file>] [--allow-increase]]
  *     [--update-baseline[=lower]] [--scale=2]
  *
  * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
@@ -25,6 +25,13 @@
  * regressions instead of failing. A fixture without a baseline entry is reported, not failed.
  * Baselines are per platform because font rasterization differs between operating systems; a
  * platform without one is reported, not failed.
+ *
+ * Every fixture also gets a text-run check (textRuns.ts): its text runs are matched with the
+ * reference's and compared by position, width, font and painted colour, which the pixel diff is
+ * too coarse to see. fixtures/text-baseline.<platform>.json records each fixture's findings
+ * (`<property>|<text>|<occurrence>`). --check fails on any finding the baseline doesn't list and
+ * reports the ones that disappeared; --update-baseline=lower only drops resolved findings (and adds
+ * new fixtures), --update-baseline rewrites them. --text-baseline compares against another file.
  */
 import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -33,6 +40,15 @@ import { Glob } from "bun";
 import pixelmatch from "pixelmatch";
 import { chromium, type Page } from "playwright";
 import { PNG } from "pngjs";
+import { collectTextRuns } from "./collectTextRuns";
+import {
+  checkTextBaseline,
+  compareTextRuns,
+  type TextBaseline,
+  type TextRun,
+  type TextRunReport,
+  updateTextBaseline,
+} from "./textRuns";
 
 const ROOT = resolve(import.meta.dir, "../../..");
 const FIXTURES = join(ROOT, "fixtures");
@@ -55,6 +71,9 @@ const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(1
 const BASELINE = join(FIXTURES, `visual-baseline.${process.platform}.json`);
 const checkBaselineArg = args.find((a) => a.startsWith("--baseline="))?.slice(11);
 const CHECK_BASELINE = checkBaselineArg ? resolve(checkBaselineArg) : BASELINE;
+const TEXT_BASELINE = join(FIXTURES, `text-baseline.${process.platform}.json`);
+const checkTextBaselineArg = args.find((a) => a.startsWith("--text-baseline="))?.slice(16);
+const CHECK_TEXT_BASELINE = checkTextBaselineArg ? resolve(checkTextBaselineArg) : TEXT_BASELINE;
 
 interface Meta {
   width: number;
@@ -69,6 +88,8 @@ export interface Result {
   ratio: number;
   /** Set when our side failed to render; the fixture then counts as a 100% mismatch. */
   error?: string;
+  /** The text-run comparison; absent when our side failed to render. */
+  text?: TextRunReport;
 }
 
 const names: string[] = [];
@@ -252,6 +273,7 @@ for (const name of names) {
     console.warn(`  no STATES entry for ${name}; comparing its initial state`);
   if (state?.reference) await state.reference(page);
   const reference = await shot(page, "#sbk-reference > *");
+  const referenceRuns: TextRun[] = await page.evaluate(collectTextRuns, "#sbk-reference > *");
 
   const url = new URL(base);
   url.searchParams.set("render", name.split("@")[0] ?? name);
@@ -261,6 +283,7 @@ for (const name of names) {
   const onError = (err: Error) => errors.push(err.message);
   page.on("pageerror", onError);
   let actual: PNG;
+  let ourRuns: TextRun[];
   try {
     await page.goto(url.href, { waitUntil: "load" });
     await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
@@ -271,6 +294,7 @@ for (const name of names) {
       await afterInteraction(page);
     }
     actual = await shot(page, "#sbk-render > *");
+    ourRuns = await page.evaluate(collectTextRuns, "#sbk-render > *");
   } catch (err) {
     const error = errors[0] ?? (err as Error).message.split("\n")[0];
     results.push({
@@ -307,11 +331,16 @@ for (const name of names) {
     actual: { width: actual.width, height: actual.height },
     mismatch,
     ratio: mismatch / (width * height),
+    text: compareTextRuns(referenceRuns, ourRuns),
   };
   results.push(result);
+  const text = result.text as TextRunReport;
   console.log(
-    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}`,
+    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged`,
   );
+  // A filtered run is for iterating on a few fixtures, so it lists what the text check flagged.
+  if (prefixes.length > 0)
+    for (const line of describeTextRuns(text)) console.log(`         ${line}`);
 }
 
 await browser.close();
@@ -328,6 +357,11 @@ if (prefixes.length === 0) console.log(`report: ${join(OUT, "index.html")}`);
 const percent = (r: Result) => Math.round(r.ratio * 10_000) / 100;
 const readBaseline = async (file: string): Promise<Record<string, number>> =>
   existsSync(file) ? await Bun.file(file).json() : {};
+const readTextBaseline = async (file: string): Promise<TextBaseline> =>
+  existsSync(file) ? await Bun.file(file).json() : {};
+const textFindings: TextBaseline = Object.fromEntries(
+  results.flatMap((r) => (r.text ? [[r.name, r.text.findings] as const] : [])),
+);
 
 if (updateBaseline) {
   // A filtered run only updates the fixtures it ran, and only a full run drops removed fixtures.
@@ -342,15 +376,21 @@ if (updateBaseline) {
   const sorted = Object.fromEntries(Object.entries(next).sort(([a], [b]) => a.localeCompare(b)));
   await writeFile(BASELINE, `${JSON.stringify(sorted, null, 2)}\n`);
   console.log(`baseline: ${BASELINE}`);
+  const nextText = updateTextBaseline(await readTextBaseline(TEXT_BASELINE), textFindings, {
+    full: prefixes.length === 0,
+    lowerOnly,
+  });
+  await writeFile(TEXT_BASELINE, `${JSON.stringify(nextText, null, 2)}\n`);
+  console.log(`text baseline: ${TEXT_BASELINE}`);
 }
 
 if (check) {
+  const failures: string[] = [];
+  const increased: string[] = [];
   if (!existsSync(CHECK_BASELINE)) {
     console.log(`\nNo baseline at ${CHECK_BASELINE}; run with --update-baseline to create one.`);
   } else {
     const baseline = await readBaseline(CHECK_BASELINE);
-    const failures: string[] = [];
-    const increased: string[] = [];
     const improved: string[] = [];
     const unrecorded: string[] = [];
     for (const r of results) {
@@ -368,17 +408,42 @@ if (check) {
     if (improved.length > 0) {
       console.log(`\nImproved beyond tolerance:\n  ${improved.join("\n  ")}`);
     }
-    if (increased.length > 0) {
-      console.log(`\nAllowed to regress:\n  ${increased.join("\n  ")}`);
-    }
-    if (failures.length > 0) {
-      console.error(
-        `\nVisual regressions (tolerance ${tolerance} points):\n  ${failures.join("\n  ")}`,
-      );
-      process.exit(1);
-    }
-    console.log(`\nNo visual regressions (tolerance ${tolerance} points).`);
   }
+  if (!existsSync(CHECK_TEXT_BASELINE)) {
+    console.log(
+      `\nNo text baseline at ${CHECK_TEXT_BASELINE}; run with --update-baseline to create one.`,
+    );
+  } else {
+    const text = checkTextBaseline(textFindings, await readTextBaseline(CHECK_TEXT_BASELINE));
+    if (text.unrecorded.length > 0) {
+      console.log(`\nNo text baseline entry yet:\n  ${text.unrecorded.join("\n  ")}`);
+    }
+    if (text.improved.length > 0) {
+      console.log(`\nResolved text findings:\n  ${text.improved.join("\n  ")}`);
+    }
+    (allowIncrease ? increased : failures).push(...text.failures);
+  }
+  if (increased.length > 0) {
+    console.log(`\nAllowed to regress:\n  ${increased.join("\n  ")}`);
+  }
+  if (failures.length > 0) {
+    console.error(
+      `\nVisual regressions (tolerance ${tolerance} points, none for text runs):\n  ${failures.join("\n  ")}`,
+    );
+    process.exit(1);
+  }
+  console.log(`\nNo visual regressions (tolerance ${tolerance} points, none for text runs).`);
+}
+
+/** One line per flagged text run, for reading a fixture's text-run results. */
+function describeTextRuns(textReport: TextRunReport): string[] {
+  return [
+    ...textReport.differences.map(
+      (d) => `${d.property} ${JSON.stringify(d.text)}: Slack ${d.reference}, ours ${d.ours}`,
+    ),
+    ...textReport.missing.map((r) => `only Slack ${JSON.stringify(r.text)}`),
+    ...textReport.extra.map((r) => `only ours ${JSON.stringify(r.text)}`),
+  ];
 }
 
 /** Builder | ours | diff, separated by grey bars; the quickest way to eyeball a fixture. */
