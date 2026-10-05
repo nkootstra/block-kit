@@ -142,10 +142,7 @@
   ],
   "catalog/input/checkboxes": [],
   "catalog/input/datepicker": [],
-  "catalog/input/dispatches-actions": [
-    "x|Press 'enter' to submit|0",
-    "width|Press 'enter' to submit|0"
-  ],
+  "catalog/input/dispatches-actions": [],
   "catalog/input/dispatches-custom-actions": [],
   "catalog/input/multi-static-select": [],
   "catalog/input/multi-users-select": [],
@@ -294,7 +291,6 @@
   "extra/modal/form": [
     "x|(optional)|0",
     "y|(optional)|0",
-    "width|(optional)|0",
     "color|(optional)|0"
   ],
   "extra/modal/rich-and-file": [
