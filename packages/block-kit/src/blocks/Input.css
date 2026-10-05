@@ -38,7 +38,7 @@
 .sbk-input__hint-text {
   font-size: 13px;
   line-height: 18px;
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 .sbk-input__hint-text--dispatch {
