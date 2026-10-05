@@ -64,8 +64,10 @@
   color: rgb(69, 68, 71);
   background: rgba(29, 28, 29, 0.04);
   border-radius: 4px;
-  /* Slack's copy control (`container__nrkPh`) is invisible until the code block is hovered. */
+  /* Slack's copy control (`container__nrkPh`) is invisible until the code block is hovered or
+     holds focus, and fades in over 80ms. */
   opacity: 0;
+  transition: opacity 80ms ease-in-out;
 }
 
 .sbk-rich-text__pre:hover .sbk-rich-text__pre-copy,
