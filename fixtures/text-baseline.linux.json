@@ -1,0 +1,343 @@
+{
+  "catalog/actions/all-selects": [
+    "extra|Select a conversation|0",
+    "extra|Select a channel|0",
+    "extra|Select a user|0",
+    "extra|Select an item|0"
+  ],
+  "catalog/actions/button": [],
+  "catalog/actions/checkboxes": [],
+  "catalog/actions/datepickers": [],
+  "catalog/actions/filtered-conversations-select": [
+    "extra|Select private conversation|0"
+  ],
+  "catalog/actions/radio-buttons": [],
+  "catalog/actions/selects-with-initial-options": [],
+  "catalog/actions/timepicker": [],
+  "catalog/agents/message-feedback": [],
+  "catalog/agents/plan": [
+    "extra|, in progress|0"
+  ],
+  "catalog/agents/plan-error": [
+    "extra|, in progress|0"
+  ],
+  "catalog/agents/plan-error@expanded": [
+    "extra|, in progress|0",
+    "extra|, complete|0",
+    "extra|, failed|0",
+    "extra|, pending|0"
+  ],
+  "catalog/agents/plan@expanded": [
+    "extra|, in progress|0",
+    "extra|, complete|0",
+    "extra|, in progress|1",
+    "extra|, pending|0"
+  ],
+  "catalog/agents/plan@tasks-collapsed": [
+    "extra|, in progress|0",
+    "extra|, complete|0",
+    "extra|, in progress|1",
+    "extra|, pending|0"
+  ],
+  "catalog/agents/task-card": [
+    "extra|, in progress|0"
+  ],
+  "catalog/agents/task-card-statuses": [
+    "extra|, in progress|0",
+    "extra|, complete|0",
+    "extra|, failed|0"
+  ],
+  "catalog/agents/task-card@expanded": [
+    "extra|, in progress|0"
+  ],
+  "catalog/callout/callout": [
+    "missing|(2 MB)|0",
+    "missing|lumen|0",
+    "extra|Contact|0"
+  ],
+  "catalog/card-and-carousel/card": [],
+  "catalog/card-and-carousel/card-actions-and-content": [],
+  "catalog/card-and-carousel/card-content-only": [],
+  "catalog/card-and-carousel/card-header-and-actions": [],
+  "catalog/card-and-carousel/card-header-only": [],
+  "catalog/card-and-carousel/card-image-and-text": [],
+  "catalog/card-and-carousel/card-image-only": [],
+  "catalog/card-and-carousel/card-title-only": [],
+  "catalog/card-and-carousel/card-with-slack-icon": [],
+  "catalog/card-and-carousel/card-with-subtext": [],
+  "catalog/card-and-carousel/card-with-three-actions": [],
+  "catalog/card-and-carousel/card-without-icon": [],
+  "catalog/card-and-carousel/card-without-image": [],
+  "catalog/card-and-carousel/card-without-subtitle": [],
+  "catalog/card-and-carousel/carousel": [],
+  "catalog/card-and-carousel/carousel@scrolled": [],
+  "catalog/condition/client-platforms": [],
+  "catalog/container/collapsible": [],
+  "catalog/container/collapsible@collapsed": [
+    "missing|This is a simple rich text block inside a container.|0",
+    "missing|Section title|0",
+    "missing|This is a section block with markdown text inside the container.|0"
+  ],
+  "catalog/container/data-entry-form": [
+    "extra|Select priority|0",
+    "extra|Select category|0"
+  ],
+  "catalog/container/full-width": [],
+  "catalog/container/header-divider": [],
+  "catalog/container/icon-plus-subtitle": [],
+  "catalog/container/media-preview": [],
+  "catalog/container/standard-width": [],
+  "catalog/container/with-callout": [],
+  "catalog/container/with-image": [],
+  "catalog/data-visualization/area-multi-series": [
+    "missing|Users|0",
+    "extra|Users|0"
+  ],
+  "catalog/data-visualization/area-negative-values": [
+    "missing|Delta ($)|0",
+    "extra|Delta ($)|0"
+  ],
+  "catalog/data-visualization/area-single-series": [
+    "missing|Users|0",
+    "extra|Users|0"
+  ],
+  "catalog/data-visualization/bar-multi-series": [
+    "missing|Messages|0",
+    "extra|Messages|0"
+  ],
+  "catalog/data-visualization/bar-negative-values": [
+    "missing|People (delta)|0",
+    "extra|People (delta)|0"
+  ],
+  "catalog/data-visualization/bar-single-series": [
+    "missing|Messages|0",
+    "extra|Messages|0"
+  ],
+  "catalog/data-visualization/line-multi-series": [
+    "missing|Users|0",
+    "extra|Users|0"
+  ],
+  "catalog/data-visualization/line-negative-values": [
+    "missing|Delta ($)|0",
+    "extra|Delta ($)|0"
+  ],
+  "catalog/data-visualization/line-single-series": [
+    "missing|Users|0",
+    "extra|Users|0"
+  ],
+  "catalog/data-visualization/pie-dominant-segment": [],
+  "catalog/data-visualization/pie-multi-segment": [],
+  "catalog/data-visualization/pie-single-segment": [],
+  "catalog/image/no-title": [
+    "missing|(71 kB)|0"
+  ],
+  "catalog/image/no-title@hidden": [
+    "missing|(71 kB)|0"
+  ],
+  "catalog/image/title": [
+    "missing|(71 kB)|0"
+  ],
+  "catalog/image/title@hidden": [
+    "missing|(71 kB)|0"
+  ],
+  "catalog/input/checkboxes": [],
+  "catalog/input/datepicker": [],
+  "catalog/input/dispatches-actions": [
+    "x|Press 'enter' to submit|0",
+    "width|Press 'enter' to submit|0",
+    "color|Press 'enter' to submit|0"
+  ],
+  "catalog/input/dispatches-custom-actions": [],
+  "catalog/input/multi-static-select": [],
+  "catalog/input/multi-users-select": [],
+  "catalog/input/multiline-plain-text-input": [],
+  "catalog/input/plain-text-input": [],
+  "catalog/input/radio-buttons": [],
+  "catalog/input/static-select": [
+    "extra|Select an item|0"
+  ],
+  "catalog/input/timepicker": [],
+  "catalog/markdown/code": [
+    "missing|Markdown|0"
+  ],
+  "catalog/markdown/headings-and-dividers": [
+    "missing|Markdown|0"
+  ],
+  "catalog/markdown/inline-styles": [
+    "missing|Markdown|0"
+  ],
+  "catalog/markdown/table": [
+    "missing|Markdown|0"
+  ],
+  "catalog/reference/fallback-canary": [],
+  "catalog/rich-text/basic": [],
+  "catalog/rich-text/bold": [],
+  "catalog/rich-text/emoji": [],
+  "catalog/rich-text/italic": [],
+  "catalog/rich-text/kitchen-sink": [],
+  "catalog/rich-text/list": [
+    "missing|item 2: this is a list item|0",
+    "missing|item 4: we are near the end|0",
+    "missing|item 5: this is the end|0",
+    "extra|item 2:|0",
+    "extra|this is a list item|0",
+    "extra|item 4:|0",
+    "extra|we are near the end|0",
+    "extra|item 5:|0",
+    "extra|this is the end|0"
+  ],
+  "catalog/rich-text/preformatted": [],
+  "catalog/rich-text/strikethrough": [],
+  "catalog/section/button": [
+    "missing|Click Me|0",
+    "extra|Click Me|0"
+  ],
+  "catalog/section/checkboxes": [
+    "missing|This is a section block with checkboxes.|0",
+    "extra|This is a section block with checkboxes.|0"
+  ],
+  "catalog/section/datepicker": [],
+  "catalog/section/image": [],
+  "catalog/section/link-button": [
+    "missing|Click Me|0",
+    "extra|Click Me|0"
+  ],
+  "catalog/section/markdown": [],
+  "catalog/section/multi-conversations-select": [
+    "missing|Select conversations|0",
+    "extra|Select conversations|0"
+  ],
+  "catalog/section/multi-static-select": [
+    "missing|Select options|0",
+    "extra|Select options|0"
+  ],
+  "catalog/section/overflow": [],
+  "catalog/section/plain-text": [],
+  "catalog/section/radio-buttons": [
+    "missing|Section block with radio buttons|0",
+    "extra|Section block with radio buttons|0"
+  ],
+  "catalog/section/static-select": [
+    "extra|Select an item|0"
+  ],
+  "catalog/section/text-fields": [],
+  "catalog/section/timepicker": [
+    "missing|1:37 PM|0",
+    "extra|1:37 PM|0"
+  ],
+  "catalog/section/users-select": [
+    "extra|Select a user|0"
+  ],
+  "catalog/structure/default": [],
+  "catalog/structure/divider": [],
+  "catalog/structure/level-1": [],
+  "catalog/structure/level-2": [],
+  "catalog/structure/level-3": [],
+  "catalog/structure/level-4": [],
+  "catalog/structure/markdown": [],
+  "catalog/structure/plain-text": [],
+  "catalog/structure/text-and-images": [],
+  "catalog/table/basic-data-table": [
+    "width|Acme Expansion Deal|0",
+    "width|Weather Forecast Integration|0",
+    "width|Retail Partner Portal|0",
+    "width|Sustainable Materials Sourcing|0",
+    "width|Global Distribution Network|0",
+    "x|proposal sent|0",
+    "width|proposal sent|0"
+  ],
+  "catalog/table/numeric-sort-data-table": [],
+  "catalog/table/numeric-sort-data-table@sort-asc": [],
+  "catalog/table/paginated-data-table": [
+    "width|Acme Expansion Deal|0",
+    "width|Weather Forecast Integration|0",
+    "width|Retail Partner Portal|0",
+    "width|Sustainable Materials Sourcing|0",
+    "width|Global Distribution Network|0"
+  ],
+  "catalog/table/paginated-data-table@page-2": [
+    "width|Cloud Migration Project|0",
+    "width|Data Analytics Platform|0"
+  ],
+  "catalog/table/simple-table": [],
+  "extra/actions/more-elements": [
+    "missing|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
+    "extra|Search tickets|0",
+    "extra|Pick a channel|0",
+    "extra|January 1st, 2026|0",
+    "extra|Time zone:|0",
+    "extra|Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
+  ],
+  "extra/context-actions/feedback-row": [],
+  "extra/context/mixed": [],
+  "extra/home/dashboard": [
+    "y|Home|0",
+    "missing|New ticket|0",
+    "extra|New ticket|0"
+  ],
+  "extra/input/datetimepicker": [
+    "missing|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
+    "extra|January 1st, 2026|0",
+    "extra|Time zone:|0",
+    "extra|Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
+  ],
+  "extra/input/more-selects": [
+    "color|Options load from the app as you type.|0",
+    "missing|You can select up to 3 items.|0",
+    "extra|Select a conversation|0",
+    "extra|You can select up to|0",
+    "extra|3|0",
+    "extra|items|0",
+    "extra|.|0"
+  ],
+  "extra/input/text-inputs": [
+    "color|We'll only use this for receipts.|0"
+  ],
+  "extra/media/video": [],
+  "extra/modal/alert": [],
+  "extra/modal/form": [
+    "x|(optional)|0",
+    "y|(optional)|0",
+    "width|(optional)|0",
+    "color|(optional)|0",
+    "color|Steps to reproduce help a lot.|0"
+  ],
+  "extra/modal/rich-and-file": [
+    "missing|Write something|0"
+  ],
+  "extra/rich-text/mentions-and-styles": [
+    "missing|@here|0",
+    "missing|· colour #1264A3|0",
+    "extra|@|0",
+    "extra|here|0",
+    "extra|· colour|0",
+    "extra|#1264A3|0"
+  ],
+  "extra/section/text-and-fields": [
+    "missing|View|0",
+    "extra|View|0"
+  ],
+  "interactive/open-modal": [
+    "missing|New request|0",
+    "extra|New request|0",
+    "extra|Search fruit|0"
+  ],
+  "interactive/update-message": [],
+  "message/approval": [],
+  "message/mrkdwn": [
+    "missing|@U123|0",
+    "missing|@here|0",
+    "missing|const answer = 42;|0",
+    "missing|console.log(answer < 100);|0",
+    "extra|@|0",
+    "extra|U123|0",
+    "extra|@|1",
+    "extra|here|0",
+    "extra|const answer = 42; console.log(answer < 100);|0"
+  ],
+  "message/section-accessory": [
+    "missing|Learn more|0",
+    "missing|(14 kB)|0",
+    "extra|Learn more|0"
+  ]
+}
