@@ -538,7 +538,48 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
     }
   });
+
+  describe("card icon", () => {
+    // Slack's sample icons are square, so no reference shows this: a 2:1 icon must letterbox
+    // (36 x 18 in the 36px slot), not be cropped to fill it.
+    it("shows a wide icon whole instead of cropping it", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "card",
+            icon: { type: "image", image_url: WIDE_GREEN_ICON, alt_text: "Icon" },
+            title: { type: "mrkdwn", text: "Title" },
+          },
+        ],
+      });
+      expect(await greenExtent(page, ".sbk-card__icon")).toEqual({ width: 36, height: 18 });
+    });
+  });
 });
+
+/** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
+const WIDE_GREEN_ICON = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="36"><rect width="72" height="36" fill="#00c800"/></svg>',
+)}`;
+
+/** How far the green image paints along the element's middle row and middle column, at 1x. */
+async function greenExtent(page: Page, selector: string) {
+  const { PNG } = await import("pngjs");
+  const png = PNG.sync.read(
+    await page.locator(selector).first().screenshot({ animations: "disabled" }),
+  );
+  const green = (x: number, y: number) => {
+    const i = (y * png.width + x) * 4;
+    return png.data[i]! < 60 && png.data[i + 1]! > 160 && png.data[i + 2]! < 60;
+  };
+  const midX = Math.floor(png.width / 2);
+  const midY = Math.floor(png.height / 2);
+  let width = 0;
+  let height = 0;
+  for (let x = 0; x < png.width; x++) if (green(x, midY)) width++;
+  for (let y = 0; y < png.height; y++) if (green(midX, y)) height++;
+  return { width, height };
+}
 
 /**
  * Where the checkmark paints in a checked box at rest at 2x: [left, top, right, bottom] in device
