@@ -8,9 +8,10 @@
   margin-bottom: 8px;
 }
 
+/* Slack's `c-label__optional_tag` uses the tertiary grey, like the hint text. */
 .sbk-input__optional {
   font-weight: 400;
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 /* Selects and date/time pickers default to a fixed ~190px width (their size as a section/actions accessory), but
