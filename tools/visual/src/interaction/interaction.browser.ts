@@ -555,6 +555,31 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(await greenExtent(page, ".sbk-card__icon")).toEqual({ width: 36, height: 18 });
     });
   });
+
+  describe("rich text input", () => {
+    // The style isolation in base.css reverts every property, and WebKit makes `contenteditable`
+    // editable through `-webkit-user-modify`, which `revert` would undo.
+    it("takes focus and the text typed into it", async () => {
+      const page = await harness.open({
+        view: {
+          type: "modal",
+          title: plain("New entry"),
+          blocks: [
+            {
+              type: "input",
+              block_id: "summary",
+              label: plain("Summary"),
+              element: { type: "rich_text_input", action_id: "a" },
+            },
+          ],
+        },
+      });
+      const editor = page.locator(".sbk-rich-text-input__editor");
+      await editor.click();
+      await page.keyboard.type("Hello");
+      expect(await editor.textContent()).toBe("Hello");
+    });
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
