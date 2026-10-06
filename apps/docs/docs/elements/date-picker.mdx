@@ -185,6 +185,16 @@ When `initial_date` is set, the action carries it too (`"initial_date": "2024-06
 does; the placeholder isn't sent. The initial value is also reported as state as soon as the
 element mounts. You don't need an interaction first to read it back.
 
+### Keyboard
+
+As in Slack, the calendar opens with its right edge on the field's, and opening it with a click
+focuses the selected day (or today). Tabbing into the field opens the calendar too but leaves focus
+in the field, so Tab keeps moving through the form; ArrowDown moves into the calendar. There, the
+arrow keys move a day left or right and a week up or down, turning the month when they cross its
+edge, and Enter picks the focused day. The month grid is a single tab stop. Picking a day or
+pressing Escape closes the calendar and returns focus to the field. The
+[datetime picker](/elements/datetime-picker)'s calendar uses the same arrow keys.
+
 ## Related
 
 <CardGroup cols={2}>

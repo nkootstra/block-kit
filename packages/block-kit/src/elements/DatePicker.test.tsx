@@ -8,6 +8,30 @@ import { clickAsync } from "./test-utils";
 
 afterEach(cleanup);
 
+/** Renders a datepicker set to 28 April 1990, opens its calendar and returns the field. */
+function open(onAction = vi.fn()) {
+  render(
+    <BlockKitProvider onAction={onAction}>
+      <DatePicker
+        element={
+          {
+            type: "datepicker",
+            action_id: "a1",
+            initial_date: "1990-04-28",
+          } as unknown as Datepicker
+        }
+        blockId="b1"
+      />
+    </BlockKitProvider>,
+  );
+  const input = screen.getByRole("textbox") as HTMLInputElement;
+  fireEvent.click(input);
+  return input;
+}
+
+const focusedDay = () => (document.activeElement as HTMLElement).textContent;
+const monthLabel = () => document.querySelector(".sbk-calendar__label")?.textContent;
+
 describe("<DatePicker>", () => {
   it("shows the placeholder when no date is selected", () => {
     render(
@@ -135,5 +159,83 @@ describe("<DatePicker>", () => {
     fireEvent.keyDown(input, { key: "Escape" });
     expect(input.getAttribute("aria-expanded")).toBe("false");
     expect(screen.queryByText("Previous month")).toBeNull();
+  });
+
+  describe("keyboard", () => {
+    it("keeps focus in the field when tabbing opens the calendar, and ArrowDown moves in", () => {
+      render(
+        <BlockKitProvider>
+          <DatePicker
+            element={
+              {
+                type: "datepicker",
+                action_id: "a1",
+                initial_date: "1990-04-28",
+              } as unknown as Datepicker
+            }
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      // Tabbing in: focus lands on the field without a click.
+      input.focus();
+      fireEvent.focus(input);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+      expect(document.activeElement).toBe(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      expect(focusedDay()).toBe("28");
+    });
+
+    it("focuses the selected day when the calendar opens", () => {
+      open();
+      expect(focusedDay()).toBe("28");
+    });
+
+    it("makes the month grid a single tab stop on the focused day", () => {
+      open();
+      const tabbable = [...document.querySelectorAll(".sbk-calendar__grid button")].filter(
+        (b) => (b as HTMLElement).tabIndex === 0,
+      );
+      expect(tabbable.map((b) => b.textContent)).toEqual(["28"]);
+    });
+
+    it("moves a day with ArrowLeft and ArrowRight", () => {
+      open();
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowRight" });
+      expect(focusedDay()).toBe("29");
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowLeft" });
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowLeft" });
+      expect(focusedDay()).toBe("27");
+    });
+
+    it("moves a week with ArrowUp and ArrowDown, into the next month when it has to", () => {
+      open();
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowUp" });
+      expect(focusedDay()).toBe("21");
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowDown" });
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowDown" });
+      expect([monthLabel(), focusedDay()]).toEqual(["May 1990", "5"]);
+    });
+
+    it("picks the focused day with Enter and returns focus to the field, closed", async () => {
+      const onAction = vi.fn();
+      const input = open(onAction);
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowRight" });
+      await clickAsync(document.activeElement!);
+      expect(onAction).toHaveBeenCalledWith(
+        expect.objectContaining({ selected_date: "1990-04-29" }),
+        expect.anything(),
+      );
+      expect(document.activeElement).toBe(input);
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("closes on Escape from the calendar and returns focus to the field", () => {
+      const input = open();
+      fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+      expect(document.activeElement).toBe(input);
+    });
   });
 });

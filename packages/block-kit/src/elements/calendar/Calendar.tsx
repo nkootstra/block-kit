@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 
 export interface CalendarProps {
   /** `YYYY-MM-DD`, or undefined for no selection. */
@@ -38,12 +38,61 @@ function Caret({ direction }: { direction: "left" | "right" }) {
   );
 }
 
+/** The day `delta` days after the `YYYY-MM-DD` date, as `YYYY-MM-DD`. */
+function addDays(iso: string, delta: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + delta);
+  return toISO(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+/** Days the arrow keys move the focused day: a day sideways, a week up or down. */
+const ARROW_DAYS: Record<string, number> = {
+  ArrowLeft: -1,
+  ArrowRight: 1,
+  ArrowUp: -7,
+  ArrowDown: 7,
+};
+
 /** A month grid matching Slack's `c-date_picker_calendar`: a bordered 7-column grid of 44×42
- * day cells, a ring around today, and solid blue for the selected day. */
+ * day cells, a ring around today, and solid blue for the selected day. The grid is one tab stop:
+ * the focused day (the selected one, else today, else the 1st) takes Tab, and the arrow keys move
+ * it a day or a week, turning the month when they cross its edge. */
 export function Calendar({ value, onSelect, onClear }: CalendarProps) {
   const initial = value ? new Date(`${value}T00:00:00Z`) : new Date();
   const [year, setYear] = useState(initial.getUTCFullYear());
   const [month, setMonth] = useState(initial.getUTCMonth());
+  const [focused, setFocused] = useState(() => {
+    if (value) return value;
+    const today = todayISO();
+    return today.startsWith(toISO(year, month, 1).slice(0, 7)) ? today : toISO(year, month, 1);
+  });
+  const gridRef = useRef<HTMLDivElement>(null);
+  // Only the keyboard moves DOM focus; a month turned with the arrow buttons leaves it alone.
+  const moveFocus = useRef(false);
+
+  useEffect(() => {
+    if (!moveFocus.current) return;
+    moveFocus.current = false;
+    gridRef.current?.querySelector<HTMLElement>(`[data-date="${focused}"]`)?.focus();
+  }, [focused, year, month]);
+
+  function onGridKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const delta = ARROW_DAYS[e.key];
+    if (delta === undefined) return;
+    e.preventDefault();
+    const next = addDays(focused, delta);
+    const [y = year, m = month + 1] = next.split("-").map(Number);
+    moveFocus.current = true;
+    setFocused(next);
+    if (y !== year || m - 1 !== month) {
+      setYear(y);
+      setMonth(m - 1);
+    }
+  }
+
+  // The focused day stays in the shown month: turning the month with the buttons moves it there.
+  const shown = toISO(year, month, 1).slice(0, 7);
+  const tabStop = focused.startsWith(shown) ? focused : toISO(year, month, 1);
 
   const first = new Date(Date.UTC(year, month, 1));
   const startWeekday = first.getUTCDay();
@@ -92,7 +141,7 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
           <span key={w}>{w}</span>
         ))}
       </div>
-      <div className="sbk-calendar__grid">
+      <div className="sbk-calendar__grid" ref={gridRef} onKeyDown={onGridKeyDown}>
         {cells.map((day, i) => {
           if (day === null)
             return <span key={i} className="sbk-calendar__cell sbk-calendar__cell--empty" />;
@@ -107,6 +156,9 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
               className={classes.join(" ")}
               aria-pressed={iso === value}
               aria-current={iso === today ? "date" : undefined}
+              data-date={iso}
+              tabIndex={iso === tabStop ? 0 : -1}
+              onFocus={() => setFocused(iso)}
               onClick={() => onSelect(iso)}
             >
               {day}
