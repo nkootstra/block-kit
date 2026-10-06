@@ -2,8 +2,7 @@
   "catalog/actions/all-selects": [
     "extra|Select a conversation|0",
     "extra|Select a channel|0",
-    "extra|Select a user|0",
-    "extra|Select an item|0"
+    "extra|Select a user|0"
   ],
   "catalog/actions/button": [],
   "catalog/actions/checkboxes": [],
@@ -78,10 +77,7 @@
     "missing|Section title|0",
     "missing|This is a section block with markdown text inside the container.|0"
   ],
-  "catalog/container/data-entry-form": [
-    "extra|Select priority|0",
-    "extra|Select category|0"
-  ],
+  "catalog/container/data-entry-form": [],
   "catalog/container/full-width": [],
   "catalog/container/header-divider": [],
   "catalog/container/icon-plus-subtitle": [],
@@ -149,9 +145,7 @@
   "catalog/input/multiline-plain-text-input": [],
   "catalog/input/plain-text-input": [],
   "catalog/input/radio-buttons": [],
-  "catalog/input/static-select": [
-    "extra|Select an item|0"
-  ],
+  "catalog/input/static-select": [],
   "catalog/input/timepicker": [],
   "catalog/markdown/code": [
     "missing|Markdown|0"
@@ -213,9 +207,7 @@
     "missing|Section block with radio buttons|0",
     "extra|Section block with radio buttons|0"
   ],
-  "catalog/section/static-select": [
-    "extra|Select an item|0"
-  ],
+  "catalog/section/static-select": [],
   "catalog/section/text-fields": [],
   "catalog/section/timepicker": [
     "missing|1:37 PM|0",
