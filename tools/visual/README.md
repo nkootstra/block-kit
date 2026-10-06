@@ -148,7 +148,9 @@ it's hovered, pressed, focused or animating. `src/interaction/interaction.browse
 Chromium, Firefox and WebKit: `src/interaction/harness.ts` bundles the library's source like the
 render diff does, draws a payload in a blank page, and drives it with a real pointer and keyboard.
 Each case asserts a computed style or a painted pixel against Slack's value, such as the grey of a
-pressed select, the red focus ring of an invalid input or the 80ms curve of a button.
+pressed select, the red focus ring of an invalid input or the 80ms curve of a button. It also
+covers rendering no reference can show, such as a non-square card icon, which Slack's sample payloads
+don't have.
 
 - Styles are read once transitions finish (`settle`); looping animations such as a status spinner
   are left running.
