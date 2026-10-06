@@ -10,6 +10,7 @@
  * changed fixture and theme it writes `<fixture>.<theme>.{before,after,diff}.png`; manifest.json
  * lists them, plus the renders that failed.
  */
+import { isFixturePayload } from "../lock";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { Glob } from "bun";
@@ -78,7 +79,7 @@ export async function renderDiff(options: {
 async function listFixtures(prefixes: string[]): Promise<string[]> {
   const names: string[] = [];
   for await (const path of new Glob("**/*.json").scan(FIXTURES)) {
-    if (path === "references.lock.json" || path.startsWith("visual-baseline.")) continue;
+    if (!isFixturePayload(path)) continue;
     const name = path.replace(/\.json$/, "");
     if (prefixes.length === 0 || prefixes.some((p) => name.startsWith(p))) names.push(name);
   }
