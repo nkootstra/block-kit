@@ -125,7 +125,7 @@
   "extra/modal/alert": 0.01,
   "extra/modal/form": 0.1,
   "extra/modal/rich-and-file": 0.15,
-  "extra/rich-text/mentions-and-styles": 1.09,
+  "extra/rich-text/mentions-and-styles": 0.02,
   "extra/section/text-and-fields": 0,
   "interactive/open-modal": 0,
   "interactive/update-message": 0.02,

@@ -267,9 +267,6 @@
   "extra/context-actions/feedback-row": [],
   "extra/context/mixed": [],
   "extra/home/dashboard": [
-    "y|Home|0",
-    "width|Home|0",
-    "font-size|Home|0",
     "missing|New ticket|0",
     "extra|New ticket|0"
   ],
@@ -298,10 +295,6 @@
     "missing|Write something|0"
   ],
   "extra/rich-text/mentions-and-styles": [
-    "y|First|0",
-    "y|Second|0",
-    "y|Nested bullet|0",
-    "y|Third (offset)|0",
     "missing|@here|0",
     "missing|· colour #1264A3|0",
     "extra|@|0",
