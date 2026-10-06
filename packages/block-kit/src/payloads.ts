@@ -33,6 +33,8 @@ export interface PayloadIdentity {
   token?: string;
   triggerId?: string;
   responseUrl?: string;
+  /** Whether the app is installed org-wide on an Enterprise Grid org (`is_enterprise_install`). */
+  isEnterpriseInstall?: boolean;
 }
 
 const DEFAULT_IDENTITY = {
@@ -43,6 +45,7 @@ const DEFAULT_IDENTITY = {
   triggerId: "000000000000.000000000000.deadbeefdeadbeefdeadbeefdeadbeef",
   responseUrl:
     "https://hooks.slack.com/actions/T00000000/0000000000000/deadbeefdeadbeefdeadbeefdeadbeef",
+  isEnterpriseInstall: false,
 };
 
 type ResolvedIdentity = typeof DEFAULT_IDENTITY;
@@ -172,10 +175,19 @@ export interface BuildBlockActionsPayloadOptions {
   identity?: PayloadIdentity;
 }
 
+/** The Enterprise Grid org a payload came from, as Slack names it. */
+export interface PayloadEnterprise {
+  id: string;
+  name: string;
+}
+
 interface BlockActionsPayloadBase {
   type: "block_actions";
   actions: BlockAction[];
   team: PayloadTeam | null;
+  /** The team's Enterprise Grid org, or `null` outside one. */
+  enterprise: PayloadEnterprise | null;
+  is_enterprise_install: boolean;
   user: PayloadUser;
   token?: string;
   response_url?: string;
@@ -224,6 +236,10 @@ export function buildBlockActionsPayload({
     type: "block_actions" as const,
     actions: [normalizeEchoes(action)],
     team: id.team,
+    enterprise: id.team?.enterprise_id
+      ? { id: id.team.enterprise_id, name: id.team.enterprise_name ?? "" }
+      : null,
+    is_enterprise_install: id.isEnterpriseInstall,
     user: id.user,
     token: id.token,
     response_url: id.responseUrl,

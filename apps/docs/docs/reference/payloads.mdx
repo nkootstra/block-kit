@@ -34,6 +34,8 @@ A message container gives a payload with `channel`, `message` and `state`; a vie
 
 Text objects come back the way Slack echoes them: every `plain_text` object in the action and in `state` (the button `text`, a `placeholder`, the `confirm` dialog, an option's `text` and `description`) gets `emoji: true`, and every `mrkdwn` one gets `verbatim: false`, unless you set them.
 
+Like Slack's, the payload carries `enterprise` and `is_enterprise_install`. `enterprise` is `null` unless the identity's `team` has an `enterprise_id`, which makes it `{ id, name }` (from `enterprise_id` and `enterprise_name`). `is_enterprise_install` is `false` unless the identity sets `isEnterpriseInstall`.
+
 ## buildViewSubmissionPayload
 
 A `view_submission` payload: the modal's submit button was pressed.
@@ -73,4 +75,4 @@ type OptionsResponse =
 | `Container`              | `MessageContainer \| ViewContainer`                                                                   |
 | `ViewLike`               | The view fields the builders read and echo back                                                       |
 | `ViewResponseAction`     | What `onSubmit` may return: `errors`, `update`, `push` or `clear`                                     |
-| `PayloadIdentity`        | `team`, `user`, `apiAppId`, `token`, `triggerId`, `responseUrl`                                       |
+| `PayloadIdentity`        | `team`, `user`, `apiAppId`, `token`, `triggerId`, `responseUrl`, `isEnterpriseInstall`                |

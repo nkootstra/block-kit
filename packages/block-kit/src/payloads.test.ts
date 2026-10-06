@@ -159,3 +159,39 @@ describe("echoed text objects", () => {
     });
   });
 });
+
+describe("enterprise fields", () => {
+  const container = { type: "message" as const, messageTs: "1700000000.000100" };
+
+  it("are null and false outside an Enterprise Grid org, as Slack sends them", () => {
+    const payload = buildBlockActionsPayload({ action, state: {}, container });
+    expect(payload.enterprise).toBeNull();
+    expect(payload.is_enterprise_install).toBe(false);
+  });
+
+  it("name the org the team belongs to", () => {
+    const payload = buildBlockActionsPayload({
+      action,
+      state: {},
+      container,
+      identity: {
+        team: { id: "T0ACME", domain: "acme", enterprise_id: "E0ACME", enterprise_name: "Acme" },
+      },
+    });
+    expect(payload.enterprise).toEqual({ id: "E0ACME", name: "Acme" });
+    expect(payload.is_enterprise_install).toBe(false);
+  });
+
+  it("mark an org-wide install", () => {
+    const payload = buildBlockActionsPayload({
+      action,
+      state: {},
+      container,
+      identity: {
+        team: { id: "T0ACME", domain: "acme", enterprise_id: "E0ACME", enterprise_name: "Acme" },
+        isEnterpriseInstall: true,
+      },
+    });
+    expect(payload.is_enterprise_install).toBe(true);
+  });
+});
