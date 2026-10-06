@@ -202,6 +202,9 @@
   gap: 4px;
   height: 32px;
   margin-left: 25px;
+  /* Slack's tab title is a size up from body text, at the same 22/15 line-height ratio. */
+  font-size: 16px;
+  line-height: 1.4667;
   font-weight: 700;
   /* Slack's aubergine, independent of the app's primary (green) buttons. */
   box-shadow: inset 0 -2px 0 0 rgb(74, 21, 75);
