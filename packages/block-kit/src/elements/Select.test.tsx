@@ -13,6 +13,10 @@ function opt(value: string, text: string): PlainTextOption {
   return { value, text: { type: "plain_text", text } } as unknown as PlainTextOption;
 }
 
+/** The option as Slack sends it back in an action: its plain_text gains `emoji: true`. */
+function sent(value: string, text: string) {
+  return { value, text: { type: "plain_text", text, emoji: true } };
+}
 describe("<Select> static_select", () => {
   it("reports initial_option as selected_option on mount", () => {
     let state: StateValues = {};
@@ -59,7 +63,7 @@ describe("<Select> static_select", () => {
         type: "static_select",
         action_id: "a1",
         block_id: "b1",
-        selected_option: opt("b", "B"),
+        selected_option: sent("b", "B"),
       }),
       expect.anything(),
     );
@@ -86,12 +90,12 @@ describe("<Select> static_select", () => {
     fireEvent.click(screen.getByRole("button", { expanded: false }));
     await clickAsync(screen.getByText("A"));
     expect(onAction).toHaveBeenLastCalledWith(
-      expect.objectContaining({ selected_options: [opt("a", "A")] }),
+      expect.objectContaining({ selected_options: [sent("a", "A")] }),
       expect.anything(),
     );
     await clickAsync(screen.getByText("B"));
     expect(onAction).toHaveBeenLastCalledWith(
-      expect.objectContaining({ selected_options: [opt("a", "A"), opt("b", "B")] }),
+      expect.objectContaining({ selected_options: [sent("a", "A"), sent("b", "B")] }),
       expect.anything(),
     );
   });
@@ -238,7 +242,7 @@ describe("<Select> users_select / channels_select", () => {
     expect(screen.getByText("B").closest("[data-active]")).toBeTruthy();
     await keyDownAsync(trigger, "Enter");
     expect(onAction).toHaveBeenCalledWith(
-      expect.objectContaining({ selected_option: opt("b", "B") }),
+      expect.objectContaining({ selected_option: sent("b", "B") }),
       expect.anything(),
     );
   });
@@ -324,7 +328,7 @@ describe("<Select> external_select with onOptions", () => {
 
     await clickAsync(screen.getByRole("option", { name: "Apricot" }));
     expect(onAction).toHaveBeenCalledWith(
-      expect.objectContaining({ action_id: "fruit", selected_option: opt("apricot", "Apricot") }),
+      expect.objectContaining({ action_id: "fruit", selected_option: sent("apricot", "Apricot") }),
       expect.anything(),
     );
   });
@@ -439,7 +443,7 @@ describe("<Select> max_selected_items", () => {
     await clickAsync(screen.getByRole("option", { name: "C" }));
     expect(onAction).toHaveBeenCalledTimes(2);
     expect(onAction).toHaveBeenLastCalledWith(
-      expect.objectContaining({ selected_options: [opt("a", "A"), opt("b", "B")] }),
+      expect.objectContaining({ selected_options: [sent("a", "A"), sent("b", "B")] }),
       expect.anything(),
     );
   });
@@ -488,7 +492,7 @@ describe("<Select> multi_external_select with onOptions", () => {
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({
         type: "multi_external_select",
-        selected_options: [opt("x-1", "x one"), opt("y-2", "y two")],
+        selected_options: [sent("x-1", "x one"), sent("y-2", "y two")],
       }),
       expect.anything(),
     );
@@ -558,7 +562,7 @@ describe("<Select> multi-select chips", () => {
     expect(onAction).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "multi_static_select",
-        selected_options: [opt("b", "Bravo")],
+        selected_options: [sent("b", "Bravo")],
       }),
       expect.anything(),
     );
@@ -573,7 +577,7 @@ describe("<Select> multi-select chips", () => {
     await keyDownAsync(screen.getByRole("button", { name: "Remove Alpha" }), "Enter");
     expect(onAction).toHaveBeenCalledTimes(1);
     expect(onAction).toHaveBeenCalledWith(
-      expect.objectContaining({ selected_options: [opt("b", "Bravo")] }),
+      expect.objectContaining({ selected_options: [sent("b", "Bravo")] }),
       expect.anything(),
     );
   });

@@ -11,6 +11,11 @@ function option(value: string, text: string): Option {
   return { value, text: { type: "plain_text", text } } as unknown as Option;
 }
 
+/** The option as Slack sends it back in an action: its plain_text gains `emoji: true`. */
+function sent(value: string, text: string) {
+  return { value, text: { type: "plain_text", text, emoji: true } };
+}
+
 describe("<Checkboxes>", () => {
   it("reports initial_options as selected_options on mount", () => {
     let state: StateValues = {};
@@ -58,7 +63,7 @@ describe("<Checkboxes>", () => {
         type: "checkboxes",
         action_id: "a1",
         block_id: "b1",
-        selected_options: [option("a", "A")],
+        selected_options: [sent("a", "A")],
       }),
       expect.anything(),
     );
