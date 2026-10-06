@@ -28,18 +28,31 @@ async (win = window) => {
   fdoc.open();
   fdoc.write("<!doctype html><body></body>");
   fdoc.close();
+  // A tag's defaults, as its replay will resolve them. Many are em-based (an <hr>'s 0.5em margin,
+  // an <h2>'s 1.5em font size): measured at the iframe's 16px they'd match Slack's 8px margin and
+  // leave it out, and the replay would resolve 0.5em at Slack's 15px. So each probe sits in a
+  // parent at the element's parent's font size and takes the element's own font size, except for
+  // `font-size` itself, which defaults relative to the parent.
   const defaults = new Map();
-  const defaultsFor = (el) => {
-    const key = `${el.namespaceURI}|${el.localName}`;
+  const defaultsFor = (el, fontSize, parentFontSize) => {
+    const key = `${el.namespaceURI}|${el.localName}|${fontSize}|${parentFontSize}`;
     if (!defaults.has(key)) {
-      const probe = fdoc.createElementNS(el.namespaceURI, el.localName);
-      (el.namespaceURI === "http://www.w3.org/2000/svg" && el.localName !== "svg"
-        ? fdoc.body.appendChild(fdoc.createElementNS(el.namespaceURI, "svg"))
-        : fdoc.body
-      ).appendChild(probe);
-      const cs = frame.contentWindow.getComputedStyle(probe);
+      const probeIn = (ownFontSize) => {
+        const wrapper = fdoc.createElement("div");
+        if (parentFontSize) wrapper.style.fontSize = parentFontSize;
+        fdoc.body.appendChild(wrapper);
+        const probe = fdoc.createElementNS(el.namespaceURI, el.localName);
+        if (ownFontSize && probe.style) probe.style.fontSize = ownFontSize;
+        (el.namespaceURI === "http://www.w3.org/2000/svg" && el.localName !== "svg"
+          ? wrapper.appendChild(fdoc.createElementNS(el.namespaceURI, "svg"))
+          : wrapper
+        ).appendChild(probe);
+        return frame.contentWindow.getComputedStyle(probe);
+      };
+      const cs = probeIn(fontSize);
       const map = {};
       for (let i = 0; i < cs.length; i++) map[cs[i]] = cs.getPropertyValue(cs[i]);
+      map["font-size"] = probeIn(undefined).getPropertyValue("font-size");
       defaults.set(key, map);
     }
     return defaults.get(key);
@@ -53,41 +66,62 @@ async (win = window) => {
   // scroller) equals the tag default, but still has to be inlined or the parent's value wins.
   const INHERITED =
     /^(color|font|line-height|letter-spacing|word-spacing|text-align|text-indent|text-transform|text-shadow|text-wrap|white-space|word-break|overflow-wrap|hyphens|tab-size|direction|visibility|list-style|quotes|-webkit-text-security)/;
-  // getComputedStyle gives the used size of a box, so freezing it pins sizes Slack lets the content
-  // decide: a label sized to its text, serialized a hair short ("100.062px" for 100.0625), wraps
-  // on replay; a grid's resolved track list includes its implicit rows, so frozen as explicit rows
-  // an item placed after the grid lands one row lower. CSS Typed OM gives the computed value
-  // instead ("auto", "auto auto"): content-sized widths and heights are left out so the replay
-  // sizes them the same way, and track lists keep their authored form. Replaced elements and SVG
-  // keep their used size, since their content (an image that fails to load) may not replay.
+  // Every box keeps its used size: leaving the sizes the content decides to the replay changes
+  // what the boxes around them shrink and grow to (a checkbox label's text lost 4px to the box
+  // beside it and wrapped). Three corrections make the frozen sizes replay exactly:
+  // - A width serializes to six significant digits, so 100.0625 comes out as "100.062px": a hair
+  //   short, and a label sized to its text wraps. Layout works in 1/64px units, so a width is
+  //   rounded up to the next unit (less the serialization error), which recovers the exact value.
+  // - Frozen sizes are final, so a flex item in a row is pinned to its width (flex: 0 0 <width>):
+  //   with widths rounded up, a full row could overflow by a fraction of a pixel and squeeze a
+  //   tight label after all, and an item with its own flex-basis would ignore its width.
+  // - A grid's resolved track list includes its implicit rows; frozen as explicit rows, an item
+  //   placed after the grid lands a row lower. CSS Typed OM gives the authored list ("auto auto").
+  // - A height the page leaves at `auto` isn't frozen: a box with a set height stops its last
+  //   child's bottom margin from collapsing through it, so the block after it moved up by that
+  //   margin. With every width frozen, the content lays out the same and gives the same height.
+  //   Images and form controls keep theirs, since an image that fails to load may not replay.
   const REPLACED = /^(img|svg|video|canvas|iframe|object|embed|input|textarea|select)$/i;
-  const INTRINSIC = /^(auto|min-content|max-content|fit-content)$/;
-  const authoredSizes = (el) => {
-    if (!el.computedStyleMap || REPLACED.test(el.localName)) return {};
-    if (el.namespaceURI !== "http://www.w3.org/1999/xhtml") return {};
-    const map = el.computedStyleMap();
+  const UNIT = 64;
+  const roundUpToUnit = (px) => Math.ceil(px * UNIT - 0.032) / UNIT;
+  const sizeOverrides = (el, cs, parentStyle) => {
     const out = {};
-    for (const prop of ["width", "height"]) {
-      if (INTRINSIC.test(String(map.get(prop)))) out[prop] = null;
+    const width = cs.getPropertyValue("width");
+    if (/^[\d.]+px$/.test(width)) out.width = `${roundUpToUnit(Number.parseFloat(width))}px`;
+    if (
+      out.width &&
+      parentStyle &&
+      parentStyle.display.endsWith("flex") &&
+      parentStyle.flexDirection.startsWith("row") &&
+      cs.position !== "absolute" &&
+      cs.position !== "fixed"
+    ) {
+      out["flex-basis"] = out.width;
+      out["flex-grow"] = "0";
+      out["flex-shrink"] = "0";
     }
-    for (const prop of ["grid-template-rows", "grid-template-columns"]) {
-      const value = String(map.get(prop));
-      if (value !== "none") out[prop] = value;
+    if (el.computedStyleMap && el.namespaceURI === "http://www.w3.org/1999/xhtml") {
+      const map = el.computedStyleMap();
+      if (!REPLACED.test(el.localName) && String(map.get("height")) === "auto") out.height = null;
+      for (const prop of ["grid-template-rows", "grid-template-columns"]) {
+        const value = String(map.get(prop));
+        if (value !== "none") out[prop] = value;
+      }
     }
     return out;
   };
 
   // A pseudo-element inherits from its host, not from a plain span: pass the host's computed style
   // as `host` so a value that differs from it (an icon's upright glyph in an italic <i>) is kept.
-  // For an element, `host` is its parent and only inherited properties are compared. `authored`
-  // replaces used values with authored ones; null leaves the property out.
-  const diff = (cs, base, host, inheritedOnly = false, authored = {}) => {
+  // For an element, `host` is its parent and only inherited properties are compared. `overrides`
+  // replaces computed values (see sizeOverrides); null leaves the property out.
+  const diff = (cs, base, host, inheritedOnly = false, overrides = {}) => {
     const out = [];
     for (let i = 0; i < cs.length; i++) {
       const prop = cs[i];
       if (SKIP.test(prop)) continue;
-      if (authored[prop] === null) continue;
-      const value = authored[prop] ?? cs.getPropertyValue(prop);
+      if (overrides[prop] === null) continue;
+      const value = overrides[prop] ?? cs.getPropertyValue(prop);
       if (
         value !== base[prop] ||
         (host && (!inheritedOnly || INHERITED.test(prop)) && value !== host.getPropertyValue(prop))
@@ -142,7 +176,14 @@ async (win = window) => {
 
   const pseudoRules = [];
   let refs = 0;
-  const abs = (url) => new URL(url, win.location.href).href;
+  // A page without a base URL (about:blank) can't resolve a relative URL; keep it as written.
+  const abs = (url) => {
+    try {
+      return new URL(url, win.location.href).href;
+    } catch {
+      return url;
+    }
+  };
 
   const freeze = (src, parent) => {
     if (src.nodeType === win.Node.TEXT_NODE) return doc.createTextNode(src.data);
@@ -166,8 +207,9 @@ async (win = window) => {
     if (el.localName === "a") el.setAttribute("href", abs(src.getAttribute("href") || "#"));
     if (el.localName === "input" || el.localName === "textarea")
       el.setAttribute("value", src.value);
-    el.setAttribute("style", diff(cs, defaultsFor(src), parent, true, authoredSizes(src)));
-    const moves = motionOf(cs, defaultsFor(src), parent);
+    const base = defaultsFor(src, cs.fontSize, parent?.fontSize);
+    el.setAttribute("style", diff(cs, base, parent, true, sizeOverrides(src, cs, parent)));
+    const moves = motionOf(cs, base, parent);
     if (Object.keys(moves).length > 0) {
       el.setAttribute("data-ref", String(++refs));
       motion[el.getAttribute("data-ref")] = moves;
@@ -177,13 +219,14 @@ async (win = window) => {
       const ps = win.getComputedStyle(src, pseudo);
       if (ps.content && ps.content !== "none" && ps.content !== "normal") {
         if (!el.hasAttribute("data-ref")) el.setAttribute("data-ref", String(++refs));
-        const base = defaultsFor({
-          namespaceURI: "http://www.w3.org/1999/xhtml",
-          localName: "span",
-        });
+        const pseudoBase = defaultsFor(
+          { namespaceURI: "http://www.w3.org/1999/xhtml", localName: "span" },
+          ps.fontSize,
+          cs.fontSize,
+        );
         pseudoRules.push(
           cssAscii(
-            `[data-ref="${el.getAttribute("data-ref")}"]${pseudo}{content:${ps.content};${diff(ps, base, cs)}}`,
+            `[data-ref="${el.getAttribute("data-ref")}"]${pseudo}{content:${ps.content};${diff(ps, pseudoBase, cs)}}`,
           ),
         );
       }
@@ -196,7 +239,9 @@ async (win = window) => {
     return el;
   };
 
-  const frozen = freeze(root, root.parentElement && win.getComputedStyle(root.parentElement));
+  // The root replays inside a bare #sbk-reference, not inside Slack's app, so what it inherits
+  // (Slack's font) is compared with the defaults, not with its parent, and written down.
+  const frozen = freeze(root, null);
   frame.remove();
 
   // Pin the message timestamp so references don't change between captures. Only the timestamp:

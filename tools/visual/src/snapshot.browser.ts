@@ -1,11 +1,13 @@
 // Needs Chromium (`bunx playwright install chromium`); run with `bun run test:browser`.
 // snapshot.js freezes the Builder preview into a reference. These cases build small pages the way
 // Slack lays them out, snapshot them, replay the snapshot and check it lays out like the original.
-import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import { afterAll, beforeAll, describe, expect, it, setDefaultTimeout } from "bun:test";
 import { join, resolve } from "node:path";
 import { type Browser, chromium, type Page } from "playwright";
 import { collectTextRuns } from "./collectTextRuns";
 import { createHarness, type Harness, settle } from "./interaction/harness";
+
+setDefaultTimeout(30_000);
 
 const SNAPSHOT = await Bun.file(join(import.meta.dir, "snapshot.js")).text();
 const ROOT = resolve(import.meta.dir, "../../..");
@@ -95,6 +97,20 @@ describe("snapshot.js", () => {
       `<div style="display:flex"><label id="label"><span id="name" style="display:inline-block;width:60.0625px"></span><span id="optional" style="display:inline-block;width:40px"></span></label></div>`,
     );
     expect(replayed.optional).toEqual(live.optional);
+    expect(replayed.label).toEqual(live.label);
+  });
+
+  it("keeps a checkbox label's text on one line in a row its flex layout packed tight", async () => {
+    // Slack's checkbox option (catalog/section/checkboxes): a flex label holds the box's wrapper
+    // and the text, and the flex layout shrinks the wrapper below its 26px content to fit. Left to
+    // size from its content on replay, the wrapper took 4px from the text and it wrapped. This
+    // page only approximates Slack's CSS, which the captures don't carry, so it guards the shape;
+    // the fixture replays in snapshotReplay.browser.ts are what caught the regression class.
+    const { live, replayed } = await snapshotAndReplay(
+      `<div style="display:flex"><div id="element"><label id="label" style="display:flex;width:149.461px;font:700 15px sans-serif"><span id="box" style="display:block;min-width:0"><input type="checkbox" style="display:flex;flex:none;width:14px;height:14px;margin:3px 8px 3px 4px"></span><span id="text" style="display:block;min-width:0">*this is mrkdwn text*</span></label></div></div>`,
+    );
+    expect(replayed.text).toEqual(live.text);
+    expect(replayed.box).toEqual(live.box);
     expect(replayed.label).toEqual(live.label);
   });
 

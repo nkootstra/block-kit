@@ -91,13 +91,28 @@ way to read the exact paddings, line heights and colours Slack uses.
 3. Copy the resulting JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.
 
-`snapshot.js` inlines each element's computed styles, but not every used size. A width or height
-the page leaves to the content (`auto` and the intrinsic keywords, read through CSS Typed OM) is
-left out, so the replay sizes the box the way Slack did; frozen, a label's text could need a
-fraction of a pixel more than its serialized width and wrap. Grid track lists keep their authored
-form (`auto auto`), because the resolved list also contains the implicit rows, which would push an
-item placed after the grid one row down. Images, SVG and form controls keep their used size. The
-browser test `src/snapshot.browser.ts` checks that a replay lays out like the live page.
+`snapshot.js` inlines each element's computed styles, with a few corrections so the frozen copy
+lays out like the live page:
+
+- **Widths are all frozen,** rounded up to the next 1/64px layout unit. A width serializes to six
+  significant digits ("100.062px" for 100.0625), and a label sized to its text would wrap a hair
+  short. Leaving content-sized widths to the replay is worse: it changes what the boxes beside them
+  shrink and grow to, so a checkbox label's text lost 4px and wrapped.
+- **A flex item in a row is pinned** to its frozen width (`flex: 0 0 <width>`), so the rounded-up
+  row can't squeeze a tight item and an item with its own `flex-basis` doesn't ignore its width.
+- **Heights left at `auto` aren't frozen** (read through CSS Typed OM). A box with a set height stops
+  its last child's bottom margin from collapsing through it; with the widths frozen, the content
+  lays out the same and gives the same height. Images and form controls keep theirs.
+- **Grid track lists keep their authored form** (`auto auto`): the resolved list also contains the
+  implicit rows, which would push an item placed after the grid one row down.
+- **Tag defaults are read at the element's font size.** A style equal to its tag's default is left
+  out, but many defaults are em-based: an `<hr>`'s 8px margin matched the default at the probe's
+  16px and replayed as 7.5px at Slack's 15px.
+- **The root writes down what it inherits** (Slack's font), since it replays in a bare page.
+
+`src/snapshotReplay.browser.ts` checks all of this without the Builder: our own rendering of every
+fixture is snapshotted the way the capture loop does it, replayed, and every element must land
+within 0.5px of where it was live. `src/snapshot.browser.ts` holds the small reproductions.
 
 Snapshots are normalized (`normalize.ts`) so timestamps, avatars and generated ids don't produce
 noise. After adding a normalize rule, run `bun tools/visual/src/renormalize.ts` to rewrite the
