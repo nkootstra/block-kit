@@ -4,6 +4,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { join, resolve } from "node:path";
 import { type Browser, chromium, type Page } from "playwright";
+import { collectTextRuns } from "./collectTextRuns";
 import { createHarness, type Harness, settle } from "./interaction/harness";
 
 const SNAPSHOT = await Bun.file(join(import.meta.dir, "snapshot.js")).text();
@@ -141,6 +142,49 @@ describe("snapshot.js", () => {
       expect(moved.slice(0, 3)).toEqual([]);
     });
   }
+
+  describe("motion", () => {
+    const BUTTON = `<button id="save" style="transition:background-color 80ms cubic-bezier(.36,.19,.29,1);cursor:pointer">Save</button><p id="still">Still</p>`;
+
+    it("records an element's transitions in the meta, not in its style", async () => {
+      await page.setContent(
+        `<!doctype html><body style="margin:0"><div class="p-bkb_preview__message" style="width:400px">${BUTTON}</div></body>`,
+      );
+      const html = await snapshot(page);
+      const meta = JSON.parse(
+        html.match(
+          /<script type="application\/json" id="sbk-reference-meta">(.*?)<\/script>/s,
+        )![1]!,
+      );
+      const ref = html.match(/<button id="save"[^>]*data-ref="(\d+)"/)?.[1];
+      expect(meta.motion[ref!]).toMatchObject({
+        "transition-property": "background-color",
+        "transition-duration": "0.08s",
+        "transition-timing-function": "cubic-bezier(0.36, 0.19, 0.29, 1)",
+        cursor: "pointer",
+      });
+      await page.setContent(html);
+      expect(
+        await page.evaluate(
+          () => getComputedStyle(document.getElementById("save")!).transitionDuration,
+        ),
+      ).toBe("0s");
+    });
+
+    it("reads the same motion from a reference as from the live page", async () => {
+      const live = `<!doctype html><body style="margin:0"><div class="p-bkb_preview__message" style="width:400px">${BUTTON}</div></body>`;
+      await page.setContent(live);
+      const ours = await page.evaluate(collectTextRuns, ".p-bkb_preview__message");
+      const html = await snapshot(page);
+      await page.setContent(html);
+      const reference = await page.evaluate(collectTextRuns, "#sbk-reference > *");
+      expect(ours.map((r) => r.motion)).toEqual([
+        "transition background-color 0.08s cubic-bezier(0.36, 0.19, 0.29, 1) 0s",
+        "",
+      ]);
+      expect(reference.map((r) => r.motion)).toEqual(ours.map((r) => r.motion));
+    });
+  });
 
   it("keeps a size the page sets explicitly", async () => {
     const { live, replayed } = await snapshotAndReplay(

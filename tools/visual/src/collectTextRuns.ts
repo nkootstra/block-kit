@@ -20,6 +20,58 @@ export function collectTextRuns(selector: string): TextRun[] {
     return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0, parts[3] ?? 1];
   };
 
+  // A reference keeps its motion in the meta (snapshot.js leaves it out of the inlined styles);
+  // one captured before snapshots recorded motion has no `motion` there, and its runs get none.
+  const metaElement = document.getElementById("sbk-reference-meta");
+  const recorded: Record<string, Record<string, string>> | undefined = metaElement
+    ? JSON.parse(metaElement.textContent ?? "{}").motion
+    : undefined;
+  const knowsMotion = !metaElement || recorded !== undefined;
+
+  // "transition <property> <duration> <easing> <delay>; animation <name> …" for whatever moves,
+  // or "" for nothing. Easings hold commas (cubic-bezier), so lists split outside parentheses.
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
+  const describeMotion = (get: (prop: string) => string | undefined): string => {
+    const list = (prop: string, fallback: string) =>
+      (get(prop) ?? fallback).split(/,\s*(?![^(]*\))/);
+    const at = (values: string[], i: number) => values[i % values.length] ?? "";
+    const parts: string[] = [];
+    const properties = list("transition-property", "all");
+    const durations = list("transition-duration", "0s");
+    const easings = list("transition-timing-function", "ease");
+    const delays = list("transition-delay", "0s");
+    properties.forEach((property, i) => {
+      const duration = at(durations, i);
+      if (duration === "0s") return;
+      parts.push(`transition ${property} ${duration} ${at(easings, i)} ${at(delays, i)}`);
+    });
+    const names = list("animation-name", "none");
+    const animationDurations = list("animation-duration", "0s");
+    const animationEasings = list("animation-timing-function", "ease");
+    const iterations = list("animation-iteration-count", "1");
+    names.forEach((name, i) => {
+      if (name === "none") return;
+      parts.push(
+        `animation ${name} ${at(animationDurations, i)} ${at(animationEasings, i)} ${at(iterations, i)}`,
+      );
+    });
+    return parts.join("; ");
+  };
+  const motionOf = (el: Element): string | undefined => {
+    if (!knowsMotion) return undefined;
+    for (let e: Element | null = el; e && root.contains(e); e = e.parentElement) {
+      const entry = recorded?.[e.getAttribute("data-ref") ?? ""];
+      const style = recorded ? undefined : getComputedStyle(e);
+      const described = recorded
+        ? entry
+          ? describeMotion((prop) => entry[prop])
+          : ""
+        : describeMotion((prop) => style?.getPropertyValue(prop));
+      if (described) return described;
+    }
+    return "";
+  };
+
   const runs: TextRun[] = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const range = document.createRange();
@@ -65,6 +117,7 @@ export function collectTextRuns(selector: string): TextRun[] {
       color: style.color,
       opacity,
       background: `rgb(${background.map(Math.round).join(", ")})`,
+      motion: motionOf(el),
     });
   }
   return runs;

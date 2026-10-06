@@ -65,4 +65,20 @@ describe("collectTextRuns", () => {
     );
     expect(result.map((r) => r.text)).toEqual(["Shown"]);
   });
+
+  it("reads the motion of the nearest element that transitions or animates", async () => {
+    const [inButton, outside] = await runs(
+      '<button style="transition:opacity 150ms ease-out 20ms"><span>Go</span></button><p>Still</p>',
+    );
+    expect(inButton?.motion).toBe("transition opacity 0.15s ease-out 0.02s");
+    expect(outside?.motion).toBe("");
+  });
+
+  it("leaves motion unknown on a reference captured before snapshots recorded it", async () => {
+    await page.setContent(
+      `<script type="application/json" id="sbk-reference-meta">{"width":400}</script><div id="root"><button data-ref="1">Go</button></div>`,
+    );
+    const [run] = await page.evaluate(collectTextRuns, "#root");
+    expect(run?.motion).toBeUndefined();
+  });
 });

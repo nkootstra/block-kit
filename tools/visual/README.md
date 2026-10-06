@@ -62,6 +62,23 @@ and a run only one side has is keyed `missing` or `extra`.
   resolved findings, but never adds a finding to a fixture it already lists.
 - `--text-baseline=<file>` checks against another file, as `--baseline` does for pixels.
 
+### Motion
+
+A frozen render shouldn't move, so `snapshot.js` keeps transitions, animations, `cursor` and
+`pointer-events` out of the inlined styles. It records them in the reference's meta instead, under
+`motion`, keyed by each element's `data-ref`. The text-run check compares the motion of the nearest
+element that transitions or animates behind each matched pair (`transition <property> <duration>
+<easing> <delay>`), on Slack's side from the meta and on ours from the computed style. Differences
+show as `<n> moving differently` on the fixture's line and as `motion` lines in a filtered run:
+
+```text
+         motion "Save": Slack transition background-color 0.08s cubic-bezier(0.36, 0.19, 0.29, 1) 0s, ours transition background-color 0.15s ease 0s
+```
+
+Motion is reported only: it isn't a text-baseline finding and never fails `--check`. References
+captured before snapshots recorded motion have no `motion` in their meta, and their runs aren't
+compared.
+
 `bun tools/visual/src/inspect.ts <fixture> [--ours]` prints a box-model tree, which is the quickest
 way to read the exact paddings, line heights and colours Slack uses.
 
