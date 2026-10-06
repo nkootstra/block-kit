@@ -53,15 +53,41 @@ async (win = window) => {
   // scroller) equals the tag default, but still has to be inlined or the parent's value wins.
   const INHERITED =
     /^(color|font|line-height|letter-spacing|word-spacing|text-align|text-indent|text-transform|text-shadow|text-wrap|white-space|word-break|overflow-wrap|hyphens|tab-size|direction|visibility|list-style|quotes|-webkit-text-security)/;
+  // getComputedStyle gives the used size of a box, so freezing it pins sizes Slack lets the content
+  // decide: a label sized to its text, serialized a hair short ("100.062px" for 100.0625), wraps
+  // on replay; a grid's resolved track list includes its implicit rows, so frozen as explicit rows
+  // an item placed after the grid lands one row lower. CSS Typed OM gives the computed value
+  // instead ("auto", "auto auto"): content-sized widths and heights are left out so the replay
+  // sizes them the same way, and track lists keep their authored form. Replaced elements and SVG
+  // keep their used size, since their content (an image that fails to load) may not replay.
+  const REPLACED = /^(img|svg|video|canvas|iframe|object|embed|input|textarea|select)$/i;
+  const INTRINSIC = /^(auto|min-content|max-content|fit-content)$/;
+  const authoredSizes = (el) => {
+    if (!el.computedStyleMap || REPLACED.test(el.localName)) return {};
+    if (el.namespaceURI !== "http://www.w3.org/1999/xhtml") return {};
+    const map = el.computedStyleMap();
+    const out = {};
+    for (const prop of ["width", "height"]) {
+      if (INTRINSIC.test(String(map.get(prop)))) out[prop] = null;
+    }
+    for (const prop of ["grid-template-rows", "grid-template-columns"]) {
+      const value = String(map.get(prop));
+      if (value !== "none") out[prop] = value;
+    }
+    return out;
+  };
+
   // A pseudo-element inherits from its host, not from a plain span: pass the host's computed style
   // as `host` so a value that differs from it (an icon's upright glyph in an italic <i>) is kept.
-  // For an element, `host` is its parent and only inherited properties are compared.
-  const diff = (cs, base, host, inheritedOnly = false) => {
+  // For an element, `host` is its parent and only inherited properties are compared. `authored`
+  // replaces used values with authored ones; null leaves the property out.
+  const diff = (cs, base, host, inheritedOnly = false, authored = {}) => {
     const out = [];
     for (let i = 0; i < cs.length; i++) {
       const prop = cs[i];
       if (SKIP.test(prop)) continue;
-      const value = cs.getPropertyValue(prop);
+      if (authored[prop] === null) continue;
+      const value = authored[prop] ?? cs.getPropertyValue(prop);
       if (
         value !== base[prop] ||
         (host && (!inheritedOnly || INHERITED.test(prop)) && value !== host.getPropertyValue(prop))
@@ -107,7 +133,7 @@ async (win = window) => {
     if (el.localName === "a") el.setAttribute("href", abs(src.getAttribute("href") || "#"));
     if (el.localName === "input" || el.localName === "textarea")
       el.setAttribute("value", src.value);
-    el.setAttribute("style", diff(cs, defaultsFor(src), parent, true));
+    el.setAttribute("style", diff(cs, defaultsFor(src), parent, true, authoredSizes(src)));
 
     for (const pseudo of ["::before", "::after"]) {
       const ps = win.getComputedStyle(src, pseudo);
