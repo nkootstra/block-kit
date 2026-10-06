@@ -291,9 +291,7 @@
     "x|(optional)|0",
     "y|(optional)|0"
   ],
-  "extra/modal/rich-and-file": [
-    "missing|Write something|0"
-  ],
+  "extra/modal/rich-and-file": [],
   "extra/rich-text/mentions-and-styles": [
     "missing|@here|0",
     "missing|· colour #1264A3|0",
