@@ -1,0 +1,70 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U00000000",
+    "username": "user",
+    "name": "user",
+    "team_id": "T00000000"
+  },
+  "api_app_id": "<api_app_id>",
+  "token": "<token>",
+  "container": {
+    "type": "message",
+    "text": "The contents of the original message where the action originated"
+  },
+  "trigger_id": "<trigger_id>",
+  "team": {
+    "id": "T00000000",
+    "domain": "workspace"
+  },
+  "enterprise": null,
+  "is_enterprise_install": false,
+  "state": {
+    "values": {
+      "<block_id>": {
+        "actionId-0": {
+          "type": "checkboxes",
+          "selected_options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "*this is plain_text text*",
+                "emoji": true
+              },
+              "value": "value-0",
+              "description": {
+                "type": "plain_text",
+                "text": "*this is plain_text text*",
+                "emoji": true
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "response_url": "<response_url>",
+  "actions": [
+    {
+      "type": "checkboxes",
+      "block_id": "<block_id>",
+      "action_id": "actionId-0",
+      "selected_options": [
+        {
+          "text": {
+            "type": "plain_text",
+            "text": "*this is plain_text text*",
+            "emoji": true
+          },
+          "value": "value-0",
+          "description": {
+            "type": "plain_text",
+            "text": "*this is plain_text text*",
+            "emoji": true
+          }
+        }
+      ],
+      "action_ts": "<action_ts>"
+    }
+  ]
+}
