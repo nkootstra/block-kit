@@ -32,6 +32,8 @@ const payload = buildBlockActionsPayload({
 
 A message container gives a payload with `channel`, `message` and `state`; a view container gives one with `view`, whose `state` holds the values. The return type narrows to match.
 
+Text objects come back the way Slack echoes them: every `plain_text` object in the action and in `state` (the button `text`, a `placeholder`, the `confirm` dialog, an option's `text` and `description`) gets `emoji: true`, and every `mrkdwn` one gets `verbatim: false`, unless you set them.
+
 ## buildViewSubmissionPayload
 
 A `view_submission` payload: the modal's submit button was pressed.

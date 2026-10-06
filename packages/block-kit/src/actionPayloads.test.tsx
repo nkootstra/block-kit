@@ -119,10 +119,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     "is_enterprise_install: Slack false, ours missing",
   ],
   "extra/actions/more-elements@confirm-delete": [
-    "actions.0.confirm.confirm.emoji: Slack true, ours missing",
-    "actions.0.confirm.deny.emoji: Slack true, ours missing",
-    "actions.0.confirm.text.verbatim: Slack false, ours missing",
-    "actions.0.confirm.title.emoji: Slack true, ours missing",
     "enterprise: Slack null, ours missing",
     "is_enterprise_install: Slack false, ours missing",
   ],
