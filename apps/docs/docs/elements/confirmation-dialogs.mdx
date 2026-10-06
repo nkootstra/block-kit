@@ -38,8 +38,9 @@ with it, a modal dialog appears first; the underlying action only fires if the u
 
 Click Delete: the dialog opens and the actions log below stays empty until you pick a button.
 Choosing "Delete" logs the `block_actions` payload for the button, exactly as if it had been
-clicked with no `confirm` at all. Choosing "Cancel" (or clicking outside the dialog) closes it and
-nothing is logged: no action fires, and no element state changes.
+clicked with no `confirm` at all. Choosing "Cancel" (or pressing Escape, the close button, or
+clicking outside the dialog) closes it and nothing is logged: no action fires, and no element state
+changes.
 
 ## Fields
 
@@ -185,12 +186,23 @@ happens when the user chooses confirm or deny:
   all. `onAction` fires with the element's normal payload, and (for stateful elements like
   selects, checkboxes, radio buttons, and date/time pickers) `state.values` updates to the new
   value.
-- **Deny, or dismiss by clicking outside the dialog**: the dialog closes and nothing else
-  happens. `onAction` doesn't fire, `state.values` doesn't change, and (for a `url` button) no new
+- **Deny, or dismiss with Escape, the close button or a click outside the dialog**: the dialog
+  closes and nothing else happens. `onAction` doesn't fire, `state.values` doesn't change, and (for a `url` button) no new
   tab opens. The element is left exactly as it was before the interaction.
 
 There's no separate action payload for the confirm/deny choice itself. Slack doesn't report it,
 and neither does this library.
+
+### Keyboard and screen readers
+
+The dialog draws as Slack's does: 520px wide, with the title and a close button on top, and it
+fades in over 80ms (at once with reduced motion). When it opens, focus moves to the deny button,
+the least destructive choice, and Tab stays inside the dialog until it closes. Closing it gives
+focus back to the element that opened it.
+
+It's an `alertdialog` with `aria-modal`, named by its title and described by its text, so a screen
+reader reads the question out as it opens. Slack itself marks it `role="dialog"`; `alertdialog` is
+the role WAI-ARIA gives a dialog that interrupts to ask for confirmation.
 
 ## Related
 
