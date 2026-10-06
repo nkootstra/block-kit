@@ -10,6 +10,8 @@ export interface Mount {
   theme?: "light" | "dark";
   /** Validation errors by block_id, as an app returns them with `response_action: "errors"`. */
   errors?: Record<string, string>;
+  /** A modal any action opens through `views.open`, as an app answering the interaction would. */
+  opens?: { type: "modal"; [key: string]: unknown };
 }
 
 export const ENGINES = { chromium, firefox, webkit } satisfies Record<string, BrowserType>;

@@ -13,12 +13,15 @@ declare global {
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-window.mountBlockKit = ({ blocks, view, theme = "light", errors }) => {
+window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens }) => {
   root.render(
     <BlockKitProvider
       timeZone="UTC"
       theme={theme}
       errors={errors}
+      onAction={(_action, { views }) => {
+        if (opens) views.open(opens as unknown as Parameters<typeof views.open>[0]);
+      }}
       surface={view ? (view.type as "modal" | "home") : "message"}
     >
       <div id="sbk-render" style={{ width: 600 }}>

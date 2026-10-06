@@ -9,6 +9,9 @@ A modal is a `<Modal>` rendering a `view`: a title, a scrollable body of blocks,
 close/submit footer. You rarely render one directly: instead a button's `onAction` opens it through
 `views`, the same `views.open` / `views.push` / `views.update` an app would call.
 
+A modal opened through `views` sits centred on a dimmed overlay, with Slack's modal shadow. The dim
+fades in over 80ms, as Slack's does; with reduced motion turned on, it appears at once.
+
 <Preview
   actions
   opens={{
