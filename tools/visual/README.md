@@ -74,6 +74,14 @@ way to read the exact paddings, line heights and colours Slack uses.
 3. Copy the resulting JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.
 
+`snapshot.js` inlines each element's computed styles, but not every used size. A width or height
+the page leaves to the content (`auto` and the intrinsic keywords, read through CSS Typed OM) is
+left out, so the replay sizes the box the way Slack did; frozen, a label's text could need a
+fraction of a pixel more than its serialized width and wrap. Grid track lists keep their authored
+form (`auto auto`), because the resolved list also contains the implicit rows, which would push an
+item placed after the grid one row down. Images, SVG and form controls keep their used size. The
+browser test `src/snapshot.browser.ts` checks that a replay lays out like the live page.
+
 Snapshots are normalized (`normalize.ts`) so timestamps, avatars and generated ids don't produce
 noise. After adding a normalize rule, run `bun tools/visual/src/renormalize.ts` to rewrite the
 committed references.

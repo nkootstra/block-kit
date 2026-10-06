@@ -9,7 +9,7 @@
     "compare:check": "bun src/compare.ts --check",
     "type-check": "tsc --noEmit",
     "test": "bun test",
-    "test:browser": "bun test ./src/render/renderer.browser.ts ./src/render/render-diff.browser.ts ./src/render/dark-theme.browser.ts ./src/collectTextRuns.browser.ts ./src/interaction/interaction.browser.ts",
+    "test:browser": "bun test ./src/snapshot.browser.ts ./src/render/renderer.browser.ts ./src/render/render-diff.browser.ts ./src/render/dark-theme.browser.ts ./src/collectTextRuns.browser.ts ./src/interaction/interaction.browser.ts",
     "render:diff": "bun src/render/render-diff.ts"
   },
   "devDependencies": {
