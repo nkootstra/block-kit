@@ -9,9 +9,10 @@
   max-height: min(640px, 90vh);
   background: var(--sbk-bg);
   border-radius: 8px;
+  /* Slack's `.c-sk-modal`: a hairline ring and a deep, soft drop shadow. */
   box-shadow:
     0 0 0 1px var(--sbk-border),
-    0 8px 28px rgba(0, 0, 0, 0.28);
+    0 18px 48px rgba(0, 0, 0, 0.35);
   overflow: hidden;
 }
 
@@ -227,7 +228,9 @@
   padding: 25px;
 }
 
-/* Modals opened through `views` sit centred on a dimmed, full-viewport overlay, as in Slack. */
+/* Modals opened through `views` sit centred on a dimmed, full-viewport overlay, as in Slack. The
+   dim is a pseudo-element, like Slack's `.c-sk-overlay::before`, so it can fade in on its own
+   (80ms, linear) while the modal above it stays opaque. */
 .sbk-modal-layer {
   position: fixed;
   inset: 0;
@@ -236,10 +239,31 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
+}
+
+.sbk-modal-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  animation: sbk-overlay-fade-in 80ms linear;
+}
+
+@keyframes sbk-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sbk-modal-layer::before {
+    animation: none;
+  }
 }
 
 .sbk-modal-layer__view {
+  /* Above the dim, which is positioned and would otherwise paint over it. */
+  position: relative;
   display: flex;
   justify-content: center;
   width: 100%;

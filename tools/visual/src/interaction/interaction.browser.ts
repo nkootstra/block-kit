@@ -616,6 +616,57 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(await underline()).toBe("21px x 1.5px");
     });
   });
+
+  describe("modal overlay", () => {
+    // A button whose action opens a modal through `views.open`, as an app would.
+    const opener = (): Mount => ({
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type: "button", action_id: "open", text: plain("Open") }],
+        },
+      ],
+      opens: { type: "modal", title: plain("New entry"), blocks: [] },
+    });
+    const open = async (options?: { reducedMotion?: boolean }) => {
+      const page = await harness.open(opener(), options);
+      await page.click(".sbk-button");
+      await page.waitForSelector(".sbk-modal-layer .sbk-modal");
+      return page;
+    };
+    const dim = (page: Page) =>
+      page.locator(".sbk-modal-layer").evaluate((el) => {
+        const before = getComputedStyle(el, "::before");
+        return {
+          layer: getComputedStyle(el).backgroundColor,
+          dim: before.backgroundColor,
+          animation: `${before.animationName} ${before.animationDuration} ${before.animationTimingFunction}`,
+        };
+      });
+
+    // Slack's `.c-sk-overlay::before`: the dim fades from transparent at 80ms, linearly.
+    it("fades the dim in over 80ms", async () => {
+      const page = await open();
+      expect(await dim(page)).toEqual({
+        layer: "rgba(0, 0, 0, 0)",
+        dim: "rgba(0, 0, 0, 0.6)",
+        animation: "sbk-overlay-fade-in 0.08s linear",
+      });
+    });
+
+    it("shows the dim at once with reduced motion", async () => {
+      const page = await open({ reducedMotion: true });
+      expect((await dim(page)).animation.split(" ")[0]).toBe("none");
+    });
+
+    // Slack's `.c-sk-modal` shadow.
+    it("gives the modal Slack's shadow", async () => {
+      const page = await open();
+      expect((await style(page, ".sbk-modal-layer .sbk-modal")).boxShadow).toBe(
+        "rgba(29, 28, 29, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.35) 0px 18px 48px 0px",
+      );
+    });
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
