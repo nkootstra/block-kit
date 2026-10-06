@@ -17,11 +17,13 @@ function block(extra: Record<string, unknown>): InputBlock {
 
 const plain = (text: string) => ({ type: "plain_text", text });
 
-function control(role: "textbox" | "button") {
-  // The select and time picker triggers are the only buttons that open a popup.
+function control(role: "textbox" | "button" | "combobox") {
+  // The select trigger is the only button that opens a popup; the time picker types into a combobox.
   return role === "textbox"
     ? screen.getByRole("textbox")
-    : screen.getByRole("button", { expanded: false });
+    : role === "combobox"
+      ? screen.getByRole("combobox")
+      : screen.getByRole("button", { expanded: false });
 }
 
 describe("<Input> block", () => {
@@ -166,7 +168,7 @@ describe("<Input> block", () => {
         },
         "button",
       ],
-      ["a time picker", { type: "timepicker", action_id: "a1" }, "button"],
+      ["a time picker", { type: "timepicker", action_id: "a1" }, "combobox"],
     ] as const;
 
     it.each(controls)("marks %s invalid and describes it with the error", (_, element, role) => {

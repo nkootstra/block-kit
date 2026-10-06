@@ -4,6 +4,7 @@
 }
 
 .sbk-timepicker__control {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -26,6 +27,62 @@
 }
 
 .sbk-timepicker__control:hover .sbk-timepicker__chevron {
+  color: var(--sbk-text);
+}
+
+.sbk-timepicker__icon {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 20px;
+  color: var(--sbk-badge-text);
+}
+
+/* Slack's c-select_input: the time is typed into a text input that fills the box between the icons. */
+.sbk-timepicker__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--sbk-text);
+  text-overflow: ellipsis;
+  background: transparent;
+  border: 0;
+  outline: none;
+  cursor: inherit;
+}
+
+/* While the overlay below shows the chosen time, the input's own copy of it is transparent, as
+   Slack's `c-select_input--offscreen` is. */
+.sbk-timepicker__input--behind {
+  color: transparent;
+}
+
+/* Slack's `c-select_input__content`: the chosen time drawn in a layer over the whole field, 29px
+   in from either side (past the clock and the chevron), where the input's text would sit. Our
+   border is inside the box, so the padding is 1px less. Presses go through to the input. */
+.sbk-timepicker__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  pointer-events: none;
+}
+
+.sbk-timepicker__content-text {
+  display: block;
+  overflow: hidden;
+  line-height: 19.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-timepicker__input::placeholder {
+  color: var(--sbk-muted);
+  opacity: 1;
+}
+
+.sbk-timepicker__chevron {
   color: var(--sbk-text);
 }
 
@@ -61,8 +118,10 @@
   z-index: 10;
   top: 0;
   left: 0;
-  width: 100%;
-  max-height: 240px;
+  /* Slack's time list: 212px wide, up to 264px tall, starting 12px left of the field (the offset
+     is the Popover's). */
+  width: 212px;
+  max-height: 264px;
   overflow-y: auto;
   padding: 12px 0;
   /* The grey `c-select_options_list__wrapper` surface, as in Select.css. */

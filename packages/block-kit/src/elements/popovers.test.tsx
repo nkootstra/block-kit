@@ -21,7 +21,7 @@ const cases: { name: string; element: Json; open: (clip: HTMLElement) => HTMLEle
   {
     name: "timepicker",
     element: { type: "timepicker", action_id: "a", initial_time: "10:00" },
-    open: (clip) => clip.querySelector("button")!,
+    open: (clip) => clip.querySelector('[role="combobox"]')!,
   },
   {
     name: "datetimepicker",
