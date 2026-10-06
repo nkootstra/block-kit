@@ -1,0 +1,123 @@
+/* Slack's "Select options" dialog, opened by a multi_static_select section accessory. Its 520px
+   width is measured in Block Kit Builder; the rest follows Slack's dialog (c-sk-modal): an 8px
+   radius, a hairline ring with a deep drop shadow, a dimmed page behind it. No reference captures
+   it yet, so spacing beyond the width isn't verified pixel for pixel. */
+.sbk-select-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.sbk-select-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 520px;
+  max-width: 100%;
+  font: 15px / 22px var(--sbk-font);
+  color: var(--sbk-text);
+  background: var(--sbk-bg);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(29, 28, 29, 0.13),
+    0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+.sbk-select-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.sbk-select-dialog__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.27;
+}
+
+.sbk-select-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-right: -8px;
+  padding: 0;
+  color: var(--sbk-muted);
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sbk-select-dialog__close:hover {
+  color: var(--sbk-text);
+  background: var(--sbk-hover-overlay);
+}
+
+.sbk-select-dialog__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sbk-select-dialog__body {
+  padding: 0 24px;
+}
+
+/* The multi-select field: chips, then the input they're typed after. */
+.sbk-select-dialog__field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 8px 4px 0;
+  border: 1px solid rgb(124, 122, 127);
+  border-radius: 8px;
+}
+
+.sbk-select-dialog__field:focus-within {
+  border-color: transparent;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+.sbk-select-dialog__input {
+  flex: 1;
+  min-width: 80px;
+  margin: 4px 0 0 8px;
+  padding: 0;
+  font: inherit;
+  color: var(--sbk-text);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.sbk-select-dialog__input::placeholder {
+  color: var(--sbk-muted);
+  opacity: 1;
+}
+
+/* A chip's remove control is a real button here; drop the browser's button chrome. */
+.sbk-select-dialog__field .sbk-select__chip-remove {
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: 0;
+}
+
+.sbk-select-dialog__menu {
+  width: 100%;
+}
+
+.sbk-select-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+}

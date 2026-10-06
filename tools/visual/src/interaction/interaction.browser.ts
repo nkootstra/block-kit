@@ -366,6 +366,44 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  describe("multi-select section accessory", () => {
+    it("opens a 520px Select options dialog, focused, and shows the count after Confirm", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: { type: "mrkdwn", text: "Pick some" },
+            accessory: {
+              type: "multi_static_select",
+              action_id: "m",
+              placeholder: plain("Select options"),
+              options: [option("Alpha"), option("Bravo")],
+            },
+          },
+        ],
+      });
+      await page.click(".sbk-section__accessory .sbk-select__control");
+      await settle(page);
+      expect((await page.locator(".sbk-select-dialog").boundingBox())?.width).toBe(520);
+      expect(
+        await page.evaluate(() =>
+          document.activeElement?.classList.contains("sbk-select-dialog__input"),
+        ),
+      ).toBe(true);
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter");
+      // The list stays open over the footer while picking, as Slack's does; a press elsewhere in
+      // the dialog closes it.
+      await page.click(".sbk-select-dialog__title");
+      await page.click(".sbk-select-dialog .sbk-button--primary");
+      await settle(page);
+      expect(await page.locator(".sbk-select-dialog").count()).toBe(0);
+      expect(await page.locator(".sbk-section__accessory .sbk-select__control").textContent()).toBe(
+        "1 selected",
+      );
+    });
+  });
+
   describe("static select list", () => {
     const select: Mount = {
       blocks: [

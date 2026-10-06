@@ -1,5 +1,5 @@
 import type { OptionGroup, PlainTextOption } from "@slack/types";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
@@ -10,6 +10,8 @@ import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { Popover } from "./Popover";
+import { SectionAccessoryContext } from "./accessoryContext";
+import { SelectDialog } from "./SelectDialog";
 
 /**
  * One component renders every `*_select` element. The 5 data sources (static, external, users,
@@ -303,6 +305,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   // Slack's single static select is typed into (`c-select_input`): the field filters the options,
   // so there's no search box in the menu. The others open from a button.
   const typeable = source === "static" && !multi;
+  // As a section accessory, Slack's multi_static_select is a small button ("Select options", then
+  // "N selected") that opens a "Select options" dialog and sends once, on Confirm.
+  const inAccessory = useContext(SectionAccessoryContext);
+  const dialogMode = inAccessory && multi && source === "static";
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const combo = useCombobox({
     open,
@@ -403,6 +410,44 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       </div>
     </Popover>
   );
+
+  if (dialogMode) {
+    const closeDialog = () => {
+      setDialogOpen(false);
+      triggerRef.current?.focus();
+    };
+    return (
+      <div className={`sbk-select sbk-select--multi${sizeClass}`} ref={rootRef}>
+        <button
+          ref={triggerRef}
+          type="button"
+          className="sbk-select__control"
+          onClick={() => setDialogOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={dialogOpen}
+          {...invalid}
+        >
+          <span className="sbk-select__placeholder">
+            {items.length > 0 ? `${items.length} selected` : placeholder}
+          </span>
+        </button>
+        {dialogOpen && (
+          <SelectDialog
+            options={allOptions(element)}
+            initial={items.flatMap((i) => (i.option ? [i.option] : []))}
+            placeholder={placeholder}
+            onCancel={closeDialog}
+            onConfirm={async (selected) => {
+              closeDialog();
+              if (!(await ask())) return;
+              await commit(selected.map(optionToItem));
+            }}
+          />
+        )}
+        {dialog}
+      </div>
+    );
+  }
 
   if (typeable) {
     const unresolved = items[0] !== undefined && isUnresolved(items[0]);

@@ -1,5 +1,6 @@
 import type { SectionBlock } from "@slack/types";
 import { useState } from "react";
+import { SectionAccessoryContext } from "../elements/accessoryContext";
 import { Element } from "../elements/Element";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
@@ -57,7 +58,9 @@ export function Section({ block, blockId }: BlockProps<SectionBlock>) {
       </div>
       {accessory && (
         <div className={`sbk-section__accessory sbk-section__accessory--${accessory.type}`}>
-          <Element element={accessory} blockId={blockId} />
+          <SectionAccessoryContext.Provider value={true}>
+            <Element element={accessory} blockId={blockId} />
+          </SectionAccessoryContext.Provider>
         </div>
       )}
     </div>

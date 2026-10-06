@@ -185,6 +185,36 @@ keyboard focus; either way the action fires with the remaining `selected_options
   }}
 />
 
+As a section accessory, a multi-static-select is a small button, as in Slack: it reads the
+placeholder ("Select options"), then "2 selected" once options are chosen. Clicking it opens a
+"Select options" dialog with the field and its chips; the option list stays open while you pick,
+and nothing is sent until **Confirm**, which fires one action with every `selected_options` (and the
+`placeholder`). **Cancel**, the close button and Escape discard the picks. Focus moves into the
+dialog's field and back to the button when it closes.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        block_id: "labels",
+        text: { type: "mrkdwn", text: "*Labels*" },
+        accessory: {
+          type: "multi_static_select",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Select options" },
+          options: [
+            { text: { type: "plain_text", text: "Bug" }, value: "bug" },
+            { text: { type: "plain_text", text: "Feature" }, value: "feature" },
+            { text: { type: "plain_text", text: "Chore" }, value: "chore" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
 <TypeTable
   type={{
     options: {
