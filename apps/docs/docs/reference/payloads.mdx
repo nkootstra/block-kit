@@ -34,7 +34,7 @@ A message container gives a payload with `channel`, `message` and `state`; a vie
 
 Text objects come back the way Slack echoes them: every `plain_text` object in the action and in `state` (the button `text`, a `placeholder`, the `confirm` dialog, an option's `text` and `description`) gets `emoji: true`, and every `mrkdwn` one gets `verbatim: false`, unless you set them.
 
-Like Slack's, the payload carries `enterprise` and `is_enterprise_install`. `enterprise` is `null` unless the identity's `team` has an `enterprise_id`, which makes it `{ id, name }` (from `enterprise_id` and `enterprise_name`). `is_enterprise_install` is `false` unless the identity sets `isEnterpriseInstall`.
+Like Slack's, the payload carries `enterprise` and `is_enterprise_install`, and so do `view_submission`, `view_closed` and `block_suggestion` payloads. `enterprise` is `null` unless the identity's `team` has an `enterprise_id`, which makes it `{ id, name }` (from `enterprise_id` and `enterprise_name`). `is_enterprise_install` is `false` unless the identity sets `isEnterpriseInstall`.
 
 ## buildViewSubmissionPayload
 
@@ -49,7 +49,7 @@ const payload = buildViewSubmissionPayload({
 });
 ```
 
-`view.state.values` in the payload is the `state` you pass. Add `responseUrls` for modals with a `response_url_enabled` conversation select.
+`view.state.values` in the payload is the `state` you pass, with its text objects normalized like the action's. The view itself comes back the way Slack echoes a stored view: `title`, `submit`, `close` and every text object in `blocks` get `emoji: true` or `verbatim: false`, and each input block gets `optional: false` and `dispatch_action: false` unless set. The same applies to the `view` in `view_closed`, `block_suggestion` and a view's `block_actions`. Add `responseUrls` for modals with a `response_url_enabled` conversation select.
 
 ## buildViewClosedPayload
 
