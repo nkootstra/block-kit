@@ -1,8 +1,9 @@
 /**
  * Fixes known artifacts of the snapshot so references render the way the Builder did:
  *
- * - The snapshot pins the message time to 12:00 PM, but the timestamp spans keep the width of the
- *   time that was on screen. Drop their fixed sizes so the pinned text lays out naturally.
+ * - The snapshot pins the message time to 12:00 PM, but the timestamp spans keep the width (and,
+ *   as a flex item in the header, the flex basis) of the time that was on screen. Drop their fixed
+ *   sizes so the pinned text lays out naturally instead of wrapping onto a second line.
  * - Older snapshots read tag defaults in a quirks-mode frame, where inputs and textareas default
  *   to border-box, so Slack's border-box was never inlined and they render 17px too tall.
  * - A block captured while selected in the Builder keeps the selection's outline and drop shadow
@@ -31,7 +32,7 @@ export function normalize(html: string): string {
               .split(";")
               .filter(
                 (decl) =>
-                  !/^(width|height|min-width|max-width|perspective-origin|transform-origin):/.test(
+                  !/^(width|height|min-width|max-width|flex-basis|flex-grow|flex-shrink|perspective-origin|transform-origin):/.test(
                     decl,
                   ),
               );
