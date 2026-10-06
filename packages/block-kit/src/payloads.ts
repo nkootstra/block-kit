@@ -101,12 +101,12 @@ function toViewOutput(view: ViewLike, state: StateValues, identity: ResolvedIden
     bot_id: "B00000000",
     callback_id: view.callback_id ?? "",
     type: view.type,
-    title: view.title ?? null,
-    close: view.close ?? null,
-    submit: view.submit ?? null,
-    blocks: view.blocks,
+    title: normalizeText(view.title ?? null),
+    close: normalizeText(view.close ?? null),
+    submit: normalizeText(view.submit ?? null),
+    blocks: normalizeBlocks(view.blocks),
     private_metadata: view.private_metadata ?? "",
-    state: { values: state },
+    state: { values: normalizeState(state) },
     hash: view.hash ?? "0.0000000000",
     clear_on_close: view.clear_on_close ?? false,
     notify_on_close: view.notify_on_close ?? false,
@@ -166,6 +166,44 @@ function normalizeState(state: StateValues): StateValues {
       ),
     ]),
   );
+}
+
+/**
+ * Blocks as Slack echoes a stored view: every text object normalized like {@link normalizeText},
+ * and an input block's `optional` and `dispatch_action` filled in as `false`.
+ */
+function normalizeBlocks<T>(blocks: T): T {
+  return normalizeBlockNode(blocks) as T;
+}
+
+function normalizeBlockNode(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(normalizeBlockNode);
+  if (typeof node !== "object" || node === null) return node;
+  const object = node as Record<string, unknown>;
+  if (
+    (object.type === "plain_text" || object.type === "mrkdwn") &&
+    typeof object.text === "string"
+  ) {
+    return normalizeText(object);
+  }
+  const out = Object.fromEntries(
+    Object.entries(object).map(([key, value]) => [key, normalizeBlockNode(value)]),
+  );
+  if (object.type === "input") {
+    out.optional ??= false;
+    out.dispatch_action ??= false;
+  }
+  return out;
+}
+
+/** `enterprise` and `is_enterprise_install`, as every interaction payload carries them. */
+function enterpriseFields(id: ResolvedIdentity) {
+  return {
+    enterprise: id.team?.enterprise_id
+      ? { id: id.team.enterprise_id, name: id.team.enterprise_name ?? "" }
+      : null,
+    is_enterprise_install: id.isEnterpriseInstall,
+  };
 }
 
 export interface BuildBlockActionsPayloadOptions {
@@ -236,10 +274,7 @@ export function buildBlockActionsPayload({
     type: "block_actions" as const,
     actions: [normalizeEchoes(action)],
     team: id.team,
-    enterprise: id.team?.enterprise_id
-      ? { id: id.team.enterprise_id, name: id.team.enterprise_name ?? "" }
-      : null,
-    is_enterprise_install: id.isEnterpriseInstall,
+    ...enterpriseFields(id),
     user: id.user,
     token: id.token,
     response_url: id.responseUrl,
@@ -292,6 +327,7 @@ export function buildViewSubmissionPayload({
   return {
     type: "view_submission" as const,
     team: id.team,
+    ...enterpriseFields(id),
     user: {
       id: id.user.id,
       name: id.user.name ?? id.user.username ?? "",
@@ -324,6 +360,7 @@ export function buildViewClosedPayload({
   return {
     type: "view_closed" as const,
     team: id.team,
+    ...enterpriseFields(id),
     user: {
       id: id.user.id,
       name: id.user.name ?? id.user.username ?? "",
@@ -390,6 +427,7 @@ export function buildBlockSuggestionPayload({
     block_id: blockId,
     value,
     team: id.team,
+    ...enterpriseFields(id),
   };
 
   if (container.type === "message") {

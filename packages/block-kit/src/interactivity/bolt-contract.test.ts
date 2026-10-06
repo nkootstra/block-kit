@@ -108,6 +108,40 @@ describe("sendInteraction against a real @slack/bolt App", () => {
     });
   });
 
+  it("hands app.view(...) the enterprise fields and the view's normalized text", async () => {
+    const port = await startApp();
+    let received: { enterprise?: unknown; install?: unknown; title?: unknown } = {};
+    app?.view("new_ticket", async ({ ack, body, view }) => {
+      received = {
+        enterprise: body.enterprise,
+        install: body.is_enterprise_install,
+        title: view.title,
+      };
+      await ack();
+    });
+
+    const result = await sendInteraction({
+      requestUrl: `http://127.0.0.1:${port}/slack/events`,
+      signingSecret,
+      payload: buildViewSubmissionPayload({
+        view: {
+          type: "modal",
+          callback_id: "new_ticket",
+          blocks: [],
+          title: { type: "plain_text", text: "New ticket" },
+        },
+        state: {},
+      }),
+    });
+
+    expect(result.ok).toBe(true);
+    expect(received).toEqual({
+      enterprise: null,
+      install: false,
+      title: { type: "plain_text", text: "New ticket", emoji: true },
+    });
+  });
+
   it("round-trips a browser httpTransport through the signing relay to the app", async () => {
     const port = await startApp();
     app?.view("new_ticket", async ({ ack }) => {

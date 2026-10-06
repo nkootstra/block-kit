@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildBlockActionsPayload,
+  buildBlockSuggestionPayload,
   buildViewClosedPayload,
   buildViewSubmissionPayload,
   type ViewLike,
@@ -193,5 +194,104 @@ describe("enterprise fields", () => {
       },
     });
     expect(payload.is_enterprise_install).toBe(true);
+  });
+});
+
+describe("enterprise fields on view and suggestion payloads", () => {
+  const grid = {
+    team: { id: "T0ACME", domain: "acme", enterprise_id: "E0ACME", enterprise_name: "Acme" },
+    isEnterpriseInstall: true,
+  };
+  const builders = {
+    view_submission: (identity?: typeof grid) =>
+      buildViewSubmissionPayload({ view, state: {}, identity }),
+    view_closed: (identity?: typeof grid) => buildViewClosedPayload({ view, state: {}, identity }),
+    block_suggestion: (identity?: typeof grid) =>
+      buildBlockSuggestionPayload({
+        actionId: "a",
+        blockId: "b",
+        value: "ab",
+        container: { type: "message", messageTs: "1700000000.000100" },
+        state: {},
+        identity,
+      }),
+  };
+
+  for (const [type, build] of Object.entries(builders)) {
+    it(`${type}: null and false outside an Enterprise Grid org`, () => {
+      const payload = build();
+      expect(payload.enterprise).toBeNull();
+      expect(payload.is_enterprise_install).toBe(false);
+    });
+
+    it(`${type}: the org and an org-wide install`, () => {
+      const payload = build(grid);
+      expect(payload.enterprise).toEqual({ id: "E0ACME", name: "Acme" });
+      expect(payload.is_enterprise_install).toBe(true);
+    });
+  }
+});
+
+describe("the view as Slack echoes it", () => {
+  const form: ViewLike = {
+    ...view,
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: "*All fields* are shared." } },
+      {
+        type: "input",
+        block_id: "summary",
+        label: { type: "plain_text", text: "Summary" },
+        element: {
+          type: "plain_text_input",
+          action_id: "summary_input",
+          placeholder: { type: "plain_text", text: "Write something" },
+        },
+      },
+    ],
+  };
+  const option = { text: { type: "plain_text", text: "High" }, value: "high" };
+  const state = { priority: { pick: { type: "static_select", selected_option: option } } };
+
+  it("normalizes the title, submit and close text", () => {
+    const { view: echoed } = buildViewSubmissionPayload({ view: form, state: {} });
+    expect(echoed.title).toEqual({ type: "plain_text", text: "New ticket", emoji: true });
+    expect(echoed.submit).toEqual({ type: "plain_text", text: "Create", emoji: true });
+    expect(echoed.close).toEqual({ type: "plain_text", text: "Cancel", emoji: true });
+  });
+
+  it("normalizes text objects in the blocks and fills an input block's defaults", () => {
+    const { view: echoed } = buildViewClosedPayload({ view: form, state: {} });
+    expect(echoed.blocks).toEqual([
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*All fields* are shared.", verbatim: false },
+      },
+      {
+        type: "input",
+        block_id: "summary",
+        label: { type: "plain_text", text: "Summary", emoji: true },
+        element: {
+          type: "plain_text_input",
+          action_id: "summary_input",
+          placeholder: { type: "plain_text", text: "Write something", emoji: true },
+        },
+        optional: false,
+        dispatch_action: false,
+      },
+    ]);
+  });
+
+  it("normalizes the options in state.values", () => {
+    const { view: echoed } = buildViewSubmissionPayload({ view: form, state });
+    expect(echoed.state.values.priority!.pick).toEqual({
+      type: "static_select",
+      selected_option: { text: { type: "plain_text", text: "High", emoji: true }, value: "high" },
+    });
+  });
+
+  it("leaves the app's view and state untouched", () => {
+    const before = JSON.stringify({ form, state });
+    buildViewSubmissionPayload({ view: form, state });
+    expect(JSON.stringify({ form, state })).toBe(before);
   });
 });
