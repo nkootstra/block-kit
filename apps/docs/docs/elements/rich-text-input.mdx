@@ -32,9 +32,11 @@ supports it in modals, not Home tabs.
 />
 
 :::note
-The formatting toolbar above the field (bold, italic, lists, links, and so on) renders exactly as
-Slack draws it, but the buttons are inert: they only act on a text selection inside Slack's own
-editor. Typing into the field itself works normally.
+The field is drawn like Slack's composer: the formatting bar above it (bold, italic, lists, links,
+and so on) and a row under it with **Aa** and an emoji button. **Aa** hides and shows the formatting
+bar. The editor itself is plain text, so the formatting buttons are marked unavailable (they dim
+until the field has focus, as Slack's do), and the emoji button is unavailable until block-kit has
+an emoji picker. Typing into the field works normally.
 :::
 
 ## Fields

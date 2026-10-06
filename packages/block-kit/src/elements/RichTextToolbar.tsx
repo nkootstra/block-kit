@@ -60,17 +60,30 @@ const FORMATTING_GROUPS: { label: string; evenOdd: boolean; d: string }[][] = [
   ],
 ];
 
-/** The (inert) formatting toolbar Slack shows above a modal's rich-text editor; its buttons stay
- * dimmed because they only act on a selection in Slack's own editor. */
+/** The formatting bar Slack shows above a modal's rich-text editor. The editor here is plain text,
+ * so its buttons are there to look like Slack's but marked unavailable; they dim until the editor
+ * has focus, as Slack's do. */
 export function RichTextToolbar() {
   return (
-    <div className="sbk-rich-text-input__toolbar" aria-hidden="true">
+    <div
+      className="sbk-rich-text-input__toolbar"
+      role="toolbar"
+      aria-orientation="horizontal"
+      aria-label="Formatting"
+    >
       {FORMATTING_GROUPS.map((group, i) => (
         <Fragment key={group[0]?.label}>
           {i > 0 && <span className="sbk-rich-text-input__separator" />}
           {group.map((icon) => (
-            <span key={icon.label} className="sbk-rich-text-input__tool" title={icon.label}>
-              <svg viewBox="0 0 20 20" width="18" height="18">
+            <button
+              key={icon.label}
+              type="button"
+              className="sbk-rich-text-input__tool"
+              aria-label={icon.label}
+              aria-disabled="true"
+              tabIndex={-1}
+            >
+              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
                 <path
                   fill="currentColor"
                   fillRule={icon.evenOdd ? "evenodd" : undefined}
@@ -78,10 +91,62 @@ export function RichTextToolbar() {
                   d={icon.d}
                 />
               </svg>
-            </span>
+            </button>
           ))}
         </Fragment>
       ))}
+    </div>
+  );
+}
+
+/** Slack's "Aa" (show formatting) and emoji glyphs, 20-unit paths as Slack ships them. */
+const FORMATTING_ICON =
+  "M6.941 3.952c-.459-1.378-2.414-1.363-2.853.022l-4.053 12.8a.75.75 0 0 0 1.43.452l1.101-3.476h6.06l1.163 3.487a.75.75 0 1 0 1.423-.474zm1.185 8.298L5.518 4.427 3.041 12.25zm6.198-5.537a4.74 4.74 0 0 1 3.037-.081A3.74 3.74 0 0 1 20 10.208V17a.75.75 0 0 1-1.5 0v-.745a8 8 0 0 1-2.847 1.355 3 3 0 0 1-3.15-1.143C10.848 14.192 12.473 11 15.287 11H18.5v-.792c0-.984-.641-1.853-1.581-2.143a3.24 3.24 0 0 0-2.077.056l-.242.089a2.22 2.22 0 0 0-1.34 1.382l-.048.145a.75.75 0 0 1-1.423-.474l.048-.145a3.72 3.72 0 0 1 2.244-2.315zM18.5 12.5h-3.213c-1.587 0-2.504 1.801-1.57 3.085.357.491.98.717 1.572.57a6.5 6.5 0 0 0 2.47-1.223l.741-.593z";
+const EMOJI_ICON =
+  "M2.5 10a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0M10 1a9 9 0 1 0 0 18 9 9 0 0 0 0-18M7.5 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M14 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-6.385 3.766a.75.75 0 1 0-1.425.468C6.796 14.08 8.428 15 10.027 15s3.23-.92 3.838-2.766a.75.75 0 1 0-1.425-.468c-.38 1.155-1.38 1.734-2.413 1.734s-2.032-.58-2.412-1.734";
+
+function Glyph({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+      <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d={d} />
+    </svg>
+  );
+}
+
+/** The row Slack draws under the editor: "Aa" shows or hides the formatting bar (underlined while
+ * it's shown), and an emoji button, unavailable until block-kit has an emoji picker. */
+export function RichTextComposerActions({
+  formatting,
+  onToggleFormatting,
+}: {
+  formatting: boolean;
+  onToggleFormatting: () => void;
+}) {
+  return (
+    <div
+      className="sbk-rich-text-input__footer"
+      role="toolbar"
+      aria-orientation="horizontal"
+      aria-label="Composer actions"
+    >
+      <button
+        type="button"
+        className="sbk-rich-text-input__action sbk-rich-text-input__action--formatting"
+        aria-label="Show formatting"
+        aria-pressed={formatting}
+        onClick={onToggleFormatting}
+      >
+        <Glyph d={FORMATTING_ICON} />
+      </button>
+      <button
+        type="button"
+        className="sbk-rich-text-input__action"
+        aria-label="Emoji"
+        aria-disabled="true"
+        tabIndex={-1}
+      >
+        <Glyph d={EMOJI_ICON} />
+      </button>
     </div>
   );
 }
