@@ -292,8 +292,7 @@
   "extra/modal/alert": [],
   "extra/modal/form": [
     "x|(optional)|0",
-    "y|(optional)|0",
-    "color|(optional)|0"
+    "y|(optional)|0"
   ],
   "extra/modal/rich-and-file": [
     "missing|Write something|0"
