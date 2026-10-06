@@ -101,18 +101,28 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   });
   useFocusOnLoad(element, combo.inputRef);
 
-  const input = combo.inputProps(
-    time ? formatTime(time) : undefined,
-    element.placeholder?.text ?? "Select time",
-  );
+  const display = time ? formatTime(time) : undefined;
+  const input = combo.inputProps(display, element.placeholder?.text ?? "Select time");
+  // Slack keeps the chosen time in the input but draws it in a layer over the field
+  // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
+  const overlay = display !== undefined && !combo.open;
 
   return (
     <div className="sbk-timepicker" ref={rootRef}>
       {/* A label, so a press on the icons or padding lands in the input as on Slack's field. */}
       <label className="sbk-timepicker__control">
         <ClockIcon className="sbk-timepicker__icon" />
-        <input {...input} {...invalid} className="sbk-timepicker__input" />
+        <input
+          {...input}
+          {...invalid}
+          className={`sbk-timepicker__input${overlay ? " sbk-timepicker__input--behind" : ""}`}
+        />
         <ChevronDownIcon className="sbk-timepicker__chevron" />
+        {overlay && (
+          <span className="sbk-timepicker__content" aria-hidden="true">
+            <span className="sbk-timepicker__content-text">{display}</span>
+          </span>
+        )}
       </label>
       {combo.open && (
         <Popover anchorRef={rootRef} onDismiss={() => combo.setOpen(false)} offsetX={-12}>

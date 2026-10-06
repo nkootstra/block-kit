@@ -91,6 +91,24 @@ describe("<TimePicker>", () => {
   });
 
   describe("as a typeable picker", () => {
+    it("shows the chosen time in an overlay over the input, as Slack's c-select_input__content does", () => {
+      renderPicker(vi.fn(), "13:37");
+      const overlay = document.querySelector(".sbk-timepicker__content");
+      expect(overlay?.textContent).toBe("1:37 PM");
+      expect(overlay?.getAttribute("aria-hidden")).toBe("true");
+    });
+
+    it("hides the overlay while the list is open, so typing shows in the input", () => {
+      const { input } = renderPicker(vi.fn(), "13:37");
+      fireEvent.click(input);
+      expect(document.querySelector(".sbk-timepicker__content")).toBeNull();
+    });
+
+    it("has no overlay without a chosen time, leaving the placeholder to the input", () => {
+      renderPicker();
+      expect(document.querySelector(".sbk-timepicker__content")).toBeNull();
+    });
+
     it("lists the day hour by hour, as Slack does", () => {
       const { input } = renderPicker();
       fireEvent.click(input);
