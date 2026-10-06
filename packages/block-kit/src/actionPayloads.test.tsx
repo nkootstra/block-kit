@@ -10,7 +10,7 @@
  * Every difference that remains is listed in KNOWN_DIFFERENCES, so the check fails both on a
  * new difference and on a listed one that no longer happens: a fix removes its entries.
  */
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -59,8 +59,11 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   // Slack opens a "Select options" dialog and dispatches on Confirm; block-kit's menu is inline.
   "catalog/section/multi-static-select@pick-confirm": async () => {
-    fireEvent.click(screen.getByText("Select options"));
-    await clickAsync(screen.getByText("*plain_text option 1*"));
+    // As a section accessory it opens Slack's "Select options" dialog and sends on Confirm.
+    fireEvent.click(screen.getByRole("button", { name: "Select options" }));
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("combobox"));
+    await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
+    await clickAsync(screen.getByRole("button", { name: "Confirm" }));
   },
   "catalog/actions/datepickers@pick-15th": async () => {
     fireEvent.click(screen.getAllByPlaceholderText("Select a date")[0]!);

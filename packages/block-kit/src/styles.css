@@ -42,6 +42,7 @@
 @import "./elements/RadioButtons.css";
 @import "./elements/RichTextInput.css";
 @import "./elements/Select.css";
+@import "./elements/SelectDialog.css";
 @import "./elements/TextInput.css";
 @import "./elements/TimePicker.css";
 @import "./elements/WorkflowButton.css";
