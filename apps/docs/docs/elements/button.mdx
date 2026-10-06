@@ -208,7 +208,8 @@ and, if `url` is set, opens it in a new tab:
 }
 ```
 
-`url` and `style` are only included when the element itself sets them. A button doesn't write to
+`url` and `style` are only included when the element itself sets them, and a button with a
+`confirm` dialog sends that `confirm` object back too, as Slack does. A button doesn't write to
 `state.values`: Slack only tracks state for elements that hold a value across interactions
 (selects, inputs, date pickers, and so on).
 

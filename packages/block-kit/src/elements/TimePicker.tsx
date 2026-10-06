@@ -49,7 +49,14 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
     setTime(next);
     setOpen(false);
     setValue(blockId, actionId, { type: "timepicker", selected_time: next });
-    dispatch({ type: "timepicker", action_id: actionId, block_id: blockId, selected_time: next });
+    dispatch({
+      type: "timepicker",
+      action_id: actionId,
+      block_id: blockId,
+      selected_time: next,
+      // Slack echoes the element's initial_time back in the action, but not its placeholder.
+      ...(element.initial_time !== undefined ? { initial_time: element.initial_time } : {}),
+    });
   }
 
   const times = timeOptions();

@@ -83,7 +83,6 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
  */
 const KNOWN_DIFFERENCES: Record<string, string[]> = {
   "catalog/actions/all-selects@pick-static": [
-    'actions.0.placeholder: Slack {"type":"plain_text","text":"Select an item","emoji":true}, ours missing',
     "enterprise: Slack null, ours missing",
     "is_enterprise_install: Slack false, ours missing",
   ],
@@ -96,7 +95,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     "is_enterprise_install: Slack false, ours missing",
   ],
   "catalog/actions/datepickers@pick-15th": [
-    'actions.0.initial_date: Slack "1990-04-28", ours missing',
     "enterprise: Slack null, ours missing",
     "is_enterprise_install: Slack false, ours missing",
   ],
@@ -105,7 +103,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     "is_enterprise_install: Slack false, ours missing",
   ],
   "catalog/actions/timepicker@pick-3pm": [
-    'actions.0.initial_time: Slack "13:37", ours missing',
     "enterprise: Slack null, ours missing",
     "is_enterprise_install: Slack false, ours missing",
   ],
@@ -114,7 +111,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     "is_enterprise_install: Slack false, ours missing",
   ],
   "catalog/section/multi-static-select@pick-confirm": [
-    'actions.0.placeholder: Slack {"type":"plain_text","text":"Select options","emoji":true}, ours missing',
     "enterprise: Slack null, ours missing",
     "is_enterprise_install: Slack false, ours missing",
   ],
@@ -123,7 +119,10 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     "is_enterprise_install: Slack false, ours missing",
   ],
   "extra/actions/more-elements@confirm-delete": [
-    'actions.0.confirm: Slack {"title":{"type":"plain_text","text":"Are you sure?","emoji":true},"text":{"type":"mrkdwn","text":"This can\'t be undone.","verbatim":false},"confirm":{"type":"plain_text","text":"Delete","emoji":true},"deny":{"type":"plain_text","text":"Cancel","emoji":true},"style":"danger"}, ours missing',
+    "actions.0.confirm.confirm.emoji: Slack true, ours missing",
+    "actions.0.confirm.deny.emoji: Slack true, ours missing",
+    "actions.0.confirm.text.verbatim: Slack false, ours missing",
+    "actions.0.confirm.title.emoji: Slack true, ours missing",
     "enterprise: Slack null, ours missing",
     "is_enterprise_install: Slack false, ours missing",
   ],

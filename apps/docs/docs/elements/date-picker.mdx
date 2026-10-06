@@ -181,8 +181,9 @@ The same shape lands in `state.values[block_id][action_id]` for reading back lat
 }
 ```
 
-When `initial_date` is set, that value is reported as state as soon as the element mounts. You
-don't need an interaction first to read it back.
+When `initial_date` is set, the action carries it too (`"initial_date": "2024-06-01"`), as Slack's
+does; the placeholder isn't sent. The initial value is also reported as state as soon as the
+element mounts. You don't need an interaction first to read it back.
 
 ## Related
 

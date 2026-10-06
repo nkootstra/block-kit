@@ -49,7 +49,14 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
     setDate(next);
     setOpen(false);
     setValue(blockId, actionId, { type: "datepicker", selected_date: next });
-    dispatch({ type: "datepicker", action_id: actionId, block_id: blockId, selected_date: next });
+    dispatch({
+      type: "datepicker",
+      action_id: actionId,
+      block_id: blockId,
+      selected_date: next,
+      // Slack echoes the element's initial_date back in the action, but not its placeholder.
+      ...(element.initial_date !== undefined ? { initial_date: element.initial_date } : {}),
+    });
   }
 
   async function clear() {
@@ -57,7 +64,13 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
     setDate(undefined);
     setOpen(false);
     setValue(blockId, actionId, { type: "datepicker", selected_date: null });
-    dispatch({ type: "datepicker", action_id: actionId, block_id: blockId, selected_date: null });
+    dispatch({
+      type: "datepicker",
+      action_id: actionId,
+      block_id: blockId,
+      selected_date: null,
+      ...(element.initial_date !== undefined ? { initial_date: element.initial_date } : {}),
+    });
   }
 
   return (
