@@ -81,48 +81,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
  * Differences between block-kit and the recordings, as `path: Slack <value>, ours <value>`.
  * Remove an entry when a change makes block-kit match Slack there.
  */
-const KNOWN_DIFFERENCES: Record<string, string[]> = {
-  "catalog/actions/all-selects@pick-static": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/actions/button@click": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/actions/checkboxes@check-first": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/actions/datepickers@pick-15th": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/actions/radio-buttons@pick": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/actions/timepicker@pick-3pm": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/input/dispatches-actions@enter": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/section/multi-static-select@pick-confirm": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "catalog/section/overflow@pick": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-  "extra/actions/more-elements@confirm-delete": [
-    "enterprise: Slack null, ours missing",
-    "is_enterprise_install: Slack false, ours missing",
-  ],
-};
+const KNOWN_DIFFERENCES: Record<string, string[]> = {};
 
 interface Recording {
   name: string;
