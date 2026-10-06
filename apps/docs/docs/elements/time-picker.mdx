@@ -214,8 +214,8 @@ The same shape lands in `state.values[block_id][action_id]`:
 }
 ```
 
-When `initial_time` is set, that value is reported as state as soon as the element mounts, before
-any interaction.
+When `initial_time` is set, the action carries it too (`"initial_time": "13:37"`), as Slack's does.
+It's also reported as state as soon as the element mounts, before any interaction.
 
 :::note
 Unlike `datepicker`, `timepicker` has no "clear" affordance. Once a time is selected, picking a

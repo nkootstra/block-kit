@@ -20,6 +20,8 @@ export function Button({ element, blockId }: ElementProps<ButtonElement>) {
       ...(element.value !== undefined ? { value: element.value } : {}),
       ...(element.url !== undefined ? { url: element.url } : {}),
       ...(element.style !== undefined ? { style: element.style } : {}),
+      // Slack echoes the button's confirm dialog back in the action.
+      ...(element.confirm ? { confirm: element.confirm } : {}),
     });
     if (element.url) window.open(element.url, "_blank", "noopener,noreferrer");
   };

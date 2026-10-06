@@ -240,7 +240,14 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     setItems(next);
     const fields = buildStateFor(next);
     setValue(blockId, actionId, { type: element.type, ...fields });
-    dispatch({ type: element.type, action_id: actionId, block_id: blockId, ...fields });
+    dispatch({
+      type: element.type,
+      action_id: actionId,
+      block_id: blockId,
+      ...fields,
+      // Slack echoes a select's placeholder back in the action.
+      ...(element.placeholder ? { placeholder: element.placeholder } : {}),
+    });
   }
 
   function buildStateFor(next: Item[]) {
