@@ -52,7 +52,7 @@ describe("the provider's theme reaches what it renders outside its wrapper", () 
         <Element element={{ type: "static_select", action_id: "a", options }} blockId="b" />
       </BlockKitProvider>,
     );
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("combobox"));
     expect(themeOf(document.body.querySelector(".sbk-popover"))).toBe("dark");
   });
 

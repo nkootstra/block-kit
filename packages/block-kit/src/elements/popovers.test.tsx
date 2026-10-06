@@ -31,7 +31,7 @@ const cases: { name: string; element: Json; open: (clip: HTMLElement) => HTMLEle
   {
     name: "static_select",
     element: { type: "static_select", action_id: "a", options: [option("One"), option("Two")] },
-    open: (clip) => clip.querySelector("button")!,
+    open: (clip) => clip.querySelector('[role="combobox"]')!,
   },
   {
     name: "overflow",

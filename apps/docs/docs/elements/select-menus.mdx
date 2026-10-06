@@ -112,6 +112,14 @@ Options come from a fixed list you provide: `options`, or `option_groups` to lab
 them. Slack caps `options` and `option_groups` at 100 entries each, and a select can carry one or
 the other, never both.
 
+Like Slack's, a single `static_select` is typed into: its field is a text input
+(`role="combobox"`) that shows the chosen option. Clicking it opens a 322px list, starting 12px left
+of the field, with the first option (or the chosen one) highlighted. Typing narrows the list to the
+options that contain what you typed, so there's no separate search box; the arrow keys move the
+highlight, Enter picks it and closes the list, and Escape or Tab close it. A
+`multi_static_select` and the other sources still open from a button, with a search box where
+there's something to search.
+
 <Preview
   payload={{
     blocks: [

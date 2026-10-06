@@ -48,7 +48,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     );
   },
   "catalog/actions/all-selects@pick-static": async () => {
-    fireEvent.click(screen.getByText("Select an item"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   "catalog/actions/radio-buttons@pick": () => clickAsync(screen.getAllByRole("radio")[1]!),

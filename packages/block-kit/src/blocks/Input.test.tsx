@@ -156,7 +156,7 @@ describe("<Input> block", () => {
           placeholder: plain("Pick one"),
           options: [{ text: plain("One"), value: "1" }],
         },
-        "button",
+        "combobox",
       ],
       [
         "a multi-select",

@@ -127,6 +127,33 @@
   margin-right: -1px;
 }
 
+/* A single static select is typed into, as Slack's c-select_input is: the chosen option or the
+   query sits in a text input that fills the box up to the chevron, where `.sbk-select__value`
+   would be. */
+.sbk-select__input {
+  flex: 1;
+  min-width: 0;
+  margin-left: -1px;
+  padding: 0;
+  font: inherit;
+  color: var(--sbk-text);
+  text-overflow: ellipsis;
+  background: transparent;
+  border: 0;
+  outline: none;
+  cursor: inherit;
+}
+
+.sbk-select__input::placeholder {
+  color: var(--sbk-muted);
+  opacity: 1;
+}
+
+/* Only a chosen value sits in Slack's unbordered layer; the placeholder keeps the border's inset. */
+.sbk-select__input:placeholder-shown {
+  margin-left: 0;
+}
+
 /* An id Slack couldn't resolve: c-small_channel_entity with a c-missing_channel--private pill. */
 .sbk-select__entity {
   display: flex;
@@ -281,6 +308,12 @@
     0 0 0 1px rgba(29, 28, 29, 0.13),
     0 5px 10px rgba(0, 0, 0, 0.12);
   padding: 12px 0;
+}
+
+/* The typed-into single static select's list is Slack's 322px, starting 12px left of the field
+   (the offset is the Popover's). */
+.sbk-select__menu--typeable {
+  width: 322px;
 }
 
 .sbk-select__search {
