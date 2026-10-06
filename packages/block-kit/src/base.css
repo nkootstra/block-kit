@@ -355,6 +355,7 @@ a.sbk-mention {
 .sbk-datetimepicker__time-input:focus,
 .sbk-select__control:focus-visible,
 .sbk-select__control[aria-expanded="true"],
+.sbk-select--typeable .sbk-select__control:focus-within,
 .sbk-timepicker__control:focus-within,
 .sbk-datetimepicker__control:focus-visible,
 .sbk-datetimepicker__control[aria-expanded="true"] {
@@ -370,6 +371,7 @@ a.sbk-mention {
 .sbk-datepicker__input[aria-invalid="true"]:focus,
 .sbk-select__control[aria-invalid="true"]:focus-visible,
 .sbk-select__control[aria-invalid="true"][aria-expanded="true"],
+.sbk-select--typeable .sbk-select__control:has([aria-invalid="true"]):focus-within,
 .sbk-timepicker__control:has([aria-invalid="true"]):focus-within {
   border-color: transparent;
   box-shadow: var(--sbk-focus-shadow-invalid);

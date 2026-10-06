@@ -22,6 +22,9 @@ export function useCombobox({
   onChoose,
   onSubmitQuery,
   listRef,
+  returnFocusRef,
+  open: controlledOpen,
+  onOpenChange,
 }: {
   /** What's typed; the owner filters its rows by it, so it owns the state. */
   query: string;
@@ -34,8 +37,18 @@ export function useCombobox({
   /** Enter with no highlighted row, e.g. a typed value the list doesn't offer. */
   onSubmitQuery?: (query: string) => void;
   listRef: RefObject<HTMLElement | null>;
+  /**
+   * Where focus goes back to when Escape closes the list; the input by default. A select whose
+   * trigger is a button (a multi-select, a directory search) passes the button.
+   */
+  returnFocusRef?: RefObject<HTMLElement | null>;
+  /** Whether the list is open, for an owner that needs it before the hook runs; owned here if not. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpenState] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
+  const open = controlledOpen ?? ownOpen;
+  const setOpenState = onOpenChange ?? setOwnOpen;
   const inputRef = useRef<HTMLInputElement>(null);
   const id = useId();
   const listId = `${id}-list`;
@@ -53,13 +66,14 @@ export function useCombobox({
     onChoose,
     onClose: () => {
       setOpen(false);
-      inputRef.current?.focus();
+      (returnFocusRef ?? inputRef).current?.focus();
     },
     onOpen: () => setOpenState(true),
     listRef,
   });
 
-  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+  /** Keys for the input, or for a container around a button trigger and its list. */
+  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
     if (e.key === "Tab") {
       if (open) setOpen(false);
       return;
@@ -106,5 +120,14 @@ export function useCombobox({
     return { id: optionId(index), ...nav.itemProps(index) };
   }
 
-  return { open, setOpen, listId, inputRef, inputProps, optionProps, active: nav.active };
+  return {
+    open,
+    setOpen,
+    onKeyDown,
+    listId,
+    inputRef,
+    inputProps,
+    optionProps,
+    active: nav.active,
+  };
 }

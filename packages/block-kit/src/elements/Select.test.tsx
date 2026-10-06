@@ -55,8 +55,9 @@ describe("<Select> static_select", () => {
         />
       </BlockKitProvider>,
     );
-    expect(screen.getByText("Choose")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button"));
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    expect(input.getAttribute("placeholder")).toBe("Choose");
+    fireEvent.click(input);
     await clickAsync(screen.getByText("B"));
     expect(onAction).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -67,7 +68,82 @@ describe("<Select> static_select", () => {
       }),
       expect.anything(),
     );
-    expect(screen.getByText("B")).toBeTruthy();
+    expect(input.value).toBe("B");
+    // The menu closes after a pick.
+    expect(screen.queryByRole("listbox")).toBeNull();
+  });
+
+  it("shows the chosen option in an overlay over the field, hidden while typing", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              options: [opt("a", "A"), opt("b", "B")],
+              initial_option: opt("b", "B"),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const overlay = () => document.querySelector(".sbk-select__content");
+    expect(overlay()?.textContent).toBe("B");
+    expect(overlay()?.getAttribute("aria-hidden")).toBe("true");
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(overlay()).toBeNull();
+  });
+
+  it("filters the options by what's typed into the field, with no separate search box", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              // More than 8 options used to add a search box above the list.
+              options: "ABCDEFGHIJ".split("").map((l) => opt(l.toLowerCase(), `Option ${l}`)),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    expect(screen.queryByPlaceholderText("Search options")).toBeNull();
+    fireEvent.change(input, { target: { value: "option c" } });
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Option C"]);
+    expect(screen.getByText("Option C").closest("[data-active]")).toBeTruthy();
+  });
+
+  it("picks the highlighted option with Enter after typing", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              options: [opt("a", "Apple"), opt("b", "Banana"), opt("c", "Cherry")],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "an" } });
+    await keyDownAsync(input, "Enter");
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ selected_option: sent("b", "Banana") }),
+      expect.anything(),
+    );
   });
 
   it("dispatches selected_options (plural) for multi_static_select", async () => {
@@ -230,7 +306,7 @@ describe("<Select> users_select / channels_select", () => {
         />
       </BlockKitProvider>,
     );
-    const trigger = screen.getByRole("button");
+    const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
     // Opening highlights the first option; two more presses land on "C", one more wraps to "A".
@@ -263,7 +339,7 @@ describe("<Select> users_select / channels_select", () => {
         />
       </BlockKitProvider>,
     );
-    const trigger = screen.getByRole("button");
+    const trigger = screen.getByRole("combobox");
     fireEvent.click(trigger);
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
     fireEvent.keyDown(trigger, { key: "Escape" });

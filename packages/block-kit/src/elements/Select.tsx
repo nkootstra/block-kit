@@ -8,7 +8,7 @@ import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
-import { useMenuNavigation } from "./useMenuNavigation";
+import { useCombobox } from "./useCombobox";
 import { Popover } from "./Popover";
 
 /**
@@ -136,7 +136,6 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  useFocusOnLoad(element as { focus_on_load?: boolean }, triggerRef);
   const invalid = useInvalidProps();
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -300,21 +299,34 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const isSelected = (option: PlainTextOption) =>
     items.some((i) => i.id === (option.value ?? option.text.text));
 
-  const nav = useMenuNavigation({
+  const showSearchOnly = source !== "static"; // external/users/conversations/channels have no local directory
+  // Slack's single static select is typed into (`c-select_input`): the field filters the options,
+  // so there's no search box in the menu. The others open from a button.
+  const typeable = source === "static" && !multi;
+
+  const combo = useCombobox({
     open,
+    onOpenChange: setOpen,
+    query,
+    onQueryChange: setQuery,
     count: flatOptions.length,
     initialIndex: Math.max(0, flatOptions.findIndex(isSelected)),
     onChoose: (i) => {
       const option = flatOptions[i];
       if (option) selectItem(optionToItem(option));
     },
-    onClose: () => {
-      setOpen(false);
-      triggerRef.current?.focus();
+    // No live directory to search against: typing an id/value and pressing Enter selects it
+    // directly, our approximation for external/users/conversations/channels selects.
+    onSubmitQuery: (typed) => {
+      if (showSearchOnly && !remote) selectItem({ id: typed, label: resolveLabel(typed) });
     },
-    onOpen: () => setOpen(true),
     listRef,
+    returnFocusRef: typeable ? undefined : triggerRef,
   });
+  useFocusOnLoad<HTMLElement>(
+    element as { focus_on_load?: boolean },
+    typeable ? combo.inputRef : triggerRef,
+  );
 
   const closedLabel = multi
     ? undefined
@@ -322,13 +334,109 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       ? items[0].label || resolveLabel(items[0].id)
       : undefined;
   const placeholder = element.placeholder?.text ?? "Select an item";
-  const showSearchOnly = source !== "static"; // external/users/conversations/channels have no local directory
+
+  const menu = open && (
+    <Popover
+      anchorRef={rootRef}
+      onDismiss={() => combo.setOpen(false)}
+      offsetX={typeable ? -12 : 0}
+    >
+      <div
+        className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}`}
+        role="listbox"
+        id={combo.listId}
+        ref={listRef}
+      >
+        {!typeable && (showSearchOnly || allOptions(element).length > 8) && (
+          <div className="sbk-select__search">
+            <SearchIcon />
+            <input
+              autoFocus
+              className="sbk-select__search-input"
+              placeholder={
+                source === "static" || source === "external" ? "Search options" : `Search ${source}`
+              }
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+        )}
+        {(() => {
+          let index = 0;
+          return visibleGroups.map((group, gi) => {
+            const rows = group.options.map((option) => {
+              const i = index++;
+              return (
+                <SelectOption
+                  key={option.value ?? i}
+                  option={option}
+                  selected={isSelected(option)}
+                  onSelect={() => selectItem(optionToItem(option))}
+                  navProps={combo.optionProps(i)}
+                />
+              );
+            });
+            return group.label === undefined ? (
+              rows
+            ) : (
+              <div className="sbk-select__group" key={gi}>
+                <div className="sbk-select__group-label">{group.label}</div>
+                {rows}
+              </div>
+            );
+          });
+        })()}
+        {remote && loading && <div className="sbk-select__status">Loading…</div>}
+        {remote && !loading && remoteGroups !== undefined && flatOptions.length === 0 && (
+          <div className="sbk-select__status">No results</div>
+        )}
+        {showSearchOnly && items.length > 0 && multi && (
+          <div className="sbk-select__group-label">Selected</div>
+        )}
+        {showSearchOnly &&
+          multi &&
+          items.map((item) => (
+            <div className="sbk-select__option sbk-select__option--selected" key={item.id}>
+              {item.label || resolveLabel(item.id)}
+            </div>
+          ))}
+      </div>
+    </Popover>
+  );
+
+  if (typeable) {
+    const unresolved = items[0] !== undefined && isUnresolved(items[0]);
+    const display = unresolved ? undefined : closedLabel;
+    // Slack keeps the chosen option in the input but draws it in a layer over the field
+    // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
+    const overlay = display !== undefined && !open;
+    return (
+      <div className={`sbk-select sbk-select--typeable${sizeClass}`} ref={rootRef}>
+        {/* A label, so a press on the chevron or padding lands in the input as on Slack's field. */}
+        <label className="sbk-select__control">
+          <input
+            {...combo.inputProps(display, placeholder)}
+            {...invalid}
+            className={`sbk-select__input${overlay ? " sbk-select__input--behind" : ""}`}
+          />
+          <ChevronDownIcon className="sbk-select__chevron" />
+          {overlay && (
+            <span className="sbk-select__content" aria-hidden="true">
+              <span className="sbk-select__content-text">{display}</span>
+            </span>
+          )}
+        </label>
+        {menu}
+        {dialog}
+      </div>
+    );
+  }
 
   return (
     <div
       className={`sbk-select${multi ? " sbk-select--multi" : ""}${multi && items.length > 0 ? " sbk-select--chips" : ""}${sizeClass}`}
       ref={rootRef}
-      onKeyDown={nav.onKeyDown}
+      onKeyDown={combo.onKeyDown}
     >
       {multi && element.max_selected_items && (
         <p className="sbk-select__max-info">
@@ -396,75 +504,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         )}
         <ChevronDownIcon className="sbk-select__chevron" />
       </button>
-      {open && (
-        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
-          <div className="sbk-select__menu" role="listbox" ref={listRef}>
-            {(showSearchOnly || allOptions(element).length > 8) && (
-              <div className="sbk-select__search">
-                <SearchIcon />
-                <input
-                  autoFocus
-                  className="sbk-select__search-input"
-                  placeholder={
-                    source === "static" || source === "external"
-                      ? "Search options"
-                      : `Search ${source}`
-                  }
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && query.trim() && showSearchOnly && !remote) {
-                      // No live directory to search against: typing an id/value and pressing
-                      // enter selects it directly. This is our approximation for
-                      // external/users/conversations/channels selects, documented in the brief.
-                      selectItem({ id: query.trim(), label: resolveLabel(query.trim()) });
-                    }
-                  }}
-                />
-              </div>
-            )}
-            {(() => {
-              let index = 0;
-              return visibleGroups.map((group, gi) => {
-                const rows = group.options.map((option) => {
-                  const i = index++;
-                  return (
-                    <SelectOption
-                      key={option.value ?? i}
-                      option={option}
-                      selected={isSelected(option)}
-                      onSelect={() => selectItem(optionToItem(option))}
-                      navProps={nav.itemProps(i)}
-                    />
-                  );
-                });
-                return group.label === undefined ? (
-                  rows
-                ) : (
-                  <div className="sbk-select__group" key={gi}>
-                    <div className="sbk-select__group-label">{group.label}</div>
-                    {rows}
-                  </div>
-                );
-              });
-            })()}
-            {remote && loading && <div className="sbk-select__status">Loading…</div>}
-            {remote && !loading && remoteGroups !== undefined && flatOptions.length === 0 && (
-              <div className="sbk-select__status">No results</div>
-            )}
-            {showSearchOnly && items.length > 0 && multi && (
-              <div className="sbk-select__group-label">Selected</div>
-            )}
-            {showSearchOnly &&
-              multi &&
-              items.map((item) => (
-                <div className="sbk-select__option sbk-select__option--selected" key={item.id}>
-                  {item.label || resolveLabel(item.id)}
-                </div>
-              ))}
-          </div>
-        </Popover>
-      )}
+      {menu}
       {dialog}
     </div>
   );
@@ -479,7 +519,7 @@ function SelectOption({
   option: PlainTextOption;
   selected: boolean;
   onSelect: () => void;
-  navProps?: ReturnType<ReturnType<typeof useMenuNavigation>["itemProps"]>;
+  navProps?: ReturnType<ReturnType<typeof useCombobox>["optionProps"]>;
 }) {
   return (
     <div

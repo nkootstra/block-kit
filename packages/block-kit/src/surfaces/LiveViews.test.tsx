@@ -280,7 +280,8 @@ describe("focus_on_load", () => {
     await act(async () => {
       render(<Modal view={{ ...nameModal(), blocks } as never} />);
     });
-    expect(document.activeElement?.tagName).toBe("BUTTON");
+    // A single static select is typed into, so its input takes the focus.
+    expect(document.activeElement?.getAttribute("role")).toBe("combobox");
     expect(screen.queryByRole("listbox")).toBeNull();
   });
 });

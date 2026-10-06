@@ -366,6 +366,47 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  describe("static select list", () => {
+    const select: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "static_select",
+              action_id: "s",
+              placeholder: plain("Pick one"),
+              options: [option("Alpha"), option("Bravo"), option("Charlie")],
+            },
+          ],
+        },
+      ],
+    };
+
+    it("opens a 322px list that starts 12px left of the field", async () => {
+      const page = await harness.open(select);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((s) => page.locator(s).boundingBox()),
+      );
+      expect(menu?.width).toBe(322);
+      expect(Math.round((menu?.x ?? 0) - (field?.x ?? 0))).toBe(-12);
+    });
+
+    it("highlights the first option on open and narrows the list to what's typed", async () => {
+      const page = await harness.open(select);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const active = () => page.locator(".sbk-select__option[data-active]").allTextContents();
+      expect(await active()).toEqual(["Alpha"]);
+      await page.keyboard.type("ar");
+      await settle(page);
+      expect(await page.locator(".sbk-select__option").allTextContents()).toEqual(["Charlie"]);
+      expect(await active()).toEqual(["Charlie"]);
+    });
+  });
+
   describe("time picker list", () => {
     const picker: Mount = {
       blocks: [
@@ -580,7 +621,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     // time picker's field is an input inside its box, so the box draws the ring.
     for (const [name, focused, ringed] of [
       ["text input", ".sbk-text-input", ".sbk-text-input"],
-      ["select", ".sbk-select__control", ".sbk-select__control"],
+      ["select", ".sbk-select__input", ".sbk-select__control"],
       ["date picker", ".sbk-datepicker__input", ".sbk-datepicker__input"],
       ["time picker", ".sbk-timepicker__input", ".sbk-timepicker__control"],
     ] as const) {
