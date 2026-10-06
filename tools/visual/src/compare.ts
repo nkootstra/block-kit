@@ -336,7 +336,7 @@ for (const name of names) {
   results.push(result);
   const text = result.text as TextRunReport;
   console.log(
-    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged`,
+    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged${text.motion.length > 0 ? `, ${text.motion.length} moving differently` : ""}`,
   );
   // A filtered run is for iterating on a few fixtures, so it lists what the text check flagged.
   if (prefixes.length > 0)
@@ -443,6 +443,10 @@ function describeTextRuns(textReport: TextRunReport): string[] {
     ),
     ...textReport.missing.map((r) => `only Slack ${JSON.stringify(r.text)}`),
     ...textReport.extra.map((r) => `only ours ${JSON.stringify(r.text)}`),
+    // Reported only: motion never fails --check until the references carry it.
+    ...textReport.motion.map(
+      (m) => `motion ${JSON.stringify(m.text)}: Slack ${m.reference}, ours ${m.ours}`,
+    ),
   ];
 }
 

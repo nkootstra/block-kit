@@ -19,6 +19,12 @@ export interface TextRun {
   opacity: number;
   /** The opaque colour the run is painted over. */
   background: string;
+  /**
+   * How the run's nearest moving element transitions and animates ("transition <property>
+   * <duration> <easing> <delay>; animation …"), "" when nothing moves, and absent when a
+   * reference was captured before snapshots recorded motion.
+   */
+  motion?: string;
 }
 
 export interface TextRunDifference {
@@ -28,9 +34,17 @@ export interface TextRunDifference {
   ours: string;
 }
 
+/** A matched run whose element moves differently from Slack's. Reported, never a finding. */
+export interface MotionDifference {
+  text: string;
+  reference: string;
+  ours: string;
+}
+
 export interface TextRunReport {
   matched: number;
   differences: TextRunDifference[];
+  motion: MotionDifference[];
   /** Runs only the reference has. */
   missing: TextRun[];
   /** Runs only we render. */
@@ -57,7 +71,21 @@ export function compareTextRuns(reference: TextRun[], ours: TextRun[]): TextRunR
 
   const differences: TextRunDifference[] = [];
   const findings: string[] = [];
+  const motion: MotionDifference[] = [];
+  const seenMotion = new Set<string>();
   for (const [i, j] of pairs) {
+    const referenceMotion = reference[i]?.motion;
+    const ourMotion = ours[j]?.motion ?? "";
+    if (referenceMotion !== undefined && referenceMotion !== ourMotion) {
+      const difference = {
+        text: referenceTexts[i] ?? "",
+        reference: referenceMotion || "none",
+        ours: ourMotion || "none",
+      };
+      const key = `${difference.text}|${difference.reference}|${difference.ours}`;
+      if (!seenMotion.has(key)) motion.push(difference);
+      seenMotion.add(key);
+    }
     for (const difference of compareRun(reference[i] as TextRun, ours[j] as TextRun)) {
       differences.push(difference);
       findings.push(`${difference.property}|${referenceTexts[i]}|${referenceOccurrences[i]}`);
@@ -77,7 +105,7 @@ export function compareTextRuns(reference: TextRun[], ours: TextRun[]): TextRunR
     extra.push(r);
     findings.push(`extra|${ourTexts[j]}|${ourOccurrences[j]}`);
   });
-  return { matched: pairs.length, differences, missing, extra, findings };
+  return { matched: pairs.length, differences, motion, missing, extra, findings };
 }
 
 /** A text baseline: each fixture's finding keys, as `fixtures/text-baseline.<platform>.json`. */

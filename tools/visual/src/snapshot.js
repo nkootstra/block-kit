@@ -107,6 +107,39 @@ async (win = window) => {
   const jsonAscii = (json) =>
     json.replace(/[\u0080-\uffff]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
 
+  // Transitions, animations, the cursor and pointer-events would only get in the way of a frozen
+  // render, so SKIP keeps them out of the inlined styles. They're recorded per element in the meta
+  // instead (keyed by data-ref), so a comparison can still check how Slack's elements move.
+  const MOTION = [
+    "transition-property",
+    "transition-duration",
+    "transition-timing-function",
+    "transition-delay",
+    "animation-name",
+    "animation-duration",
+    "animation-timing-function",
+    "animation-delay",
+    "animation-iteration-count",
+    "animation-direction",
+    "animation-fill-mode",
+  ];
+  const INHERITED_MOTION = ["cursor", "pointer-events"];
+  const motion = {};
+  const motionOf = (cs, base, parent) => {
+    const out = {};
+    for (const prop of MOTION) {
+      const value = cs.getPropertyValue(prop);
+      if (value !== base[prop]) out[prop] = value;
+    }
+    // Inherited: only where the element changes what it inherits, not on every descendant.
+    for (const prop of INHERITED_MOTION) {
+      const value = cs.getPropertyValue(prop);
+      if (parent ? value !== parent.getPropertyValue(prop) : value !== base[prop])
+        out[prop] = value;
+    }
+    return out;
+  };
+
   const pseudoRules = [];
   let refs = 0;
   const abs = (url) => new URL(url, win.location.href).href;
@@ -134,6 +167,11 @@ async (win = window) => {
     if (el.localName === "input" || el.localName === "textarea")
       el.setAttribute("value", src.value);
     el.setAttribute("style", diff(cs, defaultsFor(src), parent, true, authoredSizes(src)));
+    const moves = motionOf(cs, defaultsFor(src), parent);
+    if (Object.keys(moves).length > 0) {
+      el.setAttribute("data-ref", String(++refs));
+      motion[el.getAttribute("data-ref")] = moves;
+    }
 
     for (const pseudo of ["::before", "::after"]) {
       const ps = win.getComputedStyle(src, pseudo);
@@ -228,6 +266,7 @@ async (win = window) => {
     height: Math.round(rect.height),
     devicePixelRatio: win.devicePixelRatio,
     rects,
+    motion,
   };
 
   const bodyBg = win.getComputedStyle(

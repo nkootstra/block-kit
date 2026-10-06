@@ -15,6 +15,43 @@ const run = (text: string, overrides: Partial<TextRun> = {}): TextRun => ({
   ...overrides,
 });
 
+describe("compareTextRuns motion", () => {
+  const ease = "transition background-color 0.08s cubic-bezier(0.36, 0.19, 0.29, 1) 0s";
+
+  it("reports a run whose element moves differently from Slack's", () => {
+    const report = compareTextRuns(
+      [run("Save", { motion: ease })],
+      [run("Save", { motion: "transition background-color 0.15s ease 0s" })],
+    );
+    expect(report.motion).toEqual([
+      { text: "Save", reference: ease, ours: "transition background-color 0.15s ease 0s" },
+    ]);
+  });
+
+  it("reports motion Slack has and we don't", () => {
+    const report = compareTextRuns([run("Save", { motion: ease })], [run("Save", { motion: "" })]);
+    expect(report.motion).toEqual([{ text: "Save", reference: ease, ours: "none" }]);
+  });
+
+  it("says nothing when the reference recorded no motion", () => {
+    const report = compareTextRuns([run("Save")], [run("Save", { motion: ease })]);
+    expect(report.motion).toEqual([]);
+  });
+
+  it("reports one element once, however many runs it holds", () => {
+    const report = compareTextRuns(
+      [run("Save", { motion: ease }), run("Save", { motion: ease })],
+      [run("Save", { motion: "" }), run("Save", { motion: "" })],
+    );
+    expect(report.motion).toHaveLength(1);
+  });
+
+  it("keeps motion out of the findings, so a text baseline never fails on it", () => {
+    const report = compareTextRuns([run("Save", { motion: ease })], [run("Save", { motion: "" })]);
+    expect(report.findings).toEqual([]);
+  });
+});
+
 describe("compareTextRuns", () => {
   it("matches identical runs without flagging anything", () => {
     const report = compareTextRuns([run("Hello")], [run("Hello")]);
