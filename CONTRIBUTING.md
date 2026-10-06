@@ -48,9 +48,11 @@ Slack's rendering is the reference, not our opinion of it. For a change to how s
 - Add or edit a fixture payload in `fixtures/` that shows it.
 - Say in the pull request's "Slack reference" section which fixtures show the change and how the
   visual comparison moved.
-- Leave `fixtures/**/*.reference.html`, `fixtures/references.lock.json` and
-  the `fixtures/visual-baseline.*.json` and `fixtures/text-baseline.*.json` files alone. They record what Slack renders and are owned by the
-  maintainers, who capture new references in Block Kit Builder. Never edit them to make a check pass.
+- Leave `fixtures/**/*.reference.html`, `fixtures/references.lock.json`, the
+  `fixtures/visual-baseline.*.json` and `fixtures/text-baseline.*.json` files and the
+  `fixtures/**/*.actions.json` payload recordings alone. They record what Slack renders and sends
+  and are owned by the maintainers, who capture them in Block Kit Builder. Never edit them to make a
+  check pass.
 
 ## Docs change with the code
 

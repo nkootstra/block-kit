@@ -162,6 +162,30 @@ don't have.
 
 CI runs them in the `render-diff` job, whose Playwright image has all three browsers.
 
+## Action payloads
+
+`fixtures/<fixture>@<interaction>.actions.json` records the `block_actions` payload Block Kit
+Builder's Actions Preview showed after an interaction with the fixture: `button@click`,
+`all-selects@pick-static` and so on. `packages/block-kit/src/actionPayloads.test.tsx` (part of
+`bun run test`) renders the fixture, performs the same interaction and compares the payload
+block-kit builds: `type`, `enterprise`, `is_enterprise_install`, `actions` and `state.values`.
+
+- Not compared: identity, `action_ts`, the block ids Slack generates for blocks without one, and
+  `container`, `message` and `channel`, which the Builder only simulates.
+- Slack's `state.values` holds only what the user changed; block-kit also reports initial values
+  from mount. Until that's checked against a real app, an entry Slack doesn't have is ignored while
+  it still holds its initial value.
+- Every remaining difference is listed in the test's `KNOWN_DIFFERENCES`. The test fails on a new
+  difference and on a listed one that no longer happens, so a fix removes its entries.
+
+To record one, load the fixture in Block Kit Builder, perform the interaction, open Actions Preview
+and copy the payload. Replace the identity before saving: `user` becomes
+`{ "id": "U00000000", "username": "user", "name": "user", "team_id": "T00000000" }`, `team`
+becomes `{ "id": "T00000000", "domain": "workspace" }`, `api_app_id`, `token`, `trigger_id`,
+`response_url` and each `action_ts` become `"<field name>"`, and a block id Slack generated
+becomes `"<block_id>"` (in `actions` and as the `state.values` key). Then add the interaction to
+the test's `INTERACTIONS`. Recordings are maintainer-owned, like the references.
+
 In CI, the Visual workflow's `render-diff` job runs this for every pull request the comparison
 covers and uploads the result. The Visual preview workflow then checks the artifact
 (`src/render/publish.ts`), uploads the renders to R2 and comments on the pull request, only when
