@@ -113,6 +113,58 @@ function toViewOutput(view: ViewLike, state: StateValues, identity: ResolvedIden
   };
 }
 
+/**
+ * A text object as Slack echoes it back: `plain_text` gains `emoji: true` and `mrkdwn` gains
+ * `verbatim: false` unless the app set them.
+ */
+export function normalizeText<T>(text: T): T {
+  if (typeof text !== "object" || text === null) return text;
+  const object = text as { type?: unknown; emoji?: unknown; verbatim?: unknown };
+  if (object.type === "plain_text") return { ...text, emoji: object.emoji ?? true };
+  if (object.type === "mrkdwn") return { ...text, verbatim: object.verbatim ?? false };
+  return text;
+}
+
+function normalizeOption(option: unknown): unknown {
+  if (typeof option !== "object" || option === null) return option;
+  const { text, description } = option as { text?: unknown; description?: unknown };
+  return {
+    ...option,
+    ...(text === undefined ? {} : { text: normalizeText(text) }),
+    ...(description === undefined ? {} : { description: normalizeText(description) }),
+  };
+}
+
+/** An action or state entry with every text object it echoes normalized like Slack's. */
+function normalizeEchoes<T extends Record<string, unknown>>(entry: T): T {
+  const out: Record<string, unknown> = { ...entry };
+  if (out.text !== undefined) out.text = normalizeText(out.text);
+  if (out.placeholder !== undefined) out.placeholder = normalizeText(out.placeholder);
+  if (out.selected_option) out.selected_option = normalizeOption(out.selected_option);
+  if (Array.isArray(out.selected_options)) {
+    out.selected_options = out.selected_options.map(normalizeOption);
+  }
+  if (typeof out.confirm === "object" && out.confirm !== null) {
+    const confirm = { ...(out.confirm as Record<string, unknown>) };
+    for (const key of ["title", "text", "confirm", "deny"]) {
+      if (confirm[key] !== undefined) confirm[key] = normalizeText(confirm[key]);
+    }
+    out.confirm = confirm;
+  }
+  return out as T;
+}
+
+function normalizeState(state: StateValues): StateValues {
+  return Object.fromEntries(
+    Object.entries(state).map(([blockId, elements]) => [
+      blockId,
+      Object.fromEntries(
+        Object.entries(elements).map(([actionId, value]) => [actionId, normalizeEchoes(value)]),
+      ),
+    ]),
+  );
+}
+
 export interface BuildBlockActionsPayloadOptions {
   action: BlockAction;
   state: StateValues;
@@ -167,9 +219,10 @@ export function buildBlockActionsPayload({
   identity,
 }: BuildBlockActionsPayloadOptions): BlockActionsPayload {
   const id = resolveIdentity(identity);
+  state = normalizeState(state);
   const base = {
     type: "block_actions" as const,
-    actions: [action],
+    actions: [normalizeEchoes(action)],
     team: id.team,
     user: id.user,
     token: id.token,

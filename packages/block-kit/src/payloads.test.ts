@@ -102,3 +102,60 @@ describe("buildViewClosedPayload", () => {
     expect(payload.is_cleared).toBe(true);
   });
 });
+
+describe("echoed text objects", () => {
+  const confirm = {
+    title: { type: "plain_text" as const, text: "Sure?" },
+    text: { type: "mrkdwn" as const, text: "This *can't* be undone." },
+    confirm: { type: "plain_text" as const, text: "Yes" },
+    deny: { type: "plain_text" as const, text: "No", emoji: false },
+  };
+
+  it("gain Slack's defaults: emoji on plain_text, verbatim on mrkdwn", () => {
+    const payload = buildBlockActionsPayload({
+      action: { ...action, type: "button", text: { type: "plain_text", text: "Go" }, confirm },
+      state: {},
+      container: { type: "message", messageTs: "1700000000.000100" },
+    });
+    expect(payload.actions[0]).toMatchObject({
+      text: { type: "plain_text", text: "Go", emoji: true },
+      confirm: {
+        title: { type: "plain_text", text: "Sure?", emoji: true },
+        text: { type: "mrkdwn", text: "This *can't* be undone.", verbatim: false },
+        confirm: { type: "plain_text", text: "Yes", emoji: true },
+        deny: { type: "plain_text", text: "No", emoji: false },
+      },
+    });
+  });
+
+  it("cover a select's placeholder and every selected option's text and description", () => {
+    const option = {
+      text: { type: "plain_text", text: "High" },
+      description: { type: "mrkdwn", text: "*Now*" },
+      value: "high",
+    };
+    const payload = buildBlockActionsPayload({
+      action: {
+        ...action,
+        type: "multi_static_select",
+        placeholder: { type: "plain_text", text: "Pick" },
+        selected_options: [option],
+      },
+      state: { b1: { approve: { type: "multi_static_select", selected_options: [option] } } },
+      container: { type: "message", messageTs: "1700000000.000100" },
+    });
+    const normalized = {
+      text: { type: "plain_text", text: "High", emoji: true },
+      description: { type: "mrkdwn", text: "*Now*", verbatim: false },
+      value: "high",
+    };
+    expect(payload.actions[0]).toMatchObject({
+      placeholder: { type: "plain_text", text: "Pick", emoji: true },
+      selected_options: [normalized],
+    });
+    expect(payload.state.values.b1!.approve).toEqual({
+      type: "multi_static_select",
+      selected_options: [normalized],
+    });
+  });
+});
