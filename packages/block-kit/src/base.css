@@ -98,6 +98,13 @@
   all: revert;
 }
 
+/* WebKit makes a `contenteditable` element editable through `-webkit-user-modify`, which the revert
+   above rolls back to `read-only`: Safari then can't focus or type in it. */
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :where([contenteditable]:not([contenteditable="false"])) {
+  -webkit-user-modify: read-write;
+}
+
 :is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
   :where(svg, img, video, canvas, iframe, embed, object) {
   display: revert;
