@@ -13,6 +13,11 @@ export interface PopoverProps {
   onDismiss: () => void;
   /** Space between the anchor and the popover; Slack's table sort menu sits flush below its header. */
   gap?: number;
+  /**
+   * Called once the popover is placed and visible. It renders hidden until then, and a hidden
+   * element can't take focus, so move focus into the popover here rather than when it mounts.
+   */
+  onPlaced?: () => void;
   children: ReactNode;
 }
 
@@ -23,7 +28,13 @@ export interface PopoverProps {
  * The layer is as wide as the anchor, so a child sized `width: 100%` matches the control it opened
  * from.
  */
-export function Popover({ anchorRef, onDismiss, gap = DEFAULT_GAP, children }: PopoverProps) {
+export function Popover({
+  anchorRef,
+  onDismiss,
+  gap = DEFAULT_GAP,
+  onPlaced,
+  children,
+}: PopoverProps) {
   const { theme } = useBlockKit();
   const layerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(
@@ -67,6 +78,16 @@ export function Popover({ anchorRef, onDismiss, gap = DEFAULT_GAP, children }: P
       resize?.disconnect();
     };
   }, [anchorRef, gap]);
+
+  // Once, on the first placement: later ones only follow the anchor as the page scrolls.
+  const placed = position !== null;
+  const notified = useRef(false);
+  useEffect(() => {
+    if (!placed || notified.current) return;
+    notified.current = true;
+    onPlaced?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placed]);
 
   useEffect(() => {
     function onDocDown(e: MouseEvent) {

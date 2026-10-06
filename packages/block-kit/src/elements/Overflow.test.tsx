@@ -19,6 +19,16 @@ function element(extra: Record<string, unknown> = {}): OverflowElement {
   } as unknown as OverflowElement;
 }
 
+/** Renders the overflow and returns its trigger. */
+function renderOverflow(onAction = vi.fn()) {
+  render(
+    <BlockKitProvider onAction={onAction}>
+      <Overflow element={element()} blockId="b1" />
+    </BlockKitProvider>,
+  );
+  return screen.getByRole("button", { name: "More options" });
+}
+
 describe("<Overflow>", () => {
   it("opens the menu on click and dispatches selected_option when an item is chosen", async () => {
     const onAction = vi.fn();
@@ -103,6 +113,40 @@ describe("<Overflow>", () => {
       expect.anything(),
     );
     expect(screen.queryByRole("menu")).toBeNull();
+  });
+
+  describe("focus", () => {
+    it("moves into the menu when it opens", () => {
+      const trigger = renderOverflow();
+      fireEvent.click(trigger);
+      expect(document.activeElement).toBe(screen.getByRole("menu"));
+    });
+
+    it("highlights the first item on the first ArrowDown from the menu", () => {
+      renderOverflow();
+      fireEvent.click(screen.getByRole("button", { name: "More options" }));
+      const menu = screen.getByRole("menu");
+      fireEvent.keyDown(menu, { key: "ArrowDown" });
+      expect(screen.getByText("Edit").closest("[data-active]")).toBeTruthy();
+      expect(menu.getAttribute("aria-activedescendant")).toBe(
+        screen.getByText("Edit").closest("[role=menuitem]")?.id,
+      );
+    });
+
+    it("returns to the trigger when Escape closes the menu", () => {
+      const trigger = renderOverflow();
+      fireEvent.click(trigger);
+      fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
+      expect(screen.queryByRole("menu")).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+    });
+
+    it("returns to the trigger after an item is chosen", async () => {
+      const trigger = renderOverflow();
+      fireEvent.click(trigger);
+      await clickAsync(screen.getByText("Delete"));
+      expect(document.activeElement).toBe(trigger);
+    });
   });
 
   it("highlights the row under the pointer", () => {
