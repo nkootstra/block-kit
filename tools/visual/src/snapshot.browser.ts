@@ -114,6 +114,24 @@ describe("snapshot.js", () => {
     expect(replayed.label).toEqual(live.label);
   });
 
+  it("keeps a wrapping row's items on the row they were laid out on", async () => {
+    // Slack's actions block (interactive/update-message) is a wrapping row sized to its buttons.
+    // Live, the row came to 207.71875px while its buttons and margins snap to 207.734375px, a
+    // layout unit more, and still sat on one line; frozen, the last button dropped to a second
+    // row. The snapshot gives such a row a unit per item. Chrome sizes this page's row exactly,
+    // so it can't reproduce Slack's shortfall: it checks the extra width keeps every item where
+    // it was and the row within half a pixel.
+    const button = (id: string, width: string) =>
+      `<span id="${id}" style="display:block;flex:none;width:${width};height:28px;margin-right:8px"></span>`;
+    const { live, replayed } = await snapshotAndReplay(
+      `<div style="display:flex"><div id="row" style="display:flex;flex-wrap:wrap">${button("a", "65.3125px")}${button("b", "56px")}${button("c", "62.41px")}</div></div>`,
+    );
+    expect(replayed.a).toEqual(live.a);
+    expect(replayed.b).toEqual(live.b);
+    expect(replayed.c).toEqual(live.c);
+    expect(Math.abs(replayed.row!.width - live.row!.width)).toBeLessThan(0.5);
+  });
+
   it("keeps an item on an implicit grid row where Slack draws it", async () => {
     // Slack's composer puts its footer on the row after the explicit grid (grid-row-start: -1).
     // The resolved track list includes that implicit row; frozen as an explicit row, it pushes
@@ -185,6 +203,21 @@ describe("snapshot.js", () => {
           () => getComputedStyle(document.getElementById("save")!).transitionDuration,
         ),
       ).toBe("0s");
+    });
+
+    it("leaves the Builder's own block wrapper out of the motion", async () => {
+      // The Builder wraps every block in a draggable wrapper with a box-shadow transition for
+      // its selection highlight; it isn't part of how Slack renders the message.
+      await page.setContent(
+        `<!doctype html><body style="margin:0"><div class="p-bkb_preview__message" style="width:400px"><div class="dragWrapper___5blE" style="transition:box-shadow 160ms"><p>Text</p></div></div></body>`,
+      );
+      const html = await snapshot(page);
+      const meta = JSON.parse(
+        html.match(
+          /<script type="application\/json" id="sbk-reference-meta">(.*?)<\/script>/s,
+        )![1]!,
+      );
+      expect(meta.motion).toEqual({});
     });
 
     it("reads the same motion from a reference as from the live page", async () => {

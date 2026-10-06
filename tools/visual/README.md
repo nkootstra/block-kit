@@ -100,9 +100,17 @@ lays out like the live page:
   shrink and grow to, so a checkbox label's text lost 4px and wrapped.
 - **A flex item in a row is pinned** to its frozen width (`flex: 0 0 <width>`), so the rounded-up
   row can't squeeze a tight item and an item with its own `flex-basis` doesn't ignore its width.
-- **Heights left at `auto` aren't frozen** (read through CSS Typed OM). A box with a set height stops
-  its last child's bottom margin from collapsing through it; with the widths frozen, the content
-  lays out the same and gives the same height. Images and form controls keep theirs.
+- **A wrapping flex row gets one more layout unit per item.** Chrome sizes such a row from its items'
+  unsnapped widths, so live it can be a unit narrower than its snapped items and still hold them on
+  one line; frozen, Slack's third action button dropped to a second line.
+- **Heights are frozen, except where a set height would stop margins collapsing:** a block in
+  normal flow, at `auto` (read through CSS Typed OM), whose first or last child's margin collapses
+  through it. Leaving every `auto` height out is wrong elsewhere: Slack's checkbox wrapper, a flex
+  item, was 14px live and replayed 20px tall around its 14px box and 3px margins.
+- **The message time isn't pinned:** the capture writes `12:00 PM` over the time on screen, which
+  would otherwise wrap in the narrower time's width.
+- **The Builder's drag wrapper isn't in the motion:** its selection-highlight transition is the
+  Builder's, not Slack's.
 - **Grid track lists keep their authored form** (`auto auto`): the resolved list also contains the
   implicit rows, which would push an item placed after the grid one row down.
 - **Tag defaults are read at the element's font size.** A style equal to its tag's default is left
