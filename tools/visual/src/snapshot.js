@@ -84,7 +84,25 @@ async (win = window) => {
   const REPLACED = /^(img|svg|video|canvas|iframe|object|embed|input|textarea|select)$/i;
   const UNIT = 64;
   const roundUpToUnit = (px) => Math.ceil(px * UNIT - 0.032) / UNIT;
+  // The message time is replaced with FIXED_TIME after freezing, so its sizes belong to the time
+  // that was on screen ("7:37 PM"); pinned, the wider "12:00 PM" wraps. Its label and the
+  // timestamp around it size to their text instead.
+  const TIMESTAMP = '[data-qa="timestamp_label"]';
+  const showsTime = (el) =>
+    el.matches?.(TIMESTAMP) ||
+    [...(el.children ?? [])].some((child) => child.matches(TIMESTAMP) && el.children.length === 1);
   const sizeOverrides = (el, cs, parentStyle) => {
+    if (showsTime(el)) {
+      return {
+        width: null,
+        height: null,
+        "min-width": null,
+        "max-width": null,
+        "flex-basis": null,
+        "flex-grow": null,
+        "flex-shrink": null,
+      };
+    }
     const out = {};
     const width = cs.getPropertyValue("width");
     if (/^[\d.]+px$/.test(width)) out.width = `${roundUpToUnit(Number.parseFloat(width))}px`;

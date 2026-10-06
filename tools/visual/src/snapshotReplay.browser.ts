@@ -85,6 +85,15 @@ describe("snapshot.js replays every fixture where it was laid out", () => {
         }
       });
       const live = await page.evaluate(boxes);
+      // The Builder shows the time of capture (7:37 PM) and the snapshot writes the fixed 12:00 PM
+      // in its place. Our message shows 12:00 PM, which is how the reference must replay: mark
+      // our time as Slack's label and show a narrower time while capturing.
+      await page.evaluate(() => {
+        const time = document.querySelector(".sbk-message__time");
+        if (!time) return;
+        time.setAttribute("data-qa", "timestamp_label");
+        time.textContent = "7:37 PM";
+      });
       await snapshotAndReplay(page);
       const replayed = await page.evaluate(boxes);
       await harness.closePages();

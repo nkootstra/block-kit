@@ -13,6 +13,16 @@ describe("normalize", () => {
     );
   });
 
+  it("lets the pinned 12:00 PM lay out at its own width instead of the captured time's", () => {
+    // From catalog/section/button, captured when the preview showed 7:37 PM: the snapshot pinned
+    // the timestamp to that time's 50.3125px flex basis, and the wider "12:00 PM" wrapped.
+    const html =
+      '<span role="none" class="c-timestamp c-timestamp--static" data-ts="1495733843.826540" style="box-sizing:border-box;color:rgb(97, 96, 97);display:block;flex-basis:50.3125px;flex-shrink:0;font-size:12px;line-height:17.6002px;margin-right:5px;min-height:auto" data-ref="1"><span class="c-timestamp__label" data-qa="timestamp_label" style="box-sizing:border-box;color:rgb(97, 96, 97);line-height:17.6002px;margin-right:5px">12:00 PM</span></span>';
+    expect(normalize(html)).toBe(
+      '<span role="none" class="c-timestamp c-timestamp--static" data-ts="1495733843.826540" style="box-sizing:border-box;color:rgb(97, 96, 97);display:block;font-size:12px;line-height:17.6002px;margin-right:5px;min-height:auto" data-ref="1"><span class="c-timestamp__label" data-qa="timestamp_label" style="box-sizing:border-box;color:rgb(97, 96, 97);line-height:17.6002px;margin-right:5px">12:00 PM</span></span>',
+    );
+  });
+
   it("keeps box shadows that belong to the blocks themselves", () => {
     const html =
       '<div class="c-link" style="box-shadow:rgba(0, 0, 0, 0.1) 0px 0px 0px 1px inset"></div>';
