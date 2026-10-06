@@ -79,6 +79,9 @@ export function useCombobox({
       type: "text",
       role: "combobox",
       autoComplete: "off",
+      // The field's width comes from the flex layout around it; without this an input's default
+      // 20-character intrinsic width becomes its minimum wherever `min-width` is left at `auto`.
+      size: 1,
       spellCheck: false,
       "aria-autocomplete": "list" as const,
       "aria-expanded": open,
