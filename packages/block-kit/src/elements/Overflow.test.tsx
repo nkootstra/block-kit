@@ -36,7 +36,7 @@ describe("<Overflow>", () => {
         type: "overflow",
         action_id: "a1",
         block_id: "b1",
-        selected_option: { value: "b", text: { type: "plain_text", text: "Delete" } },
+        selected_option: { value: "b", text: { type: "plain_text", text: "Delete", emoji: true } },
       }),
       expect.anything(),
     );

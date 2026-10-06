@@ -13,6 +13,7 @@ import {
 import {
   type BlockSuggestionPayload,
   buildBlockActionsPayload,
+  normalizeEchoes,
   buildBlockSuggestionPayload,
   buildViewClosedPayload,
   buildViewSubmissionPayload,
@@ -492,7 +493,11 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
 
   const dispatch = useCallback<BlockKitContextValue["dispatch"]>(
     (action, scope) => {
-      const full = { ...action, action_ts: action.action_ts ?? actionTs() } as BlockAction;
+      // onAction and the block_actions payload get the same action, normalized as Slack sends it.
+      const full = normalizeEchoes({
+        ...action,
+        action_ts: action.action_ts ?? actionTs(),
+      } as BlockAction);
       const message = scope?.message;
       onAction?.(full, { state: stateRef.current, views, message });
       const container = scope?.container ?? containerRef.current;

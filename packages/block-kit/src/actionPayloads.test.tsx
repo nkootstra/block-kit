@@ -199,5 +199,17 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
         (KNOWN_DIFFERENCES[name] ?? []).toSorted(),
       );
     });
+
+    it(`${name} hands onAction the action the payload sends`, async () => {
+      let payload: BlockActionsPayload | undefined;
+      let action: unknown;
+      render(
+        <BlockKitProvider onAction={(a) => (action = a)} onPayload={(p) => (payload = p)}>
+          <Message blocks={fixtureBlocks(name)} />
+        </BlockKitProvider>,
+      );
+      await INTERACTIONS[name]!();
+      expect(action).toEqual(payload?.actions[0]);
+    });
   }
 });

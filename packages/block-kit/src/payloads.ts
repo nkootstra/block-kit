@@ -139,7 +139,7 @@ function normalizeOption(option: unknown): unknown {
 }
 
 /** An action or state entry with every text object it echoes normalized like Slack's. */
-function normalizeEchoes<T extends Record<string, unknown>>(entry: T): T {
+export function normalizeEchoes<T extends Record<string, unknown>>(entry: T): T {
   const out: Record<string, unknown> = { ...entry };
   if (out.text !== undefined) out.text = normalizeText(out.text);
   if (out.placeholder !== undefined) out.placeholder = normalizeText(out.placeholder);

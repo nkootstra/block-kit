@@ -31,7 +31,7 @@ One provider can hold several surfaces. Each action still carries the message or
     onAction: {
       type: "(action: BlockAction, context: ActionContext) => void",
       description:
-        "Called for every action: a click, a selection, a date picked. `action` is one entry of the `block_actions` payload's `actions` array. `context` has `state`, `views` and, for actions in a message, `message`.",
+        "Called for every action: a click, a selection, a date picked. `action` is exactly the payload's `actions[0]`, with text objects normalized as Slack echoes them (`emoji: true`, `verbatim: false`). `context` has `state`, `views` and, for actions in a message, `message`.",
     },
     onPayload: {
       type: "(payload: BlockActionsPayload, context: PayloadContext) => void",

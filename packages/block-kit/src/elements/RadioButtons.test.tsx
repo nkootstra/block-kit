@@ -11,6 +11,11 @@ function option(value: string, text: string): Option {
   return { value, text: { type: "plain_text", text } } as unknown as Option;
 }
 
+/** The option as Slack sends it back in an action: its plain_text gains `emoji: true`. */
+function sent(value: string, text: string) {
+  return { value, text: { type: "plain_text", text, emoji: true } };
+}
+
 describe("<RadioButtons>", () => {
   it("reports the initial_option as selected_option on mount", () => {
     let state: StateValues = {};
@@ -52,14 +57,14 @@ describe("<RadioButtons>", () => {
     await clickAsync(radioA!);
     expect(radioA!.checked).toBe(true);
     expect(onAction).toHaveBeenLastCalledWith(
-      expect.objectContaining({ type: "radio_buttons", selected_option: option("a", "A") }),
+      expect.objectContaining({ type: "radio_buttons", selected_option: sent("a", "A") }),
       expect.anything(),
     );
     await clickAsync(radioB!);
     expect(radioA!.checked).toBe(false);
     expect(radioB!.checked).toBe(true);
     expect(onAction).toHaveBeenLastCalledWith(
-      expect.objectContaining({ selected_option: option("b", "B") }),
+      expect.objectContaining({ selected_option: sent("b", "B") }),
       expect.anything(),
     );
   });

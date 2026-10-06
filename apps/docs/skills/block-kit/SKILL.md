@@ -63,7 +63,8 @@ export function Preview() {
 ## Handle actions
 
 `onAction` on `<BlockKitProvider>` receives each action in the shape of one entry of a
-`block_actions` payload's `actions` array. The second argument answers the way an app would:
+`block_actions` payload's `actions` array, exactly as Slack sends it: echoed text objects carry
+`emoji: true` (plain_text) or `verbatim: false` (mrkdwn). The second argument answers the way an app would:
 `message.update` replaces the message (like `response_url` with `replace_original`), `views` opens,
 pushes or updates modals, and `state` holds the current value of every input.
 

@@ -30,7 +30,7 @@ describe("<FeedbackButtons>", () => {
         action_id: "a1",
         block_id: "b1",
         value: "good",
-        text: { type: "plain_text", text: "Good response" },
+        text: { type: "plain_text", text: "Good response", emoji: true },
       }),
       expect.anything(),
     );
