@@ -73,6 +73,29 @@ describe("<Select> static_select", () => {
     expect(screen.queryByRole("listbox")).toBeNull();
   });
 
+  it("shows the chosen option in an overlay over the field, hidden while typing", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              options: [opt("a", "A"), opt("b", "B")],
+              initial_option: opt("b", "B"),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const overlay = () => document.querySelector(".sbk-select__content");
+    expect(overlay()?.textContent).toBe("B");
+    expect(overlay()?.getAttribute("aria-hidden")).toBe("true");
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(overlay()).toBeNull();
+  });
+
   it("filters the options by what's typed into the field, with no separate search box", () => {
     render(
       <BlockKitProvider>

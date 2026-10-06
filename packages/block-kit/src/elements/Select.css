@@ -154,6 +154,44 @@
   margin-left: 0;
 }
 
+/* While the overlay below shows the chosen option, the input's own copy of it is transparent, as
+   Slack's `c-select_input--offscreen` is. */
+.sbk-select__input--behind {
+  color: transparent;
+}
+
+/* Slack's `c-select_input__content`: the chosen option drawn in a layer over the whole field, where
+   the input's text would sit, stopping short of the chevron. Slack pads it 8px / 29px (12px / 33px
+   on the medium field) from the outer edge; our border is inside the box, so 1px less. Presses go
+   through to the input. */
+.sbk-select--typeable .sbk-select__control {
+  position: relative;
+}
+
+.sbk-select__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 28px 0 7px;
+  pointer-events: none;
+}
+
+.sbk-select--medium .sbk-select__content {
+  padding: 0 32px 0 11px;
+}
+
+.sbk-select__content-text {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-select--medium .sbk-select__content-text {
+  line-height: 22.5px;
+}
+
 /* An id Slack couldn't resolve: c-small_channel_entity with a c-missing_channel--private pill. */
 .sbk-select__entity {
   display: flex;

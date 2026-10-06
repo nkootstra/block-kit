@@ -406,16 +406,25 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
 
   if (typeable) {
     const unresolved = items[0] !== undefined && isUnresolved(items[0]);
+    const display = unresolved ? undefined : closedLabel;
+    // Slack keeps the chosen option in the input but draws it in a layer over the field
+    // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
+    const overlay = display !== undefined && !open;
     return (
       <div className={`sbk-select sbk-select--typeable${sizeClass}`} ref={rootRef}>
         {/* A label, so a press on the chevron or padding lands in the input as on Slack's field. */}
         <label className="sbk-select__control">
           <input
-            {...combo.inputProps(unresolved ? undefined : closedLabel, placeholder)}
+            {...combo.inputProps(display, placeholder)}
             {...invalid}
-            className="sbk-select__input"
+            className={`sbk-select__input${overlay ? " sbk-select__input--behind" : ""}`}
           />
           <ChevronDownIcon className="sbk-select__chevron" />
+          {overlay && (
+            <span className="sbk-select__content" aria-hidden="true">
+              <span className="sbk-select__content-text">{display}</span>
+            </span>
+          )}
         </label>
         {menu}
         {dialog}
