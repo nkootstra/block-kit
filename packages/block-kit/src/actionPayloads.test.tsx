@@ -67,8 +67,8 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await clickAsync(screen.getByText("15"));
   },
   "catalog/actions/timepicker@pick-3pm": async () => {
-    fireEvent.click(screen.getByText("1:37 PM"));
-    await clickAsync(screen.getByText("3:00 PM"));
+    fireEvent.click(screen.getByDisplayValue("1:37 PM"));
+    await clickAsync(screen.getByRole("option", { name: "3:00 PM" }));
   },
   "catalog/input/dispatches-actions@enter": async () => {
     const input = screen.getByRole("textbox");

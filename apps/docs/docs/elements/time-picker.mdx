@@ -5,9 +5,16 @@ seo:
   title: "Slack time picker element"
 ---
 
-`timepicker` opens a scrollable list of times in 30-minute increments. Use it in an `actions`
-block or a section's accessory for a quick pick, or in an `input` block to collect a time in a
-modal.
+`timepicker` is a field you can type a time into, with a list of the day's hours under it. Use it
+in an `actions` block or a section's accessory for a quick pick, or in an `input` block to collect a
+time in a modal.
+
+Like Slack's, the field is a text input (`role="combobox"`). Clicking it opens the list, hour by
+hour from 12:00 AM; typing narrows the list to the times that start with what you typed. The arrow
+keys move through it, Enter picks the highlighted time, and Escape or Tab closes it. A typed time
+the list doesn't offer, such as `2:15 PM`, `2:15pm` or `14:15`, can be picked with Enter and is sent
+as typed (`"14:15"`). Whether Slack keeps a typed time off the hour or rounds it hasn't been
+verified.
 
 <Preview
   actions
@@ -194,14 +201,14 @@ their values for display.
 
 ## Interactivity
 
-Picking an option fires an action with `selected_time`:
+Picking a time, from the list or typed, fires an action with `selected_time`:
 
 ```json
 {
   "type": "timepicker",
   "action_id": "select_time",
   "block_id": "meeting",
-  "selected_time": "14:30"
+  "selected_time": "15:00"
 }
 ```
 
@@ -210,7 +217,7 @@ The same shape lands in `state.values[block_id][action_id]`:
 ```json
 {
   "type": "timepicker",
-  "selected_time": "14:30"
+  "selected_time": "15:00"
 }
 ```
 

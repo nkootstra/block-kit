@@ -13,6 +13,8 @@ export interface PopoverProps {
   onDismiss: () => void;
   /** Space between the anchor and the popover; Slack's table sort menu sits flush below its header. */
   gap?: number;
+  /** Horizontal shift from the anchor's left edge; Slack's select menus start 12px to its left. */
+  offsetX?: number;
   /**
    * Called once the popover is placed and visible. It renders hidden until then, and a hidden
    * element can't take focus, so move focus into the popover here rather than when it mounts.
@@ -32,6 +34,7 @@ export function Popover({
   anchorRef,
   onDismiss,
   gap = DEFAULT_GAP,
+  offsetX = 0,
   onPlaced,
   children,
 }: PopoverProps) {
@@ -62,7 +65,7 @@ export function Popover({
       if (!fitsBelow && !fitsAbove) {
         top = Math.max(gap, Math.min(below, window.innerHeight - height - gap));
       }
-      setPosition({ top, left: a.left, width: a.width });
+      setPosition({ top, left: a.left + offsetX, width: a.width });
     }
     place();
     window.addEventListener("scroll", place, true);
@@ -77,7 +80,7 @@ export function Popover({
       window.removeEventListener("resize", place);
       resize?.disconnect();
     };
-  }, [anchorRef, gap]);
+  }, [anchorRef, gap, offsetX]);
 
   // Once, on the first placement: later ones only follow the anchor as the page scrolls.
   const placed = position !== null;

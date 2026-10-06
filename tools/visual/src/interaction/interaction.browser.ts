@@ -366,6 +366,42 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  describe("time picker list", () => {
+    const picker: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type: "timepicker", action_id: "t", initial_time: "13:37" }],
+        },
+      ],
+    };
+
+    it("opens a 212px list that starts 12px left of the field and is at most 264px tall", async () => {
+      const page = await harness.open(picker);
+      await page.click(".sbk-timepicker__control");
+      await settle(page);
+      const [field, menu] = await Promise.all(
+        [".sbk-timepicker__control", ".sbk-timepicker__menu"].map((s) =>
+          page.locator(s).boundingBox(),
+        ),
+      );
+      expect(menu?.width).toBe(212);
+      expect(Math.round((menu?.x ?? 0) - (field?.x ?? 0))).toBe(-12);
+      expect(menu?.height).toBe(264);
+    });
+
+    it("lists the hours and narrows them to what's typed", async () => {
+      const page = await harness.open(picker);
+      await page.click(".sbk-timepicker__control");
+      await page.keyboard.type("3");
+      await settle(page);
+      expect(await page.locator(".sbk-timepicker__option").allTextContents()).toEqual([
+        "3:00 AM",
+        "3:00 PM",
+      ]);
+    });
+  });
+
   describe("multi-select chips", () => {
     const chips: Mount = {
       blocks: [
@@ -540,18 +576,19 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ],
     };
 
-    // Text fields show the ring on any focus; buttons only for keyboard focus, as Slack does.
-    for (const [name, selector] of [
-      ["text input", ".sbk-text-input"],
-      ["select", ".sbk-select__control"],
-      ["date picker", ".sbk-datepicker__input"],
-      ["time picker", ".sbk-timepicker__control"],
+    // Text fields show the ring on any focus; buttons only for keyboard focus, as Slack does. The
+    // time picker's field is an input inside its box, so the box draws the ring.
+    for (const [name, focused, ringed] of [
+      ["text input", ".sbk-text-input", ".sbk-text-input"],
+      ["select", ".sbk-select__control", ".sbk-select__control"],
+      ["date picker", ".sbk-datepicker__input", ".sbk-datepicker__input"],
+      ["time picker", ".sbk-timepicker__input", ".sbk-timepicker__control"],
     ] as const) {
       it(`${name}: shows a red focus ring`, async () => {
         const page = await harness.open(invalid);
-        await tabTo(page, selector);
+        await tabTo(page, focused);
         await settle(page);
-        expect((await style(page, selector)).boxShadow.startsWith(`${RED} 0px 0px 0px 1px`)).toBe(
+        expect((await style(page, ringed)).boxShadow.startsWith(`${RED} 0px 0px 0px 1px`)).toBe(
           true,
         );
       });
