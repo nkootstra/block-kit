@@ -1,64 +1,135 @@
+/* Slack's confirmation dialog (`c-dialog`), measured in Block Kit Builder. */
+
+/* The dim is a pseudo-element so it can fade in on its own (80ms, linear), under the dialog. */
 .sbk-confirm__overlay {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
+.sbk-confirm__overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  animation: sbk-confirm-dim-in 80ms linear;
+}
+
+/* The box fades in while growing from 95%, on Slack's curve. */
 .sbk-confirm {
-  width: 400px;
+  position: relative;
+  width: 520px;
   max-width: calc(100vw - 32px);
   background: var(--sbk-bg);
   border-radius: 8px;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.08),
-    0 8px 32px rgba(0, 0, 0, 0.35);
-  padding: 20px;
+    0 0 0 1px var(--sbk-border),
+    0 18px 48px rgba(0, 0, 0, 0.35);
   font-family: var(--sbk-font);
+  color: var(--sbk-text);
+  animation: sbk-confirm-enter 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+@keyframes sbk-confirm-dim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sbk-confirm-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sbk-confirm__overlay::before,
+  .sbk-confirm {
+    animation: none;
+  }
+}
+
+.sbk-confirm__header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 16px 24px;
 }
 
 .sbk-confirm__title {
-  margin: 0 0 8px;
-  font-size: 18px;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 22px;
   font-weight: 900;
-  color: var(--sbk-text);
+  line-height: 30px;
+}
+
+/* A 34px icon button, like the modal's close button. */
+.sbk-confirm__close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--sbk-badge-text);
+  cursor: pointer;
+}
+
+.sbk-confirm__close:hover {
+  background: var(--sbk-icon-button-hover-bg);
 }
 
 .sbk-confirm__text {
+  padding: 0 24px;
   font-size: 15px;
   line-height: 22px;
-  color: var(--sbk-text);
-  margin-bottom: 20px;
 }
 
 .sbk-confirm__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 12px;
+  padding: 20px 24px;
 }
 
+/* The dialog's buttons are Slack's 36px "medium" buttons, as in a modal footer. */
 .sbk-confirm__button {
   height: 36px;
-  padding: 0 16px;
-  border-radius: 4px;
+  min-width: 80px;
+  padding: 0 12px 1px;
+  border-radius: 8px;
   border: 1px solid var(--sbk-button-border);
   background: var(--sbk-bg);
   color: var(--sbk-text);
   font: 700 15px var(--sbk-font);
   cursor: pointer;
+  transition-property: color, background-color, border-color;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+.sbk-confirm__button--deny:hover {
+  background-color: var(--sbk-button-hover-bg);
 }
 
 .sbk-confirm__button--primary {
-  border: 0;
+  border-color: transparent;
   background: var(--sbk-primary);
   color: #fff;
 }
 
 .sbk-confirm__button--danger {
-  border: 0;
+  border-color: transparent;
   background: var(--sbk-danger);
   color: #fff;
 }

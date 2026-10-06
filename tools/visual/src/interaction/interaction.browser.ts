@@ -667,6 +667,133 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       );
     });
   });
+
+  describe("confirm dialog", () => {
+    const withConfirm: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+              action_id: "delete",
+              text: plain("Delete"),
+              style: "danger",
+              confirm: {
+                title: plain("Are you sure?"),
+                text: plain("This can't be undone."),
+                confirm: plain("Delete"),
+                deny: plain("Cancel"),
+                style: "danger",
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const open = async (options?: { reducedMotion?: boolean }) => {
+      const page = await harness.open(withConfirm, options);
+      await page.click(".sbk-button");
+      await page.waitForSelector(".sbk-confirm");
+      return page;
+    };
+    const css = (page: Page, selector: string, pseudo?: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el, p) => {
+          const s = getComputedStyle(el, p);
+          const r = el.getBoundingClientRect();
+          return {
+            size: `${r.width} x ${r.height}`,
+            radius: s.borderTopLeftRadius,
+            shadow: s.boxShadow,
+            padding: s.padding,
+            font: `${s.fontWeight} ${s.fontSize}/${s.lineHeight}`,
+            background: s.backgroundColor,
+            animation: `${s.animationName} ${s.animationDuration} ${s.animationTimingFunction}`,
+          };
+        }, pseudo);
+
+    // Slack's `c-dialog`, measured in Block Kit Builder.
+    it("draws Slack's 520px dialog with its header, body and footer spacing", async () => {
+      const page = await open();
+      await settle(page);
+      const box = await css(page, ".sbk-confirm");
+      expect({ width: box.size.split(" x ")[0], radius: box.radius, shadow: box.shadow }).toEqual({
+        width: "520",
+        radius: "8px",
+        shadow: "rgba(29, 28, 29, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.35) 0px 18px 48px 0px",
+      });
+      expect((await css(page, ".sbk-confirm__header")).padding).toBe("16px 24px");
+      expect((await css(page, ".sbk-confirm__title")).font).toBe("900 22px/30px");
+      expect((await css(page, ".sbk-confirm__close")).size).toBe("34 x 34");
+      const body = await css(page, ".sbk-confirm__text");
+      expect({ padding: body.padding, font: body.font }).toEqual({
+        padding: "0px 24px",
+        font: "400 15px/22px",
+      });
+      expect((await css(page, ".sbk-confirm__actions")).padding).toBe("20px 24px");
+    });
+
+    it("draws Slack's 36px dialog buttons", async () => {
+      const page = await open();
+      await settle(page);
+      for (const selector of [".sbk-confirm__button--deny", ".sbk-confirm__button--danger"]) {
+        const b = await css(page, selector);
+        const [width, height] = b.size.split(" x ").map(Number);
+        expect({
+          wide: width! >= 80,
+          height,
+          radius: b.radius,
+          padding: b.padding,
+          weight: b.font.split(" ")[0],
+          size: b.font.split(" ")[1]!.split("/")[0],
+        }).toEqual({
+          wide: true,
+          height: 36,
+          radius: "8px",
+          padding: "0px 12px 1px",
+          weight: "700",
+          size: "15px",
+        });
+      }
+    });
+
+    // The dim fades in like a modal's; the box fades in while growing from 95%.
+    it("fades the dim in and the dialog in from 95%, over 80ms", async () => {
+      const page = await open();
+      const dim = await css(page, ".sbk-confirm__overlay", "::before");
+      expect({ background: dim.background, animation: dim.animation }).toEqual({
+        background: "rgba(0, 0, 0, 0.6)",
+        animation: "sbk-confirm-dim-in 0.08s linear",
+      });
+      expect((await css(page, ".sbk-confirm")).animation).toBe(
+        `sbk-confirm-enter 0.08s ${SLACK_CURVE}`,
+      );
+    });
+
+    it("shows the dialog at once with reduced motion", async () => {
+      const page = await open({ reducedMotion: true });
+      expect((await css(page, ".sbk-confirm__overlay", "::before")).animation.split(" ")[0]).toBe(
+        "none",
+      );
+      expect((await css(page, ".sbk-confirm")).animation.split(" ")[0]).toBe("none");
+    });
+
+    // From the keyboard: Safari (and WebKit) don't focus a clicked button, so there would be
+    // nothing to give focus back to after a click.
+    it("moves focus in on open, denies on Escape and gives focus back", async () => {
+      const page = await harness.open(withConfirm);
+      await tabTo(page, ".sbk-button");
+      await page.keyboard.press("Enter");
+      await page.waitForSelector(".sbk-confirm");
+      expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Cancel");
+      await page.keyboard.press("Escape");
+      expect(await page.locator(".sbk-confirm").count()).toBe(0);
+      expect(await page.evaluate(() => document.activeElement?.className)).toContain("sbk-button");
+    });
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
