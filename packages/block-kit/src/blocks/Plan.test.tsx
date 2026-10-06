@@ -210,3 +210,18 @@ describe("<Plan>", () => {
     expect(icons).toHaveLength(2);
   });
 });
+
+describe("expanded tasks", () => {
+  afterEach(cleanup);
+
+  it("are list items that take keyboard focus, as Slack's do", () => {
+    render(<Plan block={planOf("complete", "in_progress")} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: /Plan/ }));
+    const tasks = screen.getAllByRole("listitem");
+    expect(tasks).toHaveLength(2);
+    for (const task of tasks) {
+      task.focus();
+      expect(document.activeElement).toBe(task);
+    }
+  });
+});
