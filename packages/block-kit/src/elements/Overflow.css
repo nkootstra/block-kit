@@ -31,15 +31,19 @@
   position: absolute;
   z-index: 10;
   top: 0;
-  right: 0;
-  /* Slack's `c-menu`: 200-300px wide, hairline ring plus drop shadow, 12px list padding. */
-  min-width: 200px;
-  max-width: 300px;
-  width: max-content;
+  left: 0;
+  /* Slack's overflow `c-menu`: 250px wide, its left edge under the trigger's, with a hairline ring,
+     a drop shadow and 12px list padding. */
+  width: 250px;
   padding: 12px 0;
   background: var(--sbk-menu-bg);
   border-radius: 4px;
   box-shadow: var(--sbk-menu-shadow);
+}
+
+/* Focus sits on the menu itself while the highlighted row shows where the keyboard is. */
+.sbk-overflow__menu:focus {
+  outline: none;
 }
 
 /* `c-menu_item__button`: 15px text on a 28px line, 24px side padding. */

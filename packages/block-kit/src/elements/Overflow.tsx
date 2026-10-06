@@ -1,5 +1,5 @@
 import type { Overflow as OverflowElement, PlainTextOption } from "@slack/types";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { KebabIcon } from "../icons";
@@ -15,10 +15,12 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
+  const idPrefix = useId();
 
   async function choose(option: PlainTextOption) {
     if (!(await ask())) return;
     setOpen(false);
+    triggerRef.current?.focus();
     dispatch({
       type: "overflow",
       action_id: actionId,
@@ -57,11 +59,23 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
         <KebabIcon />
       </button>
       {open && (
-        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
-          <div className="sbk-overflow__menu" role="menu" ref={listRef}>
+        <Popover
+          anchorRef={rootRef}
+          onDismiss={() => setOpen(false)}
+          // Slack moves focus into the menu as it opens, so the arrow keys and Escape work there.
+          onPlaced={() => listRef.current?.focus()}
+        >
+          <div
+            className="sbk-overflow__menu"
+            role="menu"
+            ref={listRef}
+            tabIndex={-1}
+            aria-activedescendant={nav.active >= 0 ? `${idPrefix}-${nav.active}` : undefined}
+          >
             {element.options.map((option, i) => (
               <div
                 key={option.value ?? i}
+                id={`${idPrefix}-${i}`}
                 role="menuitem"
                 className="sbk-overflow__option"
                 onClick={() => choose(option)}

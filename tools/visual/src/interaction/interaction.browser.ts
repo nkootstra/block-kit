@@ -556,6 +556,55 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  describe("overflow menu", () => {
+    const overflow: Mount = {
+      blocks: [
+        {
+          type: "section",
+          text: { type: "mrkdwn", text: "A section with an overflow menu." },
+          accessory: {
+            type: "overflow",
+            action_id: "o",
+            options: [option("Edit"), option("Delete")],
+          },
+        },
+      ],
+    };
+
+    // Measured in Block Kit Builder: 250px wide, its left edge under the trigger's, 4px below it.
+    it("opens a 250px menu left-aligned 4px below the trigger", async () => {
+      const page = await harness.open(overflow);
+      await page.click(".sbk-overflow__button");
+      const trigger = (await page.locator(".sbk-overflow__button").boundingBox())!;
+      const menu = (await page.locator(".sbk-overflow__menu").boundingBox())!;
+      expect({
+        width: menu.width,
+        left: Math.round(menu.x - trigger.x),
+        gap: Math.round(menu.y - (trigger.y + trigger.height)),
+      }).toEqual({ width: 250, left: 0, gap: 4 });
+    });
+
+    it("moves focus into the menu, and the first ArrowDown highlights the first item", async () => {
+      const page = await harness.open(overflow);
+      await page.click(".sbk-overflow__button");
+      expect(await page.evaluate(() => document.activeElement?.getAttribute("role"))).toBe("menu");
+      await page.keyboard.press("ArrowDown");
+      expect(await page.locator(".sbk-overflow__option[data-active]").textContent()).toBe("Edit");
+    });
+
+    it("returns focus to the trigger when Escape closes it", async () => {
+      const page = await harness.open(overflow);
+      await page.click(".sbk-overflow__button");
+      await page.keyboard.press("Escape");
+      expect(await page.locator(".sbk-overflow__menu").count()).toBe(0);
+      expect(
+        await page.evaluate(() =>
+          document.activeElement?.classList.contains("sbk-overflow__button"),
+        ),
+      ).toBe(true);
+    });
+  });
+
   describe("rich text input", () => {
     const composer: Mount = {
       view: {
