@@ -77,13 +77,45 @@ async (win = window) => {
   //   tight label after all, and an item with its own flex-basis would ignore its width.
   // - A grid's resolved track list includes its implicit rows; frozen as explicit rows, an item
   //   placed after the grid lands a row lower. CSS Typed OM gives the authored list ("auto auto").
-  // - A height the page leaves at `auto` isn't frozen: a box with a set height stops its last
-  //   child's bottom margin from collapsing through it, so the block after it moved up by that
-  //   margin. With every width frozen, the content lays out the same and gives the same height.
-  //   Images and form controls keep theirs, since an image that fails to load may not replay.
-  const REPLACED = /^(img|svg|video|canvas|iframe|object|embed|input|textarea|select)$/i;
+  // - A wrapping flex row sized to its items gets one more layout unit per item. Chrome sizes the
+  //   row from the items' unsnapped widths and decides line breaks the same way, so live the row
+  //   can be a unit narrower than its snapped items and still hold them on one line; frozen, the
+  //   last item (Slack's third action button) dropped to a second line.
+  // - Heights are frozen too, except where a set height would stop margins collapsing: a block in
+  //   normal flow, at `auto`, whose first or last child's margin collapses through it. Frozen, the
+  //   margin stayed inside and the block after it moved up by that much. Leaving every `auto`
+  //   height out is wrong elsewhere: Slack's checkbox wrapper, a flex item, was 14px live around
+  //   a 14px box with 3px margins, and replayed 20px tall.
   const UNIT = 64;
   const roundUpToUnit = (px) => Math.ceil(px * UNIT - 0.032) / UNIT;
+  const inFlowChildren = (el) =>
+    [...el.children].filter((child) => {
+      const s = win.getComputedStyle(child);
+      return s.display !== "none" && s.position !== "absolute" && s.position !== "fixed";
+    });
+  const BLOCK_FLOW = /^(block|flow-root|list-item)$/;
+  const collapsesMargins = (el, cs, parentStyle) => {
+    if (cs.display !== "block" || !parentStyle || !BLOCK_FLOW.test(parentStyle.display))
+      return false;
+    if (cs.overflow !== "visible" || cs.position === "absolute" || cs.position === "fixed") {
+      return false;
+    }
+    const children = inFlowChildren(el);
+    const first = children[0];
+    const last = children.at(-1);
+    const px = (value) => Number.parseFloat(value) || 0;
+    const top =
+      first &&
+      px(cs.paddingTop) === 0 &&
+      px(cs.borderTopWidth) === 0 &&
+      px(win.getComputedStyle(first).marginTop) !== 0;
+    const bottom =
+      last &&
+      px(cs.paddingBottom) === 0 &&
+      px(cs.borderBottomWidth) === 0 &&
+      px(win.getComputedStyle(last).marginBottom) !== 0;
+    return Boolean(top || bottom);
+  };
   // The message time is replaced with FIXED_TIME after freezing, so its sizes belong to the time
   // that was on screen ("7:37 PM"); pinned, the wider "12:00 PM" wraps. Its label and the
   // timestamp around it size to their text instead.
@@ -105,7 +137,17 @@ async (win = window) => {
     }
     const out = {};
     const width = cs.getPropertyValue("width");
-    if (/^[\d.]+px$/.test(width)) out.width = `${roundUpToUnit(Number.parseFloat(width))}px`;
+    if (/^[\d.]+px$/.test(width)) {
+      let px = roundUpToUnit(Number.parseFloat(width));
+      if (
+        cs.display.endsWith("flex") &&
+        cs.flexWrap !== "nowrap" &&
+        cs.flexDirection.startsWith("row")
+      ) {
+        px += inFlowChildren(el).length / UNIT;
+      }
+      out.width = `${px}px`;
+    }
     if (
       out.width &&
       parentStyle &&
@@ -120,7 +162,9 @@ async (win = window) => {
     }
     if (el.computedStyleMap && el.namespaceURI === "http://www.w3.org/1999/xhtml") {
       const map = el.computedStyleMap();
-      if (!REPLACED.test(el.localName) && String(map.get("height")) === "auto") out.height = null;
+      if (String(map.get("height")) === "auto" && collapsesMargins(el, cs, parentStyle)) {
+        out.height = null;
+      }
       for (const prop of ["grid-template-rows", "grid-template-columns"]) {
         const value = String(map.get(prop));
         if (value !== "none") out[prop] = value;
@@ -227,7 +271,10 @@ async (win = window) => {
       el.setAttribute("value", src.value);
     const base = defaultsFor(src, cs.fontSize, parent?.fontSize);
     el.setAttribute("style", diff(cs, base, parent, true, sizeOverrides(src, cs, parent)));
-    const moves = motionOf(cs, base, parent);
+    // The Builder's draggable block wrapper transitions its selection highlight; that's the
+    // Builder's motion, not Slack's.
+    const builderChrome = [...src.classList].some((c) => /^(dragWrapper|blockContent)/.test(c));
+    const moves = builderChrome ? {} : motionOf(cs, base, parent);
     if (Object.keys(moves).length > 0) {
       el.setAttribute("data-ref", String(++refs));
       motion[el.getAttribute("data-ref")] = moves;

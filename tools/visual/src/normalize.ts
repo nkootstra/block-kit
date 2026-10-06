@@ -18,6 +18,8 @@
  * - An inherited property reset to its default was dropped too: Slack's gallery scroller is
  *   `nowrap` and its carousel cards set `wrap` again, so card bodies rendered as one clipped line.
  * - The same goes for a data table's scroller, whose 8px scrollbar Slack also keeps idle-invisible.
+ * - Slack draws a mention it can't resolve as a loading bar of a random width (80, 120 or 160px),
+ *   so each capture laid the rest of the line out differently. It's always 120px here.
  * - Links were diffed against an <a> without an href, which isn't underlined, so a link Slack
  *   leaves plain never got `text-decoration:none` and picks up the browser's underline here.
  */
@@ -39,6 +41,9 @@ export function normalize(html: string): string {
             return `style="${kept.join(";")}"`;
           })
         : tag,
+    )
+    .replace(/<span\b[^>]*\bclass="c-missing_text[^>]*>/g, (tag) =>
+      tag.replace(/(style="(?:[^"]*;)?)width:[\d.]+px/, "$1width:120px"),
     )
     .replace(/<a\b[^>]*\bhref="[^>]*>/g, (tag) =>
       /text-decoration:/.test(tag) ? tag : tag.replace(/style="/, 'style="text-decoration:none;'),

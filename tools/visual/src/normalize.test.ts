@@ -23,6 +23,15 @@ describe("normalize", () => {
     );
   });
 
+  it("gives an unresolved mention's placeholder one width, whatever Slack drew that time", () => {
+    // Slack draws a loading bar of a random width (80, 120 or 160px) for a mention it can't
+    // resolve; at 160px it no longer fit message/mrkdwn's line and moved everything below it.
+    const bar = (width: string) =>
+      `<span class="c-missing_text c-missing_text--non-existent" style="background-color:rgba(29, 28, 29, 0.06);border-top-width:1px;display:inline-block;height:8px;width:${width}"></span>`;
+    expect(normalize(bar("160px"))).toBe(bar("120px"));
+    expect(normalize(bar("80px"))).toBe(bar("120px"));
+  });
+
   it("keeps box shadows that belong to the blocks themselves", () => {
     const html =
       '<div class="c-link" style="box-shadow:rgba(0, 0, 0, 0.1) 0px 0px 0px 1px inset"></div>';
