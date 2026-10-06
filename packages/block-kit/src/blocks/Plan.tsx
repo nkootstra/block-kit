@@ -45,7 +45,9 @@ function TaskRow({ task }: { task: PlanTask }) {
   const expandable = Boolean(task.details || task.output || sources.length > 0);
 
   return (
-    <li className="sbk-plan__task">
+    // Slack makes each task a focusable list item, so the keyboard can step through a long plan.
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- deliberate, matching Slack
+    <li className="sbk-plan__task" tabIndex={0}>
       <span className="sbk-plan__step" aria-hidden="true">
         <span className="sbk-plan__line sbk-plan__line--top" />
         <span className="sbk-plan__task-icon">

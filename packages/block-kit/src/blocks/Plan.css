@@ -105,6 +105,13 @@
   color: var(--sbk-plan-text);
 }
 
+/* Slack's task `listitem`: the standard focus ring, rounded 8px, for keyboard focus only. */
+.sbk-plan__task:focus-visible {
+  outline: none;
+  border-radius: 8px;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
 .sbk-plan__step {
   display: flex;
   flex: 0 0 12px;

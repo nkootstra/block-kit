@@ -162,6 +162,22 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  describe("plan tasks", () => {
+    // Slack's expanded tasks are focusable list items with the standard ring, rounded 8px.
+    it("shows the focus ring on a task reached with the keyboard", async () => {
+      const page = await harness.open(await fixture("catalog/agents/plan"));
+      await page.click(".sbk-plan__pill");
+      await tabTo(page, ".sbk-plan__task");
+      await settle(page);
+      const s = await style(page, ".sbk-plan__task");
+      const radius = await page
+        .locator(".sbk-plan__task")
+        .first()
+        .evaluate((el) => getComputedStyle(el).borderTopLeftRadius);
+      expect([s.boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`), radius]).toEqual([true, "8px"]);
+    });
+  });
+
   describe("checkboxes", () => {
     const checkboxes: Mount = {
       blocks: [
