@@ -51,11 +51,13 @@
   color: var(--sbk-muted);
 }
 
+/* Slack anchors the calendar's right edge to the field's, so it opens leftward from it. The layer
+   it sits in is as wide as the field. */
 .sbk-datepicker__popup {
   position: absolute;
   z-index: 10;
   top: 0;
-  left: 0;
+  right: 0;
   /* Slack's datepicker dropdown: 16px padding, hairline ring plus a soft drop shadow. */
   padding: 16px;
   background: var(--sbk-menu-bg);

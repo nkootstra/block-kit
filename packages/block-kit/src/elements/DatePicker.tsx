@@ -35,9 +35,27 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useFocusOnLoad<HTMLInputElement>(element);
   const invalid = useInvalidProps();
-  // Focus given by `focus_on_load` shouldn't pop the calendar open; a user's focus does.
-  const loadFocus = useRef(element.focus_on_load === true);
+  // Focus given by `focus_on_load`, or handed back as the calendar closes, shouldn't pop the
+  // calendar open; a user's focus does.
+  const quietFocus = useRef(element.focus_on_load === true);
+  // Opened with the pointer or a key, the calendar takes focus on its selected day, as Slack's
+  // does. Opened by tabbing into the field, it leaves focus there so Tab keeps moving through the
+  // form; ArrowDown then moves into the calendar.
+  const focusCalendar = useRef(false);
+  const popupRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
+
+  function focusDay() {
+    popupRef.current?.querySelector<HTMLElement>(".sbk-calendar__grid [tabindex='0']")?.focus();
+  }
+
+  function close() {
+    setOpen(false);
+    const input = inputRef.current;
+    if (!input || document.activeElement === input) return;
+    quietFocus.current = true;
+    input.focus();
+  }
 
   useEffect(() => {
     if (date) setValue(blockId, actionId, { type: "datepicker", selected_date: date });
@@ -47,7 +65,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   async function pick(next: string) {
     if (!(await ask())) return;
     setDate(next);
-    setOpen(false);
+    close();
     setValue(blockId, actionId, { type: "datepicker", selected_date: next });
     dispatch({
       type: "datepicker",
@@ -62,7 +80,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   async function clear() {
     if (!(await ask())) return;
     setDate(undefined);
-    setOpen(false);
+    close();
     setValue(blockId, actionId, { type: "datepicker", selected_date: null });
     dispatch({
       type: "datepicker",
@@ -87,19 +105,53 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
           {...invalid}
           ref={inputRef}
           onFocus={() => {
-            if (loadFocus.current) loadFocus.current = false;
+            if (quietFocus.current) quietFocus.current = false;
             else setOpen(true);
           }}
-          onClick={() => setOpen(true)}
+          // A press focuses the field before its click, so mark the pointer on the way down.
+          onMouseDown={() => {
+            focusCalendar.current = true;
+          }}
+          onClick={() => {
+            if (open) focusDay();
+            else focusCalendar.current = true;
+            setOpen(true);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Escape") setOpen(false);
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              if (open) focusDay();
+              else {
+                focusCalendar.current = true;
+                setOpen(true);
+              }
+            }
           }}
         />
         <ChevronDownIcon className="sbk-datepicker__chevron" />
       </div>
       {open && (
-        <Popover anchorRef={rootRef} onDismiss={() => setOpen(false)}>
-          <div className="sbk-datepicker__popup">
+        <Popover
+          anchorRef={rootRef}
+          onDismiss={() => setOpen(false)}
+          onPlaced={() => {
+            if (focusCalendar.current) focusDay();
+            focusCalendar.current = false;
+          }}
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Escape closes the dialog, wherever focus is in it */}
+          <div
+            className="sbk-datepicker__popup"
+            ref={popupRef}
+            role="dialog"
+            aria-label="Choose a date"
+            onKeyDown={(e) => {
+              if (e.key !== "Escape") return;
+              e.preventDefault();
+              close();
+            }}
+          >
             <Calendar value={date} onSelect={pick} onClear={clear} />
           </div>
         </Popover>

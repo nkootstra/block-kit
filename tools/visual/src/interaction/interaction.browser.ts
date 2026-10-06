@@ -80,6 +80,9 @@ function expectColor(actual: [number, number, number], expected: [number, number
   expect(close ? expected : actual).toEqual(expected);
 }
 
+/** The text of the focused element: a calendar day's number. */
+const focused = (page: Page) => page.evaluate(() => document.activeElement?.textContent);
+
 /** Leaves pointer modality on: after a click, a scripted focus is pointer focus, not keyboard. */
 async function pointerFocus(page: Page, selector: string) {
   await page.mouse.click(790, 690);
@@ -618,6 +621,61 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           document.activeElement?.classList.contains("sbk-overflow__button"),
         ),
       ).toBe(true);
+    });
+  });
+
+  describe("datepicker calendar", () => {
+    const datepicker: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type: "datepicker", action_id: "d", initial_date: "1990-04-28" }],
+        },
+      ],
+    };
+
+    // Measured in Block Kit Builder: the popup's right edge meets the field's, and it opens below.
+    // (Slack's popup is 349 x 372 and ours 350 x 376; no reference shows an open calendar yet to
+    // tell which inner spacing differs, so the size waits for one.)
+    it("opens below the field with its right edge on the field's", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const field = (await page.locator(".sbk-datepicker").boundingBox())!;
+      const popup = (await page.locator(".sbk-datepicker__popup").boundingBox())!;
+      expect({
+        right: Math.round(popup.x + popup.width - (field.x + field.width)),
+        gap: Math.round(popup.y - (field.y + field.height)),
+      }).toEqual({ right: 0, gap: 4 });
+    });
+
+    it("focuses the selected day and moves it with the arrow keys", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      expect(await focused(page)).toBe("28");
+      await page.keyboard.press("ArrowDown");
+      expect(await focused(page)).toBe("5");
+      expect(await page.locator(".sbk-calendar__label").textContent()).toBe("May 1990");
+      await page.keyboard.press("ArrowLeft");
+      expect(await focused(page)).toBe("4");
+    });
+
+    it("picks with Enter and Escape closes, both returning focus to the field", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("Enter");
+      expect(await page.locator(".sbk-datepicker__input").inputValue()).toBe("04/29/1990");
+      expect(await page.locator(".sbk-datepicker__popup").count()).toBe(0);
+      expect(await page.evaluate(() => document.activeElement?.className)).toContain(
+        "sbk-datepicker__input",
+      );
+
+      await page.click(".sbk-datepicker__input");
+      await page.keyboard.press("Escape");
+      expect(await page.locator(".sbk-datepicker__popup").count()).toBe(0);
+      expect(await page.evaluate(() => document.activeElement?.className)).toContain(
+        "sbk-datepicker__input",
+      );
     });
   });
 
