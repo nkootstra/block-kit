@@ -69,7 +69,7 @@ links, mentions, emoji, and dates.
     rich_text_list: {
       type: '{ type: "rich_text_list"; style: "bullet" | "ordered"; indent?: number; border?: number; elements: RichTextSection[] }',
       description:
-        "A list. `indent` (0–8) nests it under the previous list item at a shallower indent; consecutive rich_text_list elements merge into one continuous outline.",
+        "A list. `indent` (0–8) nests it under the previous list item at a shallower indent; consecutive rich_text_list elements merge into one continuous outline. `border: 1` draws the list inside a quote, which the rich_text_quote elements right after it join, as Slack does.",
     },
     rich_text_quote: {
       type: '{ type: "rich_text_quote"; elements: RichTextElement[] }',

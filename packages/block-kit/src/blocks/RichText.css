@@ -138,17 +138,16 @@
   margin: 0 0 0 28px;
 }
 
-/* A list with `border: 1` carries the same left bar as a quote, so the two join visually. */
-.sbk-rich-list--bordered {
-  position: relative;
-  margin-left: 0;
+/* A list with `border: 1` sits in a quote group (RichText.tsx) with the quotes after it, under one
+   bar. The list keeps its own indent; the quoted text inside the group indents like a quote. */
+.sbk-rich-text__quote--group {
+  padding-left: 0;
 }
 
-.sbk-rich-list--bordered::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  border-radius: 8px;
-  background: var(--sbk-quote-bar);
+.sbk-rich-text__quote-text {
+  padding-left: 16px;
+}
+
+.sbk-rich-list--bordered {
+  margin-left: 0;
 }

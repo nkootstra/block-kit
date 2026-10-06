@@ -3,6 +3,7 @@ import type {
   RichTextBlockElement,
   RichTextElement,
   RichTextList,
+  RichTextQuote,
   RichTextSection,
 } from "@slack/types";
 import { formatSlackDate } from "../parser";
@@ -53,7 +54,28 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
         i++;
       }
       const forest = buildListForest(run);
-      for (const group of forest) nodes.push(renderListGroup(group, ctx, key++, 0));
+      const lists = forest.map((group) => renderListGroup(group, ctx, key++, 0));
+      if (!forest.some((group) => group.border)) {
+        nodes.push(...lists);
+        continue;
+      }
+      // Slack draws a list with `border: 1` inside a quote, and the quotes right after it join that
+      // same quote: one bar down the side, one 4px margin above and below the group.
+      const quoted: ReactNode[] = [];
+      while (i < elements.length && elements[i]?.type === "rich_text_quote") {
+        quoted.push(
+          <div key={key++} className="sbk-rich-text__quote-text">
+            {renderSectionChildren((elements[i] as RichTextQuote).elements, ctx)}
+          </div>,
+        );
+        i++;
+      }
+      nodes.push(
+        <blockquote key={key++} className="sbk-rich-text__quote sbk-rich-text__quote--group">
+          {lists}
+          {quoted}
+        </blockquote>,
+      );
       continue;
     }
     switch (el.type) {

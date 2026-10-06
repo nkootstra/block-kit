@@ -228,4 +228,46 @@ describe("<RichText>", () => {
     const { container } = render(<RichText block={block as never} blockId="b1" index={0} />);
     expect(container.querySelector(".sbk-rich-text__jumbo-emoji")).toBeTruthy();
   });
+
+  describe("a list with a border", () => {
+    const text = (value: string) => ({ type: "text", text: value });
+    const section = (value: string) => ({ type: "rich_text_section", elements: [text(value)] });
+    const bordered = {
+      type: "rich_text_list",
+      style: "ordered",
+      indent: 0,
+      border: 1,
+      elements: [section("First"), section("Second")],
+    };
+
+    it("shares one quote with the quote that follows it, as Slack groups them", () => {
+      const block = {
+        type: "rich_text",
+        elements: [bordered, { type: "rich_text_quote", elements: [text("Quoted text")] }],
+      };
+      render(<RichText block={block as never} blockId="b1" index={0} />);
+      const quote = screen.getByText("Quoted text").closest("blockquote");
+      expect(quote).toBeTruthy();
+      expect(screen.getByText("First").closest("blockquote")).toBe(quote);
+    });
+
+    it("sits in a quote of its own when nothing quoted follows", () => {
+      const block = { type: "rich_text", elements: [bordered, section("After")] };
+      render(<RichText block={block as never} blockId="b1" index={0} />);
+      expect(screen.getByText("First").closest("blockquote")).toBeTruthy();
+      expect(screen.getByText("After").closest("blockquote")).toBeNull();
+    });
+
+    it("leaves a list without a border outside any quote", () => {
+      const block = {
+        type: "rich_text",
+        elements: [
+          { ...bordered, border: 0 },
+          { type: "rich_text_quote", elements: [text("Quoted text")] },
+        ],
+      };
+      render(<RichText block={block as never} blockId="b1" index={0} />);
+      expect(screen.getByText("First").closest("blockquote")).toBeNull();
+    });
+  });
 });
