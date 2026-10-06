@@ -6,6 +6,23 @@ import { RichTextInput } from "./RichTextInput";
 
 afterEach(cleanup);
 
+function renderComposer(placeholder?: string) {
+  render(
+    <BlockKitProvider>
+      <RichTextInput
+        element={
+          {
+            type: "rich_text_input",
+            action_id: "a1",
+            placeholder: placeholder ? { type: "plain_text", text: placeholder } : undefined,
+          } as unknown as RichTextInputElement
+        }
+        blockId="b1"
+      />
+    </BlockKitProvider>,
+  );
+}
+
 function richText(text: string): RichTextBlock {
   return {
     type: "rich_text",
@@ -77,5 +94,47 @@ describe("<RichTextInput>", () => {
       </BlockKitProvider>,
     );
     expect(screen.getByRole("textbox", { name: "Write a message" })).toBeTruthy();
+  });
+
+  describe("composer", () => {
+    it("shows the formatting bar until Aa hides it, and brings it back", () => {
+      renderComposer();
+      const aa = screen.getByRole("button", { name: "Show formatting" });
+      expect(aa.getAttribute("aria-pressed")).toBe("true");
+      expect(screen.getByRole("toolbar", { name: "Formatting" })).toBeTruthy();
+
+      fireEvent.click(aa);
+      expect(aa.getAttribute("aria-pressed")).toBe("false");
+      expect(screen.queryByRole("toolbar", { name: "Formatting" })).toBeNull();
+
+      fireEvent.click(aa);
+      expect(aa.getAttribute("aria-pressed")).toBe("true");
+      expect(screen.getByRole("toolbar", { name: "Formatting" })).toBeTruthy();
+    });
+
+    it("puts Aa and Emoji in Slack's composer actions row", () => {
+      renderComposer();
+      const row = screen.getByRole("toolbar", { name: "Composer actions" });
+      expect(row.contains(screen.getByRole("button", { name: "Show formatting" }))).toBe(true);
+      expect(row.contains(screen.getByRole("button", { name: "Emoji" }))).toBe(true);
+    });
+
+    it("marks Emoji unavailable, since there's no picker yet", () => {
+      renderComposer();
+      expect(screen.getByRole("button", { name: "Emoji" }).getAttribute("aria-disabled")).toBe(
+        "true",
+      );
+    });
+
+    it("shows the placeholder as text until something is typed", () => {
+      renderComposer("Write something");
+      expect(screen.getByText("Write something")).toBeTruthy();
+
+      const box = screen.getByRole("textbox") as HTMLElement;
+      Object.defineProperty(box, "innerText", { value: "hi", configurable: true });
+      box.textContent = "hi";
+      fireEvent.input(box);
+      expect(screen.queryByText("Write something")).toBeNull();
+    });
   });
 });

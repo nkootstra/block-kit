@@ -1,11 +1,10 @@
-/* Slack's modal rich-text editor: a grey formatting toolbar over a text area, in a box that
-   measures 118px tall in the reference (the Aa/emoji button row Slack draws below it overflows
-   that frozen box in the capture, so it's left out). */
+/* Slack's modal rich-text composer (`c-wysiwyg_container`): the formatting bar (38px), the editor
+   (one 22px line plus 8px padding) and the composer actions row (40px), in a box that measures
+   118px with its border. */
 .sbk-rich-text-input {
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 118px;
   background: var(--sbk-bg);
   border: 1px solid rgba(29, 28, 29, 0.13);
   border-radius: 4px;
@@ -20,6 +19,7 @@
   border-radius: 8px 8px 0 0;
 }
 
+/* The formatting buttons stay dim until the editor has focus, as Slack's do. */
 .sbk-rich-text-input__tool {
   display: inline-flex;
   align-items: center;
@@ -28,8 +28,17 @@
   height: 28px;
   /* Slack's buttons carry no bottom margin, so they sit 2px down the 30px bar, not centred in it. */
   margin: 2px 2px 0;
+  padding: 2px;
   color: rgba(29, 28, 29, 0.7);
+  background: none;
+  border: none;
+  border-radius: 4px;
   opacity: 0.3;
+  cursor: default;
+}
+
+.sbk-rich-text-input:has(.sbk-rich-text-input__editor:focus) .sbk-rich-text-input__tool {
+  opacity: 1;
 }
 
 .sbk-rich-text-input__separator {
@@ -37,6 +46,12 @@
   height: 20px;
   margin: 0 4px;
   background: rgba(29, 28, 29, 0.13);
+}
+
+.sbk-rich-text-input__body {
+  position: relative;
+  display: flex;
+  flex: 1;
 }
 
 .sbk-rich-text-input__editor {
@@ -48,7 +63,60 @@
   outline: none;
 }
 
-.sbk-rich-text-input__editor:empty::before {
-  content: attr(data-placeholder);
-  color: var(--sbk-muted);
+/* Slack's `ql-placeholder`: a line of text over the empty editor, cut off with an ellipsis. */
+.sbk-rich-text-input__placeholder {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  left: 12px;
+  overflow: hidden;
+  font: 15px / 22px var(--sbk-font);
+  color: var(--sbk-content-ter);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+/* Slack's `c-wysiwyg_container__footer`: 28px buttons with 2px margins in a 4px-padded row. */
+.sbk-rich-text-input__footer {
+  display: flex;
+  padding: 4px 4px 4px 6px;
+  border-radius: 0 0 4px 4px;
+}
+
+.sbk-rich-text-input__action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 2px;
+  padding: 2px;
+  color: var(--sbk-content-sec);
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sbk-rich-text-input__action[aria-disabled="true"] {
+  cursor: default;
+}
+
+/* While the formatting bar shows, Slack underlines "Aa": a 21 x 1.5px rounded rule under the glyph. */
+.sbk-rich-text-input__action--formatting[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  top: 22.5px;
+  left: 3.5px;
+  width: 21px;
+  height: 1.5px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.sbk-rich-text-input__action:focus-visible {
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
 }

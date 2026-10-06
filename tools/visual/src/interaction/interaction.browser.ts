@@ -557,27 +557,63 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
   });
 
   describe("rich text input", () => {
+    const composer: Mount = {
+      view: {
+        type: "modal",
+        title: plain("New entry"),
+        blocks: [
+          {
+            type: "input",
+            block_id: "summary",
+            label: plain("Summary"),
+            element: {
+              type: "rich_text_input",
+              action_id: "a",
+              placeholder: plain("Write something"),
+            },
+          },
+        ],
+      },
+    };
+    const TOOL = ".sbk-rich-text-input__tool";
+    const AA = ".sbk-rich-text-input__action--formatting";
+
     // The style isolation in base.css reverts every property, and WebKit makes `contenteditable`
     // editable through `-webkit-user-modify`, which `revert` would undo.
     it("takes focus and the text typed into it", async () => {
-      const page = await harness.open({
-        view: {
-          type: "modal",
-          title: plain("New entry"),
-          blocks: [
-            {
-              type: "input",
-              block_id: "summary",
-              label: plain("Summary"),
-              element: { type: "rich_text_input", action_id: "a" },
-            },
-          ],
-        },
-      });
+      const page = await harness.open(composer);
       const editor = page.locator(".sbk-rich-text-input__editor");
       await editor.click();
       await page.keyboard.type("Hello");
       expect(await editor.textContent()).toBe("Hello");
+    });
+
+    it("dims the formatting buttons until the editor has focus", async () => {
+      const page = await harness.open(composer);
+      await settle(page);
+      expect((await style(page, TOOL)).opacity).toBe("0.3");
+      await page.click(".sbk-rich-text-input__editor");
+      await settle(page);
+      expect((await style(page, TOOL)).opacity).toBe("1");
+    });
+
+    it("hides and shows the formatting bar with Aa, underlining Aa while it shows", async () => {
+      const page = await harness.open(composer);
+      const underline = () =>
+        page.locator(AA).evaluate((el) => {
+          const after = getComputedStyle(el, "::after");
+          return after.content === "none" ? "none" : `${after.width} x ${after.height}`;
+        });
+      expect(await page.locator(".sbk-rich-text-input__toolbar").count()).toBe(1);
+      expect(await underline()).toBe("21px x 1.5px");
+
+      await page.click(AA);
+      expect(await page.locator(".sbk-rich-text-input__toolbar").count()).toBe(0);
+      expect(await underline()).toBe("none");
+
+      await page.click(AA);
+      expect(await page.locator(".sbk-rich-text-input__toolbar").count()).toBe(1);
+      expect(await underline()).toBe("21px x 1.5px");
     });
   });
 });
