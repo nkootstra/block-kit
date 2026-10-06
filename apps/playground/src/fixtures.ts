@@ -1,6 +1,7 @@
-// The visual-baseline.<platform>.json files sit alongside the fixtures but aren't payloads.
+// Fixture payloads live in folders under fixtures/: the JSON files at its top are bookkeeping (the
+// lock and the baselines), and `*.actions.json` files are payloads recorded in Block Kit Builder.
 const modules = import.meta.glob<{ default: unknown }>(
-  ["../../../fixtures/**/*.json", "!../../../fixtures/visual-baseline.*.json"],
+  ["../../../fixtures/*/**/*.json", "!../../../fixtures/**/*.actions.json"],
   { eager: true },
 );
 

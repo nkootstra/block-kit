@@ -44,10 +44,20 @@ export function payloadName(reference: string): string {
   return reference.split("@")[0] ?? reference;
 }
 
+/**
+ * Whether a JSON file under fixtures/ (its path relative to it) is a fixture payload. Files at the
+ * top of fixtures/ are bookkeeping (the lock and the baselines), and `<fixture>@<interaction>.actions.json`
+ * files are payloads recorded in Block Kit Builder's Actions Preview, not blocks to render.
+ */
+export function isFixturePayload(path: string): boolean {
+  return path.includes("/") && path.endsWith(".json") && !path.endsWith(".actions.json");
+}
+
 /** Fixture payloads by name; JSON files at the top of fixtures/ are bookkeeping, not fixtures. */
 export async function readPayloads(): Promise<Map<string, unknown>> {
   const payloads = new Map<string, unknown>();
   for await (const path of new Glob("*/**/*.json").scan(FIXTURES)) {
+    if (!isFixturePayload(path)) continue;
     payloads.set(path.replace(/\.json$/, ""), await Bun.file(join(FIXTURES, path)).json());
   }
   return payloads;

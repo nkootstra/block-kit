@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { hashPayload, type Lock, sha256, verify } from "./lock";
+import { hashPayload, isFixturePayload, type Lock, readPayloads, sha256, verify } from "./lock";
 
 const payload = { blocks: [{ type: "divider" }] };
 const html = "<div>divider</div>";
@@ -72,5 +72,28 @@ describe("verify", () => {
       problems: [],
       uncaptured: ["divider"],
     });
+  });
+});
+
+describe("isFixturePayload", () => {
+  it("accepts a payload inside a fixture folder", () => {
+    expect(isFixturePayload("catalog/actions/button.json")).toBe(true);
+  });
+
+  it("rejects the bookkeeping files at the top of fixtures/", () => {
+    expect(isFixturePayload("references.lock.json")).toBe(false);
+    expect(isFixturePayload("visual-baseline.linux.json")).toBe(false);
+    expect(isFixturePayload("text-baseline.darwin.json")).toBe(false);
+  });
+
+  it("rejects action payloads recorded in Block Kit Builder", () => {
+    expect(isFixturePayload("catalog/actions/button@click.actions.json")).toBe(false);
+  });
+});
+
+describe("readPayloads", () => {
+  it("lists only fixture payloads, not the recorded action payloads beside them", async () => {
+    const names = [...(await readPayloads()).keys()];
+    expect(names.filter((n) => n.endsWith(".actions"))).toEqual([]);
   });
 });
