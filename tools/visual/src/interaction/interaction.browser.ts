@@ -1350,6 +1350,58 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     // Measured in Block Kit Builder: 250px wide, its left edge under the trigger's, 4px below it.
     // An accessory sits too near the window's right edge for that (the menu would shift inside
     // it), so this trigger sits on the left, in an actions block.
+    // Captured in Block Kit Builder (`extra/home/dashboard@open`): as the accessory of a section
+    // with two lines of text, the menu still opens 4px below the button.
+    it("opens 4px below the button beside a two-line section", async () => {
+      type Rect = { x: number; y: number; width: number; height: number };
+      const page = await harness.open({
+        view: {
+          type: "home",
+          blocks: [
+            {
+              type: "section",
+              text: { type: "mrkdwn", text: "*Login page times out*\nOpened 2 days ago · High" },
+              accessory: {
+                type: "overflow",
+                action_id: "o",
+                options: [option("Close"), option("Reassign")],
+              },
+            },
+          ],
+        },
+      });
+      await page.click(".sbk-overflow button");
+      await settle(page);
+      const [button, menu] = (await Promise.all(
+        [".sbk-overflow button", ".sbk-overflow__menu"].map((s) =>
+          page.locator(s).first().boundingBox(),
+        ),
+      )) as [Rect, Rect];
+      expect(Math.round(menu.y - (button.y + button.height))).toBe(4);
+    });
+
+    // Captured in Block Kit Builder (`catalog/section/overflow@open`): each option's label
+    // (`c-menu_item__label`) sits 1px above its 28px row.
+    it("raises each option's label 1px in its row", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: plain("Menu"),
+            accessory: { type: "overflow", action_id: "o", options: [option("Edit")] },
+          },
+        ],
+      });
+      await page.click(".sbk-overflow button");
+      await settle(page);
+      const offset = await page.evaluate(() => {
+        const row = document.querySelector('.sbk-overflow__menu [role="menuitem"]')!;
+        const label = row.firstElementChild;
+        return label ? label.getBoundingClientRect().y - row.getBoundingClientRect().y : null;
+      });
+      expect(offset).toBe(-1);
+    });
+
     it("opens a 250px menu left-aligned 4px below the trigger", async () => {
       const page = await harness.open({
         blocks: [

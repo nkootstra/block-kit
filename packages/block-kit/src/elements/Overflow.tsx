@@ -85,7 +85,7 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
                 onClick={() => choose(option)}
                 {...nav.itemProps(i)}
               >
-                {option.text.text}
+                <span className="sbk-overflow__label">{option.text.text}</span>
               </div>
             ))}
           </div>
