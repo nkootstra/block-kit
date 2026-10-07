@@ -1745,6 +1745,75 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
   // element in :hover until the next tap lands elsewhere, so a hover wash would stay painted on it.
   // Colours measured in Block Kit Builder in both themes (the dark pass of the state audit). Each
   // theme gets the same probes, so a dark fix can't move a light colour.
+  // Measured in Block Kit Builder's dark theme: the Enter key on the typed match, the rule between
+  // option groups and the "Nothing could be found" text.
+  describe("select list extras in dark mode", () => {
+    const groups: Mount = {
+      theme: "dark",
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "static_select",
+              action_id: "g",
+              placeholder: plain("Groups"),
+              option_groups: [
+                { label: plain("One"), options: [option("Alpha"), option("Bravo")] },
+                { label: plain("Two"), options: [option("Charlie")] },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const colours = (page: Page, selector: string, props: string[]) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el, names) => {
+          const c = getComputedStyle(el);
+          return Object.fromEntries(names.map((n) => [n, c.getPropertyValue(n)]));
+        }, props);
+
+    it("draws the Enter key on Slack's dark keycap", async () => {
+      const page = await harness.open(groups);
+      await page.click(".sbk-select__control");
+      await page.keyboard.type("a");
+      await settle(page);
+      expect(
+        await colours(page, ".sbk-select__keycap", ["background-color", "border-bottom-color"]),
+      ).toEqual({
+        "background-color": "rgb(33, 36, 40)",
+        "border-bottom-color": "rgba(121, 124, 129, 0.3)",
+      });
+    });
+
+    it("rules the option groups apart in Slack's dark grey", async () => {
+      const page = await harness.open(groups);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const rule = await page.evaluate(() =>
+        [...document.querySelectorAll(".sbk-select__menu .sbk-select__divider")].map(
+          (el) => getComputedStyle(el, "::before").borderTopColor,
+        ),
+      );
+      expect(rule).toEqual(["rgb(53, 55, 59)"]);
+    });
+
+    it("writes Nothing could be found in Slack's dark faint text", async () => {
+      const page = await harness.open(groups);
+      await page.click(".sbk-select__control");
+      await page.keyboard.type("zzz");
+      await settle(page);
+      const color = await page
+        .getByText("Nothing could be found.", { exact: false })
+        .first()
+        .evaluate((el) => getComputedStyle(el).color);
+      expect(color).toBe("rgba(232, 232, 232, 0.7)");
+    });
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,
