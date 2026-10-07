@@ -65,9 +65,19 @@
   text-align: center;
 }
 
+/* Slack's weekday cells start half a pixel further right than the day grid. */
+.sbk-calendar__weekdays {
+  margin-left: 0.5px;
+}
+
+/* Slack's weekday labels: 13px on a 19.0668px line with 4px/6px padding. Its 29.5625px row loses
+   its bottom half-pixel border under the day buttons, which start 29.0625px below the row's top. */
 .sbk-calendar__weekdays span {
+  box-sizing: border-box;
+  height: 29.0625px;
   padding: 4px 0 6px;
   font-size: 13px;
+  line-height: 19.0668px;
   font-weight: 700;
   color: var(--sbk-content-sec);
 }

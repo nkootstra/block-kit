@@ -7,7 +7,7 @@ import type { ElementProps } from "../types";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { timeZoneLabel } from "./dateFormat";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { useInvalidProps } from "./inputBlockContext";
+import { useInClearableInput, useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { MENU_GAP, Popover } from "./Popover";
 
@@ -51,6 +51,9 @@ export function parseTime(input: string): string | undefined {
  */
 export const TIMES: readonly string[] = HOURS;
 
+/** The "Clear selection" row's key in the list. */
+const CLEAR = "clear";
+
 export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   const { setValue, dispatch } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
@@ -58,6 +61,8 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const invalid = useInvalidProps();
+  const inInputBlock = useInInputBlock();
+  const clearable = useInClearableInput();
   const actionId = element.action_id ?? "";
 
   useEffect(() => {
@@ -80,17 +85,36 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
     });
   }
 
+  async function clear() {
+    combo.setOpen(false);
+    if (!(await ask())) return;
+    setTime(undefined);
+    setQuery("");
+    setValue(blockId, actionId, { type: "timepicker", selected_time: null });
+    dispatch({
+      type: "timepicker",
+      action_id: actionId,
+      block_id: blockId,
+      selected_time: null,
+      ...(element.initial_time !== undefined ? { initial_time: element.initial_time } : {}),
+    });
+  }
+
   const [query, setQuery] = useState("");
-  const times = TIMES;
+  // Where the time may be left empty, Slack leads the list with "Clear selection" once a time is
+  // chosen, until something else is typed.
+  const showClear = clearable && time !== undefined && (query === "" || query === formatTime(time));
+  const rows = [...(showClear ? [CLEAR] : []), ...TIMES];
   const combo = useCombobox({
     query,
     onQueryChange: setQuery,
-    count: times.length,
+    count: rows.length,
     // Slack opens its time list with nothing highlighted, even with a time chosen.
     initialIndex: -1,
     onChoose: (i) => {
-      const t = times[i];
-      if (t) pick(t);
+      const row = rows[i];
+      if (row === CLEAR) clear();
+      else if (row) pick(row);
     },
     onSubmitQuery: (typed) => {
       const t = parseTime(typed);
@@ -147,25 +171,31 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
           offsetX={-12}
           gap={MENU_GAP}
         >
-          <div className="sbk-timepicker__menu" role="listbox" id={combo.listId} ref={listRef}>
-            {times.map((t, i) => (
+          <div
+            className={`sbk-timepicker__menu${inInputBlock ? " sbk-timepicker__menu--input" : ""}`}
+            role="listbox"
+            id={combo.listId}
+            ref={listRef}
+          >
+            {rows.map((row, i) => (
               <div
-                key={t}
+                key={row}
                 role="option"
-                aria-selected={t === time}
-                className={`sbk-timepicker__option${t === time ? " sbk-timepicker__option--selected" : ""}`}
+                aria-selected={row === time}
+                className={`sbk-timepicker__option${row === CLEAR ? " sbk-timepicker__option--clear" : ""}${row === time ? " sbk-timepicker__option--selected" : ""}`}
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => pick(t)}
+                onClick={() => (row === CLEAR ? clear() : pick(row))}
                 {...combo.optionProps(i)}
               >
-                {formatTime(t)}
+                {row === CLEAR ? "Clear selection" : formatTime(row)}
               </div>
             ))}
           </div>
         </Popover>
       )}
       {element.timezone && (
-        <div className="sbk-timepicker__hint">Time zone: {timeZoneLabel(element.timezone)}</div>
+        // One text run, as Slack writes it.
+        <div className="sbk-timepicker__hint">{`Time zone: ${timeZoneLabel(element.timezone)}`}</div>
       )}
       {dialog}
     </div>

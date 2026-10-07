@@ -175,7 +175,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
               </span>
             )}
           </label>
-          <p className="sbk-datetimepicker__timezone">Time zone: {timeZoneLabel(zone)}</p>
+          <p className="sbk-datetimepicker__timezone">{`Time zone: ${timeZoneLabel(zone)}`}</p>
         </div>
       </div>
       {calendarOpen && (
