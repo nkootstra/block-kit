@@ -1,0 +1,19 @@
+{
+  "type": "home",
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "conversations_select",
+          "action_id": "conversations",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select a conversation",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

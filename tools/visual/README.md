@@ -82,14 +82,86 @@ compared.
 `bun tools/visual/src/inspect.ts <fixture> [--ours]` prints a box-model tree, which is the quickest
 way to read the exact paddings, line heights and colours Slack uses.
 
+## Reference names: states, themes and widths
+
+A reference is a fixture captured in one state (`names.ts`):
+
+```
+<fixture>[@<interaction>][+mobile][+dark]
+```
+
+- **No suffix:** light theme, desktop width, nothing opened. These are the 123 catalog references.
+- **`@<interaction>`:** captured after interacting with the preview. Fixture-specific ones
+  (`@expanded`, `@sort-asc`, `@page-2`) are listed in `states.ts`; three apply to any fixture and
+  act on its _first_ control of the kind:
+  - `@open`: the first select, multi-select, time list, datepicker, datetime picker or overflow
+    menu, opened;
+  - `@confirm`: the first button, with its confirm dialog open (put the `confirm` on it);
+  - `@dialog`: a section accessory's multi-select, with Slack's selection dialog open.
+- **`+mobile`:** the Builder's Mobile preview; ours is rendered at that width.
+- **`+dark`:** the Builder in its dark theme (recorded as `theme` in the reference's meta); ours is
+  rendered with `theme="dark"` (`?theme=dark` on the playground's render page), on the reference's
+  page background.
+
+The suffix parts always come in that order (`@open+mobile+dark`), so each state has one name;
+`import.ts` and `references:check` reject any other spelling.
+
+**Open states.** `snapshot.js` also freezes every open Slack popover or dialog it finds in the
+Builder's `.ReactModalPortal`, and records each in the meta's `layers` (`kind`, and its box relative
+to the preview):
+
+- A **popover** (a select list, the calendar, the time list, the overflow menu) is placed in the
+  reference where it sat relative to the preview, and the page is padded so one that sticks out to
+  the left of the message still fits. `compare.ts` crops both sides to one box, relative to the
+  message, that holds both sides' message and popovers (`layout.ts`), and moves our message away
+  from the window's edge so our popover isn't pushed inward. A popover a few pixels off shows as a
+  diff instead of shifting the whole image. The text check reads the popover's text too.
+- A **dialog** (a confirm dialog, the multi-select dialog) is centred in the window, so its position
+  says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`).
+
 ## Capture new references
 
 1. `bun tools/visual/src/bundle.ts [prefix...] | pbcopy` copies the fixture payloads.
-2. In Block Kit Builder, open the devtools console, paste the payloads into a loop that loads each
-   one into the Builder and evaluates `snapshot.js` against the preview, collecting
-   `{ "<fixture name>": "<html>" }`.
-3. Copy the resulting JSON and write it to `fixtures/` with
+2. In Block Kit Builder (Message Preview, Desktop, the theme you start in doesn't matter), paste
+   `snapshot.js` and `capture.js` into the page verbatim. The Builder's CSP blocks `eval`, so they
+   can't be fetched and evaluated:
+
+   ```js
+   window.sbkSnap = /* contents of snapshot.js */;
+   window.sbkCapture = /* contents of capture.js */;
+   const refs = await window.sbkCapture({
+     items: [{ name: "catalog/actions/datepickers@open+dark", payload: /* from bundle.ts */ }],
+     snap: window.sbkSnap,
+   });
+   ```
+
+   For each item, `capture.js` switches the theme and preview width the name asks for, loads the
+   payload (switching the surface when needed), waits for the preview to settle, performs `@open`,
+   `@confirm` or `@dialog` on the first control of the kind, waits for transitions to finish,
+   snapshots, and closes what it opened. When a scripted click doesn't open a control, or the
+   interaction is fixture-specific, it waits: `window.sbkCaptureWaiting` names the item. Perform it
+   with a real click and set `window.sbkCaptureReady = true`.
+   Keep the Builder tab visible: macOS pauses a hidden tab and the preview never settles. When the
+   run is done, switch the Builder back to light.
+
+3. Copy the resulting `refs` JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.
+
+## Elements in every context
+
+`fixtures/contexts/<element>/<context>.json` holds each interactive element in every place Slack
+allows it: `actions` (an actions block in a message), `accessory` (a section's accessory),
+`modal-input` (an input block in a modal) and `home` (an actions block on App Home). They're
+generated from `contexts.ts`, which lists the elements and where Slack allows each, from Slack's
+Block Kit reference; `bun tools/visual/src/contexts.ts` rewrites them, and `contexts.test.ts` fails
+when they drift. They're captured and compared like any other fixture.
+
+## Coverage
+
+`bun run coverage:visual` prints how far the references go: for every fixture, which of the states
+it should be compared in have a reference (light, `+mobile`, `+dark`, and `@open`, `@confirm` or
+`@dialog` in both themes where its controls have them), and which interactive fixtures have a
+payload recording. CI adds it to the `check` job's summary; it reports and doesn't fail yet.
 
 `snapshot.js` inlines each element's computed styles, with a few corrections so the frozen copy
 lays out like the live page:

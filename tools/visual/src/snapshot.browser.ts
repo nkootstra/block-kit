@@ -280,6 +280,89 @@ describe("snapshot.js", () => {
     });
   });
 
+  describe("open states", () => {
+    const metaOf = (html: string) =>
+      JSON.parse(
+        html.match(
+          /<script type="application\/json" id="sbk-reference-meta">(.*?)<\/script>/s,
+        )![1]!,
+      );
+    // Slack mounts menus and dialogs in a .ReactModalPortal at the end of <body>, outside the
+    // preview: a select list sits under its field, a calendar may stick out to the left of the
+    // preview, and a confirm dialog is centred in the window.
+    const PAGE = `<!doctype html><body style="margin:0;font:15px sans-serif">
+      <div style="padding:150px 0 0 200px"><div class="p-bkb_preview__message" style="width:400px;height:100px"><span id="field" style="display:block;width:190px;height:28px"></span></div></div>
+      <div class="ReactModalPortal"><div class="ReactModal__Overlay c-popover" style="position:fixed;inset:0">
+        <div class="ReactModal__Content" style="position:absolute;left:90px;top:174px"><div>
+          <div class="c-date_picker__dropdown" style="width:349px;height:372px;background:#fff;box-shadow:0 0 0 1px rgba(29,28,29,.13)"><span id="day">28</span></div>
+        </div></div>
+      </div></div>
+    </body>`;
+
+    it("freezes an open popover where it was, relative to the preview, and records it", async () => {
+      await page.setContent(PAGE);
+      const html = await snapshot(page);
+      expect(metaOf(html).layers).toEqual([
+        { kind: "popover", x: -110, y: 24, width: 349, height: 372 },
+      ]);
+      await page.setContent(html);
+      const placed = await page.evaluate(() => {
+        const root = document.querySelector("#sbk-reference > *")!.getBoundingClientRect();
+        const layer = document.querySelector('[data-sbk-layer="popover"] > *')!;
+        const r = layer.getBoundingClientRect();
+        return {
+          x: r.x - root.x,
+          y: r.y - root.y,
+          width: r.width,
+          height: r.height,
+          // Nothing of the popover is cut off by the page's left edge.
+          onPage: r.x >= 0,
+          day: layer.textContent,
+        };
+      });
+      expect(placed).toEqual({ x: -110, y: 24, width: 349, height: 372, onPage: true, day: "28" });
+    });
+
+    it("leaves a snapshot without an open popover as it was", async () => {
+      await page.setContent(
+        `<!doctype html><body style="margin:0"><div class="p-bkb_preview__message" style="width:400px"><p>Text</p></div></body>`,
+      );
+      const html = await snapshot(page);
+      expect(metaOf(html).layers).toEqual([]);
+      expect(html).not.toContain("data-sbk-layer");
+      expect(html).toContain("#sbk-reference{width:400px}");
+    });
+
+    it("freezes an open dialog on its own, below the preview", async () => {
+      await page.setContent(`<!doctype html><body style="margin:0;font:15px sans-serif">
+        <div class="p-bkb_preview__message" style="width:400px;height:60px"></div>
+        <div class="ReactModalPortal"><div class="ReactModal__Overlay c-sk-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.5)">
+          <div class="ReactModal__Content" style="position:absolute;left:300px;top:200px">
+            <div role="alertdialog" class="c-sk-modal" style="width:520px;height:164px;background:#fff;border-radius:8px"><h1>Are you sure?</h1></div>
+          </div>
+        </div></div>
+      </body>`);
+      const html = await snapshot(page);
+      expect(metaOf(html).layers).toMatchObject([{ kind: "dialog", width: 520, height: 164 }]);
+      await page.setContent(html);
+      const dialog = await page.evaluate(() => {
+        const el = document.querySelector('[data-sbk-layer="dialog"] > *')!;
+        const r = el.getBoundingClientRect();
+        return { width: r.width, height: r.height, text: el.textContent };
+      });
+      expect(dialog).toEqual({ width: 520, height: 164, text: "Are you sure?" });
+    });
+
+    it("records the Builder's theme in the meta", async () => {
+      for (const theme of ["light", "dark"] as const) {
+        await page.setContent(
+          `<!doctype html><html class="sk-client-theme--${theme}"><body style="margin:0"><div class="p-bkb_preview__message" style="width:400px"><p>Text</p></div></body></html>`,
+        );
+        expect(metaOf(await snapshot(page)).theme).toBe(theme);
+      }
+    });
+  });
+
   it("keeps a size the page sets explicitly", async () => {
     const { live, replayed } = await snapshotAndReplay(
       `<div id="fixed" style="width:123.5px;height:45px"></div><div id="track" style="display:grid;grid-template-columns:100px 1fr"><div id="cell" style="height:20px"></div></div>`,

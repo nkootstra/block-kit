@@ -16,6 +16,7 @@ import {
   sha256,
   writeLock,
 } from "./lock";
+import { isReferenceName } from "./names";
 import { normalize } from "./normalize";
 
 const refs = JSON.parse(await Bun.stdin.text()) as Record<string, string>;
@@ -23,7 +24,7 @@ const [lock, payloads] = await Promise.all([readLock(), readPayloads()]);
 const captured = new Date().toISOString().slice(0, 10);
 let written = 0;
 for (const [name, html] of Object.entries(refs)) {
-  if (!/^[a-z0-9/_-]+(@[a-z0-9-]+)?$/.test(name) || name.includes("..")) {
+  if (!isReferenceName(name)) {
     console.warn(`skipping invalid name ${JSON.stringify(name)}`);
     continue;
   }

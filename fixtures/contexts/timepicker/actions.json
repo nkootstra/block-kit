@@ -1,0 +1,19 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "timepicker",
+          "action_id": "time",
+          "initial_time": "13:37",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select time",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

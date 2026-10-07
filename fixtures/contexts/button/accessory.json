@@ -1,0 +1,21 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A section with an accessory"
+      },
+      "accessory": {
+        "type": "button",
+        "action_id": "button",
+        "text": {
+          "type": "plain_text",
+          "text": "Click me",
+          "emoji": true
+        },
+        "value": "click"
+      }
+    }
+  ]
+}

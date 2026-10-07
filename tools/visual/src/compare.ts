@@ -7,7 +7,11 @@
  *     [--update-baseline[=lower]] [--scale=2]
  *
  * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
- * expanded, a table sorted); STATES replays the same interaction on our rendering first.
+ * expanded, a table sorted, a select opened); states.ts replays the same interaction on our
+ * rendering first. `+dark` references render ours in the dark theme and `+mobile` ones at the
+ * Builder's mobile width (names.ts). A reference with an open popover (`@open`) compares the message
+ * and the popover together, cropped to one box relative to the message on both sides (layout.ts);
+ * one with a dialog (`@confirm`, `@dialog`) compares the dialog on its own.
  *
  * Writes reference/actual/diff/compare PNGs to test-results/visual/, plus report.json and
  * index.html on a full (unfiltered) run.
@@ -41,6 +45,9 @@ import pixelmatch from "pixelmatch";
 import { chromium, type Page } from "playwright";
 import { PNG } from "pngjs";
 import { collectTextRuns } from "./collectTextRuns";
+import { type Box, cropBox, type Layer, roomFor } from "./layout";
+import { parseReferenceName } from "./names";
+import { stateFor } from "./states";
 import {
   checkTextBaseline,
   compareTextRuns,
@@ -78,7 +85,13 @@ const CHECK_TEXT_BASELINE = checkTextBaselineArg ? resolve(checkTextBaselineArg)
 interface Meta {
   width: number;
   height: number;
+  /** Open popovers and dialogs frozen with the preview (snapshot.js); absent in older captures. */
+  layers?: Layer[];
 }
+
+/** Where our open menus and dialogs render: portalled to <body>, outside #sbk-render. */
+const OUR_POPOVERS = ".sbk-popover > *";
+const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog";
 
 export interface Result {
   name: string;
@@ -164,51 +177,6 @@ await context.route(/slack-imgs\.com|picsum\.photos/, async (route) => {
   });
 });
 
-/**
- * How to reach each captured `@state`: `ours` clicks through our rendering the way the reference was
- * clicked through in Builder. `reference` restores what a DOM snapshot can't record, such as a
- * scroll offset.
- */
-const STATES: Record<
-  string,
-  { ours: (page: Page) => Promise<void>; reference?: (page: Page) => Promise<void> }
-> = {
-  "catalog/agents/plan@expanded": { ours: (p) => p.click(".sbk-plan__pill") },
-  "catalog/agents/plan-error@expanded": { ours: (p) => p.click(".sbk-plan__pill") },
-  "catalog/agents/plan@tasks-collapsed": {
-    ours: async (p) => {
-      await p.click(".sbk-plan__pill");
-      for (const header of await p.locator("button.sbk-plan__task-header").all()) {
-        await header.click();
-      }
-    },
-  },
-  "catalog/agents/task-card@expanded": { ours: (p) => p.click(".sbk-task-card__pill") },
-  "catalog/container/collapsible@collapsed": {
-    ours: (p) => p.click(".sbk-container__header--button"),
-  },
-  "catalog/image/title@hidden": { ours: (p) => p.click(".sbk-image__toggle") },
-  "catalog/image/no-title@hidden": { ours: (p) => p.click(".sbk-image__toggle") },
-  "catalog/table/numeric-sort-data-table@sort-asc": {
-    ours: async (p) => {
-      await p.getByRole("button", { name: "Amount" }).click();
-      await p.getByRole("menuitemradio", { name: "Ascending" }).click();
-    },
-  },
-  "catalog/table/paginated-data-table@page-2": {
-    ours: (p) => p.getByRole("button", { name: "Next page" }).click(),
-  },
-  // One press of Slack's right arrow scrolls the gallery by a card and its gap: 356px.
-  "catalog/card-and-carousel/carousel@scrolled": {
-    ours: (p) => p.getByRole("button", { name: "Scroll right" }).click(),
-    reference: (p) =>
-      p.evaluate(() => {
-        const wrapper = document.querySelector(".p-gallery_scroller__wrapper");
-        if (wrapper) wrapper.scrollLeft = 356;
-      }),
-  },
-};
-
 /** Lets transitions and smooth scrolling started by a state's clicks finish before the screenshot. */
 async function afterInteraction(page: Page) {
   await page.mouse.move(0, 0);
@@ -229,6 +197,31 @@ async function settle(page: Page) {
 async function shot(page: Page, selector: string): Promise<PNG> {
   const el = page.locator(selector).first();
   return PNG.sync.read(await el.screenshot({ animations: "disabled" }));
+}
+
+/** Each matched element's box, relative to the first match (the message). */
+async function boxesOf(page: Page, selector: string): Promise<Box[]> {
+  return page.evaluate((sel) => {
+    const els = [...document.querySelectorAll(sel)];
+    const origin = els[0]!.getBoundingClientRect();
+    return els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.x - origin.x, y: r.y - origin.y, width: r.width, height: r.height };
+    });
+  }, selector);
+}
+
+/** A screenshot of `box`, relative to the first element `selector` matches. */
+async function shotBox(page: Page, selector: string, box: Box): Promise<PNG> {
+  const origin = await page.locator(selector).first().boundingBox();
+  if (!origin) throw new Error(`no element matches ${selector}`);
+  return PNG.sync.read(
+    await page.screenshot({
+      animations: "disabled",
+      fullPage: true,
+      clip: { x: origin.x + box.x, y: origin.y + box.y, width: box.width, height: box.height },
+    }),
+  );
 }
 
 function pad(png: PNG, width: number, height: number): PNG {
@@ -265,20 +258,48 @@ for (const name of names) {
     /<img[^>]*class="(?:p-bkb_preview__app_icon|p-bkb_preview_modal__title_icon)"[^>]*src="([^"]+)"/,
   )?.[1];
 
+  const parsed = parseReferenceName(name);
+  const layers = meta.layers ?? [];
+  const dialog = layers.some((l) => l.kind === "dialog");
+  const popovers = layers.some((l) => l.kind === "popover");
+  // The dark theme leaves parts of the message transparent; give our page the reference's
+  // background so only the rendering differs.
+  const pageBackground =
+    parsed.theme === "dark"
+      ? (html.match(/html,body\{margin:0;padding:0;background:([^}]+)\}/)?.[1] ?? "")
+      : "";
+  // What each side compares: the message, the message with its popovers, or a dialog alone.
+  const refTarget = dialog ? '[data-sbk-layer="dialog"] > *' : "#sbk-reference > *";
+  const ourTarget = dialog
+    ? OUR_DIALOGS
+    : popovers
+      ? `#sbk-render > *, ${OUR_POPOVERS}`
+      : "#sbk-render > *";
+
   await page.setContent(html, { waitUntil: "load" });
   await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
   await settle(page);
-  const state = STATES[name];
-  if (name.includes("@") && !state)
+  const state = stateFor(name);
+  if (parsed.interaction && !state)
     console.warn(`  no STATES entry for ${name}; comparing its initial state`);
   if (state?.reference) await state.reference(page);
-  const reference = await shot(page, "#sbk-reference > *");
-  const referenceRuns: TextRun[] = await page.evaluate(collectTextRuns, "#sbk-reference > *");
+  // A popover's crop needs both sides' boxes, so the reference is kept open on its own page.
+  const refPage = popovers ? await context.newPage() : page;
+  if (popovers) {
+    await refPage.setContent(html, { waitUntil: "load" });
+    await refPage.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
+    await settle(refPage);
+  }
+  const refBoxes = popovers ? await boxesOf(refPage, refTarget) : [];
+  let reference = popovers ? undefined : await shot(page, refTarget);
+  const referenceRuns: TextRun[] = await refPage.evaluate(collectTextRuns, refTarget);
 
   const url = new URL(base);
-  url.searchParams.set("render", name.split("@")[0] ?? name);
+  url.searchParams.set("render", parsed.fixture);
   url.searchParams.set("width", String(meta.width));
+  if (parsed.theme === "dark") url.searchParams.set("theme", "dark");
   if (icon) url.searchParams.set("icon", icon.replace(/&amp;/g, "&"));
+  const room = roomFor(layers);
   const errors: string[] = [];
   const onError = (err: Error) => errors.push(err.message);
   page.on("pageerror", onError);
@@ -287,21 +308,34 @@ for (const name of names) {
   try {
     await page.goto(url.href, { waitUntil: "load" });
     await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
+    if (pageBackground)
+      await page.addStyleTag({ content: `html,body{background:${pageBackground}}` });
+    if (room.left || room.top)
+      await page.addStyleTag({
+        content: `#sbk-render{margin-left:${room.left}px;margin-top:${room.top}px}`,
+      });
     await page.waitForSelector("#sbk-render > *", { timeout: 10_000 });
     await settle(page);
     if (state) {
       await state.ours(page);
       await afterInteraction(page);
     }
-    actual = await shot(page, "#sbk-render > *");
-    ourRuns = await page.evaluate(collectTextRuns, "#sbk-render > *");
+    if (popovers) {
+      const box = cropBox(refBoxes, await boxesOf(page, ourTarget));
+      reference = await shotBox(refPage, refTarget, box);
+      actual = await shotBox(page, ourTarget, box);
+    } else {
+      actual = await shot(page, ourTarget);
+    }
+    ourRuns = await page.evaluate(collectTextRuns, ourTarget);
   } catch (err) {
     const error = errors[0] ?? (err as Error).message.split("\n")[0];
+    const failed = reference ?? { width: meta.width, height: meta.height };
     results.push({
       name,
-      reference: { width: reference.width, height: reference.height },
+      reference: { width: failed.width, height: failed.height },
       actual: { width: 0, height: 0 },
-      mismatch: reference.width * reference.height,
+      mismatch: failed.width * failed.height,
       ratio: 1,
       error,
     });
@@ -309,7 +343,9 @@ for (const name of names) {
     continue;
   } finally {
     page.off("pageerror", onError);
+    if (refPage !== page) await refPage.close();
   }
+  if (!reference) throw new Error(`${name}: no reference screenshot`);
 
   const width = Math.max(reference.width, actual.width);
   const height = Math.max(reference.height, actual.height);

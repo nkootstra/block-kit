@@ -51,6 +51,12 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       # Every reference snapshot must still show Slack's rendering of its fixture's payload.
       - run: bun run references:check
+      # How many of the states Slack should be compared in have a reference, and which
+      # interactions have a recorded payload. A report on the job's summary; it doesn't fail.
+      - name: Visual coverage
+        run: |
+          bun tools/visual/src/coverage.ts > /dev/null
+          cat test-results/visual/coverage.md >> "$GITHUB_STEP_SUMMARY"
       # The release and preview helpers the workflows run.
       - run: bun test scripts
       # Hand the docs build to deploy-docs, so it ships exactly what passed the checks.

@@ -1,0 +1,19 @@
+{
+  "type": "home",
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "users_select",
+          "action_id": "users",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select a user",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

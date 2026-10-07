@@ -1,0 +1,37 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "Context",
+    "emoji": true
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Submit",
+    "emoji": true
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel",
+    "emoji": true
+  },
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Label",
+        "emoji": true
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "text",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Write something",
+          "emoji": true
+        }
+      }
+    }
+  ]
+}

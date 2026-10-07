@@ -1,0 +1,18 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "external_select",
+          "action_id": "external",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select an item",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

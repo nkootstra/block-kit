@@ -1,0 +1,16 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A section with an accessory"
+      },
+      "accessory": {
+        "type": "datetimepicker",
+        "action_id": "datetime",
+        "initial_date_time": 1767261600
+      }
+    }
+  ]
+}

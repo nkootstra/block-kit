@@ -1,0 +1,20 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A section with an accessory"
+      },
+      "accessory": {
+        "type": "conversations_select",
+        "action_id": "conversations",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select a conversation",
+          "emoji": true
+        }
+      }
+    }
+  ]
+}

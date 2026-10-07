@@ -19,6 +19,7 @@
     "compare": "bun tools/visual/src/compare.ts",
     "compare:check": "bun tools/visual/src/compare.ts --check",
     "references:check": "bun tools/visual/src/references.ts --check",
+    "coverage:visual": "bun tools/visual/src/coverage.ts",
     "emoji": "bun tools/emoji-data/generate.ts"
   },
   "devDependencies": {

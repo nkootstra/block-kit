@@ -322,6 +322,44 @@ async (win = window) => {
   // The root replays inside a bare #sbk-reference, not inside Slack's app, so what it inherits
   // (Slack's font) is compared with the defaults, not with its parent, and written down.
   const frozen = freeze(root, null);
+
+  // An open menu, calendar or dialog: Slack mounts them in a .ReactModalPortal at the end of the
+  // page, outside the preview. Each is frozen too, as a layer: a popover (anchored to a field) is
+  // placed where it sat relative to the preview, so the reference shows both as they were laid
+  // out; a dialog (centred in the window) is kept on its own, since its position says nothing.
+  const origin = root.getBoundingClientRect();
+  const visual = (content) => {
+    let el = content;
+    while (el) {
+      const s = win.getComputedStyle(el);
+      if (s.backgroundColor !== "rgba(0, 0, 0, 0)" || s.boxShadow !== "none") return el;
+      el = el.firstElementChild;
+    }
+    return content;
+  };
+  const layers = [];
+  for (const content of doc.querySelectorAll(".ReactModalPortal .ReactModal__Content")) {
+    if (content.getBoundingClientRect().height === 0) continue;
+    const overlay = content.closest(".ReactModal__Overlay");
+    const dialog = content.querySelector('[role="dialog"], [role="alertdialog"]');
+    const kind = /popover/.test(overlay?.className ?? "") || !dialog ? "popover" : "dialog";
+    const src = kind === "dialog" ? dialog : visual(content);
+    const r = src.getBoundingClientRect();
+    const el = freeze(src, null);
+    // It was positioned by the portal; in the reference its layer places it.
+    el.setAttribute(
+      "style",
+      `${el.getAttribute("style")};position:relative;inset:auto;margin:0;transform:none`,
+    );
+    layers.push({
+      kind,
+      x: Math.round(r.x - origin.x),
+      y: Math.round(r.y - origin.y),
+      width: Math.round(r.width),
+      height: Math.round(r.height),
+      el,
+    });
+  }
   frame.remove();
 
   // Pin the message timestamp so references don't change between captures. Only the timestamp:
@@ -392,11 +430,35 @@ async (win = window) => {
     devicePixelRatio: win.devicePixelRatio,
     rects,
     motion,
+    // The Builder's theme: a dark reference is compared with our dark theme.
+    theme: /sk-client-theme--dark/.test(`${doc.documentElement.className} ${doc.body.className}`)
+      ? "dark"
+      : "light",
+    layers: layers.map(({ el, ...box }) => box),
   };
 
   const bodyBg = win.getComputedStyle(
     doc.querySelector(".p-bkb_preview__content") || doc.body,
   ).backgroundColor;
+  // Popovers sit in #sbk-reference at their offset from the preview; the page is padded so one
+  // that stuck out to the left of (or above) the preview still lands on the page.
+  const popovers = layers.filter((l) => l.kind === "popover");
+  const dialogs = layers.filter((l) => l.kind === "dialog");
+  const padLeft = Math.max(0, ...popovers.map((l) => -l.x));
+  const padTop = Math.max(0, ...popovers.map((l) => -l.y));
+  const layerHtml = popovers
+    .map(
+      (l) =>
+        `<div data-sbk-layer="popover" style="position:absolute;left:${l.x}px;top:${l.y}px">${l.el.outerHTML}</div>`,
+    )
+    .join("");
+  const dialogHtml = dialogs
+    .map((l) => `<div data-sbk-layer="dialog" style="width:max-content">${l.el.outerHTML}</div>`)
+    .join("");
+  const layout =
+    popovers.length > 0
+      ? `body{padding:${padTop}px 0 0 ${padLeft}px}\n#sbk-reference{position:relative}\n`
+      : "";
   return `<!doctype html>
 <html><head><meta charset="utf-8"><title>reference</title>
 <script type="application/json" id="sbk-reference-meta">${jsonAscii(JSON.stringify(meta).replace(/</g, "\\u003c"))}</script>
@@ -404,7 +466,7 @@ async (win = window) => {
 ${cssAscii(fontFaces.join("\n"))}
 html,body{margin:0;padding:0;background:${bodyBg === "rgba(0, 0, 0, 0)" ? "#fff" : bodyBg}}
 #sbk-reference{width:${Math.round(rect.width)}px}
-${pseudoRules.join("\n")}
+${layout}${pseudoRules.join("\n")}
 </style></head>
-<body><div id="sbk-reference">${htmlAscii(frozen.outerHTML)}</div></body></html>`;
+<body><div id="sbk-reference">${htmlAscii(frozen.outerHTML)}${htmlAscii(layerHtml)}</div>${htmlAscii(dialogHtml)}</body></html>`;
 };

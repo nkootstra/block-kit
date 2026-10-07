@@ -1,0 +1,18 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "channels_select",
+          "action_id": "channels",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select a channel",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}
