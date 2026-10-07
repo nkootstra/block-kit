@@ -19,3 +19,10 @@ export async function keyDownAsync(element: Element | Node, key: string) {
     fireEvent.keyDown(element, { key });
   });
 }
+
+/** Same rationale as {@link clickAsync}, for a handler that runs as focus leaves an element. */
+export async function blurAsync(element: Element | Node) {
+  await act(async () => {
+    fireEvent.blur(element);
+  });
+}

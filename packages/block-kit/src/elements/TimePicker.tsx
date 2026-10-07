@@ -4,6 +4,8 @@ import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
+import { timeZoneLabel } from "./dateFormat";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
@@ -43,15 +45,11 @@ export function parseTime(input: string): string | undefined {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-const squash = (text: string) => text.toLowerCase().replace(/\s+/g, "");
-
-/** The rows for a query: the hours whose label starts with it, after a typed time the list lacks. */
-export function timesFor(query: string): string[] {
-  if (!query.trim()) return HOURS;
-  const typed = parseTime(query);
-  const hours = HOURS.filter((t) => squash(formatTime(t)).startsWith(squash(query)));
-  return typed && !hours.includes(typed) && !HOURS.includes(typed) ? [typed, ...hours] : hours;
-}
+/**
+ * The rows of Slack's time list: every hour, whatever is typed. Slack's list doesn't filter as you
+ * type; Enter reads the typed time instead.
+ */
+export const TIMES: readonly string[] = HOURS;
 
 export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   const { setValue, dispatch } = useBlockKit();
@@ -83,12 +81,13 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   }
 
   const [query, setQuery] = useState("");
-  const times = timesFor(query);
+  const times = TIMES;
   const combo = useCombobox({
     query,
     onQueryChange: setQuery,
     count: times.length,
-    initialIndex: time ? times.indexOf(time) : -1,
+    // Slack opens its time list with nothing highlighted, even with a time chosen.
+    initialIndex: -1,
     onChoose: (i) => {
       const t = times[i];
       if (t) pick(t);
@@ -98,8 +97,24 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
       if (t) pick(t);
     },
     listRef,
+    highlightOnType: false,
   });
   useFocusOnLoad(element, combo.inputRef);
+
+  // Reopened, Slack's field holds the chosen time as text, selected, so typing replaces it. The
+  // text is selected once it's in the field, a render after the query is set.
+  const selectOnOpen = useRef(false);
+  useEffect(() => {
+    if (!combo.open || !time) return;
+    selectOnOpen.current = true;
+    setQuery(formatTime(time));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [combo.open]);
+  useClientLayoutEffect(() => {
+    if (!selectOnOpen.current) return;
+    selectOnOpen.current = false;
+    combo.inputRef.current?.select();
+  }, [query]);
 
   const display = time ? formatTime(time) : undefined;
   const input = combo.inputProps(display, element.placeholder?.text ?? "Select time");
@@ -148,7 +163,9 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
           </div>
         </Popover>
       )}
-      {element.timezone && <div className="sbk-timepicker__hint">Timezone: {element.timezone}</div>}
+      {element.timezone && (
+        <div className="sbk-timepicker__hint">Time zone: {timeZoneLabel(element.timezone)}</div>
+      )}
       {dialog}
     </div>
   );

@@ -11,11 +11,12 @@ in an `actions` block or a section's accessory for a quick pick, or in an `input
 time in a modal.
 
 Like Slack's, the field is a text input (`role="combobox"`). Clicking it opens the list, hour by
-hour from 12:00 AM; typing narrows the list to the times that start with what you typed. The arrow
-keys move through it, Enter picks the highlighted time, and Escape or Tab closes it. A typed time
-the list doesn't offer, such as `2:15 PM`, `2:15pm` or `14:15`, can be picked with Enter and is sent
-as typed (`"14:15"`). Whether Slack keeps a typed time off the hour or rounds it hasn't been
-verified.
+hour from 12:00 AM, with nothing highlighted; reopened, the field holds the chosen time as selected
+text, so typing replaces it. As in Slack, typing doesn't filter or highlight the list: Enter reads
+what you typed, so `2:15 PM`, `2:15pm` or `14:15` is picked and sent as typed (`"14:15"`), and text
+that isn't a time is ignored, leaving the list open. The arrow keys highlight a row (the first press
+starts at 12:00 AM), Enter picks the highlighted time over anything typed, and Escape or Tab closes
+the list and puts the chosen time back.
 
 <Preview
   actions
@@ -148,7 +149,11 @@ is picked. Then it reads e.g. "1:37 PM".
 
 ### With a time zone
 
-Setting `timezone` shows a hint underneath the control naming it:
+Setting `timezone` shows a hint underneath the control naming the zone the way Slack does, after
+its own region list rather than the IANA id: `America/New_York` reads "Time zone: Eastern Time (US
+and Canada)", `Europe/Madrid` "Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna", and
+`UTC` "Time zone: Monrovia, Reykjavik". The names were recorded from Block Kit Builder for every
+zone browsers know; a zone it doesn't name shows its IANA id.
 
 <Preview
   actions

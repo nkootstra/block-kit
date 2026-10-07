@@ -37,6 +37,27 @@
 }
 
 /* Slack's c-date_picker__select_btn: a 28px square on the right with a 20px chevron. */
+/* Slack's `c-date_picker__select_btn`: a 28px button over the field's right end that opens the
+   calendar, with the shared focus ring and Slack's 8px radius. */
+.sbk-datepicker__toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--sbk-content-sec);
+  cursor: pointer;
+}
+
+.sbk-datepicker__toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
 .sbk-datepicker__chevron {
   position: absolute;
   right: 4px;

@@ -28,6 +28,7 @@ export function useCombobox({
   onOpenChange,
   keepQuery = false,
   typedHighlight = false,
+  highlightOnType = true,
 }: {
   /** What's typed; the owner filters its rows by it, so it owns the state. */
   query: string;
@@ -59,6 +60,11 @@ export function useCombobox({
    * keyboard highlight, and later ones move it. `typed` reports which one is showing.
    */
   typedHighlight?: boolean;
+  /**
+   * Whether typing highlights the first row. Slack's time list doesn't: typing leaves it as it is
+   * until an arrow key, and Enter reads the typed time.
+   */
+  highlightOnType?: boolean;
 }) {
   const [ownOpen, setOwnOpen] = useState(false);
   const open = controlledOpen ?? ownOpen;
@@ -142,7 +148,7 @@ export function useCombobox({
         onQueryChange(e.target.value);
         setOpenState(true);
         setTyped(true);
-        nav.setActive(0);
+        nav.setActive(highlightOnType ? 0 : -1);
       },
       onKeyDown,
     };

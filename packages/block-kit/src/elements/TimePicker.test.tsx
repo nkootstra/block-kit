@@ -72,22 +72,44 @@ describe("<TimePicker>", () => {
     expect((screen.getByRole("combobox") as HTMLInputElement).value).toBe("2:00 PM");
   });
 
-  it("shows a timezone hint when timezone is set", () => {
+  /** The line under a timepicker with `timezone`. */
+  function zoneLine(timezone: string) {
     render(
       <BlockKitProvider>
         <TimePicker
-          element={
-            {
-              type: "timepicker",
-              action_id: "a1",
-              timezone: "America/Los_Angeles",
-            } as unknown as Timepicker
-          }
+          element={{ type: "timepicker", action_id: "a1", timezone } as unknown as Timepicker}
           blockId="b1"
         />
       </BlockKitProvider>,
     );
-    expect(screen.getByText(/America\/Los_Angeles/)).toBeTruthy();
+    return document.querySelector(".sbk-timepicker__hint")?.textContent;
+  }
+
+  // Measured in Block Kit Builder: Slack names the zone after its own region list, not the IANA id.
+  for (const [zone, line] of [
+    ["America/New_York", "Time zone: Eastern Time (US and Canada)"],
+    ["America/Los_Angeles", "Time zone: Pacific Time (US and Canada)"],
+    ["America/Denver", "Time zone: Mountain Time (US and Canada), Navajo Nation"],
+    ["Europe/Amsterdam", "Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"],
+    ["Europe/Madrid", "Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"],
+    ["Asia/Tokyo", "Time zone: Osaka, Sapporo, Tokyo"],
+    ["Asia/Singapore", "Time zone: Beijing, Chongqing, Hong Kong SAR, Urumqi"],
+    ["Asia/Kolkata", "Time zone: Chennai, Kolkata, Mumbai, New Delhi"],
+    ["UTC", "Time zone: Monrovia, Reykjavik"],
+  ] as const) {
+    it(`names ${zone} as Slack does`, () => {
+      expect(zoneLine(zone)).toBe(line);
+    });
+  }
+
+  // Two names the Builder shows garbled: Fort Nelson as another zone's "(UTC+01:00) Amsterdam, …"
+  // and Tonga with its apostrophe still HTML-escaped. Ours read cleanly.
+  it("names Fort Nelson like the other UTC-7 zones without daylight saving", () => {
+    expect(zoneLine("America/Fort_Nelson")).toBe("Time zone: Arizona, Vancouver");
+  });
+
+  it("names Tonga with a plain apostrophe", () => {
+    expect(zoneLine("Pacific/Tongatapu")).toBe("Time zone: Nuku'alofa");
   });
 
   describe("as a typeable picker", () => {
@@ -118,14 +140,43 @@ describe("<TimePicker>", () => {
       expect(options.at(-1)).toBe("11:00 PM");
     });
 
-    it("filters the list to the times that start with what's typed", () => {
+    // Measured in Block Kit Builder: typing neither filters, highlights nor scrolls Slack's list.
+    it("keeps every hour listed, with nothing highlighted, while typing", () => {
       const { input } = renderPicker();
       fireEvent.click(input);
       fireEvent.change(input, { target: { value: "3" } });
-      expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
-        "3:00 AM",
-        "3:00 PM",
-      ]);
+      expect(screen.getAllByRole("option")).toHaveLength(24);
+      expect(input.getAttribute("aria-activedescendant")).toBeNull();
+    });
+
+    it("highlights the first hour on the first ArrowDown, even with something typed", async () => {
+      const { input, onAction } = renderPicker();
+      fireEvent.click(input);
+      fireEvent.change(input, { target: { value: "3 pm" } });
+      await keyDownAsync(input, "ArrowDown");
+      const active = input.getAttribute("aria-activedescendant");
+      expect(active && document.getElementById(active)?.textContent).toBe("12:00 AM");
+      // Enter then takes the highlighted hour, not the typed time.
+      await keyDownAsync(input, "Enter");
+      expect(onAction).toHaveBeenCalledWith(
+        expect.objectContaining({ selected_time: "00:00" }),
+        expect.anything(),
+      );
+    });
+
+    it("keeps the list open and sends nothing for text that isn't a time", async () => {
+      const { input, onAction } = renderPicker();
+      fireEvent.click(input);
+      fireEvent.change(input, { target: { value: "abc" } });
+      await keyDownAsync(input, "Enter");
+      expect(onAction).not.toHaveBeenCalled();
+      expect(screen.getAllByRole("option")).toHaveLength(24);
+    });
+
+    it("shows the chosen time as the field's text when the list reopens", () => {
+      const { input } = renderPicker(vi.fn(), "15:15");
+      fireEvent.click(input);
+      expect(input.value).toBe("3:15 PM");
     });
 
     it("picks a typed time off the hour on Enter, echoing initial_time", async () => {
@@ -144,7 +195,7 @@ describe("<TimePicker>", () => {
     it("moves through the list with the arrow keys and picks with Enter", async () => {
       const { input, onAction } = renderPicker();
       fireEvent.click(input);
-      fireEvent.change(input, { target: { value: "1" } });
+      await keyDownAsync(input, "ArrowDown");
       await keyDownAsync(input, "ArrowDown");
       await keyDownAsync(input, "Enter");
       expect(onAction).toHaveBeenCalledWith(
@@ -167,12 +218,12 @@ describe("<TimePicker>", () => {
       const { input } = renderPicker();
       expect(input.getAttribute("aria-expanded")).toBe("false");
       fireEvent.click(input);
-      fireEvent.change(input, { target: { value: "4" } });
+      fireEvent.keyDown(input, { key: "ArrowDown" });
       const listbox = screen.getByRole("listbox");
       expect(input.getAttribute("aria-expanded")).toBe("true");
       expect(input.getAttribute("aria-controls")).toBe(listbox.id);
       const active = input.getAttribute("aria-activedescendant");
-      expect(active && document.getElementById(active)?.textContent).toBe("4:00 AM");
+      expect(active && document.getElementById(active)?.textContent).toBe("12:00 AM");
     });
   });
 });

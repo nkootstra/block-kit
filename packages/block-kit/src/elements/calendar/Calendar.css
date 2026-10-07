@@ -99,6 +99,13 @@
   border-color: rgba(29, 155, 209, 0.3);
 }
 
+/* Measured in Block Kit Builder: the keyboard-focused day also carries Slack's focus ring. */
+.sbk-calendar__cell:focus-visible,
+.sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
 @media (hover: hover) {
   .sbk-calendar__cell:not(.sbk-calendar__cell--empty):hover {
     z-index: 1;

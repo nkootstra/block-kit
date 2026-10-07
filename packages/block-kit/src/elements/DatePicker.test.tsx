@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
 import { Message } from "../Message";
 import { DatePicker } from "./DatePicker";
-import { clickAsync } from "./test-utils";
+import { blurAsync, clickAsync, keyDownAsync } from "./test-utils";
 
 afterEach(cleanup);
 
@@ -30,6 +30,8 @@ function open(onAction = vi.fn()) {
 }
 
 const focusedDay = () => (document.activeElement as HTMLElement).textContent;
+/** Whether the calendar popup is showing. */
+const calendarOpen = () => document.querySelector(".sbk-datepicker__popup") !== null;
 const monthLabel = () => document.querySelector(".sbk-calendar__label")?.textContent;
 
 describe("<DatePicker>", () => {
@@ -190,9 +192,9 @@ describe("<DatePicker>", () => {
     );
     const input = screen.getByPlaceholderText("Select a date");
     fireEvent.click(input);
-    expect(input.getAttribute("aria-expanded")).toBe("true");
+    expect(calendarOpen()).toBe(true);
     fireEvent.keyDown(input, { key: "Escape" });
-    expect(input.getAttribute("aria-expanded")).toBe("false");
+    expect(calendarOpen()).toBe(false);
     expect(screen.queryByText("Previous month")).toBeNull();
   });
 
@@ -216,7 +218,7 @@ describe("<DatePicker>", () => {
       // Tabbing in: focus lands on the field without a click.
       input.focus();
       fireEvent.focus(input);
-      expect(input.getAttribute("aria-expanded")).toBe("true");
+      expect(calendarOpen()).toBe(true);
       expect(document.activeElement).toBe(input);
       fireEvent.keyDown(input, { key: "ArrowDown" });
       expect(focusedDay()).toBe("28");
@@ -263,14 +265,107 @@ describe("<DatePicker>", () => {
         expect.anything(),
       );
       expect(document.activeElement).toBe(input);
-      expect(input.getAttribute("aria-expanded")).toBe("false");
+      expect(calendarOpen()).toBe(false);
     });
 
     it("closes on Escape from the calendar and returns focus to the field", () => {
       const input = open();
       fireEvent.keyDown(document.activeElement!, { key: "Escape" });
-      expect(input.getAttribute("aria-expanded")).toBe("false");
+      expect(calendarOpen()).toBe(false);
       expect(document.activeElement).toBe(input);
+    });
+  });
+
+  describe("typing a date", () => {
+    /** A datepicker set to 28 April 1990, focused with the calendar open, its text selected. */
+    function typed(text: string, onAction = vi.fn()) {
+      const input = open(onAction);
+      input.focus();
+      fireEvent.change(input, { target: { value: text } });
+      return { input, onAction };
+    }
+
+    // Measured in Block Kit Builder: each of these, then Enter, sends the date and keeps the
+    // calendar open.
+    for (const [text, date] of [
+      ["05/01/1990", "1990-05-01"],
+      ["5/4/90", "1990-05-04"],
+      ["1990-05-02", "1990-05-02"],
+      ["May 3, 1990", "1990-05-03"],
+      ["April 9th, 1990", "1990-04-09"],
+    ] as const) {
+      it(`takes "${text}" on Enter, keeping the calendar open`, async () => {
+        const { input, onAction } = typed(text);
+        await keyDownAsync(input, "Enter");
+        expect(onAction).toHaveBeenCalledWith(
+          expect.objectContaining({ selected_date: date, initial_date: "1990-04-28" }),
+          expect.anything(),
+        );
+        expect(calendarOpen()).toBe(true);
+      });
+    }
+
+    it("sends nothing for text that isn't a date, keeping the text and the calendar", async () => {
+      const { input, onAction } = typed("abc");
+      await keyDownAsync(input, "Enter");
+      expect(onAction).not.toHaveBeenCalled();
+      expect(input.value).toBe("abc");
+      expect(calendarOpen()).toBe(true);
+    });
+
+    it("puts the chosen date back on Escape", async () => {
+      const { input, onAction } = typed("abc");
+      await keyDownAsync(input, "Escape");
+      expect(input.value).toBe("04/28/1990");
+      expect(calendarOpen()).toBe(false);
+      expect(onAction).not.toHaveBeenCalled();
+    });
+
+    it("takes a typed date when focus leaves the field, as Slack does", async () => {
+      const { input, onAction } = typed("5/6/1990");
+      await blurAsync(input);
+      expect(onAction).toHaveBeenCalledWith(
+        expect.objectContaining({ selected_date: "1990-05-06" }),
+        expect.anything(),
+      );
+      expect(input.value).toBe("05/06/1990");
+    });
+  });
+
+  describe("accessibility, as Slack's field", () => {
+    it("labels the field Date, without aria-expanded or aria-haspopup", () => {
+      const input = open();
+      expect([
+        input.getAttribute("aria-label"),
+        input.hasAttribute("aria-expanded"),
+        input.hasAttribute("aria-haspopup"),
+        input.readOnly,
+      ]).toEqual(["Date", false, false, false]);
+    });
+
+    it("opens the calendar from its own Open calendar button, on the selected day", () => {
+      render(
+        <BlockKitProvider>
+          <DatePicker
+            element={
+              {
+                type: "datepicker",
+                action_id: "a1",
+                initial_date: "1990-04-28",
+              } as unknown as Datepicker
+            }
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Open calendar" }));
+      expect(calendarOpen()).toBe(true);
+      expect(focusedDay()).toBe("28");
+    });
+
+    it("names each day in full, as Slack's day buttons do", () => {
+      open();
+      expect(document.activeElement?.getAttribute("aria-label")).toBe("Saturday, April 28th, 1990");
     });
   });
 });
