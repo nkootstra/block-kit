@@ -116,6 +116,34 @@ export function ThumbsDownIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Slack's `thumbs-up-filled` glyph, shown on a picked feedback button. */
+export function ThumbsUpFilledIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12.997 1.77a2.315 2.315 0 0 0-3.3 1.304 7.5 7.5 0 0 1-1.06 2.052L7.146 7.17A.75.75 0 0 0 7 7.613v9.919a.75.75 0 0 0 .65.743l1.765.237c1.396.188 2.814.142 4.195-.134l.45-.09a4.75 4.75 0 0 0 3.717-3.68l.862-4.092c.395-1.88-1.209-3.576-3.108-3.285l-2.43.373.61-1.832.005-.011.003-.01.386-1.288a2.31 2.31 0 0 0-1.108-2.693M5.75 7.785a.75.75 0 0 0-.75-.75H2.25a.75.75 0 0 0-.735.602l-.015.148v8.096a2.653 2.653 0 0 0 2.653 2.654H5a.75.75 0 0 0 .75-.75z"
+      />
+    </svg>
+  );
+}
+
+/** Slack's `thumbs-down-filled` glyph, shown on a picked feedback button. */
+export function ThumbsDownFilledIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12.997 18.343a2.315 2.315 0 0 1-3.3-1.303 7.5 7.5 0 0 0-1.06-2.052l-1.492-2.045A.75.75 0 0 1 7 12.5V2.58a.75.75 0 0 1 .65-.743L9.415 1.6a12.8 12.8 0 0 1 4.195.135l.45.09a4.75 4.75 0 0 1 3.717 3.68l.862 4.091c.395 1.88-1.209 3.576-3.108 3.285l-2.43-.373.61 1.832.005.012.003.01.386 1.287a2.31 2.31 0 0 1-1.108 2.693M5.75 12.33a.75.75 0 0 1-.75.75H2.25a.75.75 0 0 1-.735-.603L1.5 12.33V4.232a2.653 2.653 0 0 1 2.653-2.653H5a.75.75 0 0 1 .75.75z"
+      />
+    </svg>
+  );
+}
+
 export function KebabIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg

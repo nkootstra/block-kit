@@ -2313,6 +2313,43 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured in Block Kit Builder: a picked feedback button shows the filled thumb and keeps the
+  // icon button's transparent background and grey, in both themes. (The dark grey itself is the
+  // icon button's colour token.)
+  describe("feedback buttons picked state", () => {
+    for (const theme of ["light", "dark"] as const) {
+      it(`shows the filled thumb with no fill or colour change (${theme})`, async () => {
+        const page = await harness.open({
+          ...(await fixture("extra/context-actions/feedback-row")),
+          theme,
+        });
+        const good = page.getByRole("radio", { name: "Good Response" });
+        const bad = page.getByRole("radio", { name: "Bad Response" });
+        await good.click();
+        await page.mouse.move(5, 5);
+        await settle(page);
+        const read = (el: typeof good) =>
+          el.evaluate((node) => {
+            const c = getComputedStyle(node);
+            return {
+              checked: node.getAttribute("aria-checked"),
+              background: c.backgroundColor,
+              color: c.color,
+              path: node.querySelector("path")?.getAttribute("d")?.slice(0, 12),
+            };
+          });
+        const [picked, other] = [await read(good), await read(bad)];
+        expect(picked).toEqual({
+          checked: "true",
+          background: "rgba(0, 0, 0, 0)",
+          color: other.color,
+          path: "M12.997 1.77",
+        });
+        expect(other.checked).toBe("false");
+      });
+    }
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,
