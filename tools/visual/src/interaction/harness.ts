@@ -38,6 +38,8 @@ export interface Harness {
       scale?: number;
       reducedMotion?: boolean;
       viewport?: { width: number; height: number };
+      /** A touch screen with no hover, like a phone: `(hover: none)` matches and taps replace clicks. */
+      touch?: boolean;
     },
   ): Promise<Page>;
   /** Closes every page opened so far, so one test's state never reaches the next. */
@@ -51,9 +53,10 @@ export async function createHarness(engine: Engine): Promise<Harness> {
   const browser: Browser = await ENGINES[engine].launch();
   const pages: Page[] = [];
   return {
-    async open(mount, { scale = 1, reducedMotion = false, viewport } = {}) {
+    async open(mount, { scale = 1, reducedMotion = false, viewport, touch = false } = {}) {
       const page = await browser.newPage({
         viewport: viewport ?? { width: 800, height: 700 },
+        hasTouch: touch,
         deviceScaleFactor: scale,
         reducedMotion: reducedMotion ? "reduce" : "no-preference",
         locale: "en-US",

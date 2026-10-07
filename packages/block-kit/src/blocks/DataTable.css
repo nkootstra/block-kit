@@ -73,8 +73,10 @@
   border-radius: 4px;
 }
 
-.sbk-data-table__frame:hover::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--sbk-text) 52%, transparent);
+@media (hover: hover) {
+  .sbk-data-table__frame:hover::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--sbk-text) 52%, transparent);
+  }
 }
 
 /* Like Slack's <table>, the grid never narrows below its columns' 120px minimums. */
@@ -121,9 +123,14 @@
 
 /* Slack hides the unsorted caret until the header is hovered or focused, and tints the header
    with the same 6% overlay as its other hoverable table chrome. */
-.sbk-data-table__col-header button:hover,
 .sbk-data-table__col-header button:focus-visible {
   background-color: var(--sbk-hover-overlay);
+}
+
+@media (hover: hover) {
+  .sbk-data-table__col-header button:hover {
+    background-color: var(--sbk-hover-overlay);
+  }
 }
 
 /* Slack's caret stays hidden, even on a sorted column, until the header is hovered or focused. */
@@ -239,8 +246,10 @@
   border-right: 1px solid var(--sbk-button-border);
 }
 
-.sbk-data-table__row:hover .sbk-data-table__cell {
-  background-color: var(--sbk-row-hover-bg);
+@media (hover: hover) {
+  .sbk-data-table__row:hover .sbk-data-table__cell {
+    background-color: var(--sbk-row-hover-bg);
+  }
 }
 
 .sbk-data-table__row:not(:first-child) .sbk-data-table__cell {
@@ -330,15 +339,23 @@
   background-color: var(--sbk-data-table-active);
 }
 
-.sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):hover,
 .sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):focus-visible {
   color: var(--sbk-text);
   background-color: var(--sbk-button-hover-bg);
 }
 
+@media (hover: hover) {
+  .sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):hover {
+    color: var(--sbk-text);
+    background-color: var(--sbk-button-hover-bg);
+  }
+}
+
 /* Same multiply darkening as a primary button: hover ≈ rgb(20,133,103), pressed ≈ rgb(0,110,81). */
-.sbk-data-table__page-btn--active:hover {
-  background-color: rgb(20, 133, 103);
+@media (hover: hover) {
+  .sbk-data-table__page-btn--active:hover {
+    background-color: rgb(20, 133, 103);
+  }
 }
 
 .sbk-data-table__page-btn--active:active {
@@ -350,8 +367,10 @@
   text-decoration: none;
 }
 
-.sbk-rtmini__link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .sbk-rtmini__link:hover {
+    text-decoration: underline;
+  }
 }
 
 .sbk-rtmini__code {

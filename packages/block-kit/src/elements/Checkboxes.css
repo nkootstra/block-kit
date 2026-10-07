@@ -30,12 +30,20 @@
    focused, a darker border on hover, a stronger overlay while pressed, and a 2px blue ring for
    keyboard focus. The box sits in its label, so hovering the option's text hovers it too, as in
    Slack. */
-.sbk-checkboxes__input:not(:checked):is(:hover, :focus) {
+.sbk-checkboxes__input:not(:checked):focus {
   background-image: linear-gradient(var(--sbk-interaction-hover), var(--sbk-interaction-hover));
 }
 
-.sbk-checkboxes__input:not(:checked):hover {
-  border-color: var(--sbk-outline-pry);
+@media (hover: hover) {
+  .sbk-checkboxes__input:not(:checked):hover {
+    background-image: linear-gradient(var(--sbk-interaction-hover), var(--sbk-interaction-hover));
+  }
+}
+
+@media (hover: hover) {
+  .sbk-checkboxes__input:not(:checked):hover {
+    border-color: var(--sbk-outline-pry);
+  }
 }
 
 .sbk-checkboxes__input:not(:checked):active {
@@ -54,12 +62,22 @@
   background-color: var(--sbk-checkbox-checked);
 }
 
-.sbk-checkboxes__input:checked:is(:hover, :focus) {
+.sbk-checkboxes__input:checked:focus {
   background-image: linear-gradient(
     var(--sbk-checkbox-checked-hover),
     var(--sbk-checkbox-checked-hover)
   );
   background-blend-mode: var(--sbk-blend-interaction);
+}
+
+@media (hover: hover) {
+  .sbk-checkboxes__input:checked:hover {
+    background-image: linear-gradient(
+      var(--sbk-checkbox-checked-hover),
+      var(--sbk-checkbox-checked-hover)
+    );
+    background-blend-mode: var(--sbk-blend-interaction);
+  }
 }
 
 .sbk-checkboxes__input:checked:active {

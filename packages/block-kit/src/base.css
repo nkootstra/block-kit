@@ -223,9 +223,11 @@
   padding: 0 2px 1px;
 }
 
-.sbk-mention:hover {
-  color: var(--sbk-mention-hover-text);
-  background: var(--sbk-mention-hover-bg);
+@media (hover: hover) {
+  .sbk-mention:hover {
+    color: var(--sbk-mention-hover-text);
+    background: var(--sbk-mention-hover-bg);
+  }
 }
 
 /* A mention linked through `mentionHref` keeps the pill's look, without a link's underline. */
@@ -422,9 +424,11 @@ a.sbk-mention {
 }
 
 /* Keyboard focus shouldn't also paint the pointer's hover shadow on outline buttons. */
-.sbk-button:focus-visible:hover,
-.sbk-overflow__button:focus-visible:hover {
-  box-shadow: var(--sbk-focus-shadow);
+@media (hover: hover) {
+  .sbk-button:focus-visible:hover,
+  .sbk-overflow__button:focus-visible:hover {
+    box-shadow: var(--sbk-focus-shadow);
+  }
 }
 
 /* Slack's menus and popovers open and close instantly (no transition on `c-menu` /
