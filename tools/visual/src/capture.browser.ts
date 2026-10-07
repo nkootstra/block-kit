@@ -83,12 +83,13 @@ const REAL_BUILDER = `<!doctype html><html><body>
       setValue(v) {
         this.value = v;
         const payload = JSON.parse(v);
-        const surface = payload.type === "modal" ? "Modal Preview" : "Message Preview";
+        const surface = { modal: "Modal Preview", home: "App Home Preview" }[payload.type] ?? "Message Preview";
         if (document.querySelector('[data-qa="bkb-surface-select-button"]').textContent !== surface) return;
         setTimeout(() => {
-          const cls = payload.type === "modal" ? "p-bkb_preview_modal" : "p-bkb_preview__message";
+          const cls = { modal: "p-bkb_preview_modal", home: "p-bkb_app_home" }[payload.type] ?? "p-bkb_preview__message";
+          const mobile = window.mobile && cls === "p-bkb_preview__message";
           document.getElementById("stage").innerHTML =
-            '<div class="' + cls + '" style="width:' + (window.mobile ? 400 : 512) + 'px">' + v + "</div>";
+            '<div class="' + cls + '" style="width:' + (mobile ? 400 : 512) + 'px">' + v + "</div>";
         }, 50);
       },
     };
@@ -102,7 +103,7 @@ const REAL_BUILDER = `<!doctype html><html><body>
       const box = document.querySelector('[data-qa="' + qa + '"]');
       box.addEventListener("click", () => window.log.push("ignored click " + qa));
       box.addEventListener("keydown", (e) => {
-        if (e.key !== "ArrowDown") return;
+        if (e.key !== "ArrowDown" || box.getAttribute("aria-disabled") === "true") return;
         const list = document.createElement("div");
         list.setAttribute("role", "listbox");
         labels.forEach((label) => {
@@ -120,13 +121,19 @@ const REAL_BUILDER = `<!doctype html><html><body>
       window.mobile = label === "Mobile";
       window.log.push("size " + label);
     });
-    menu("bkb-surface-select-button", ["Message Preview", "Modal Preview"], (label, box) => {
+    menu("bkb-surface-select-button", ["Message Preview", "Modal Preview", "App Home Preview"], (label, box) => {
       const dialog = document.createElement("div");
       dialog.setAttribute("role", "alertdialog");
       dialog.innerHTML = "Are you sure? <button>Cancel</button> <button>I'm Sure</button>";
       dialog.querySelectorAll("button")[1].addEventListener("click", () => {
         dialog.remove();
         box.textContent = label;
+        // Like the Builder, App Home and modals preview at desktop width only: the size menu shows
+        // "Desktop" and is disabled.
+        const size = document.querySelector('[data-qa="bkb-preview-select-button"]');
+        const desktopOnly = label !== "Message Preview";
+        size.setAttribute("aria-disabled", String(desktopOnly));
+        size.textContent = desktopOnly ? "Desktop" : window.mobile ? "Mobile" : "Desktop";
         window.log.push("surface " + label);
       });
       document.body.append(dialog);
@@ -149,8 +156,12 @@ async function runReal(items: { name: string; payload: unknown }[]) {
       snap: unknown;
       log: string[];
     };
-    const results = await w.capture({ items: list, snap: w.snap, settle: 100, viewport: false });
-    return { results, log: w.log.filter((l) => !l.startsWith("ignored")) };
+    try {
+      const results = await w.capture({ items: list, snap: w.snap, settle: 100, viewport: false });
+      return { results, log: w.log.filter((l) => !l.startsWith("ignored")) };
+    } catch (e) {
+      return { error: String(e), log: w.log.filter((l) => !l.startsWith("ignored")) };
+    }
   }, items);
 }
 
@@ -228,6 +239,17 @@ describe("capture.js against the real Builder's controls", () => {
       "surface Modal Preview",
       "snap p-bkb_preview_modal 512px",
     ]);
+  });
+
+  it("refuses a mobile capture of a surface the Builder previews only at desktop width", async () => {
+    const { error, log } = await runReal([
+      {
+        name: "contexts/button/home@mobile",
+        payload: { type: "home", blocks: [{ type: "divider" }] },
+      },
+    ]);
+    expect(error).toMatch(/home@mobile: the Builder previews App Home only at desktop width/);
+    expect(log.some((l) => l.startsWith("snap"))).toBe(false);
   });
 
   it("captures the same payload twice in a row without waiting for the preview to change", async () => {
