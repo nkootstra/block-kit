@@ -21,6 +21,7 @@
   --sbk-mention-private-bg: rgba(29, 28, 29, 0.13);
   --sbk-mention-private-text: rgba(29, 28, 29, 0.7);
   --sbk-broadcast-bg: rgba(255, 198, 0, 0.18);
+  --sbk-broadcast-text: #1d1c1d;
   --sbk-bg: #fff;
   --sbk-muted: #616061;
   /* Secondary text: the timestamp, context, image titles, video bylines and card subtext. */
@@ -295,7 +296,7 @@ a.sbk-mention {
 }
 
 .sbk-mention--broadcast {
-  color: var(--sbk-text);
+  color: var(--sbk-broadcast-text);
   background: var(--sbk-broadcast-bg);
   border-radius: 3px;
   padding: 1px 2px;
