@@ -21,3 +21,5 @@ tools/visual/.auth/
 # Local wrangler dev state
 .wrangler/
 .blume-verify/
+# Real names to redact from references (redact.ts); never commit
+tools/visual/redact.local.json

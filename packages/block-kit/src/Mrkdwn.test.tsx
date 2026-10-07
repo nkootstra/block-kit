@@ -74,3 +74,24 @@ describe("<Mrkdwn>", () => {
     );
   });
 });
+
+// Slack writes each mention as one text node ("@here", "@U123"); text measured or selected as a
+// run must not split after the sigil.
+describe("mention text nodes", () => {
+  const textNodes = (el: Element) =>
+    [...el.querySelectorAll("*"), el].flatMap((n) =>
+      [...n.childNodes].filter((c) => c.nodeType === 3 && c.textContent).map((c) => c.textContent),
+    );
+
+  it("writes @here, an unresolved @U123, and resolved @name and #name as single text nodes", () => {
+    const { container } = render(
+      <BlockKitProvider
+        resolvers={{ usergroup: () => "eng", channel: () => "general", user: () => undefined }}
+      >
+        <Mrkdwn text="<!here> <@U123> <!subteam^S1> <#C1>" />
+      </BlockKitProvider>,
+    );
+    const nodes = textNodes(container);
+    for (const text of ["@here", "@U123", "@eng", "#general"]) expect(nodes).toContain(text);
+  });
+});

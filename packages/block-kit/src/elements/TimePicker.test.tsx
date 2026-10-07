@@ -2,6 +2,7 @@ import type { Timepicker } from "@slack/types";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
+import { Input } from "../blocks/Input";
 import { TimePicker } from "./TimePicker";
 import { clickAsync, keyDownAsync } from "./test-utils";
 
@@ -20,6 +21,27 @@ function renderPicker(onAction = vi.fn(), initial_time?: string) {
 }
 
 describe("<TimePicker>", () => {
+  // Measured in Block Kit Builder: Slack labels the field "Time" for screen readers, whatever its
+  // placeholder says.
+  it("labels the field Time, as Slack does, while keeping its placeholder", () => {
+    render(
+      <BlockKitProvider>
+        <TimePicker
+          element={
+            {
+              type: "timepicker",
+              action_id: "a1",
+              placeholder: { type: "plain_text", text: "Select time" },
+            } as unknown as Timepicker
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const field = screen.getByRole("combobox", { name: "Time" }) as HTMLInputElement;
+    expect(field.placeholder).toBe("Select time");
+  });
+
   it("shows the placeholder when no time is selected", () => {
     render(
       <BlockKitProvider>
@@ -110,6 +132,100 @@ describe("<TimePicker>", () => {
 
   it("names Tonga with a plain apostrophe", () => {
     expect(zoneLine("Pacific/Tongatapu")).toBe("Time zone: Nuku'alofa");
+  });
+
+  // Slack's line under the field is one text run, "Time zone: Eastern Time (US and Canada)".
+  it("writes the time zone line as a single text run", () => {
+    render(
+      <BlockKitProvider>
+        <TimePicker
+          element={
+            {
+              type: "timepicker",
+              action_id: "a1",
+              timezone: "America/New_York",
+            } as unknown as Timepicker
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const hint = document.querySelector(".sbk-timepicker__hint")!;
+    expect([...hint.childNodes].map((n) => n.textContent)).toEqual([
+      "Time zone: Eastern Time (US and Canada)",
+    ]);
+  });
+
+  // Measured in Block Kit Builder's references: an input block's time list starts with "Clear
+  // selection" once a time is chosen, where the time may be left empty (an optional input, or any
+  // input on the message surface). Actions blocks and section accessories have no such row.
+  describe("Clear selection", () => {
+    function inInput(
+      optional: boolean,
+      props: Omit<Parameters<typeof BlockKitProvider>[0], "children"> = {},
+      initialTime: string | null = "13:37",
+    ) {
+      render(
+        <BlockKitProvider {...props}>
+          <Input
+            block={
+              {
+                type: "input",
+                block_id: "b1",
+                optional,
+                label: { type: "plain_text", text: "When" },
+                element: {
+                  type: "timepicker",
+                  action_id: "a1",
+                  initial_time: initialTime ?? undefined,
+                },
+              } as never
+            }
+            blockId="b1"
+            index={0}
+          />
+        </BlockKitProvider>,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.click(input);
+      return input;
+    }
+    const rows = () => screen.queryAllByRole("option").map((o) => o.textContent);
+
+    it("starts a message input's list with Clear selection", () => {
+      inInput(false);
+      expect(rows().slice(0, 2)).toEqual(["Clear selection", "12:00 AM"]);
+    });
+
+    it("starts an optional modal input's list with Clear selection", () => {
+      inInput(true, { surface: "modal" });
+      expect(rows()[0]).toBe("Clear selection");
+    });
+
+    it("has no Clear selection in a required modal input", () => {
+      inInput(false, { surface: "modal" });
+      expect(rows()).not.toContain("Clear selection");
+    });
+
+    it("has no Clear selection before a time is chosen", () => {
+      inInput(false, {}, null);
+      expect(rows()).not.toContain("Clear selection");
+    });
+
+    it("has no Clear selection outside an input block", () => {
+      renderPicker(vi.fn(), "13:37");
+      fireEvent.click(screen.getByRole("combobox"));
+      expect(rows()).not.toContain("Clear selection");
+    });
+
+    it("empties the field and reports a null selected_time", async () => {
+      let state: StateValues = {};
+      const input = inInput(false, { onStateChange: (s) => (state = s) });
+      await clickAsync(screen.getByRole("option", { name: "Clear selection" }));
+      expect(state.b1?.a1).toEqual({ type: "timepicker", selected_time: null });
+      expect(input.value).toBe("");
+      expect(document.querySelector(".sbk-timepicker__content")).toBeNull();
+    });
   });
 
   describe("as a typeable picker", () => {

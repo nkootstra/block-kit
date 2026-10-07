@@ -96,7 +96,7 @@ export function UserMention({ id, name }: UserMentionProps) {
         onClick={() => setOpen((o) => !o)}
         onKeyDown={onKeyDown}
       >
-        @{name}
+        {`@${name}`}
       </span>
       {profile &&
         typeof document !== "undefined" &&

@@ -143,9 +143,29 @@ to the preview):
    with a real click and set `window.sbkCaptureReady = true`.
    Keep the Builder tab visible: macOS pauses a hidden tab and the preview never settles. When the
    run is done, switch the Builder back to light.
+   Paste the scripts into a freshly loaded Builder. Late in a long session the Builder can load a
+   stylesheet that repeats rules it already has, which reorders the cascade (it once shifted every
+   datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
+   refuses to snapshot once a later sheet repeats one of their rules: reload the Builder, paste the
+   scripts again and resume from the item it names.
 
 3. Copy the resulting `refs` JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.
+
+## The Builder workspace stays out of git
+
+A capture shows whatever the Builder's workspace holds: an opened users, conversations or channels
+select lists its real members (names, avatars, user IDs) and channels, and every snapshot records
+the workspace's team ID and name. `import.ts` and `renormalize.ts` replace them through
+`normalize.ts` with stable placeholders (`redact.ts`): members become "User One", "User Two"…,
+channels "channel-one"…, the workspace "Workspace", avatars a grey pixel, profile links `#`, and
+Slack IDs short placeholders such as `U0000001`. IDs the fixture's own payload uses
+(`U0123456789`) are kept. Slack marks all of these up, so no list of real names is needed; a name
+that only appears as plain text goes in `tools/visual/redact.local.json`
+(`{ "Real name": "Placeholder" }`), which is ignored by git.
+
+`references:check` fails on a reference that still contains a member, channel or workspace name,
+an avatar URL, a profile link, or a Slack ID its fixture doesn't use.
 
 ## Elements in every context
 

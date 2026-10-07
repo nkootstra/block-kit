@@ -131,7 +131,8 @@ export function useCombobox({
   }
 
   /** Props for the input. `display` is the chosen value, shown while the list is closed. */
-  function inputProps(display: string | undefined, placeholder: string) {
+  /** The combobox input's props; `label` names it for screen readers, else the placeholder does. */
+  function inputProps(display: string | undefined, placeholder: string, label = placeholder) {
     return {
       ref: inputRef,
       type: "text",
@@ -145,7 +146,7 @@ export function useCombobox({
       "aria-expanded": open,
       "aria-controls": open ? listId : undefined,
       "aria-activedescendant": open && nav.active >= 0 ? optionId(nav.active) : undefined,
-      "aria-label": placeholder,
+      "aria-label": label,
       // While open, the chosen value stays visible as the placeholder until something is typed.
       placeholder: open ? (display ?? placeholder) : placeholder,
       value: open || (keepQuery && query) ? query : (display ?? ""),

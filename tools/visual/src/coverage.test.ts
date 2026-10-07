@@ -2,15 +2,32 @@ import { describe, expect, it } from "bun:test";
 import { coverage, expectedStates } from "./coverage";
 
 const select = {
-  blocks: [{ type: "actions", elements: [{ type: "static_select", action_id: "s", options: [] }] }],
+  blocks: [
+    {
+      type: "actions",
+      elements: [{ type: "static_select", action_id: "s", options: [] }],
+    },
+  ],
 };
 const confirmButton = {
-  blocks: [{ type: "actions", elements: [{ type: "button", action_id: "b", confirm: {} }] }],
+  blocks: [
+    {
+      type: "actions",
+      elements: [{ type: "button", action_id: "b", confirm: {} }],
+    },
+  ],
 };
 const accessoryMulti = {
-  blocks: [{ type: "section", accessory: { type: "multi_static_select", action_id: "m" } }],
+  blocks: [
+    {
+      type: "section",
+      accessory: { type: "multi_static_select", action_id: "m" },
+    },
+  ],
 };
-const text = { blocks: [{ type: "section", text: { type: "mrkdwn", text: "Hi" } }] };
+const text = {
+  blocks: [{ type: "section", text: { type: "mrkdwn", text: "Hi" } }],
+};
 
 describe("coverage", () => {
   it("expects every fixture in light, dark and mobile, plus the states its controls have", () => {
@@ -19,6 +36,16 @@ describe("coverage", () => {
     expect(expectedStates(confirmButton)).toContain("@confirm");
     expect(expectedStates(confirmButton)).toContain("@confirm+dark");
     expect(expectedStates(accessoryMulti)).toContain("@dialog");
+  });
+
+  it("expects no mobile width for App Home or a modal, whose Builder preview is desktop only", () => {
+    expect(expectedStates({ type: "home", ...text })).toEqual(["", "@dark"]);
+    expect(expectedStates({ type: "modal", ...select })).toEqual([
+      "",
+      "@dark",
+      "@open",
+      "@open+dark",
+    ]);
   });
 
   it("asks for a payload recording for every fixture with an interactive element", () => {
@@ -37,7 +64,12 @@ describe("coverage", () => {
         missing: ["@mobile", "@dark", "@open+dark"],
         recording: true,
       },
-      { fixture: "a/text", have: ["", "@dark"], missing: ["@mobile"], recording: undefined },
+      {
+        fixture: "a/text",
+        have: ["", "@dark"],
+        missing: ["@mobile"],
+        recording: undefined,
+      },
     ]);
     expect(report.totals).toEqual({
       expected: 8,

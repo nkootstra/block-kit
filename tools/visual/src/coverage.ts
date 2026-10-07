@@ -4,8 +4,9 @@
  *
  *   bun tools/visual/src/coverage.ts
  *
- * Every fixture is expected in light, at the mobile width and in dark (names.ts). A fixture with a
- * control that opens (a select, time list, calendar or overflow menu) is also expected `@open`, in
+ * Every fixture is expected in light, at the mobile width and in dark (names.ts); App Home and
+ * modal fixtures have no mobile width, since the Builder previews them only at desktop width. A
+ * fixture with a control that opens (a select, time list, calendar or overflow menu) is also expected `@open`, in
  * both themes; one with a `confirm` `@confirm`; a section accessory multi-select `@dialog`. A
  * fixture with an interactive element is expected to have a payload recording
  * (`<fixture>@<interaction>.actions.json`). Prints the totals and what's missing, and writes
@@ -39,7 +40,10 @@ const elements = (payload: unknown) => [...objects(payload)];
 export function expectedStates(payload: unknown): string[] {
   const all = elements(payload);
   const type = (o: Record<string, unknown>) => (typeof o.type === "string" ? o.type : "");
-  const states = ["", "@mobile", "@dark"];
+  // The Builder disables its preview-size menu for App Home and modals: they render desktop only.
+  const surface = (payload as { type?: unknown } | null)?.type;
+  const states =
+    surface === "home" || surface === "modal" ? ["", "@dark"] : ["", "@mobile", "@dark"];
   if (all.some(([o]) => OPENS.test(type(o)))) states.push("@open", "@open+dark");
   if (all.some(([o]) => INTERACTIVE.test(type(o)) && "confirm" in o))
     states.push("@confirm", "@confirm+dark");
@@ -65,7 +69,11 @@ export function coverage(
   recordings: Set<string>,
 ): {
   rows: Row[];
-  totals: { expected: number; captured: number; recordings: { expected: number; have: number } };
+  totals: {
+    expected: number;
+    captured: number;
+    recordings: { expected: number; have: number };
+  };
 } {
   const recorded = new Set([...recordings].map((r) => r.split("@")[0]));
   const rows = [...payloads.entries()]

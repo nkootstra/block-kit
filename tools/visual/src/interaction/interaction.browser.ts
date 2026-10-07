@@ -699,6 +699,42 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ],
     };
 
+    // From catalog/input/timepicker@open: in an input block the list is the field's width plus 22px
+    // (454 for a 432px field), starts 12px left of it, and opens with a 28px "Clear selection" row
+    // above 12:00 AM.
+    it("opens an input block's list 22px wider than the field, Clear selection first", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("When"),
+            element: { type: "timepicker", action_id: "t", initial_time: "13:37" },
+          },
+        ],
+      });
+      await page.click(".sbk-timepicker__control");
+      await settle(page);
+      const geometry = await page.evaluate(() => {
+        const field = document.querySelector(".sbk-timepicker__control")!.getBoundingClientRect();
+        const menu = document.querySelector(".sbk-timepicker__menu")!.getBoundingClientRect();
+        const rows = [...document.querySelectorAll(".sbk-timepicker__menu [role=option]")];
+        return {
+          widthOverField: Math.round(menu.width - field.width),
+          left: Math.round(menu.x - field.x),
+          first: rows[0]?.textContent,
+          rowGap: Math.round(
+            rows[1]!.getBoundingClientRect().y - rows[0]!.getBoundingClientRect().y,
+          ),
+        };
+      });
+      expect(geometry).toEqual({
+        widthOverField: 22,
+        left: -12,
+        first: "Clear selection",
+        rowGap: 28,
+      });
+    });
+
     it("opens a 212px list that starts 12px left of the field and is at most 264px tall", async () => {
       const page = await harness.open(picker);
       await page.click(".sbk-timepicker__control");
@@ -1359,10 +1395,32 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       `.sbk-calendar__cell[data-date="1990-04-${String(n).padStart(2, "0")}"]`;
     const NAV = ".sbk-calendar__nav";
 
-    // Measured in Block Kit Builder: the popup's right edge meets the field's, and its top overlaps
-    // the field's bottom by 4px, as Slack's menus do. A field at the start of an actions block
-    // leaves no room for that on its left (the calendar would shift inside the window), so this one
-    // is a section's accessory, on the right.
+    // From the open-calendar references: Slack's weekday cells start at 24.5px into the popup, in a
+    // 29.5625px row whose 13px labels sit on a 19.0668px line, and the first week's day buttons
+    // start at 101.0625px (they overlap the row's bottom half-pixel border).
+    it("places the weekday row and the first week as Slack does", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const geometry = await page.evaluate(() => {
+        const popup = document.querySelector(".sbk-datepicker__popup")!.getBoundingClientRect();
+        const weekday = document.querySelector(".sbk-calendar__weekdays > *")!;
+        const cell = weekday.getBoundingClientRect();
+        const day = document
+          .querySelector(".sbk-calendar__cell:not(.sbk-calendar__cell--empty)")!
+          .getBoundingClientRect();
+        return {
+          weekdayLeft: cell.x - popup.x,
+          weekdayLineHeight: parseFloat(getComputedStyle(weekday).lineHeight),
+          firstDayTop: day.y - popup.y,
+        };
+      });
+      // Engines round sub-pixel layout differently (Firefox works in 1/60px), so compare to a few
+      // hundredths of a pixel.
+      expect(geometry.weekdayLeft).toBe(24.5);
+      expect(geometry.weekdayLineHeight).toBeCloseTo(19.0668, 2);
+      expect(geometry.firstDayTop).toBeCloseTo(101.0625, 1);
+    });
+
     it("opens over the field's bottom edge with its right edge on the field's", async () => {
       const page = await harness.open({
         blocks: [
@@ -2350,6 +2408,57 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured in Block Kit Builder (extra/modal/rich-and-file and its @dark reference): the rich
+  // text composer's box, formatting bar, its buttons and separators, in both themes.
+  describe("rich text input surfaces", () => {
+    const SURFACES = {
+      light: {
+        box: ["rgb(255, 255, 255)", "rgba(29, 28, 29, 0.13)"],
+        toolbar: "rgb(248, 248, 248)",
+        tool: "rgba(29, 28, 29, 0.7)",
+        separator: "rgb(234, 234, 234)",
+      },
+      dark: {
+        box: ["rgb(34, 37, 41)", "rgb(86, 88, 86)"],
+        toolbar: "rgb(34, 37, 41)",
+        tool: "rgba(232, 232, 232, 0.7)",
+        separator: "rgb(33, 36, 40)",
+      },
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      it(`paints the composer in Slack's ${theme} colours`, async () => {
+        const page = await harness.open({
+          theme,
+          view: {
+            type: "modal",
+            title: plain("New entry"),
+            blocks: [
+              {
+                type: "input",
+                label: plain("Summary"),
+                element: { type: "rich_text_input", action_id: "summary" },
+              },
+            ],
+          },
+        });
+        const got = await page.evaluate(() => {
+          const c = (sel: string) => getComputedStyle(document.querySelector(sel)!);
+          return {
+            box: [
+              c(".sbk-rich-text-input").backgroundColor,
+              c(".sbk-rich-text-input").borderTopColor,
+            ],
+            toolbar: c(".sbk-rich-text-input__toolbar").backgroundColor,
+            tool: c(".sbk-rich-text-input__tool").color,
+            separator: c(".sbk-rich-text-input__separator").backgroundColor,
+          };
+        });
+        expect(got).toEqual({ ...SURFACES[theme], box: [...SURFACES[theme].box] });
+      });
+    }
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,
@@ -2553,6 +2662,50 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       await settle(page);
       expect(await fill(page, NEXT_MONTH)).toBe("rgba(29, 155, 209, 0.1)");
     });
+  });
+
+  // Measured in Block Kit Builder (catalog/data-visualization/area-multi-series and its @dark
+  // reference): each area's fill, at 0.7 opacity, in both themes.
+  describe("chart fills", () => {
+    const AREA_FILLS = {
+      light: ["rgb(255, 237, 229)", "rgb(227, 255, 243)"],
+      dark: ["rgb(56, 16, 0)", "rgb(5, 36, 27)"],
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      it(`fills each area with Slack's ${theme} tint`, async () => {
+        const page = await harness.open({
+          ...(await fixture("catalog/data-visualization/area-multi-series")),
+          theme,
+        });
+        const fills = await page.evaluate(() =>
+          [...document.querySelectorAll("path[fill-opacity]")].map((p) => {
+            const c = getComputedStyle(p);
+            return [c.fill, c.fillOpacity];
+          }),
+        );
+        expect(fills).toEqual(AREA_FILLS[theme].map((fill) => [fill, "0.7"]));
+      });
+
+      // Slack separates pie slices with a 2px line in the page colour: #fff, or #1a1d21 in dark.
+      it(`separates pie slices with the ${theme} page colour`, async () => {
+        const page = await harness.open({
+          ...(await fixture("catalog/data-visualization/pie-multi-segment")),
+          theme,
+        });
+        const strokes = await page.evaluate(() => [
+          ...new Set(
+            [...document.querySelectorAll('svg[aria-label="Pie chart"] path')].map((p) => {
+              const c = getComputedStyle(p);
+              return `${c.stroke} ${c.strokeWidth}`;
+            }),
+          ),
+        ]);
+        expect(strokes).toEqual([
+          `${theme === "dark" ? "rgb(26, 29, 33)" : "rgb(255, 255, 255)"} 2px`,
+        ]);
+      });
+    }
   });
 });
 

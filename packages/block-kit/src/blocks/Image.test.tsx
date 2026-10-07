@@ -1,5 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { BlockKitProvider, type Resolvers } from "../context";
+import { ImageElement } from "../elements/ImageElement";
 import { Image } from "./Image";
 
 afterEach(cleanup);
@@ -92,5 +94,59 @@ describe("<Image>", () => {
     const fallback = container.querySelector(".sbk-image__fallback") as HTMLElement;
     expect(fallback.getAttribute("aria-label")).toBe("a shared file");
     expect(container.querySelector(".sbk-image__title")).toBeNull();
+  });
+
+  describe("slack_file, through resolvers.slackFile", () => {
+    const resolvers: Resolvers = {
+      slackFile: (file) =>
+        file.id === "F123" ? { url: "https://files.example/taco.jpg", size: 72_704 } : undefined,
+    };
+    const withResolvers = (ui: React.ReactElement) =>
+      render(<BlockKitProvider resolvers={resolvers}>{ui}</BlockKitProvider>);
+
+    it("shows a resolved file as the image, with Slack's (N kB) size beside the caret", () => {
+      const block = { type: "image", slack_file: { id: "F123" }, alt_text: "a shared file" };
+      const { container } = withResolvers(<Image block={block as never} blockId="b1" index={0} />);
+      const img = container.querySelector("img") as HTMLImageElement;
+      expect([img.getAttribute("src"), img.alt]).toEqual([
+        "https://files.example/taco.jpg",
+        "a shared file",
+      ]);
+      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("(71 kB)");
+      expect(container.querySelector(".sbk-image__fallback")).toBeNull();
+    });
+
+    it("leaves the size out when the resolver doesn't know it", () => {
+      const resolve: Resolvers = { slackFile: () => ({ url: "https://files.example/taco.jpg" }) };
+      const block = {
+        type: "image",
+        slack_file: { url: "https://files.slack.com/x" },
+        alt_text: "x",
+      };
+      const { container } = render(
+        <BlockKitProvider resolvers={resolve}>
+          <Image block={block as never} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("");
+      expect(container.querySelector("img")?.getAttribute("src")).toBe(
+        "https://files.example/taco.jpg",
+      );
+    });
+
+    it("keeps the placeholder when the resolver can't find the file", () => {
+      const block = { type: "image", slack_file: { id: "F999" }, alt_text: "missing" };
+      const { container } = withResolvers(<Image block={block as never} blockId="b1" index={0} />);
+      expect(container.querySelector("img")).toBeNull();
+      expect(container.querySelector(".sbk-image__fallback")).toBeTruthy();
+    });
+
+    it("resolves an image element's slack_file too, as a section accessory", () => {
+      const element = { type: "image", slack_file: { id: "F123" }, alt_text: "thumb" };
+      const { container } = withResolvers(<ImageElement element={element as never} blockId="b1" />);
+      expect(container.querySelector("img")?.getAttribute("src")).toBe(
+        "https://files.example/taco.jpg",
+      );
+    });
   });
 });

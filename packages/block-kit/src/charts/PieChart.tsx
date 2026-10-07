@@ -58,7 +58,8 @@ export function PieChart({ segments }: { segments: PieSegment[] }) {
           key={arc.key}
           d={arc.d}
           fill={arc.color}
-          stroke="#fff"
+          // Slack separates slices in the page colour: white, or #1a1d21 in dark.
+          style={{ stroke: "var(--sbk-bg)" }}
           strokeWidth={2}
           strokeLinejoin="round"
         />

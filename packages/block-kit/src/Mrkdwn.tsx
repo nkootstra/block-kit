@@ -66,7 +66,7 @@ function renderNode(
       );
     case "user": {
       const name = resolvers.user?.(node.id);
-      return name ? <UserMention id={node.id} name={name} /> : <Fragment>@{node.id}</Fragment>;
+      return name ? <UserMention id={node.id} name={name} /> : <Fragment>{`@${node.id}`}</Fragment>;
     }
     case "usergroup": {
       // The Builder shows an empty loading pill for subteam mentions it can't resolve live, even
@@ -74,7 +74,7 @@ function renderNode(
       const name = resolvers.usergroup?.(node.id);
       return name ? (
         <MentionLink type="usergroup" id={node.id}>
-          @{name}
+          {`@${name}`}
         </MentionLink>
       ) : (
         <span className="sbk-mention--loading" aria-label="Loading user group" />
@@ -84,7 +84,7 @@ function renderNode(
       const name = resolvers.channel?.(node.id) ?? node.label;
       return name ? (
         <MentionLink type="channel" id={node.id}>
-          #{name}
+          {`#${name}`}
         </MentionLink>
       ) : (
         <span className="sbk-mention--private">
@@ -94,7 +94,7 @@ function renderNode(
       );
     }
     case "broadcast":
-      return <span className="sbk-mention--broadcast">@{node.range}</span>;
+      return <span className="sbk-mention--broadcast">{`@${node.range}`}</span>;
     case "date": {
       const text = formatSlackDate(node.timestamp, node.format, { timeZone });
       return node.url ? (

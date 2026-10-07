@@ -333,9 +333,10 @@ export default function Preview({
           </span>
           {last?.kind === "state" && (
             <span className="bkd-preview__log-note">
-              No <code>onAction</code>: Slack sends none for an <code>input</code> block. Its value
-              goes into the view's state, which your app receives when the form is submitted. Set{" "}
-              <code>"dispatch_action": true</code> on the block to get an action as well.
+              No <code>onAction</code> for this change: an <code>input</code> block's value goes
+              into the view's state, which your app receives when the form is submitted. Only a
+              block with <code>"dispatch_action": true</code> also sends an action, on its trigger
+              (Enter by default).
             </span>
           )}
           {last ? (

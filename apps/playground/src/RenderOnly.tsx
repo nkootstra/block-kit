@@ -3,6 +3,7 @@ import {
   type HomeTabView,
   Message,
   type ModalView,
+  type Resolvers,
   View,
 } from "@nkootstra/block-kit";
 import { fixtures } from "./fixtures";
@@ -17,6 +18,21 @@ import { parsePayload } from "./payload";
  * with no Builder gutter subtracted. `&theme=dark` renders it in the dark theme, for a reference
  * captured with the Builder in dark mode (`<fixture>@dark`).
  */
+/**
+ * Block Kit Builder has no workspace files, so it shows its sample photo for the placeholder
+ * `slack_file` URL in its catalog (the same image as its `image_url` samples, 72,704 bytes). The
+ * render mirrors that, as an app would resolve a real file through `resolvers.slackFile`.
+ */
+const BUILDER_SAMPLE_FILES: Resolvers = {
+  slackFile: (file) =>
+    file.url === "<insert slack file url here>"
+      ? {
+          url: "https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg",
+          size: 72_704,
+        }
+      : undefined,
+};
+
 export function RenderOnly({ params }: { params: URLSearchParams }) {
   const name = params.get("render") ?? "";
   // Left unset for light, so the existing references render exactly as before.
@@ -37,7 +53,12 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
     const view = { id: "V00000000", ...(raw as object) } as ModalView | HomeTabView;
     const width = Number(params.get("width")) || undefined;
     return (
-      <BlockKitProvider timeZone="Europe/Amsterdam" surface={viewType} theme={theme}>
+      <BlockKitProvider
+        timeZone="Europe/Amsterdam"
+        surface={viewType}
+        theme={theme}
+        resolvers={BUILDER_SAMPLE_FILES}
+      >
         <div id="sbk-render" style={{ width }}>
           <View view={view} icon={params.get("icon") ?? undefined} />
         </div>
@@ -51,7 +72,7 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
   const width = Number(params.get("width")) - 36 || undefined;
   return (
     // References were captured in Europe/Amsterdam; their message time was pinned to 12:00 PM.
-    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme}>
+    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme} resolvers={BUILDER_SAMPLE_FILES}>
       <div id="sbk-render" style={{ width }}>
         <Message
           blocks={result.blocks}

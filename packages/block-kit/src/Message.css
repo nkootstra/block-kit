@@ -290,6 +290,11 @@
     --sbk-keycap-border: rgba(121, 124, 129, 0.3);
     --sbk-menu-divider: #35373b;
     --sbk-menu-faint-text: rgba(232, 232, 232, 0.7);
+    --sbk-composer-bg: #222529;
+    --sbk-composer-border: #565856;
+    --sbk-composer-toolbar-bg: #222529;
+    --sbk-composer-tool: rgba(232, 232, 232, 0.7);
+    --sbk-composer-separator: #212428;
     --sbk-calendar-day: #d1d2d3;
     --sbk-calendar-today: #1d9bd1;
     --sbk-avatar-placeholder: #35373b;
@@ -316,10 +321,12 @@
     --sbk-callout-yellow-bg: #3b3321;
     --sbk-callout-purple-bg: #312c3f;
     --sbk-callout-gray-bg: #272a2e;
-    --sbk-chart-area-1: #583422;
-    --sbk-chart-area-2: #1c4539;
-    --sbk-chart-area-3: #4d3756;
-    --sbk-chart-area-4: #164356;
+    /* Areas 1 and 2 measured in the Builder; 3 and 4 follow the same rule (the series colour
+       at OKLCH lightness 0.236, chroma x0.35), as no Builder chart shows a third area. */
+    --sbk-chart-area-1: rgb(56, 16, 0);
+    --sbk-chart-area-2: rgb(5, 36, 27);
+    --sbk-chart-area-3: rgb(42, 20, 46);
+    --sbk-chart-area-4: rgb(1, 34, 48);
   }
 }
 
@@ -394,6 +401,11 @@
   --sbk-keycap-border: rgba(121, 124, 129, 0.3);
   --sbk-menu-divider: #35373b;
   --sbk-menu-faint-text: rgba(232, 232, 232, 0.7);
+  --sbk-composer-bg: #222529;
+  --sbk-composer-border: #565856;
+  --sbk-composer-toolbar-bg: #222529;
+  --sbk-composer-tool: rgba(232, 232, 232, 0.7);
+  --sbk-composer-separator: #212428;
   --sbk-calendar-day: #d1d2d3;
   --sbk-calendar-today: #1d9bd1;
   --sbk-avatar-placeholder: #35373b;
@@ -420,8 +432,10 @@
   --sbk-callout-yellow-bg: #3b3321;
   --sbk-callout-purple-bg: #312c3f;
   --sbk-callout-gray-bg: #272a2e;
-  --sbk-chart-area-1: #583422;
-  --sbk-chart-area-2: #1c4539;
-  --sbk-chart-area-3: #4d3756;
-  --sbk-chart-area-4: #164356;
+  /* Areas 1 and 2 measured in the Builder; 3 and 4 follow the same rule (the series colour
+     at OKLCH lightness 0.236, chroma x0.35), as no Builder chart shows a third area. */
+  --sbk-chart-area-1: rgb(56, 16, 0);
+  --sbk-chart-area-2: rgb(5, 36, 27);
+  --sbk-chart-area-3: rgb(42, 20, 46);
+  --sbk-chart-area-4: rgb(1, 34, 48);
 }

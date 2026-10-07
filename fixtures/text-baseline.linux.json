@@ -249,12 +249,9 @@
   ],
   "catalog/table/simple-table": [],
   "extra/actions/more-elements": [
-    "missing|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "extra|Search tickets|0",
     "extra|Pick a channel|0",
-    "extra|January 1st, 2026|0",
-    "extra|Time zone:|0",
-    "extra|Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
+    "extra|January 1st, 2026|0"
   ],
   "extra/context-actions/feedback-row": [],
   "extra/context/mixed": [],
@@ -263,10 +260,7 @@
     "extra|New ticket|0"
   ],
   "extra/input/datetimepicker": [
-    "missing|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|January 1st, 2026|0",
-    "extra|Time zone:|0",
-    "extra|Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
+    "extra|January 1st, 2026|0"
   ],
   "extra/input/more-selects": [
     "missing|You can select up to 3 items.|0",

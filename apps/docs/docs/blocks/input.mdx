@@ -317,11 +317,27 @@ By default an `input` block's element sends no actions: its value only reaches `
 app reads it from the `view_submission` payload. Set `dispatch_action: true` to also get a
 `block_actions` payload as the user interacts, like an element in an `actions` block.
 
-Checkboxes, radio buttons, selects and pickers then dispatch on every change. Single-line text
-inputs (`plain_text_input`, `email_text_input`, `url_text_input`, `number_input`) dispatch on the
-trigger in their `dispatch_action_config`: `on_enter_pressed` (the default) or
-`on_character_entered`. A multiline `plain_text_input` never dispatches on Enter, which inserts a
-newline instead.
+Checkboxes, radio buttons, selects and pickers then dispatch on every change. Text inputs
+(`plain_text_input`, `email_text_input`, `url_text_input`, `number_input`) and `rich_text_input`
+dispatch on the trigger in their `dispatch_action_config`, which Slack gives all five:
+
+- `on_enter_pressed` (the default): Enter sends the action. A multiline `plain_text_input` never
+  dispatches on Enter, which inserts a newline instead; in a `rich_text_input`, Shift+Enter adds a
+  line.
+- `on_character_entered`: one action with the full value once typing pauses for 300ms. Slack
+  coalesces keystrokes the same way (Block Kit Builder sends a single action for a quickly typed
+  word) without documenting its interval. An Enter dispatch is sent at once.
+
+Block Kit Builder sends nothing on Enter from a `url_text_input` or `rich_text_input`; the package
+follows Slack's docs, which give both elements `dispatch_action_config`.
+
+## State in a modal or Home tab
+
+A view's `state.values` holds every input block's element, as in Slack's `view_submission`: one the
+user hasn't touched is reported with its empty value, `null` for a single value (`value`,
+`selected_option`, `selected_date`, `selected_user`, …) and `[]` for a multi-value element
+(`selected_options`, `selected_users`, …). A `rich_text_input` is reported as just its `type`, and
+an initial value is reported as set. In a message, only elements with a value are reported.
 
 <Preview
   actions

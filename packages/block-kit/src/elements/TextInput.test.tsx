@@ -83,8 +83,11 @@ describe("<TextInput>", () => {
     );
   });
 
-  it("dispatches on every keystroke when trigger_actions_on is on_character_entered", () => {
-    const onAction = vi.fn();
+  /** A plain text input that dispatches on the given triggers, and its field. */
+  function dispatching(
+    onAction: NonNullable<Parameters<typeof BlockKitProvider>[0]["onAction"]>,
+    triggers: ("on_enter_pressed" | "on_character_entered")[],
+  ) {
     render(
       <BlockKitProvider onAction={onAction}>
         <TextInput
@@ -93,19 +96,70 @@ describe("<TextInput>", () => {
               type: "plain_text_input",
               action_id: "a1",
               __dispatchAction: true,
-              dispatch_action_config: { trigger_actions_on: ["on_character_entered"] },
+              dispatch_action_config: { trigger_actions_on: triggers },
             } as TextInputElement
           }
           blockId="b1"
         />
       </BlockKitProvider>,
     );
-    fireEvent.change(screen.getByPlaceholderText("Write something"), {
-      target: { value: "a" },
-    });
-    expect(onAction).toHaveBeenCalledTimes(1);
-    expect(onAction.mock.calls[0]![0]).toMatchObject({ value: "a" });
+    return screen.getByPlaceholderText("Write something");
+  }
+
+  // Block Kit Builder sent one action with the full value after "hi" was typed: Slack coalesces
+  // keystrokes rather than sending one per character.
+  it("dispatches once with the full value after typing pauses, for on_character_entered", async () => {
+    vi.useFakeTimers();
+    try {
+      const onAction = vi.fn();
+      const field = dispatching(onAction, ["on_character_entered"]);
+      fireEvent.change(field, { target: { value: "h" } });
+      fireEvent.change(field, { target: { value: "hi" } });
+      expect(onAction).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(300);
+      expect(onAction).toHaveBeenCalledTimes(1);
+      expect(onAction.mock.calls[0]![0]).toMatchObject({ value: "hi" });
+    } finally {
+      vi.useRealTimers();
+    }
   });
+
+  it("sends Enter's action at once and drops the pending character one", async () => {
+    vi.useFakeTimers();
+    try {
+      const onAction = vi.fn();
+      const field = dispatching(onAction, ["on_character_entered", "on_enter_pressed"]);
+      fireEvent.change(field, { target: { value: "hi" } });
+      fireEvent.keyDown(field, { key: "Enter" });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(onAction).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(300);
+      expect(onAction).toHaveBeenCalledTimes(1);
+      expect(onAction.mock.calls[0]![0]).toMatchObject({ value: "hi" });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  // Slack's docs give number, email and URL inputs the same dispatch_action_config as plain text.
+  for (const type of ["number_input", "email_text_input", "url_text_input"] as const) {
+    it(`dispatches on Enter from a ${type}`, async () => {
+      const onAction = vi.fn();
+      render(
+        <BlockKitProvider onAction={onAction}>
+          <TextInput
+            element={{ type, action_id: "a1", __dispatchAction: true } as TextInputElement}
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      const field = screen.getByRole("textbox");
+      fireEvent.change(field, { target: { value: type === "number_input" ? "42" : "x@y.z" } });
+      fireEvent.keyDown(field, { key: "Enter" });
+      await Promise.resolve();
+      expect(onAction).toHaveBeenCalledTimes(1);
+    });
+  }
 
   it("restricts number_input to numeric characters, respecting is_decimal_allowed", () => {
     let state: StateValues = {};

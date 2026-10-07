@@ -6,7 +6,7 @@ import { CalendarIcon, ChevronDownIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { CalendarPopover, focusCalendarDay } from "./calendar/CalendarPopover";
 import { ordinal, parseTypedDate } from "./dateFormat";
-import { useInInputBlock, useInOptionalInput, useInvalidProps } from "./inputBlockContext";
+import { useInClearableInput, useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
 /**
@@ -28,7 +28,7 @@ function formatDate(date: string, long: boolean): string {
 export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const { setValue, dispatch } = useBlockKit();
   const inInputBlock = useInInputBlock();
-  const clearable = useInOptionalInput();
+  const clearable = useInClearableInput();
   const { ask, dialog } = useConfirm(element.confirm);
   const [date, setDate] = useState<string | undefined>(element.initial_date);
   const [open, setOpen] = useState(false);
