@@ -128,6 +128,11 @@
   margin-left: -1px;
 }
 
+/* The typed field's overlay already sits 8px in, where Slack's `c-select_input__content` starts. */
+.sbk-select__content .sbk-select__value {
+  margin-left: 0;
+}
+
 .sbk-select__chevron {
   margin-right: -1px;
 }
@@ -161,7 +166,8 @@
 
 /* While the overlay below shows the chosen option, the input's own copy of it is transparent, as
    Slack's `c-select_input--offscreen` is. */
-.sbk-select__input--behind {
+.sbk-select__input--behind,
+.sbk-select__input--behind::placeholder {
   color: transparent;
 }
 
@@ -430,6 +436,92 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
+}
+
+/* A person or channel from `resolvers.directory`: Slack's `c-member` and `c-small_channel_entity`
+   rows, 20px tall inside the 28px option row. */
+.sbk-select__member {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  line-height: 20px;
+}
+
+/* The avatar: 20px with Slack's rounded corners (22.222% of its size, at least 4px). */
+.sbk-select__avatar {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  overflow: hidden;
+  border-radius: clamp(4px, min(22.222%, 12px), 12px);
+  background: var(--sbk-select-avatar-bg);
+}
+
+.sbk-select__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sbk-select__channel-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
+.sbk-select__member-text {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.sbk-select__member-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sbk-select__member-name strong,
+.sbk-select__member--channel .sbk-select__member-name {
+  font-weight: 700;
+}
+
+.sbk-select__member-you {
+  margin-left: 4px;
+}
+
+/* An app's bot user, e.g. "AGENT": the same small badge as a message's "APP". */
+.sbk-select__member-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12.5px;
+  vertical-align: 2px;
+  color: var(--sbk-badge-text);
+  background: var(--sbk-badge-bg);
+}
+
+.sbk-select__presence {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+}
+
+.sbk-select__member-secondary {
+  min-width: 0;
+  margin-left: 4px;
+  overflow: hidden;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sbk-select__option:has(.sbk-select__option-description) {

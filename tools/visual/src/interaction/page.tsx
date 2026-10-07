@@ -1,6 +1,12 @@
 // Browser entry of the interaction harness (harness.ts): bundled against the library's source and
 // loaded into a blank page, where `window.mountBlockKit` draws one message or view to interact with.
-import { type AnyView, BlockKitProvider, Message, View } from "@nkootstra/block-kit";
+import {
+  type AnyView,
+  BlockKitProvider,
+  type DirectoryEntry,
+  Message,
+  View,
+} from "@nkootstra/block-kit";
 import type { ComponentProps } from "react";
 import { createRoot } from "react-dom/client";
 import type { Mount } from "./harness";
@@ -13,12 +19,27 @@ declare global {
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens }) => {
+window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens, directory }) => {
+  const entries = (directory ?? []) as unknown as DirectoryEntry[];
   root.render(
     <BlockKitProvider
       timeZone="UTC"
       theme={theme}
       errors={errors}
+      resolvers={
+        directory
+          ? {
+              directory: (source) =>
+                entries.filter((e) =>
+                  source === "users"
+                    ? e.type === "user"
+                    : source === "channels"
+                      ? e.type === "channel"
+                      : true,
+                ),
+            }
+          : undefined
+      }
       onAction={(_action, { views }) => {
         if (opens) views.open(opens as unknown as Parameters<typeof views.open>[0]);
       }}

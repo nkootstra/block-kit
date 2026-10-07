@@ -111,6 +111,12 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 loadable URL and its size in bytes (shown as Slack's "(71 kB)"); without it an image block shows its
 alt-text placeholder.
 
+`directory: (source) => entries` lists the people and channels a users, conversations or channels
+select offers (`source` is `"users"`, `"conversations"` or `"channels"`), drawn as Slack's rows:
+`{ type: "user", id, name, realName?, avatarUrl?, self?, badge?, bot?, presence? }` or
+`{ type: "channel", id, name, private? }`. A conversations select
+applies its `filter` to them.
+
 `@nkootstra/block-kit/web-api` builds resolvers from the Slack Web API (needs `@slack/web-api`).
 
 To link mentions to the app's own pages and route links through its router (full examples per

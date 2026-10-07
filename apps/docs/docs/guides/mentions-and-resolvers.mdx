@@ -77,6 +77,11 @@ const resolvers: Resolvers = {
       description:
         "A slack_file image's loadable URL and its size in bytes, e.g. from files.info. The image block and image element show it like an image_url, with Slack's \"(71 kB)\" caption when the size is known. Without it, an image block shows the alt-text placeholder.",
     },
+    directory: {
+      type: '(source: "users" | "conversations" | "channels") => DirectoryEntry[] | undefined',
+      description:
+        'The people and channels a users, conversations or channels select lists, in order: { type: "user", id, name, realName?, avatarUrl?, self?, badge?, bot?, presence? } or { type: "channel", id, name, private? }. A chosen id it lists shows that entry\'s name.',
+    },
   }}
 />
 

@@ -2,7 +2,7 @@ import type { AnyBlock, PlainTextOption } from "@slack/types";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BlockKitProvider, type StateValues } from "../context";
+import { BlockKitProvider, type DirectoryEntry, type StateValues } from "../context";
 import { Message } from "../Message";
 import { Select, type SelectElement } from "./Select";
 import { clickAsync, keyDownAsync } from "./test-utils";
@@ -193,10 +193,11 @@ describe("<Select> users_select / channels_select", () => {
         />
       </BlockKitProvider>,
     );
-    fireEvent.click(screen.getByRole("button"));
-    const searchInput = screen.getByPlaceholderText("Search users");
-    fireEvent.change(searchInput, { target: { value: "U123" } });
-    await keyDownAsync(searchInput, "Enter");
+    // Slack's users select is typed into; without a directory, an ID typed and entered is picked.
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "U123" } });
+    await keyDownAsync(input, "Enter");
     expect(onAction).toHaveBeenCalledWith(
       expect.objectContaining({ type: "users_select", selected_user: "U123" }),
       expect.anything(),
@@ -353,6 +354,143 @@ describe("<Select> users_select / channels_select", () => {
     fireEvent.keyDown(trigger, { key: "Escape" });
     expect(trigger.getAttribute("aria-expanded")).toBe("false");
     expect(document.activeElement).toBe(trigger);
+  });
+});
+
+/** A workspace directory with placeholder people and channels, as `resolvers.directory` returns. */
+const DIRECTORY: DirectoryEntry[] = [
+  { type: "user", id: "U01", name: "Ada", self: true, presence: "snoozed" },
+  { type: "user", id: "U02", name: "Helper", badge: "AGENT", bot: true, presence: "active" },
+  { type: "user", id: "U03", name: "grace", realName: "Grace Hopper", presence: "active" },
+  { type: "channel", id: "C01", name: "design-reviews", private: true },
+  { type: "channel", id: "C02", name: "general" },
+];
+
+function renderDirectory(type: string, onAction = vi.fn(), extra: object = {}) {
+  const directory = (source: string) =>
+    DIRECTORY.filter((e) =>
+      source === "users" ? e.type === "user" : source === "channels" ? e.type === "channel" : true,
+    );
+  render(
+    <BlockKitProvider onAction={onAction} resolvers={{ directory }}>
+      <Select
+        element={
+          {
+            type,
+            action_id: "a1",
+            placeholder: { type: "plain_text", text: "Pick" },
+            ...extra,
+          } as SelectElement
+        }
+        blockId="b1"
+      />
+    </BlockKitProvider>,
+  );
+  return onAction;
+}
+
+describe("<Select> users, conversations and channels from resolvers.directory", () => {
+  it("is typed into like Slack's, with no search box in the list", () => {
+    renderDirectory("users_select");
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(screen.queryByPlaceholderText("Search users")).toBeNull();
+    expect(screen.getAllByRole("option").length).toBe(3);
+  });
+
+  it("lays a person out as Slack does: avatar, bold name, (you), badge, presence, full name", () => {
+    renderDirectory("users_select");
+    fireEvent.click(screen.getByRole("combobox"));
+    const [ada, helper, grace] = screen.getAllByRole("option");
+    expect(ada!.querySelector(".sbk-select__avatar")).toBeTruthy();
+    expect(ada!.querySelector(".sbk-select__member-name")?.textContent).toBe("Ada(you)");
+    expect(ada!.querySelector(".sbk-select__presence")?.getAttribute("aria-label")).toBe(
+      "Active, notifications snoozed",
+    );
+    expect(helper!.querySelector(".sbk-select__member-badge")?.textContent).toBe("AGENT");
+    expect(grace!.querySelector(".sbk-select__member-secondary")?.textContent).toBe("Grace Hopper");
+  });
+
+  it("marks a private channel with the lock and a public one with #", () => {
+    renderDirectory("channels_select");
+    fireEvent.click(screen.getByRole("combobox"));
+    const [locked, open] = screen.getAllByRole("option");
+    expect(locked!.querySelector(".sbk-select__channel-icon")?.getAttribute("data-icon")).toBe(
+      "lock",
+    );
+    expect(open!.querySelector(".sbk-select__channel-icon")?.getAttribute("data-icon")).toBe(
+      "hash",
+    );
+  });
+
+  it("lists people, then channels, in a conversations select", () => {
+    renderDirectory("conversations_select");
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__member-name")?.textContent),
+    ).toEqual(["Ada(you)", "HelperAGENT", "grace", "design-reviews", "general"]);
+  });
+
+  it("lists only the kinds of conversation filter.include names", () => {
+    renderDirectory("conversations_select", vi.fn(), { filter: { include: ["private"] } });
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__member-name")?.textContent),
+    ).toEqual(["design-reviews"]);
+  });
+
+  it("leaves out bots when filter.exclude_bot_users is set", () => {
+    renderDirectory("conversations_select", vi.fn(), { filter: { exclude_bot_users: true } });
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__member-name")?.textContent),
+    ).toEqual(["Ada(you)", "grace", "design-reviews", "general"]);
+  });
+
+  it("lists a chosen conversation the directory doesn't have first, selected", () => {
+    renderDirectory("conversations_select", vi.fn(), { initial_conversation: "G0123456789" });
+    fireEvent.click(screen.getByRole("combobox"));
+    const options = screen.getAllByRole("option");
+    expect(options.length).toBe(DIRECTORY.length + 1);
+    expect(options[0]!.getAttribute("aria-selected")).toBe("true");
+    expect(options[0]!.textContent).toBe("");
+    expect(options[1]!.querySelector(".sbk-select__member-name")?.textContent).toBe("Ada(you)");
+  });
+
+  it("lists a chosen person from the directory in place", () => {
+    renderDirectory("users_select", vi.fn(), { initial_user: "U03" });
+    fireEvent.click(screen.getByRole("combobox"));
+    const options = screen.getAllByRole("option");
+    expect(options.length).toBe(3);
+    expect(options[2]!.getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("filters by the start of a word in the name or full name", () => {
+    renderDirectory("users_select");
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "hop" } });
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__member-name")?.textContent),
+    ).toEqual(["grace"]);
+  });
+
+  it("sends the picked person's ID and shows the name in the field", async () => {
+    const onAction = renderDirectory("users_select");
+    fireEvent.click(screen.getByRole("combobox"));
+    await clickAsync(screen.getAllByRole("option")[2]!);
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "users_select", selected_user: "U03" }),
+      expect.anything(),
+    );
+    expect(document.querySelector(".sbk-select__content-text")?.textContent).toBe("grace");
   });
 });
 
@@ -624,7 +762,6 @@ describe("<Select> list states", () => {
 
 describe("<Select> conversation, user and channel sources", () => {
   const cases = [
-    ["conversations_select", "conversations", "selected_conversation", "C123"],
     ["multi_users_select", "users", "selected_users", ["U1", "U2"]],
     ["multi_conversations_select", "conversations", "selected_conversations", ["C1", "D2"]],
     ["multi_channels_select", "channels", "selected_channels", ["C1", "C2"]],
@@ -645,6 +782,26 @@ describe("<Select> conversation, user and channel sources", () => {
     }
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({ type, [field]: expected }),
+      expect.anything(),
+    );
+  });
+
+  it("conversations_select picks a typed conversation ID as selected_conversation", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Select
+          element={{ type: "conversations_select", action_id: "a1" } as unknown as SelectElement}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "C123" } });
+    await keyDownAsync(input, "Enter");
+    expect(onAction).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: "conversations_select", selected_conversation: "C123" }),
       expect.anything(),
     );
   });
