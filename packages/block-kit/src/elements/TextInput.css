@@ -21,7 +21,7 @@
   font-size: 15px;
 }
 
-.sbk-text-input__wrap .sbk-text-input.sbk-text-input--medium {
+.sbk-text-input__wrap--icon .sbk-text-input.sbk-text-input--medium {
   padding-left: 32px;
 }
 
@@ -41,7 +41,7 @@
   position: relative;
 }
 
-.sbk-text-input__wrap .sbk-text-input {
+.sbk-text-input__wrap--icon .sbk-text-input {
   padding-left: 28px;
 }
 
@@ -52,4 +52,27 @@
   transform: translateY(-50%);
   color: var(--sbk-muted);
   pointer-events: none;
+}
+
+/* Slack's `c-input_character_count__characters-remaining`: the characters left, at the field's
+   top-right corner (in a textarea too), 13px/18px in content-sec with 8px 12px padding; negative
+   and red past max_length. The field's right padding is set to the count's width inline, so text
+   never runs under it; 40px holds the room until it's measured. */
+.sbk-text-input--counted {
+  padding-right: 40px;
+}
+
+.sbk-text-input__count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 8px 12px;
+  font: 13px / 18px var(--sbk-font);
+  color: var(--sbk-content-sec);
+  pointer-events: none;
+}
+
+/* Slack keeps #e01e5a for the over-limit count in both themes. */
+.sbk-text-input__count--over {
+  color: #e01e5a;
 }

@@ -177,4 +177,115 @@ describe("<TextInput>", () => {
     );
     expect(state.b1?.a1).toEqual({ type: "plain_text_input", value: "hi" });
   });
+
+  describe("length limits", () => {
+    /** A text input with these limits, dispatching on Enter like an `input` block with `dispatch_action`. */
+    function limited(limits: Partial<TextInputElement>, onAction = vi.fn()) {
+      render(
+        <BlockKitProvider onAction={onAction}>
+          <TextInput
+            element={
+              {
+                type: "plain_text_input",
+                action_id: "a1",
+                __dispatchAction: true,
+                ...limits,
+              } as TextInputElement
+            }
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      return screen.getByPlaceholderText("Write something") as HTMLInputElement;
+    }
+    const counter = () => document.querySelector(".sbk-text-input__count")?.textContent ?? null;
+
+    it("lets typing run past max_length instead of cutting it off, as Slack does", () => {
+      const input = limited({ max_length: 3 });
+      expect(input.hasAttribute("maxlength")).toBe(false);
+      fireEvent.change(input, { target: { value: "abcde" } });
+      expect(input.value).toBe("abcde");
+    });
+
+    it("shows no counter until something is typed", () => {
+      limited({ max_length: 10 });
+      expect(counter()).toBeNull();
+    });
+
+    it("counts the characters left while typing", () => {
+      const input = limited({ max_length: 10 });
+      fireEvent.change(input, { target: { value: "abcd" } });
+      expect(counter()).toBe("6");
+      expect(input.getAttribute("aria-invalid")).toBeNull();
+    });
+
+    it("counts below zero past max_length and marks the field invalid", () => {
+      const input = limited({ max_length: 3 });
+      fireEvent.change(input, { target: { value: "abcde" } });
+      expect(counter()).toBe("-2");
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+    });
+
+    it("sends nothing on Enter while the text is past max_length", () => {
+      const onAction = vi.fn();
+      const input = limited({ max_length: 3 }, onAction);
+      fireEvent.change(input, { target: { value: "abcde" } });
+      fireEvent.keyDown(input, { key: "Enter" });
+      expect(onAction).not.toHaveBeenCalled();
+    });
+
+    it("marks the field invalid and sends nothing on Enter while under min_length", () => {
+      const onAction = vi.fn();
+      const input = limited({ min_length: 5 }, onAction);
+      fireEvent.change(input, { target: { value: "ab" } });
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      fireEvent.keyDown(input, { key: "Enter" });
+      expect(onAction).not.toHaveBeenCalled();
+    });
+
+    it("sends on Enter once the text is within both limits", () => {
+      const onAction = vi.fn();
+      const input = limited({ min_length: 2, max_length: 5 }, onAction);
+      fireEvent.change(input, { target: { value: "abc" } });
+      fireEvent.keyDown(input, { key: "Enter" });
+      expect(onAction).toHaveBeenCalledWith(
+        expect.objectContaining({ value: "abc" }),
+        expect.anything(),
+      );
+    });
+
+    it("counts in a multiline input too", () => {
+      render(
+        <BlockKitProvider>
+          <TextInput
+            element={
+              {
+                type: "plain_text_input",
+                action_id: "a1",
+                multiline: true,
+                max_length: 10,
+              } as TextInputElement
+            }
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      fireEvent.change(screen.getByPlaceholderText("Write something"), {
+        target: { value: "abc" },
+      });
+      expect(counter()).toBe("7");
+    });
+  });
+
+  it.each([
+    ["number_input", "Enter a number"],
+    ["url_text_input", "Enter a URL"],
+  ] as const)("defaults %s's placeholder to Slack's %j", (type, text) => {
+    render(
+      <BlockKitProvider>
+        <TextInput element={{ type, action_id: "a1" } as TextInputElement} blockId="b1" />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByPlaceholderText(text)).toBeTruthy();
+  });
 });

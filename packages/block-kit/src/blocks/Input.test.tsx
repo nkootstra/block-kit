@@ -99,7 +99,7 @@ describe("<Input> block", () => {
     expect(screen.queryByText("Press 'enter' to submit")).toBeNull();
   });
 
-  it("does not synthesize a hint when an explicit hint is already set", () => {
+  it("ends the hint with a period and adds \"Press 'enter' to submit\" on the same line", () => {
     render(
       <BlockKitProvider>
         <Input
@@ -112,8 +112,25 @@ describe("<Input> block", () => {
         />
       </BlockKitProvider>,
     );
-    expect(screen.getByText("Custom hint")).toBeTruthy();
-    expect(screen.queryByText("Press 'enter' to submit")).toBeNull();
+    const hints = document.querySelectorAll(".sbk-input__hint");
+    expect(hints.length).toBe(1);
+    expect(hints[0]!.textContent?.replace(/\s+/g, " ").trim()).toBe(
+      "Custom hint. Press 'enter' to submit",
+    );
+  });
+
+  it("keeps a hint that already ends in a period as it is", () => {
+    render(
+      <BlockKitProvider>
+        <Input
+          block={block({ dispatch_action: true, hint: { type: "plain_text", text: "Done." } })}
+          blockId="b1"
+          index={0}
+        />
+      </BlockKitProvider>,
+    );
+    expect(document.querySelector(".sbk-input__hint")?.textContent).toContain("Done. ");
+    expect(document.querySelector(".sbk-input__hint")?.textContent).not.toContain("Done..");
   });
 
   it("does not synthesize a hint for multiline inputs", () => {

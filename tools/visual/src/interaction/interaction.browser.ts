@@ -31,6 +31,7 @@ const RED = "rgb(224, 30, 90)"; // #e01e5a, Slack's invalid focus ring
 const TEXT = "rgb(29, 28, 29)"; // #1d1c1d
 const SURFACE_SEC = "rgb(248, 248, 248)"; // #f8f8f8
 const CONTENT_TER = "rgb(94, 93, 96)"; // #5e5d60, Slack's `content-ter`
+const CONTENT_SEC = "rgb(69, 68, 71)"; // #454447, Slack's `content-sec`
 const SLACK_CURVE = "cubic-bezier(0.36, 0.19, 0.29, 1)";
 
 const plain = (text: string) => ({ type: "plain_text", text });
@@ -916,6 +917,135 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         );
       });
     }
+  });
+
+  // Slack counts the characters left inside the field while typing, below zero and red past
+  // max_length, with the red ring; and puts a hint and the dispatch hint on one line.
+  describe("text input limits", () => {
+    const limited = (multiline = false): Mount => ({
+      blocks: [
+        {
+          type: "input",
+          label: plain("Title"),
+          element: { type: "plain_text_input", action_id: "t", max_length: 5, multiline },
+        },
+      ],
+    });
+    const FIELD = ".sbk-text-input";
+    const COUNT = ".sbk-text-input__count";
+
+    /** The count's box relative to the field's, its colour and padding, and the field's room for it. */
+    const count = (page: Page) =>
+      page.evaluate(
+        ([fieldSel, countSel]) => {
+          const fieldEl = document.querySelector(fieldSel)!;
+          const field = fieldEl.getBoundingClientRect();
+          const el = document.querySelector(countSel)!;
+          const box = el.getBoundingClientRect();
+          const c = getComputedStyle(el);
+          return {
+            text: el.textContent,
+            color: c.color,
+            font: `${c.fontSize}/${c.lineHeight}`,
+            padding: c.padding,
+            right: Math.round(field.right - box.right) || 0,
+            top: Math.round(box.top - field.top) || 0,
+            room: Math.abs(parseFloat(getComputedStyle(fieldEl).paddingRight) - box.width) < 1,
+          };
+        },
+        [FIELD, COUNT] as const,
+      );
+
+    // Measured in Block Kit Builder: `c-input_character_count__characters-remaining` sits at the
+    // field's top-right corner with 8px 12px padding, 13px/18px in content-sec, and the field's
+    // right padding grows to the count's width.
+    it("counts the characters left at the field's top right, in Slack's grey", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("abc");
+      expect(await count(page)).toEqual({
+        text: "2",
+        color: CONTENT_SEC,
+        font: "13px/18px",
+        padding: "8px 12px",
+        right: 0,
+        top: 0,
+        room: true,
+      });
+    });
+
+    it("counts below zero in red past the limit, with the red ring", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("abcdefg");
+      await settle(page);
+      const c = await count(page);
+      expect([c.text, c.color, c.room]).toEqual(["-2", RED, true]);
+      expect((await style(page, FIELD)).boxShadow.startsWith(`${RED} 0px 0px 0px 1px`)).toBe(true);
+      // Typing isn't cut off at the limit.
+      expect(await page.locator(FIELD).inputValue()).toBe("abcdefg");
+    });
+
+    // In Slack's dark theme the count is #b9babd, and past the limit it keeps the light theme's
+    // #e01e5a rather than the dark danger red.
+    it("keeps Slack's count colours in dark mode", async () => {
+      const page = await harness.open({ ...limited(), theme: "dark" });
+      await page.click(FIELD);
+      await page.keyboard.type("abc");
+      const under = (await count(page)).color;
+      await page.keyboard.type("defg");
+      expect([under, (await count(page)).color]).toEqual(["rgb(185, 186, 189)", RED]);
+    });
+
+    // Slack describes the field with a hidden "N characters remaining", not a bare number.
+    it("describes the field with the characters remaining", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("abcdefg");
+      const described = await page.locator(FIELD).evaluate((el) =>
+        (el.getAttribute("aria-describedby") ?? "")
+          .split(" ")
+          .map((id) => document.getElementById(id)?.textContent ?? "")
+          .join(" | "),
+      );
+      expect(described).toContain("-2 characters remaining");
+    });
+
+    it("keeps focus in the field when the count first appears", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("ab");
+      expect(await page.evaluate(() => document.activeElement?.className)).toContain(
+        "sbk-text-input",
+      );
+    });
+
+    it("counts at the top right of a multiline field too, as in Slack", async () => {
+      const page = await harness.open(limited(true));
+      await page.click(FIELD);
+      await page.keyboard.type("abc");
+      const c = await count(page);
+      expect([c.right, c.top, c.room]).toEqual([0, 0, true]);
+    });
+
+    it("puts the hint and \"Press 'enter' to submit\" on one line", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("Search"),
+            dispatch_action: true,
+            hint: plain("A hint"),
+            element: { type: "plain_text_input", action_id: "q" },
+          },
+        ],
+      });
+      const tops = await page.$$eval(".sbk-input__hint-text", (els) =>
+        els.map((el) => Math.round(el.getBoundingClientRect().top)),
+      );
+      expect(tops.length).toBe(2);
+      expect(tops[0]).toBe(tops[1]);
+    });
   });
 
   describe("card icon", () => {
