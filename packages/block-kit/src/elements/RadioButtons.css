@@ -1,16 +1,13 @@
 .sbk-radio-buttons {
   display: flex;
   flex-direction: column;
-  /* ~24px of trailing space below the last option in every context (actions, section accessory,
-     input), matching checkboxes. Confirmed against catalog/{actions,section,input}/radio-buttons. */
-  margin-bottom: 24px;
 }
 
 .sbk-radio-buttons__option {
   display: flex;
   align-items: flex-start;
-  /* Zero gap between option rows — each row's own height (22px text-only, 44px with a
-     description) sets the pitch, confirmed via inspect.ts against the same fixtures above. */
+  /* Slack's option label: 8px below every option, the last one included, in every context. */
+  margin-bottom: 8px;
   line-height: 22px;
   cursor: pointer;
 }
