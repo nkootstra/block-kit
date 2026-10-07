@@ -167,6 +167,13 @@ The stylesheet asks for `Slack-Lato` first, then falls back to plain `Lato`, so 
 serving Lato yourself (a CDN, self-hosted `@font-face`), you can skip installing Fontsource: any
 `font-family: Lato` declaration is picked up.
 
+### Field text on phones
+
+Text fields use Slack's sizes: 13px, or 15px for multiline and rich text inputs. iOS Safari zooms the
+page in whenever a field with text under 16px takes focus, so on a touch-only screen
+(`(hover: none) and (pointer: coarse)`) every text field takes 16px text in the same box. A desktop
+keeps Slack's sizes, even with a touchscreen, and pinch zoom keeps working everywhere.
+
 ## Isolation from your app's global CSS
 
 Every component's root carries an `sbk-root` class (portalled dialogs and tooltips get it too), and

@@ -1871,6 +1871,87 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  // iOS Safari zooms the page in when a field whose text is smaller than 16px takes focus. Slack's
+  // fields are 13px (15px for multiline and rich text), so on a touch-only screen every text field
+  // takes 16px text in the same box; a desktop keeps Slack's sizes.
+  describe("field text on touch screens", () => {
+    const field = (element: object) => ({ type: "input", label: plain("Field"), element });
+    const fields: Mount = {
+      blocks: [
+        field({ type: "plain_text_input", action_id: "text" }),
+        field({ type: "plain_text_input", action_id: "long", multiline: true }),
+        field({ type: "number_input", action_id: "number", is_decimal_allowed: false }),
+        field({ type: "email_text_input", action_id: "email" }),
+        field({ type: "url_text_input", action_id: "url" }),
+        field({ type: "rich_text_input", action_id: "rich" }),
+        field({ type: "datepicker", action_id: "date" }),
+        field({ type: "timepicker", action_id: "time" }),
+        field({ type: "static_select", action_id: "one", options: [option("Alpha")] }),
+        field({ type: "multi_static_select", action_id: "many", options: [option("Alpha")] }),
+        field({ type: "datetimepicker", action_id: "when" }),
+        field({ type: "plain_text_input", action_id: "short", max_length: 20 }),
+      ],
+    };
+    const FIELDS =
+      "input:not([type=checkbox], [type=radio], [type=file]), textarea, [contenteditable=true]";
+
+    /** Each text field's font size and the height of the box it shows in (a select's or time
+     * picker's frame, or the field itself), in document order. */
+    const measure = (page: Page) =>
+      page.evaluate(
+        (selector) =>
+          [...document.querySelectorAll<HTMLElement>(selector)].map((el) => ({
+            field: `${el.tagName.toLowerCase()}.${String(el.className).split(" ")[0]}`,
+            size: getComputedStyle(el).fontSize,
+            height: Math.round(
+              (
+                el.closest(".sbk-select__control, .sbk-timepicker__control") ?? el
+              ).getBoundingClientRect().height,
+            ),
+          })),
+        FIELDS,
+      );
+
+    it("gives every text field 16px text on a touch screen, in the same box", async () => {
+      const desktop = await measure(await harness.open(fields));
+      const touch = await measure(await harness.open(fields, { touch: true }));
+      expect(touch.map((f) => f.size)).toEqual(desktop.map(() => "16px"));
+      expect(touch.map((f) => [f.field, f.height])).toEqual(
+        desktop.map((f) => [f.field, f.height]),
+      );
+    });
+
+    it("keeps Slack's 13px field text, and 15px for multiline and rich text, on a desktop", async () => {
+      const desktop = await measure(await harness.open(fields));
+      expect(new Set(desktop.map((f) => f.size))).toEqual(new Set(["13px", "15px"]));
+      expect(desktop.length).toBeGreaterThanOrEqual(11);
+    });
+
+    it("gives a field in an open popover 16px text too", async () => {
+      const page = await harness.open(
+        {
+          blocks: [
+            {
+              type: "section",
+              text: plain("Pick"),
+              accessory: {
+                type: "multi_static_select",
+                action_id: "m",
+                options: [option("Alpha")],
+              },
+            },
+          ],
+        },
+        { touch: true },
+      );
+      await page.tap(".sbk-section__accessory .sbk-select__control");
+      await settle(page);
+      const sizes = await measure(page);
+      expect(sizes.length).toBeGreaterThan(0);
+      expect(new Set(sizes.map((f) => f.size))).toEqual(new Set(["16px"]));
+    });
+  });
+
   // A touch screen has no pointer resting anywhere, but after a tap the engine keeps the tapped
   // element in :hover until the next tap lands elsewhere, so a hover wash would stay painted on it.
   // Colours measured in Block Kit Builder in both themes (the dark pass of the state audit). Each

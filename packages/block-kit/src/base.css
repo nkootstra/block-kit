@@ -148,6 +148,21 @@
   touch-action: manipulation;
 }
 
+/* iOS Safari zooms the page in when a field with text under 16px takes focus, and Slack's fields
+   are 13px (15px for multiline and rich text). On a touch-only screen every text field takes 16px
+   text in the same box; a desktop with a mouse, touchscreen or not, keeps Slack's sizes, since its
+   primary pointer is fine and it can hover. Pinch zoom is untouched. */
+@media (hover: none) and (pointer: coarse) {
+  :is(.sbk-root, .sbk-confirm__overlay)
+    :is(
+      input:not([type="checkbox"], [type="radio"], [type="file"], [type="hidden"]),
+      textarea,
+      [contenteditable="true"]
+    ) {
+    font-size: 16px;
+  }
+}
+
 .sbk-root *,
 .sbk-root *::before,
 .sbk-root *::after {
