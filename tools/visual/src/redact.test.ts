@@ -83,6 +83,18 @@ describe("redact, on markup as the snapshot writes it", () => {
   });
 });
 
+describe("redact, on Slack's own system users", () => {
+  it("replaces a system user's ID such as USLACKSECURITY, which isn't shaped like a member's", () => {
+    const html =
+      '<span data-qa="USLACKSECURITY" class="c-select_options_list__option_label">Slack Security</span>';
+    expect(leaks(html)).toEqual(["Slack ID USLACKSECURITY"]);
+    const out = redact(html);
+    expect(out).not.toContain("USLACKSECURITY");
+    expect(out).toContain('data-qa="U0000001"');
+    expect(leaks(out)).toEqual([]);
+  });
+});
+
 describe("leaks", () => {
   it("finds the real names and identifiers a reference still contains", () => {
     expect(leaks(reference)).toEqual(
