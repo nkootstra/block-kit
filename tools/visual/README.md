@@ -158,14 +158,18 @@ A capture shows whatever the Builder's workspace holds: an opened users, convers
 select lists its real members (names, avatars, user IDs) and channels, and every snapshot records
 the workspace's team ID and name. `import.ts` and `renormalize.ts` replace them through
 `normalize.ts` with stable placeholders (`redact.ts`): members become "User One", "User Two"…,
-channels "channel-one"…, the workspace "Workspace", avatars a grey pixel, profile links `#`, and
-Slack IDs short placeholders such as `U0000001`. IDs the fixture's own payload uses
+channels "channel-one"…, the workspace "Workspace", avatars a grey pixel, profile links `#`, Slack
+files (`files.slack.com`, `slack-files.com` and permalink URLs, also URL-encoded inside a proxy's
+`url=`) `https://files.slack.com/files-pri/T0000001-F0000001/file`, the workspace's own subdomain
+`workspace.slack.com`, and Slack IDs (`T0…`, `U0…`, `C0…`, `F0…`) short placeholders such as
+`U0000001`. IDs the fixture's own payload uses
 (`U0123456789`) are kept. Slack marks all of these up, so no list of real names is needed; a name
 that only appears as plain text goes in `tools/visual/redact.local.json`
 (`{ "Real name": "Placeholder" }`), which is ignored by git.
 
 `references:check` fails on a reference that still contains a member, channel or workspace name,
-an avatar URL, a profile link, or a Slack ID its fixture doesn't use.
+an avatar URL, a profile link, a file URL, the workspace's subdomain, or a Slack ID its fixture
+doesn't use.
 
 ## Elements in every context
 
