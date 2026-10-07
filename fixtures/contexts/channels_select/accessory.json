@@ -1,0 +1,20 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A section with an accessory"
+      },
+      "accessory": {
+        "type": "channels_select",
+        "action_id": "channels",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select a channel",
+          "emoji": true
+        }
+      }
+    }
+  ]
+}

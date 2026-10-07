@@ -1,0 +1,19 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "datepicker",
+          "action_id": "date",
+          "initial_date": "1990-04-28",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select a date",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

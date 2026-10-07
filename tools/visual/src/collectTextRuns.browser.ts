@@ -20,6 +20,19 @@ async function runs(body: string) {
 }
 
 describe("collectTextRuns", () => {
+  it("reads every root the selector matches, positioned relative to the first", async () => {
+    // An open menu is portalled away from the message; its text counts too, where it sits
+    // relative to the message.
+    await page.setContent(
+      `<body style="margin:0;font:15px sans-serif"><div id="root" style="margin:40px 0 0 100px"><p style="margin:0">Field</p></div><div class="layer" style="position:absolute;left:30px;top:80px">Option</div></body>`,
+    );
+    const found = await page.evaluate(collectTextRuns, "#root, .layer");
+    expect(found.map((r) => [r.text, r.x, r.y])).toEqual([
+      ["Field", 0, 0],
+      ["Option", -70, 40],
+    ]);
+  });
+
   it("positions a run relative to the root and reads its font", async () => {
     const [run] = await runs(
       '<p style="margin:0;padding:8px 12px;font-size:13px;font-weight:700;font-style:italic">Hint</p>',

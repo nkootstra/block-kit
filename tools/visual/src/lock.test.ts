@@ -33,6 +33,25 @@ describe("verify", () => {
     expect(result.problems).toEqual([]);
   });
 
+  it("matches a dark, mobile or combined capture to its fixture's payload", () => {
+    const names = ["divider@dark", "divider@mobile", "divider@open+mobile+dark"];
+    const result = run(
+      Object.fromEntries(names.map((n) => [n, entry])),
+      names.map((n) => [n, html]),
+      [["divider", payload]],
+    );
+    expect(result.problems).toEqual([]);
+  });
+
+  it("flags a reference whose name isn't in the one canonical order", () => {
+    const result = run(
+      { "divider@dark+open": entry },
+      [["divider@dark+open", html]],
+      [["divider", payload]],
+    );
+    expect(result.problems.map((p) => p.name)).toEqual(["divider@dark+open"]);
+  });
+
   it("flags a reference whose payload changed after the capture", () => {
     const result = run(
       { divider: entry },

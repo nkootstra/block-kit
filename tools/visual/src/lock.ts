@@ -6,6 +6,7 @@
  */
 import { join, resolve } from "node:path";
 import { Glob } from "bun";
+import { isReferenceName } from "./names";
 
 export const FIXTURES = resolve(import.meta.dir, "../../../fixtures");
 export const LOCK = join(FIXTURES, "references.lock.json");
@@ -102,6 +103,13 @@ export function verify(
 ): Verification {
   const problems: Problem[] = [];
   for (const [name, html] of references) {
+    if (!isReferenceName(name)) {
+      problems.push({
+        name,
+        message: "not a valid reference name; see names.ts (e.g. <fixture>@open+mobile+dark)",
+      });
+      continue;
+    }
     const entry = lock[name];
     const payload = payloads.get(payloadName(name));
     if (payload === undefined) {

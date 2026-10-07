@@ -1,0 +1,14 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "datetimepicker",
+          "action_id": "datetime",
+          "initial_date_time": 1767261600
+        }
+      ]
+    }
+  ]
+}
