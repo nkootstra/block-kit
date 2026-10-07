@@ -7,8 +7,9 @@ seo:
 ---
 
 `feedback_buttons` renders a pair of thumbs-up and thumbs-down icon buttons, as seen under an
-AI agent's response in Slack. Only one of the two can be picked at a time: clicking the selected
-one again clears it, matching Slack's own toggle behavior. It's a `context_actions` block element,
+AI agent's response in Slack. As in Slack, the pair is a radio group labelled "Rating": the picked
+thumb stays checked and turns filled, and the arrow keys move between the two. It's a
+`context_actions` block element,
 so it's typically placed alongside an [icon button](/elements/icon-button) rather than in an
 `actions` row.
 
@@ -120,23 +121,13 @@ Clicking a thumb dispatches a `feedback_buttons` action carrying that button's `
   "block_id": "b1",
   "action_ts": "1706000000.000100",
   "value": "positive",
-  "text": { "type": "plain_text", "text": "Good response" }
+  "text": { "type": "plain_text", "text": "Good response", "emoji": true }
 }
 ```
 
-Unlike a plain button, feedback buttons hold a value: picking a thumb writes to `state.values`, and
-picking the same thumb again clears it back out:
-
-```json
-// state.values after picking "Good response"
-{ "b1": { "feedback": { "type": "feedback_buttons", "value": "positive" } } }
-
-// state.values after clicking the same thumb again
-{ "b1": {} }
-```
-
-Only one thumb can be selected at a time. Choosing the other one replaces the selection rather
-than allowing both to be active.
+Every pick sends an action, including picking the thumb that's already checked, and picking with the
+arrow keys. Choosing the other thumb moves the check to it. Slack doesn't record feedback buttons in
+`state.values`, and neither does the package.
 
 ## Related
 
