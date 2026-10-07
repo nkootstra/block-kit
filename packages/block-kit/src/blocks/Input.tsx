@@ -2,7 +2,11 @@ import type { InputBlock } from "@slack/types";
 import { useId } from "react";
 import { SuppressActions, useBlockKit } from "../context";
 import { Element } from "../elements/Element";
-import { InputBlockContext, InputErrorContext } from "../elements/inputBlockContext";
+import {
+  InputBlockContext,
+  InputErrorContext,
+  InputOptionalContext,
+} from "../elements/inputBlockContext";
 import { ReturnIcon } from "../icons";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
@@ -54,15 +58,17 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
       </div>
       <div className="sbk-input__element">
         <InputBlockContext.Provider value={true}>
-          <InputErrorContext.Provider value={error ? errorId : undefined}>
-            {block.dispatch_action === true ? (
-              <Element element={element} blockId={blockId} />
-            ) : (
-              <SuppressActions>
+          <InputOptionalContext.Provider value={block.optional === true}>
+            <InputErrorContext.Provider value={error ? errorId : undefined}>
+              {block.dispatch_action === true ? (
                 <Element element={element} blockId={blockId} />
-              </SuppressActions>
-            )}
-          </InputErrorContext.Provider>
+              ) : (
+                <SuppressActions>
+                  <Element element={element} blockId={blockId} />
+                </SuppressActions>
+              )}
+            </InputErrorContext.Provider>
+          </InputOptionalContext.Provider>
         </InputBlockContext.Provider>
       </div>
       {block.hint && (

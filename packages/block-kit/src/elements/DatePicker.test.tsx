@@ -115,33 +115,68 @@ describe("<DatePicker>", () => {
     });
   });
 
-  it("clears the selection from the calendar footer and dispatches a null selected_date", async () => {
-    const onAction = vi.fn();
-    let state: StateValues = {};
+  /** A datepicker set to 15 June 2024 in an input block, its calendar open. */
+  function inInput(
+    optional: boolean,
+    props: Omit<Parameters<typeof BlockKitProvider>[0], "children"> = {},
+  ) {
     render(
-      <BlockKitProvider onAction={onAction} onStateChange={(s) => (state = s)}>
-        <DatePicker
-          element={
-            {
-              type: "datepicker",
-              action_id: "a1",
-              initial_date: "2024-06-15",
-            } as unknown as Datepicker
+      <BlockKitProvider {...props}>
+        <Message
+          blocks={
+            [
+              {
+                type: "input",
+                block_id: "b1",
+                optional,
+                label: { type: "plain_text", text: "Due" },
+                element: { type: "datepicker", action_id: "a1", initial_date: "2024-06-15" },
+              },
+            ] as never
           }
-          blockId="b1"
         />
       </BlockKitProvider>,
     );
     const input = screen.getByPlaceholderText("Select a date") as HTMLInputElement;
     fireEvent.click(input);
+    return input;
+  }
+
+  it("clears the selection of an optional input's datepicker from the calendar footer", async () => {
+    const onAction = vi.fn();
+    let state: StateValues = {};
+    const input = inInput(true, { onAction, onStateChange: (s) => (state = s) });
     expect(screen.getByText("15").getAttribute("aria-pressed")).toBe("true");
     await clickAsync(screen.getByText("Clear selection"));
-    expect(onAction).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "datepicker", selected_date: null }),
-      expect.anything(),
-    );
     expect(state.b1?.a1).toEqual({ type: "datepicker", selected_date: null });
     expect(input.value).toBe("");
+  });
+
+  it("offers no Clear selection for a required input's datepicker, as in Slack", () => {
+    inInput(false);
+    expect(screen.queryByText("Clear selection")).toBeNull();
+  });
+
+  it("offers no Clear selection outside an input block, as in Slack", () => {
+    open();
+    expect(screen.queryByText("Clear selection")).toBeNull();
+  });
+
+  it("moves a year at a time with the year buttons", () => {
+    open();
+    fireEvent.click(screen.getByRole("button", { name: "Next year" }));
+    expect(monthLabel()).toBe("April 1991");
+    fireEvent.click(screen.getByRole("button", { name: "Previous year" }));
+    fireEvent.click(screen.getByRole("button", { name: "Previous year" }));
+    expect(monthLabel()).toBe("April 1989");
+  });
+
+  it("heads the week with Slack's two-letter day names", () => {
+    open();
+    const names = [...document.querySelectorAll(".sbk-calendar__weekdays > *")].map(
+      (d) => d.textContent,
+    );
+    expect(names).toEqual(["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]);
   });
 
   it("closes the calendar on Escape", () => {

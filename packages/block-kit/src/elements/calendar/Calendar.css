@@ -1,5 +1,9 @@
-/* Slack's `c-date_picker_calendar`. */
+/* Slack's `c-date_picker_calendar`: room for six weeks whatever the month, so the popup keeps its
+   size as the month turns. Its `c-mini_calendar` is at most 301px wide. */
 .sbk-calendar {
+  box-sizing: border-box;
+  width: 317px;
+  min-height: 340px;
   padding: 8px;
   font-family: var(--sbk-font);
   font-size: 15px;
@@ -7,13 +11,25 @@
   color: var(--sbk-text);
 }
 
+/* Slack's `c-calendar_view_header`: year and month buttons either side of the bold month, which
+   takes the space between them. */
 .sbk-calendar__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 32px;
   margin-bottom: 16px;
+}
+
+.sbk-calendar__label {
+  flex: 1 0 0;
+  overflow: hidden;
+  padding: 0 10px;
   font-weight: 700;
+  line-height: 22px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sbk-calendar__nav {
@@ -28,9 +44,6 @@
   background: none;
   color: var(--sbk-text);
   cursor: pointer;
-  transition-property: color, background-color;
-  transition-duration: 80ms;
-  transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
 .sbk-calendar__nav:hover {
@@ -50,13 +63,10 @@
   text-align: center;
 }
 
-.sbk-calendar__weekdays {
-  padding-right: 1px;
-}
-
 .sbk-calendar__weekdays span {
   padding: 4px 0 6px;
   font-size: 13px;
+  font-weight: 700;
   color: var(--sbk-content-sec);
 }
 
@@ -79,11 +89,36 @@
   cursor: default;
 }
 
-/* A light-blue wash with a matching border on hover, raised above its neighbours' borders. */
-.sbk-calendar__cell:hover:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--selected) {
+/* Slack's hover, which keyboard focus shares: a light-blue border raised above the neighbouring
+   grid lines, and a light-blue wash on any day but the selected one. */
+.sbk-calendar__cell:not(.sbk-calendar__cell--empty):hover,
+.sbk-calendar__cell:focus-visible,
+.sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
   z-index: 1;
   border-color: rgba(29, 155, 209, 0.3);
+}
+
+.sbk-calendar__cell:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--selected):hover,
+.sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus-visible,
+.sbk-calendar__grid--keyboard .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus {
   background: rgba(29, 155, 209, 0.2);
+}
+
+/* The grid's outer corners, rounded as in Slack. */
+.sbk-calendar__cell--top-left {
+  border-top-left-radius: 4px;
+}
+
+.sbk-calendar__cell--top-right {
+  border-top-right-radius: 4px;
+}
+
+.sbk-calendar__cell--bottom-left {
+  border-bottom-left-radius: 4px;
+}
+
+.sbk-calendar__cell--bottom-right {
+  border-bottom-right-radius: 4px;
 }
 
 .sbk-calendar__cell--today {
@@ -104,20 +139,15 @@
   pointer-events: none;
 }
 
+/* Slack keeps the grid line around the selected day. */
 .sbk-calendar__cell--selected {
-  z-index: 1;
   color: var(--sbk-on-highlight);
   background: var(--sbk-highlight);
-  border-color: var(--sbk-highlight);
   border-radius: 4px;
 }
 
 .sbk-calendar__cell--selected.sbk-calendar__cell--today::after {
   border-color: var(--sbk-on-highlight);
-}
-
-.sbk-calendar__cell:focus-visible {
-  z-index: 2;
 }
 
 /* Slack's `c-date_picker__clear_selection`: a full-width bold footer that turns blue on hover. */

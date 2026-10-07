@@ -7,6 +7,13 @@ export function useInInputBlock(): boolean {
   return useContext(InputBlockContext);
 }
 
+/** True while rendering the element of an `input` block marked `optional`, which Slack lets the user empty. */
+export const InputOptionalContext = createContext(false);
+
+export function useInOptionalInput(): boolean {
+  return useContext(InputOptionalContext);
+}
+
 /** The id of the error shown under an `input` block's element, while it has one. */
 export const InputErrorContext = createContext<string | undefined>(undefined);
 

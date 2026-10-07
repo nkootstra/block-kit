@@ -9,7 +9,7 @@ import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
-import { Popover } from "./Popover";
+import { MENU_GAP, Popover } from "./Popover";
 import { SectionAccessoryContext } from "./accessoryContext";
 import { SelectDialog } from "./SelectDialog";
 
@@ -347,6 +347,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       anchorRef={rootRef}
       onDismiss={() => combo.setOpen(false)}
       offsetX={typeable ? -12 : 0}
+      gap={MENU_GAP}
     >
       <div
         className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}`}

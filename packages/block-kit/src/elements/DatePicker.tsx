@@ -6,9 +6,9 @@ import { CalendarIcon, ChevronDownIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { Calendar } from "./calendar/Calendar";
 import { ordinal } from "./dateFormat";
-import { useInInputBlock, useInvalidProps } from "./inputBlockContext";
+import { useInInputBlock, useInOptionalInput, useInvalidProps } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { Popover } from "./Popover";
+import { MENU_GAP, Popover } from "./Popover";
 
 /**
  * Formats `YYYY-MM-DD` the way Slack's closed datepicker control shows it: "04/28/1990" in an
@@ -29,6 +29,7 @@ function formatDate(date: string, long: boolean): string {
 export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const { setValue, dispatch } = useBlockKit();
   const inInputBlock = useInInputBlock();
+  const clearable = useInOptionalInput();
   const { ask, dialog } = useConfirm(element.confirm);
   const [date, setDate] = useState<string | undefined>(element.initial_date);
   const [open, setOpen] = useState(false);
@@ -134,6 +135,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
       {open && (
         <Popover
           anchorRef={rootRef}
+          gap={MENU_GAP}
           onDismiss={() => setOpen(false)}
           onPlaced={() => {
             if (focusCalendar.current) focusDay();
@@ -152,7 +154,8 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
               close();
             }}
           >
-            <Calendar value={date} onSelect={pick} onClear={clear} />
+            {/* Slack offers "Clear selection" only where the date may be left empty. */}
+            <Calendar value={date} onSelect={pick} onClear={clearable ? clear : undefined} />
           </div>
         </Popover>
       )}
