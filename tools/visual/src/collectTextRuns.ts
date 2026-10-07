@@ -146,6 +146,7 @@ export function collectTextRuns(selector: string): TextRun[] {
         field.localName === "textarea" ||
         /^(text|search|email|url|tel|number|)$/.test((field as HTMLInputElement).type)
       ) ||
+      typeof field.value !== "string" ||
       field.value.trim() === ""
     )
       return;

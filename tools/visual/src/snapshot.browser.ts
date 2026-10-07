@@ -90,6 +90,20 @@ async function snapshotAndReplay(body: string) {
 }
 
 describe("snapshot.js", () => {
+  it('never freezes a field without a string value as value="undefined"', async () => {
+    // catalog/actions/selects-with-initial-options@open+dark froze its search field that way, and
+    // the reference then drew "undefined" in it.
+    await page.setContent(
+      `<!doctype html><body><div class="p-bkb_preview__message"><input id="field" type="text"></div></body>`,
+    );
+    await page.evaluate(() =>
+      Object.defineProperty(document.getElementById("field"), "value", { get: () => undefined }),
+    );
+    const html = await snapshot(page);
+    expect(html).toMatch(/<input\b[^>]*\bid="field"/);
+    expect(html).not.toContain('value="undefined"');
+  });
+
   it("keeps a content-sized label on one line when its width is a sub-pixel value", async () => {
     // Slack's input label is a flex item sized to its content. Its used width (100.0625px here)
     // serializes as "100.062px"; frozen at that, the second part no longer fits and wraps.
