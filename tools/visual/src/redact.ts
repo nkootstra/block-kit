@@ -6,8 +6,9 @@
  * fails on a reference that still has any of it.
  *
  * Slack marks most of it up: member names (`data-qa="member_name"`), channel names
- * (`c-channel_entity__name`), the workspace name (`data-team-id`), avatars (ca.slack-edge.com) and
- * IDs (`T0…`, `U0…`). A name that only appears as plain text can be mapped in
+ * (`c-channel_entity__name`), the workspace name (`data-team-id`), avatars (ca.slack-edge.com),
+ * IDs (`T0…`, `U0…`, `F0…`), file URLs (files.slack.com, slack-files.com, permalinks, also inside a
+ * proxy's encoded `url=`) and the workspace's own subdomain. A name that only appears as plain text can be mapped in
  * `tools/visual/redact.local.json` (`{ "Real name": "Placeholder" }`), which is never committed.
  * IDs the fixture itself uses (`U0123456789`) are its own placeholders and stay.
  */
@@ -16,10 +17,22 @@ import { join } from "node:path";
 /** A real Slack ID: a type letter, `0`, and at least eight more characters. Placeholders are shorter. */
 // Slack's own system users (USLACKBOT, USLACKSECURITY) aren't shaped like a member's ID, but they
 // key avatar URLs and list options the same way.
-const SLACK_ID = /\b(?:[TUCWB]0[A-Z0-9]{8,}|USLACK[A-Z]+)\b/g;
+const SLACK_ID = /\b(?:[TUCWBF]0[A-Z0-9]{8,}|USLACK[A-Z]+)\b/g;
 const AVATAR = /https:\/\/(?:ca|avatars)\.slack-edge\.com\/[^"'()\s&<]*/g;
 const PROFILE_LINK =
   /https?:\/\/(?:[a-z0-9-]+\.slack\.com\/team\/|app\.slack\.com\/client\/)[^"'\s<]*/g;
+/**
+ * A Slack file: its private and thumbnail URLs, its permalink on the workspace's own domain, and
+ * its public link. A file URL carries the team, user and file IDs and the file's own name.
+ */
+const FILE_URL =
+  /https?:\/\/(?:files\.slack\.com\/|slack-files\.com\/|[a-z0-9-]+\.slack\.com\/files\/)[^"'\s<>)&]*/g;
+/** The same, URL-encoded inside a proxy URL such as slack-imgs.com's `url=` parameter. */
+const ENCODED_FILE_URL =
+  /https?%3A%2F%2F(?:files\.slack\.com%2F|slack-files\.com%2F|[a-z0-9-]+\.slack\.com%2Ffiles%2F)[^"'\s<>)&]*/gi;
+/** A workspace's own subdomain (acme.slack.com); Slack's shared hosts are fine. */
+const WORKSPACE_DOMAIN =
+  /https?:\/\/(?!(?:app|api|a|ca|files|edgeapi|status|avatars|emoji|docs|workspace)\.)([a-z0-9-]+)\.slack\.com/g;
 const MEMBER_NAME = /<[a-z]+\b[^>]*\bdata-qa="member_name"[^>]*>([^<]+)</g;
 const CHANNEL_NAME = /<[a-z]+\b[^>]*\bclass="c-channel_entity__name\b[^"]*"[^>]*>([^<]+)</g;
 const WORKSPACE_NAME = /<[a-z]+\b[^>]*\bdata-team-id="[^"]*"[^>]*>([^<]+)</g;
@@ -30,6 +43,8 @@ const DATA_URI = /data:[^"')\s]+/g;
 const AVATAR_PLACEHOLDER =
   "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
 const WORKSPACE_PLACEHOLDER = "Workspace";
+/** What a Slack file's URL becomes: a file in the placeholder workspace, under a neutral name. */
+export const SLACK_FILE_PLACEHOLDER = "https://files.slack.com/files-pri/T0000001-F0000001/file";
 const ORDINALS = [
   "One",
   "Two",
@@ -126,7 +141,12 @@ export function redact(html: string, mapping: Record<string, string> = {}): stri
   const channels = distinct(out, CHANNEL_NAME, (n) => CHANNEL_PLACEHOLDER.test(n));
   const workspaces = distinct(out, WORKSPACE_NAME, (n) => n === WORKSPACE_PLACEHOLDER);
   out = outsideDataUris(out, (part) => {
-    let next = part.replace(AVATAR, AVATAR_PLACEHOLDER).replace(PROFILE_LINK, "#");
+    let next = part
+      .replace(AVATAR, AVATAR_PLACEHOLDER)
+      .replace(PROFILE_LINK, "#")
+      .replace(FILE_URL, SLACK_FILE_PLACEHOLDER)
+      .replace(ENCODED_FILE_URL, encodeURIComponent(SLACK_FILE_PLACEHOLDER))
+      .replace(WORKSPACE_DOMAIN, (url, host: string) => url.replace(`${host}.`, "workspace."));
     members.forEach((name, i) => (next = replaceName(next, name, `User ${ordinal(i)}`)));
     channels.forEach(
       (name, i) => (next = replaceName(next, name, `channel-${ordinal(i).toLowerCase()}`)),
@@ -159,6 +179,12 @@ export function leaks(html: string): string[] {
     for (const [id] of part.matchAll(SLACK_ID)) if (!own.has(id)) found.add(`Slack ID ${id}`);
     for (const [url] of part.matchAll(AVATAR)) found.add(`avatar URL ${url}`);
     for (const [url] of part.matchAll(PROFILE_LINK)) found.add(`profile link ${url}`);
+    for (const [url] of part.matchAll(FILE_URL))
+      if (url !== SLACK_FILE_PLACEHOLDER) found.add(`file URL ${url}`);
+    for (const [url] of part.matchAll(ENCODED_FILE_URL))
+      if (url !== encodeURIComponent(SLACK_FILE_PLACEHOLDER)) found.add(`file URL ${url}`);
+    for (const [, host] of part.matchAll(WORKSPACE_DOMAIN))
+      found.add(`workspace domain ${host}.slack.com`);
     return part;
   });
   for (const name of distinct(html, MEMBER_NAME, (n) => MEMBER_PLACEHOLDER.test(n)))

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { leaks, redact } from "./redact";
+import { leaks, redact, SLACK_FILE_PLACEHOLDER } from "./redact";
 
 const meta = (payload: unknown) =>
   `<script type="application/json" id="sbk-reference-meta">${JSON.stringify({
@@ -112,5 +112,44 @@ describe("leaks", () => {
 
   it("passes a redacted reference and the fixture's own placeholder IDs", () => {
     expect(leaks(redact(reference))).toEqual([]);
+  });
+});
+
+describe("redact, on Slack files", () => {
+  const file = "https://files.slack.com/files-pri/T0EXAMPLE01-F0EXAMPLE04/holiday-photo.png";
+  const thumb =
+    "https://files.slack.com/files-tmb/T0EXAMPLE01-F0EXAMPLE04-0a1b2c3d4e/holiday-photo_720.png";
+  const permalink = "https://acme-corp.slack.com/files/U0EXAMPLE02/F0EXAMPLE04/holiday-photo.png";
+  const proxied = `https://slack-imgs.com/?c=1&amp;o1=ro&amp;url=${encodeURIComponent(file)}`;
+  const html =
+    `${meta({ blocks: [{ type: "image", slack_file: { id: "F0123456789" }, alt_text: "a" }] })}` +
+    `<img src="${file}" srcset="${thumb} 2x" alt="a"><a href="${permalink}">open</a>` +
+    `<img src="${proxied}"><a href="https://slack-files.com/T0EXAMPLE01-F0EXAMPLE04-0a1b2c3d4e">public</a>` +
+    `<a href="https://acme-corp.slack.com/archives/C0EXAMPLE05">channel</a>`;
+
+  it("finds file URLs, file IDs and the workspace's own subdomain", () => {
+    expect(leaks(html)).toEqual(
+      expect.arrayContaining([
+        `file URL ${file}`,
+        `file URL ${thumb}`,
+        `file URL ${permalink}`,
+        "file URL https://slack-files.com/T0EXAMPLE01-F0EXAMPLE04-0a1b2c3d4e",
+        `file URL ${encodeURIComponent(file)}`,
+        "Slack ID F0EXAMPLE04",
+        "workspace domain acme-corp.slack.com",
+      ]),
+    );
+  });
+
+  it("replaces them with placeholders, keeping the fixture's own file ID", () => {
+    const out = redact(html);
+    for (const real of ["holiday-photo", "T0EXAMPLE01", "F0EXAMPLE04", "U0EXAMPLE02", "acme-corp"])
+      expect(out).not.toContain(real);
+    expect(out).toContain(`src="${SLACK_FILE_PLACEHOLDER}"`);
+    expect(out).toContain(encodeURIComponent(SLACK_FILE_PLACEHOLDER));
+    expect(out).toContain("https://workspace.slack.com/archives/");
+    expect(out).toContain("F0123456789");
+    expect(leaks(out)).toEqual([]);
+    expect(redact(out)).toBe(out);
   });
 });
