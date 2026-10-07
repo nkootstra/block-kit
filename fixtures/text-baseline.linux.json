@@ -5,12 +5,24 @@
     "extra|Select a user|0"
   ],
   "catalog/actions/button": [],
-  "catalog/actions/checkboxes": [],
+  "catalog/actions/checkboxes": [
+    "y|*this is plain_text text*|2",
+    "y|*this is plain_text text*|3",
+    "y|*this is plain_text text*|4",
+    "y|*this is plain_text text*|5",
+    "y|this is mrkdwn text|2",
+    "y|this is mrkdwn text|3",
+    "y|this is mrkdwn text|4",
+    "y|this is mrkdwn text|5"
+  ],
   "catalog/actions/datepickers": [],
   "catalog/actions/filtered-conversations-select": [
     "extra|Select private conversation|0"
   ],
-  "catalog/actions/radio-buttons": [],
+  "catalog/actions/radio-buttons": [
+    "y|*plain_text option 1*|0",
+    "y|*plain_text option 2*|0"
+  ],
   "catalog/actions/selects-with-initial-options": [],
   "catalog/actions/timepicker": [],
   "catalog/agents/message-feedback": [],
@@ -136,7 +148,10 @@
   "catalog/image/title@hidden": [
     "missing|(71 kB)|0"
   ],
-  "catalog/input/checkboxes": [],
+  "catalog/input/checkboxes": [
+    "y|*plain_text option 1*|0",
+    "y|*plain_text option 2*|0"
+  ],
   "catalog/input/datepicker": [],
   "catalog/input/dispatches-actions": [],
   "catalog/input/dispatches-custom-actions": [],
@@ -144,7 +159,10 @@
   "catalog/input/multi-users-select": [],
   "catalog/input/multiline-plain-text-input": [],
   "catalog/input/plain-text-input": [],
-  "catalog/input/radio-buttons": [],
+  "catalog/input/radio-buttons": [
+    "y|*plain_text option 1*|0",
+    "y|*plain_text option 2*|0"
+  ],
   "catalog/input/static-select": [],
   "catalog/input/timepicker": [],
   "catalog/markdown/code": [
@@ -183,6 +201,10 @@
     "extra|Click Me|0"
   ],
   "catalog/section/checkboxes": [
+    "y|this is mrkdwn text|2",
+    "y|this is mrkdwn text|3",
+    "y|this is mrkdwn text|4",
+    "y|this is mrkdwn text|5",
     "missing|This is a section block with checkboxes.|0",
     "extra|This is a section block with checkboxes.|0"
   ],
@@ -204,6 +226,8 @@
   "catalog/section/overflow": [],
   "catalog/section/plain-text": [],
   "catalog/section/radio-buttons": [
+    "y|*plain_text option 1*|0",
+    "y|*plain_text option 2*|0",
     "missing|Section block with radio buttons|0",
     "extra|Section block with radio buttons|0"
   ],
@@ -280,8 +304,7 @@
   "extra/media/video": [],
   "extra/modal/alert": [],
   "extra/modal/form": [
-    "x|(optional)|0",
-    "y|(optional)|0"
+    "y|Post in #incidents|0"
   ],
   "extra/modal/rich-and-file": [],
   "extra/rich-text/mentions-and-styles": [
