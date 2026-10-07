@@ -21,20 +21,34 @@ function todayISO() {
   return toISO(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
-function Caret({ direction }: { direction: "left" | "right" }) {
+/** Slack's calendar header icons, 20×20. */
+const NAV_PATHS = {
+  "previous-year":
+    "M11.03 2.78a.75.75 0 1 0-1.06-1.06L2.22 9.47a.75.75 0 0 0 0 1.06l7.75 7.75a.75.75 0 1 0 1.06-1.06L3.81 10zm6.25 0a.75.75 0 0 0-1.06-1.06L8.47 9.47a.75.75 0 0 0 0 1.06l7.75 7.75a.75.75 0 1 0 1.06-1.06L10.06 10z",
+  "previous-month":
+    "M14.53 1.72a.75.75 0 0 1 0 1.06L7.31 10l7.22 7.22a.75.75 0 1 1-1.06 1.06l-7.75-7.75a.75.75 0 0 1 0-1.06l7.75-7.75a.75.75 0 0 1 1.06 0",
+  "next-month":
+    "M5.72 1.72a.75.75 0 0 1 1.06 0l7.75 7.75a.75.75 0 0 1 0 1.06l-7.75 7.75a.75.75 0 0 1-1.06-1.06L12.94 10 5.72 2.78a.75.75 0 0 1 0-1.06",
+  "next-year":
+    "M3.78 1.72a.75.75 0 0 0-1.06 1.06L9.94 10l-7.22 7.22a.75.75 0 1 0 1.06 1.06l7.75-7.75a.75.75 0 0 0 0-1.06zm6.25 0a.75.75 0 1 0-1.06 1.06L16.19 10l-7.22 7.22a.75.75 0 1 0 1.06 1.06l7.75-7.75a.75.75 0 0 0 0-1.06z",
+} as const;
+
+/** A header button that moves the calendar by `months`. */
+function NavButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: keyof typeof NAV_PATHS;
+  label: string;
+  onClick: () => void;
+}) {
   return (
-    <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        d={
-          direction === "left"
-            ? "M12.28 5.22a.75.75 0 0 1 0 1.06L8.56 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0"
-            : "M7.72 14.78a.75.75 0 0 1 0-1.06L11.44 10 7.72 6.28a.75.75 0 0 1 1.06-1.06l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0"
-        }
-        clipRule="evenodd"
-      />
-    </svg>
+    <button type="button" className="sbk-calendar__nav" onClick={onClick} aria-label={label}>
+      <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d={NAV_PATHS[icon]} />
+      </svg>
+    </button>
   );
 }
 
@@ -67,6 +81,9 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
     return today.startsWith(toISO(year, month, 1).slice(0, 7)) ? today : toISO(year, month, 1);
   });
   const gridRef = useRef<HTMLDivElement>(null);
+  // Set once the arrow keys move the focused day, which then shows like a hovered one, as Slack's
+  // keyboard-active day does; Firefox doesn't count that script-moved focus as `:focus-visible`.
+  const [keyboard, setKeyboard] = useState(false);
   // Only the keyboard moves DOM focus; a month turned with the arrow buttons leaves it alone.
   const moveFocus = useRef(false);
 
@@ -80,6 +97,7 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
     const delta = ARROW_DAYS[e.key];
     if (delta === undefined) return;
     e.preventDefault();
+    setKeyboard(true);
     const next = addDays(focused, delta);
     const [y = year, m = month + 1] = next.split("-").map(Number);
     moveFocus.current = true;
@@ -102,6 +120,22 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
   const today = todayISO();
+  const lastRow = Math.floor((startWeekday + daysInMonth - 1) / 7);
+  const lastRowFull = (startWeekday + daysInMonth) % 7 === 0;
+
+  /** The grid's outer corners a day sits on, which Slack rounds. */
+  function corners(day: number): string[] {
+    const at = startWeekday + day - 1;
+    const row = Math.floor(at / 7);
+    const col = at % 7;
+    const out: string[] = [];
+    if (day === 1 || (row === 1 && col === 0)) out.push("top-left");
+    if (row === 0 && col === 6) out.push("top-right");
+    if (row === lastRow && col === 0) out.push("bottom-left");
+    if (day === daysInMonth || (!lastRowFull && row === lastRow - 1 && col === 6))
+      out.push("bottom-right");
+    return out;
+  }
 
   function go(delta: number) {
     const d = new Date(Date.UTC(year, month + delta, 1));
@@ -116,56 +150,56 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
   });
 
   return (
-    <div className="sbk-calendar">
-      <div className="sbk-calendar__header">
-        <button
-          type="button"
-          className="sbk-calendar__nav"
-          onClick={() => go(-1)}
-          aria-label="Previous month"
+    <>
+      <div className="sbk-calendar">
+        <div className="sbk-calendar__header">
+          <NavButton icon="previous-year" label="Previous year" onClick={() => go(-12)} />
+          <NavButton icon="previous-month" label="Previous month" onClick={() => go(-1)} />
+          <span className="sbk-calendar__label">{monthLabel}</span>
+          <NavButton icon="next-month" label="Next month" onClick={() => go(1)} />
+          <NavButton icon="next-year" label="Next year" onClick={() => go(12)} />
+        </div>
+        <div className="sbk-calendar__weekdays">
+          {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((w) => (
+            <span key={w}>{w}</span>
+          ))}
+        </div>
+        <div
+          className={`sbk-calendar__grid${keyboard ? " sbk-calendar__grid--keyboard" : ""}`}
+          ref={gridRef}
+          onKeyDown={onGridKeyDown}
+          onPointerDown={() => setKeyboard(false)}
         >
-          <Caret direction="left" />
-        </button>
-        <span className="sbk-calendar__label">{monthLabel}</span>
-        <button
-          type="button"
-          className="sbk-calendar__nav"
-          onClick={() => go(1)}
-          aria-label="Next month"
-        >
-          <Caret direction="right" />
-        </button>
+          {cells.map((day, i) => {
+            if (day === null)
+              return <span key={i} className="sbk-calendar__cell sbk-calendar__cell--empty" />;
+            const iso = toISO(year, month, day);
+            const classes = [
+              "sbk-calendar__cell",
+              ...corners(day).map((c) => `sbk-calendar__cell--${c}`),
+            ];
+            if (iso === value) classes.push("sbk-calendar__cell--selected");
+            if (iso === today) classes.push("sbk-calendar__cell--today");
+            return (
+              <button
+                type="button"
+                key={iso}
+                className={classes.join(" ")}
+                aria-pressed={iso === value}
+                aria-current={iso === today ? "date" : undefined}
+                data-date={iso}
+                tabIndex={iso === tabStop ? 0 : -1}
+                onFocus={() => setFocused(iso)}
+                onClick={() => onSelect(iso)}
+              >
+                {day}
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <div className="sbk-calendar__weekdays">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((w) => (
-          <span key={w}>{w}</span>
-        ))}
-      </div>
-      <div className="sbk-calendar__grid" ref={gridRef} onKeyDown={onGridKeyDown}>
-        {cells.map((day, i) => {
-          if (day === null)
-            return <span key={i} className="sbk-calendar__cell sbk-calendar__cell--empty" />;
-          const iso = toISO(year, month, day);
-          const classes = ["sbk-calendar__cell"];
-          if (iso === value) classes.push("sbk-calendar__cell--selected");
-          if (iso === today) classes.push("sbk-calendar__cell--today");
-          return (
-            <button
-              type="button"
-              key={iso}
-              className={classes.join(" ")}
-              aria-pressed={iso === value}
-              aria-current={iso === today ? "date" : undefined}
-              data-date={iso}
-              tabIndex={iso === tabStop ? 0 : -1}
-              onFocus={() => setFocused(iso)}
-              onClick={() => onSelect(iso)}
-            >
-              {day}
-            </button>
-          );
-        })}
-      </div>
+      {/* Slack's `c-date_picker__clear_selection_container` sits below the calendar box, across the
+          whole popup. */}
       {onClear && value && (
         <div className="sbk-calendar__footer">
           <button type="button" className="sbk-calendar__clear" onClick={onClear}>
@@ -173,6 +207,6 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -476,6 +476,17 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(Math.round((menu?.x ?? 0) - (field?.x ?? 0))).toBe(-12);
     });
 
+    // Measured in Block Kit Builder: Slack's menus cover the field's bottom 4px.
+    it("opens over the field's bottom 4px", async () => {
+      const page = await harness.open(select);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((s) => page.locator(s).boundingBox()),
+      );
+      expect(Math.round((menu?.y ?? 0) - ((field?.y ?? 0) + (field?.height ?? 0)))).toBe(-4);
+    });
+
     it("highlights the first option on open and narrows the list to what's typed", async () => {
       const page = await harness.open(select);
       await page.click(".sbk-select__control");
@@ -511,6 +522,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(menu?.width).toBe(212);
       expect(Math.round((menu?.x ?? 0) - (field?.x ?? 0))).toBe(-12);
       expect(menu?.height).toBe(264);
+      expect(Math.round((menu?.y ?? 0) - ((field?.y ?? 0) + (field?.height ?? 0)))).toBe(-4);
     });
 
     it("lists the hours and narrows them to what's typed", async () => {
@@ -884,12 +896,26 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ],
     };
 
-    // Measured in Block Kit Builder: the popup's right edge meets the field's, and it opens below.
-    // (Slack's popup is 349 x 372 and ours 350 x 376; no reference shows an open calendar yet to
-    // tell which inner spacing differs, so the size waits for one.)
-    // A field at the start of an actions block leaves no room for that on its left (the calendar
-    // would shift inside the window), so this one is a section's accessory, on the right.
-    it("opens below the field with its right edge on the field's", async () => {
+    const optionalInput: Mount = {
+      blocks: [
+        {
+          type: "input",
+          optional: true,
+          label: plain("Due"),
+          element: { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+        },
+      ],
+    };
+    const POPUP = ".sbk-datepicker__popup";
+    const DAY = (n: number) =>
+      `.sbk-calendar__cell[data-date="1990-04-${String(n).padStart(2, "0")}"]`;
+    const NAV = ".sbk-calendar__nav";
+
+    // Measured in Block Kit Builder: the popup's right edge meets the field's, and its top overlaps
+    // the field's bottom by 4px, as Slack's menus do. A field at the start of an actions block
+    // leaves no room for that on its left (the calendar would shift inside the window), so this one
+    // is a section's accessory, on the right.
+    it("opens over the field's bottom edge with its right edge on the field's", async () => {
       const page = await harness.open({
         blocks: [
           {
@@ -901,11 +927,172 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
       await page.click(".sbk-datepicker__input");
       const field = (await page.locator(".sbk-datepicker").boundingBox())!;
-      const popup = (await page.locator(".sbk-datepicker__popup").boundingBox())!;
+      const popup = (await page.locator(POPUP).boundingBox())!;
       expect({
         right: Math.round(popup.x + popup.width - (field.x + field.width)),
         gap: Math.round(popup.y - (field.y + field.height)),
-      }).toEqual({ right: 0, gap: 4 });
+      }).toEqual({ right: 0, gap: -4 });
+    });
+
+    // Slack's calendar keeps room for six weeks (`min-height: 340px`), so a five-week month like
+    // April 1990 opens at the same 349 x 372 as any other.
+    it("opens at Slack's 349 x 372, with room for six weeks", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const popup = (await page.locator(POPUP).boundingBox())!;
+      expect([popup.width, popup.height]).toEqual([349, 372]);
+    });
+
+    it("adds Slack's 45px Clear selection footer in an optional input", async () => {
+      const page = await harness.open(optionalInput);
+      await page.click(".sbk-datepicker__input");
+      const popup = (await page.locator(POPUP).boundingBox())!;
+      expect([popup.width, popup.height]).toEqual([349, 417]);
+    });
+
+    it("lays out the header like Slack: year and month buttons around a centred month", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const boxes = await page.evaluate(() => {
+        const popup = document.querySelector(".sbk-datepicker__popup")!.getBoundingClientRect();
+        const header = [...document.querySelector(".sbk-calendar__header")!.children];
+        return header.map((el) => {
+          const r = el.getBoundingClientRect();
+          return [r.x - popup.x, r.y - popup.y, r.width, r.height].map(Math.round);
+        });
+      });
+      expect(boxes).toEqual([
+        [24, 24, 32, 32],
+        [56, 24, 32, 32],
+        [88, 29, 173, 22],
+        [261, 24, 32, 32],
+        [293, 24, 32, 32],
+      ]);
+    });
+
+    it("heads the week with Slack's bold 13px day names", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const s = await page
+        .locator(".sbk-calendar__weekdays > *")
+        .first()
+        .evaluate((el) => {
+          const c = getComputedStyle(el);
+          return [c.fontSize, c.fontWeight, c.color];
+        });
+      expect(s).toEqual(["13px", "700", "rgb(69, 68, 71)"]);
+    });
+
+    /** The cell's border and fill, as Slack's stylesheet resolves them. */
+    const cell = (page: Page, selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => {
+          const c = getComputedStyle(el);
+          return { border: c.borderTopColor, fill: c.backgroundColor, text: c.color };
+        });
+    const GRID = "rgb(221, 221, 221)";
+    const WASH = "rgba(29, 155, 209, 0.2)";
+    const WASH_BORDER = "rgba(29, 155, 209, 0.3)";
+
+    it("draws a day at rest with Slack's grey grid line", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.mouse.move(790, 690);
+      await settle(page);
+      expect((await cell(page, DAY(10))).border).toBe(GRID);
+    });
+
+    it("washes a hovered day light blue", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.hover(DAY(10));
+      await settle(page);
+      expect(await cell(page, DAY(10))).toEqual({ border: WASH_BORDER, fill: WASH, text: TEXT });
+    });
+
+    it("keeps the grid line on the selected day and fills it Slack's blue", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.mouse.move(790, 690);
+      await settle(page);
+      const s = await page.locator(DAY(28)).evaluate((el) => {
+        const c = getComputedStyle(el);
+        return [c.borderTopColor, c.backgroundColor, c.color, c.borderTopLeftRadius];
+      });
+      expect(s).toEqual([GRID, BLUE, "rgb(255, 255, 255)", "4px"]);
+    });
+
+    it("tints the selected day's border, not its fill, under the pointer", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.hover(DAY(28));
+      await settle(page);
+      expect(await cell(page, DAY(28))).toEqual({
+        border: WASH_BORDER,
+        fill: BLUE,
+        text: "rgb(255, 255, 255)",
+      });
+    });
+
+    it("shows a keyboard-focused day like a hovered one", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.mouse.move(790, 690);
+      await page.keyboard.press("ArrowLeft");
+      await settle(page);
+      expect(await cell(page, DAY(27))).toEqual({ border: WASH_BORDER, fill: WASH, text: TEXT });
+    });
+
+    it("rounds the grid's outer corners", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const radii = await page.evaluate(() =>
+        ["1990-04-01", "1990-04-07", "1990-04-29", "1990-04-28"].map((d) => {
+          const c = getComputedStyle(document.querySelector(`[data-date="${d}"]`)!);
+          return [
+            c.borderTopLeftRadius,
+            c.borderTopRightRadius,
+            c.borderBottomLeftRadius,
+            c.borderBottomRightRadius,
+          ].join(" ");
+        }),
+      );
+      // April 1990 starts on a Sunday and ends on Monday the 30th: the 1st is the grid's top-left,
+      // the 7th its top-right, the 29th its bottom-left and the 30th the month's end.
+      expect(radii[0]).toBe("4px 0px 0px 0px");
+      expect(radii[1]).toBe("0px 4px 0px 0px");
+      expect(radii[2]).toBe("0px 0px 4px 0px");
+    });
+
+    it("gives the header buttons Slack's hover wash and blue press, with no transition", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const nav = page.locator(NAV).first();
+      expect(await nav.evaluate((el) => getComputedStyle(el).transitionDuration)).toBe("0s");
+      await nav.hover();
+      await settle(page);
+      expect(await nav.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
+        "rgba(29, 155, 209, 0.1)",
+      );
+      await page.mouse.down();
+      const pressed = await nav.evaluate((el) => {
+        const c = getComputedStyle(el);
+        return [c.backgroundColor, c.color];
+      });
+      await page.mouse.up();
+      expect(pressed).toEqual([BLUE, "rgb(255, 255, 255)"]);
+    });
+
+    it("turns Clear selection blue under the pointer", async () => {
+      const page = await harness.open(optionalInput);
+      await page.click(".sbk-datepicker__input");
+      await page.hover(".sbk-calendar__clear");
+      await settle(page);
+      expect(
+        await page.locator(".sbk-calendar__clear").evaluate((el) => getComputedStyle(el).color),
+      ).toBe(BLUE);
     });
 
     it("focuses the selected day and moves it with the arrow keys", async () => {

@@ -7,7 +7,7 @@ import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
-import { Popover } from "./Popover";
+import { MENU_GAP, Popover } from "./Popover";
 
 /** Formats `HH:mm` the way Slack's timepicker shows it, e.g. "1:37 PM". */
 function formatTime(time: string): string {
@@ -125,7 +125,12 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
         )}
       </label>
       {combo.open && (
-        <Popover anchorRef={rootRef} onDismiss={() => combo.setOpen(false)} offsetX={-12}>
+        <Popover
+          anchorRef={rootRef}
+          onDismiss={() => combo.setOpen(false)}
+          offsetX={-12}
+          gap={MENU_GAP}
+        >
           <div className="sbk-timepicker__menu" role="listbox" id={combo.listId} ref={listRef}>
             {times.map((t, i) => (
               <div

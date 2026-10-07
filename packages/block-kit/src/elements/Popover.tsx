@@ -8,6 +8,9 @@ const DEFAULT_GAP = 4;
 /** The least space kept between a popover and the window's left and right edges. */
 const EDGE = 8;
 
+/** Slack's select menus, time list and calendar overlap their field's bottom 4px instead. */
+export const MENU_GAP = -4;
+
 export interface PopoverProps {
   /** The element the popover opens from; it's placed below it, or above when there's no room. */
   anchorRef: RefObject<HTMLElement | null>;
