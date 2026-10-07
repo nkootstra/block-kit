@@ -1889,6 +1889,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         field({ type: "static_select", action_id: "one", options: [option("Alpha")] }),
         field({ type: "multi_static_select", action_id: "many", options: [option("Alpha")] }),
         field({ type: "datetimepicker", action_id: "when" }),
+        field({ type: "plain_text_input", action_id: "short", max_length: 20 }),
       ],
     };
     const FIELDS =
@@ -1923,7 +1924,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     it("keeps Slack's 13px field text, and 15px for multiline and rich text, on a desktop", async () => {
       const desktop = await measure(await harness.open(fields));
       expect(new Set(desktop.map((f) => f.size))).toEqual(new Set(["13px", "15px"]));
-      expect(desktop.length).toBeGreaterThanOrEqual(10);
+      expect(desktop.length).toBeGreaterThanOrEqual(11);
     });
 
     it("gives a field in an open popover 16px text too", async () => {
