@@ -261,7 +261,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       action_id: actionId,
       block_id: blockId,
       ...fields,
-      // Slack echoes a select's placeholder back in the action.
+      // Slack echoes a single select's initial_option and its placeholder back in the action.
+      ...(!multi && element.initial_option ? { initial_option: element.initial_option } : {}),
       ...(element.placeholder ? { placeholder: element.placeholder } : {}),
     });
   }
@@ -334,6 +335,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     onQueryChange: setQuery,
     count: flatOptions.length,
     initialIndex: Math.max(0, flatOptions.findIndex(isSelected)),
+    // Opened on a chosen option, Slack's first arrow key moves on from it (Block Kit Builder).
+    holdFirstArrow: flatOptions.findIndex(isSelected) < 0 || query.trim() !== "",
     onChoose: (i) => {
       const option = flatOptions[i];
       if (option) selectItem(optionToItem(option));
