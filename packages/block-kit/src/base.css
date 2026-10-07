@@ -88,6 +88,13 @@
   --sbk-menu-divider: rgb(221, 221, 221);
   /* "😕 Nothing could be found.": the list's text at 70%. */
   --sbk-menu-faint-text: rgba(29, 28, 29, 0.7);
+  /* Slack's rich text composer (`c-wysiwyg_container`): box, formatting bar, its buttons and
+     separators. */
+  --sbk-composer-bg: #fff;
+  --sbk-composer-border: rgba(29, 28, 29, 0.13);
+  --sbk-composer-toolbar-bg: #f8f8f8;
+  --sbk-composer-tool: rgba(29, 28, 29, 0.7);
+  --sbk-composer-separator: rgb(234, 234, 234);
   /* A calendar day's number, and today's number and ring. */
   --sbk-calendar-day: #1d1c1d;
   --sbk-calendar-today: #1264a3;

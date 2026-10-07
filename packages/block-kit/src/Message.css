@@ -290,6 +290,11 @@
     --sbk-keycap-border: rgba(121, 124, 129, 0.3);
     --sbk-menu-divider: #35373b;
     --sbk-menu-faint-text: rgba(232, 232, 232, 0.7);
+    --sbk-composer-bg: #222529;
+    --sbk-composer-border: #565856;
+    --sbk-composer-toolbar-bg: #222529;
+    --sbk-composer-tool: rgba(232, 232, 232, 0.7);
+    --sbk-composer-separator: #212428;
     --sbk-calendar-day: #d1d2d3;
     --sbk-calendar-today: #1d9bd1;
     --sbk-avatar-placeholder: #35373b;
@@ -394,6 +399,11 @@
   --sbk-keycap-border: rgba(121, 124, 129, 0.3);
   --sbk-menu-divider: #35373b;
   --sbk-menu-faint-text: rgba(232, 232, 232, 0.7);
+  --sbk-composer-bg: #222529;
+  --sbk-composer-border: #565856;
+  --sbk-composer-toolbar-bg: #222529;
+  --sbk-composer-tool: rgba(232, 232, 232, 0.7);
+  --sbk-composer-separator: #212428;
   --sbk-calendar-day: #d1d2d3;
   --sbk-calendar-today: #1d9bd1;
   --sbk-avatar-placeholder: #35373b;
