@@ -55,7 +55,9 @@ export const TIMES: readonly string[] = HOURS;
 const CLEAR = "clear";
 
 export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
-  const { setValue, dispatch } = useBlockKit();
+  const { setValue, dispatch, surface } = useBlockKit();
+  // Slack draws the small field in messages and the medium one in modals and on App Home.
+  const medium = surface !== "message";
   const { ask, dialog } = useConfirm(element.confirm);
   const [time, setTime] = useState<string | undefined>(element.initial_time);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -148,7 +150,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   const overlay = display !== undefined && !combo.open;
 
   return (
-    <div className="sbk-timepicker" ref={rootRef}>
+    <div className={`sbk-timepicker${medium ? " sbk-timepicker--medium" : ""}`} ref={rootRef}>
       {/* A label, so a press on the icons or padding lands in the input as on Slack's field. */}
       <label className="sbk-timepicker__control">
         <ClockIcon className="sbk-timepicker__icon" />
