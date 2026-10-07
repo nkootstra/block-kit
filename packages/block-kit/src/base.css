@@ -116,6 +116,25 @@
   min-width: revert;
 }
 
+/* A quick second tap on a control means "again" (the next month, the next page, toggling a
+   checkbox back), but iOS Safari reads it as double-tap to zoom. `manipulation` turns that off and
+   keeps pinch zoom. Text fields are left alone, where a double tap selects a word, and so are links,
+   which leave the page on the first tap. A label counts when it toggles a checkbox or radio, or
+   opens a file picker; the select and time picker labels wrap a text field. */
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip)
+  :is(
+    button,
+    [role="button"],
+    [role="option"],
+    [role="menuitem"],
+    [role="menuitemradio"],
+    input:is([type="checkbox"], [type="radio"], [type="file"]),
+    label:has(> input:is([type="checkbox"], [type="radio"])),
+    label[for]
+  ) {
+  touch-action: manipulation;
+}
+
 .sbk-root *,
 .sbk-root *::before,
 .sbk-root *::after {
