@@ -288,6 +288,50 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  // Slack gives every checkbox and radio option 8px of space below it, so a group grows by one
+  // option's height plus 8px for each option, however many it has.
+  describe("option spacing", () => {
+    const LABELS = ["Alpha", "Bravo", "Charlie", "Delta"];
+    const group = (type: "checkboxes" | "radio_buttons", count: number): Mount => ({
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type, action_id: "o", options: LABELS.slice(0, count).map(option) }],
+        },
+        { type: "section", text: plain("After") },
+      ],
+    });
+    /** Each option's top, and where the next block starts, relative to the first option. */
+    const layout = (page: Page, row: string) =>
+      page.evaluate((selector) => {
+        const rows = [...document.querySelectorAll(selector)].map((r) => r.getBoundingClientRect());
+        const after = [...document.querySelectorAll("*")].find(
+          (el) => el.children.length === 0 && el.textContent === "After",
+        )!;
+        const top = rows[0]!.top;
+        return {
+          tops: rows.map((r) => Math.round(r.top - top)),
+          after: Math.round(after.getBoundingClientRect().top - top),
+        };
+      }, row);
+
+    for (const [type, row] of [
+      ["checkboxes", ".sbk-checkboxes__option"],
+      ["radio_buttons", ".sbk-radio-buttons__option"],
+    ] as const) {
+      it(`places ${type} options 30px apart`, async () => {
+        const page = await harness.open(group(type, 4));
+        expect((await layout(page, row)).tops).toEqual([0, 30, 60, 90]);
+      });
+
+      it(`grows a ${type} group by 30px per option`, async () => {
+        const three = await layout(await harness.open(group(type, 3)), row);
+        const four = await layout(await harness.open(group(type, 4)), row);
+        expect(four.after - three.after).toBe(30);
+      });
+    }
+  });
+
   describe("links", () => {
     it("shows the shared focus ring and no underline for keyboard focus", async () => {
       const page = await harness.open({

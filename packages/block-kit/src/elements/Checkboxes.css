@@ -1,19 +1,13 @@
 .sbk-checkboxes {
   display: flex;
   flex-direction: column;
-  /* Slack renders checkboxes inside a `<fieldset>` in every context (input, section accessory,
-     actions), which carries a fixed ~24px bottom margin beyond the last option row — confirmed
-     via inspect.ts against catalog/input/checkboxes, catalog/section/checkboxes, and
-     catalog/actions/checkboxes (all measured 24px of trailing space). */
-  margin-bottom: 24px;
 }
 
 .sbk-checkboxes__option {
   display: flex;
   align-items: flex-start;
-  /* Slack's Builder packs option rows with zero gap between them — each row's own height (22px
-     for a text-only option, 44px for a text+description option) sets the pitch on its own,
-     confirmed via inspect.ts against the same three fixtures above. */
+  /* Slack's option label: 8px below every option, the last one included, in every context. */
+  margin-bottom: 8px;
   line-height: 22px;
   cursor: pointer;
 }

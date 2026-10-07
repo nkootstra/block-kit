@@ -115,11 +115,6 @@
   margin: 0;
 }
 
-/* A checkbox group's trailing space is shorter in a modal (16px) than in a message (24px). */
-.sbk-modal .sbk-checkboxes {
-  margin-bottom: 16px;
-}
-
 .sbk-modal__footer {
   display: flex;
   align-items: center;
