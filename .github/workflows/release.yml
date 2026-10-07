@@ -111,12 +111,15 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
 
-      # A release made with this job's token starts no workflow, so ask for the docs rebuild. The
-      # package is out by now, so a failure here warns rather than failing the release.
-      - name: Rebuild the docs with the new release in their changelog
+      # The docs and landing page deploy with releases: CI builds the new tag, with this release in
+      # the docs' changelog, and deploys it. A release made with this job's token starts no
+      # workflow, so ask for that run. The package is out by now, so a failure here warns rather
+      # than failing the release.
+      - name: Deploy the docs and landing page for this release
         env:
           GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          if ! gh workflow run ci.yml --ref main; then
-            echo "::warning::Couldn't start CI to rebuild the docs. Run Actions → CI → Run workflow on main, so /changelog shows this release."
+          if ! gh workflow run ci.yml --ref "v$VERSION" -f deploy=true; then
+            echo "::warning::Couldn't start the docs deploy. Run Actions → CI → Run workflow on the v$VERSION tag with \"deploy\" checked."
           fi

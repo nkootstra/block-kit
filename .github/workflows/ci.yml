@@ -5,13 +5,23 @@ name: CI
 # turbo.json's globalDependencies make root manifests, bun.lock and tsconfig.base.json affect every
 # workspace; other files outside the workspaces (fixtures/, .github/, docs/) affect none. Format,
 # lint and the reference check always run. Pushes to main run everything, because the Release
-# workflow requires this workflow to have passed on the commit it publishes. The Release workflow
-# also runs it on main after publishing, so the docs rebuild and their changelog shows the release.
+# workflow requires this workflow to have passed on the commit it publishes.
+#
+# The docs and the landing page deploy with releases, never on a plain push, so they don't describe
+# a package npm doesn't have yet. After publishing, the Release workflow runs this workflow on the
+# new vX.Y.Z tag with `deploy`, which deploys that tag (its changelog shows the release). A
+# maintainer can run it on main with `deploy` for a docs-only fix; scripts/deploy-guard.ts refuses
+# that when packages/block-kit changed since the latest release.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the docs and landing page (a release tag, or main without package changes)
+        type: boolean
+        default: false
 
 permissions: {}
 
@@ -20,8 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    outputs:
-      site-changed: ${{ steps.site.outputs.changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,8 +51,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       # Every reference snapshot must still show Slack's rendering of its fixture's payload.
       - run: bun run references:check
+      # The release and preview helpers the workflows run.
+      - run: bun test scripts
       # Hand the docs build to deploy-docs, so it ships exactly what passed the checks.
-      - if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+      - if: github.event_name == 'workflow_dispatch' && inputs.deploy
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: docs-dist
@@ -53,22 +63,7 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
-      # The landing page deploys only when a push to main changed apps/site or the package its demos
-      # render with. A manual run, or a push whose previous commit isn't in the history (a force
-      # push), deploys it regardless.
-      - id: site
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        run: |
-          if [ "$EVENT" = push ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null \
-            && git diff --quiet "$BEFORE" "$GITHUB_SHA" -- apps/site packages/block-kit; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-        env:
-          EVENT: ${{ github.event_name }}
-          BEFORE: ${{ github.event.before }}
-      - if: steps.site.outputs.changed == 'true'
+      - if: github.event_name == 'workflow_dispatch' && inputs.deploy
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: site-dist
@@ -92,7 +87,7 @@ jobs:
     # Checks out the repository; the deploy authenticates with the Cloudflare secret, not this token.
     permissions:
       contents: read
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
     runs-on: ubuntu-latest
     environment:
       name: docs
@@ -108,26 +103,39 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      # Releases deploy; see the note at the top and scripts/deploy-guard.ts.
+      - id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
+        run: |
+          MAIN_HEAD=$(git ls-remote "$REPO_URL" refs/heads/main | cut -f1)
+          LATEST_TAG=$(git ls-remote --tags --refs "$REPO_URL" 'v*' | cut -f2 | sed 's#^refs/tags/##' |
+            sort -V | tail -n 1)
+          PACKAGE_CHANGED=
+          if [ "$REF" = refs/heads/main ] && [ -n "$LATEST_TAG" ]; then
+            # The compare API lists at most 300 files; a bigger change counts as touching the package.
+            PACKAGE_CHANGED=$(gh api "repos/$GH_REPO/compare/$LATEST_TAG...$SHA" --jq \
+              '(.files | length) >= 300 or any(.files[]; .filename | startswith("packages/block-kit/"))')
+          fi
+          export MAIN_HEAD LATEST_TAG PACKAGE_CHANGED
+          bun scripts/deploy-guard.ts
+      - if: steps.guard.outputs.deploy == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: docs-dist
           path: apps/docs/dist
       # The Worker bundles Blume's MCP handler and its dependencies. No lifecycle scripts run here.
-      - run: bun install --frozen-lockfile --ignore-scripts
-      # Runs on main can finish out of order: the Release workflow's rebuild of an older commit can
-      # still be deploying after a later merge's run has. Only main's head deploys, so an older build
-      # never replaces a newer one; the run for the head deploys it.
-      - name: Deploy to Cloudflare Workers
+      - if: steps.guard.outputs.deploy == 'true'
+        run: bun install --frozen-lockfile --ignore-scripts
+      - if: steps.guard.outputs.deploy == 'true'
+        name: Deploy to Cloudflare Workers
         working-directory: apps/docs
-        run: |
-          head=$(git ls-remote "$REPO" refs/heads/main | cut -f1)
-          if [ "$head" != "$GITHUB_SHA" ]; then
-            echo "::notice::main is at $head now, so this run ($GITHUB_SHA) leaves the deploy to that one."
-            exit 0
-          fi
-          bunx wrangler@4 deploy
+        run: bunx wrangler@4 deploy
         env:
-          REPO: ${{ github.server_url }}/${{ github.repository }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
@@ -135,9 +143,8 @@ jobs:
     needs: check
     permissions:
       contents: read
-    if: >-
-      github.event_name != 'pull_request' && github.ref == 'refs/heads/main' &&
-      needs.check.outputs.site-changed == 'true'
+    # Its live demos render with the package, so it deploys with releases too.
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
     runs-on: ubuntu-latest
     environment:
       name: site
@@ -152,22 +159,36 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      # Releases deploy; see the note at the top and scripts/deploy-guard.ts.
+      - id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
+        run: |
+          MAIN_HEAD=$(git ls-remote "$REPO_URL" refs/heads/main | cut -f1)
+          LATEST_TAG=$(git ls-remote --tags --refs "$REPO_URL" 'v*' | cut -f2 | sed 's#^refs/tags/##' |
+            sort -V | tail -n 1)
+          PACKAGE_CHANGED=
+          if [ "$REF" = refs/heads/main ] && [ -n "$LATEST_TAG" ]; then
+            # The compare API lists at most 300 files; a bigger change counts as touching the package.
+            PACKAGE_CHANGED=$(gh api "repos/$GH_REPO/compare/$LATEST_TAG...$SHA" --jq \
+              '(.files | length) >= 300 or any(.files[]; .filename | startswith("packages/block-kit/"))')
+          fi
+          export MAIN_HEAD LATEST_TAG PACKAGE_CHANGED
+          bun scripts/deploy-guard.ts
+      - if: steps.guard.outputs.deploy == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: site-dist
           path: apps/site/dist
-      # Static files only, so nothing needs installing besides Wrangler itself. Only main's head
-      # deploys, as in deploy-docs.
-      - name: Deploy to Cloudflare Workers
+      # Static files only, so nothing needs installing besides Wrangler itself.
+      - if: steps.guard.outputs.deploy == 'true'
+        name: Deploy to Cloudflare Workers
         working-directory: apps/site
-        run: |
-          head=$(git ls-remote "$REPO" refs/heads/main | cut -f1)
-          if [ "$head" != "$GITHUB_SHA" ]; then
-            echo "::notice::main is at $head now, so this run ($GITHUB_SHA) leaves the deploy to that one."
-            exit 0
-          fi
-          bunx wrangler@4 deploy
+        run: bunx wrangler@4 deploy
         env:
-          REPO: ${{ github.server_url }}/${{ github.repository }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

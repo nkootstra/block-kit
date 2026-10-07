@@ -45,8 +45,14 @@ Never edit them by hand or to make a check pass; `tools/visual/README.md` explai
 - Releases run from Actions → Release → Run workflow on `main`, choosing `patch`, `minor` or
   `major`. The workflow requires green CI for the commit, publishes to npm through trusted
   publishing (no npm token exists; never run `npm publish` locally), then tags `vX.Y.Z` and creates
-  the GitHub release, and runs CI on `main` again so the docs rebuild with it. While the version is
-  0.x, a breaking change is a `minor` release.
+  the GitHub release, and runs CI on the new tag with `deploy`, which deploys the docs and the
+  landing page for that release. While the version is 0.x, a breaking change is a `minor` release.
+- The docs and the landing page deploy only with a release, never on a push to `main`, so they
+  don't describe a package npm doesn't have. For a docs-only fix, run Actions → CI → Run workflow
+  on `main` with `deploy` checked; it refuses when `packages/block-kit` changed since the latest
+  release.
+- A maintainer deploys a pull request's docs preview by commenting `/preview` on it; anyone else
+  gets a refusal.
 
 ## Commits & PRs
 
