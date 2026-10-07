@@ -207,6 +207,8 @@ export interface BlockKitContextValue {
   state: StateValues;
   /** Records an element's current value. Elements call this on every change. */
   setValue: (blockId: string, actionId: string, value: ElementState | undefined) => void;
+  /** Records `value` only when the element has none yet: an input block's empty state in a view. */
+  seedValue: (blockId: string, actionId: string, value: ElementState) => void;
   /**
    * Reports an action, passing the current state along. `scope` is the surface it happened in;
    * surfaces bind it for their elements, so elements never pass it themselves.
@@ -258,6 +260,7 @@ const BlockKitContext = createContext<BlockKitContextValue>({
   errors: {},
   state: {},
   setValue: noop,
+  seedValue: noop,
   dispatch: noop,
   identity: {},
   setContainer: noop,
@@ -488,6 +491,13 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
     [onStateChange],
   );
 
+  const seedValue = useCallback(
+    (blockId: string, actionId: string, value: ElementState) => {
+      if (stateRef.current[blockId]?.[actionId] === undefined) setValue(blockId, actionId, value);
+    },
+    [setValue],
+  );
+
   const setContainer = useCallback((container: Container | undefined) => {
     containerRef.current = container;
   }, []);
@@ -552,6 +562,7 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       timeZone,
       state,
       setValue,
+      seedValue,
       dispatch,
       identity: identity ?? {},
       setContainer,
@@ -575,6 +586,7 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       timeZone,
       state,
       setValue,
+      seedValue,
       dispatch,
       identity,
       setContainer,

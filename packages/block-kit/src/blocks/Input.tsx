@@ -1,7 +1,8 @@
 import type { InputBlock } from "@slack/types";
-import { useId } from "react";
+import { useEffect, useId } from "react";
 import { SuppressActions, useBlockKit } from "../context";
 import { Element } from "../elements/Element";
+import { emptyState } from "../elements/emptyState";
 import {
   InputBlockContext,
   InputErrorContext,
@@ -40,8 +41,17 @@ function dispatchHint(block: InputBlock): boolean {
  * `__dispatchAction` field, since text inputs need it to pick their triggers.
  */
 export function Input({ block, blockId }: BlockProps<InputBlock>) {
-  const { errors, surface } = useBlockKit();
+  const { errors, surface, seedValue } = useBlockKit();
   const element = { ...(block.element as Json), __dispatchAction: block.dispatch_action === true };
+  // In a view, Slack's state lists every input, an untouched one with its empty value. Effects run
+  // children first, so an element's initial value is already recorded and this only fills a gap.
+  const elementType = (block.element as { type: string }).type;
+  const actionId = (block.element as { action_id?: string }).action_id ?? "";
+  useEffect(() => {
+    if (surface === "message") return;
+    const empty = emptyState(elementType);
+    if (empty) seedValue(blockId, actionId, empty);
+  }, [surface, elementType, blockId, actionId, seedValue]);
   const error = errors[blockId];
   const errorId = useId();
   const showDispatchHint = dispatchHint(block);
