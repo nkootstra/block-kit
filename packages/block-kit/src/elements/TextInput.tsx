@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import { EmailIcon, LinkGlyphIcon } from "../icons";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { useInvalidProps } from "./inputBlockContext";
 
 export interface TextInputElement extends Json {
@@ -85,6 +86,13 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   const outOfBounds = tooLong || tooShort;
   const remaining =
     element.max_length !== undefined && length > 0 ? element.max_length - length : undefined;
+  // Slack widens the field's right padding to the count's width, so text never runs under it.
+  const countRef = useRef<HTMLSpanElement>(null);
+  const [countWidth, setCountWidth] = useState<number | undefined>(undefined);
+  useClientLayoutEffect(() => {
+    setCountWidth(countRef.current?.getBoundingClientRect().width);
+  }, [remaining]);
+  const countId = useId();
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (
@@ -102,6 +110,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // specify its own, rather than leaving the field visually empty.
   const placeholder = element.placeholder?.text ?? DEFAULT_PLACEHOLDER[element.type];
 
+  const invalidDescribed = invalid["aria-describedby"];
   const commonProps = {
     className: `sbk-text-input${sizeClass}${remaining !== undefined ? " sbk-text-input--counted" : ""}`,
     value,
@@ -111,16 +120,30 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
     "aria-label": element.action_id,
     ...invalid,
     ...(outOfBounds ? { "aria-invalid": true as const } : {}),
+    ...(remaining !== undefined
+      ? {
+          "aria-describedby": [invalidDescribed, countId].filter(Boolean).join(" "),
+          style: countWidth !== undefined ? { paddingRight: countWidth } : undefined,
+        }
+      : {}),
   };
 
+  // The visible count is the bare number; screen readers get "N characters remaining" through
+  // aria-describedby, as in Slack.
   const count =
     remaining !== undefined ? (
-      <span
-        className={`sbk-text-input__count${remaining < 0 ? " sbk-text-input__count--over" : ""}`}
-        aria-live="polite"
-      >
-        {remaining}
-      </span>
+      <>
+        <span
+          ref={countRef}
+          className={`sbk-text-input__count${remaining < 0 ? " sbk-text-input__count--over" : ""}`}
+          aria-hidden="true"
+        >
+          {remaining}
+        </span>
+        <span id={countId} className="sbk-visually-hidden">
+          {`${remaining} characters remaining`}
+        </span>
+      </>
     ) : null;
 
   // Slack's Builder prefixes email/url inputs with a small leading glyph (envelope / link) inside
