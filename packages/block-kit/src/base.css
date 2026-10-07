@@ -46,6 +46,13 @@
   --sbk-checkbox-checked-pressed: #122a5938;
   /* Menus and option lists (`c-menu`, `c-select_options_list`). */
   --sbk-menu-bg: #fff;
+  /* Slack's `c-menu` (the overflow and data table sort menus); #212428 in its dark theme. */
+  --sbk-c-menu-bg: #fff;
+  /* The Markdown block's fenced code box. */
+  --sbk-code-block-bg: #f8f8f8;
+  /* A rich text preformatted block's text: the body colour in light, #d1d2d3 in Slack's dark theme. */
+  --sbk-pre-text: var(--sbk-text);
+  --sbk-code-block-border: rgba(29, 28, 29, 0.06);
   --sbk-menu-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
   --sbk-menu-selected-text: #1264a3;
   --sbk-menu-separator: rgba(29, 28, 29, 0.13);

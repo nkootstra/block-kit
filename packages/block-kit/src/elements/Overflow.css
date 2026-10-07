@@ -38,7 +38,7 @@
      a drop shadow and 12px list padding. */
   width: 250px;
   padding: 12px 0;
-  background: var(--sbk-menu-bg);
+  background: var(--sbk-c-menu-bg);
   border-radius: 4px;
   box-shadow: var(--sbk-menu-shadow);
 }

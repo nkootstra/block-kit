@@ -2117,6 +2117,202 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  // Measured in Block Kit Builder in both themes (October 2026): field borders, code, the c-menu
+  // surfaces, the calendar's selected day and the feedback icons.
+  describe("Builder-measured states in both themes", () => {
+    const page_ = (theme: "light" | "dark"): Mount => ({
+      theme,
+      blocks: [
+        {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: [
+                { type: "text", text: "Run " },
+                { type: "text", text: "npm test", style: { code: true } },
+              ],
+            },
+            { type: "rich_text_preformatted", elements: [{ type: "text", text: "const a = 1;" }] },
+          ],
+        },
+        { type: "markdown", text: "```js\nconst b = 2;\n```" },
+        {
+          type: "actions",
+          elements: [
+            { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+            { type: "timepicker", action_id: "t", initial_time: "13:37" },
+            { type: "overflow", action_id: "o", options: [option("One"), option("Two")] },
+          ],
+        },
+        {
+          type: "input",
+          label: plain("Text"),
+          element: { type: "plain_text_input", action_id: "p" },
+        },
+      ],
+    });
+    const props = (page: Page, selector: string, names: string[]) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el, ps) => {
+          const c = getComputedStyle(el);
+          return Object.fromEntries(ps.map((p) => [p, c.getPropertyValue(p)]));
+        }, names);
+
+    const WANT = {
+      light: {
+        field: {
+          "background-color": "rgb(255, 255, 255)",
+          "border-top-color": "rgb(124, 122, 127)",
+        },
+        inlineCode: {
+          color: "rgb(192, 19, 67)",
+          "background-color": "rgba(29, 28, 29, 0.04)",
+          "border-top-color": "rgba(29, 28, 29, 0.13)",
+        },
+        pre: {
+          color: "rgb(29, 28, 29)",
+          "background-color": "rgba(29, 28, 29, 0.04)",
+          "border-top-color": "rgba(29, 28, 29, 0.13)",
+        },
+        codeBox: {
+          "background-color": "rgb(248, 248, 248)",
+          "border-top-color": "rgba(29, 28, 29, 0.06)",
+        },
+        menu: {
+          "background-color": "rgb(255, 255, 255)",
+          "box-shadow":
+            "rgba(29, 28, 29, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.12) 0px 4px 12px 0px",
+        },
+        selectedDay: {
+          "background-color": "rgb(18, 100, 163)",
+          color: "rgb(255, 255, 255)",
+          "border-top-color": "rgb(221, 221, 221)",
+        },
+        icon: "rgb(69, 68, 71)",
+      },
+      dark: {
+        field: { "background-color": "rgb(26, 29, 33)", "border-top-color": "rgb(121, 124, 129)" },
+        inlineCode: {
+          color: "rgb(232, 145, 45)",
+          "background-color": "rgba(232, 232, 232, 0.04)",
+          "border-top-color": "rgba(232, 232, 232, 0.13)",
+        },
+        pre: {
+          color: "rgb(209, 210, 211)",
+          "background-color": "rgba(232, 232, 232, 0.04)",
+          "border-top-color": "rgba(232, 232, 232, 0.13)",
+        },
+        codeBox: {
+          "background-color": "rgb(33, 36, 40)",
+          "border-top-color": "rgba(248, 248, 248, 0.06)",
+        },
+        menu: {
+          "background-color": "rgb(33, 36, 40)",
+          "box-shadow":
+            "rgba(232, 232, 232, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.12) 0px 4px 12px 0px",
+        },
+        selectedDay: {
+          "background-color": "rgb(18, 100, 163)",
+          color: "rgb(255, 255, 255)",
+          "border-top-color": "rgb(53, 55, 59)",
+        },
+        icon: "rgb(185, 186, 189)",
+      },
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      const want = WANT[theme];
+      describe(theme, () => {
+        it("draws text, date and time fields on Slack's surface and border", async () => {
+          const page = await harness.open(page_(theme));
+          const names = ["background-color", "border-top-color"];
+          expect([
+            await props(page, ".sbk-text-input", names),
+            await props(page, ".sbk-datepicker__input", names),
+            await props(page, ".sbk-timepicker__control", names),
+          ]).toEqual([want.field, want.field, want.field]);
+        });
+
+        it("colours inline code, a preformatted block and a Markdown code box as Slack does", async () => {
+          const page = await harness.open(page_(theme));
+          const code = await page.evaluate(() => {
+            const el = [...document.querySelectorAll("code")].find(
+              (c) => c.textContent === "npm test",
+            );
+            el?.setAttribute("data-probe", "inline");
+            return Boolean(el);
+          });
+          expect(code).toBe(true);
+          expect(
+            await props(page, '[data-probe="inline"]', [
+              "color",
+              "background-color",
+              "border-top-color",
+            ]),
+          ).toEqual(want.inlineCode);
+          expect(
+            await props(page, ".sbk-rich-text__pre", [
+              "color",
+              "background-color",
+              "border-top-color",
+            ]),
+          ).toEqual(want.pre);
+          expect(
+            await props(page, ".sbk-code-block__box", ["background-color", "border-top-color"]),
+          ).toEqual(want.codeBox);
+        });
+
+        it("opens the overflow menu on Slack's c-menu surface", async () => {
+          const page = await harness.open(page_(theme));
+          await page.click(".sbk-overflow__button");
+          await settle(page);
+          expect(
+            await props(page, ".sbk-overflow__menu", ["background-color", "box-shadow"]),
+          ).toEqual(want.menu);
+        });
+
+        it("opens the data table's sort menu on the same surface", async () => {
+          const page = await harness.open({
+            ...(await fixture("catalog/table/numeric-sort-data-table")),
+            theme,
+          });
+          await page.getByRole("button", { name: "Amount" }).click();
+          await settle(page);
+          expect(
+            await props(page, ".sbk-data-table__sort-menu", ["background-color", "box-shadow"]),
+          ).toEqual(want.menu);
+        });
+
+        it("fills the selected day Slack's blue and keeps its grid line", async () => {
+          const page = await harness.open(page_(theme));
+          await page.click(".sbk-datepicker__input");
+          await page.mouse.move(5, 5);
+          await settle(page);
+          expect(
+            await props(page, ".sbk-calendar__cell--selected", [
+              "background-color",
+              "color",
+              "border-top-color",
+            ]),
+          ).toEqual(want.selectedDay);
+        });
+
+        it("draws the feedback icons in Slack's secondary grey", async () => {
+          const page = await harness.open({
+            ...(await fixture("extra/context-actions/feedback-row")),
+            theme,
+          });
+          expect(
+            (await props(page, ".sbk-feedback-buttons .sbk-icon-button", ["color"])).color,
+          ).toBe(want.icon);
+        });
+      });
+    }
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,

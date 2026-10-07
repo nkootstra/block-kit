@@ -160,9 +160,10 @@
 }
 
 /* Slack keeps the grid line around the selected day. */
+/* Slack fills the selected day #1264a3 with white text in both themes. */
 .sbk-calendar__cell--selected {
-  color: var(--sbk-on-highlight);
-  background: var(--sbk-highlight);
+  color: #fff;
+  background: #1264a3;
   border-radius: 4px;
 }
 

@@ -8,8 +8,8 @@
   font-family: var(--sbk-font-mono);
   font-size: 12px;
   line-height: 18px;
-  background: var(--sbk-surface-sec);
-  border: 1px solid rgba(29, 28, 29, 0.06);
+  background: var(--sbk-code-block-bg);
+  border: 1px solid var(--sbk-code-block-border);
   border-radius: 12px;
   overflow: hidden;
 }

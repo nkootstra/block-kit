@@ -150,7 +150,7 @@
 .sbk-data-table__sort-menu {
   width: 200px;
   padding: 12px 0;
-  background: var(--sbk-menu-bg);
+  background: var(--sbk-c-menu-bg);
   border-radius: 4px;
   box-shadow: var(--sbk-menu-shadow);
 }
