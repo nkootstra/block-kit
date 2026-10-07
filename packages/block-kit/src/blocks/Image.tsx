@@ -1,5 +1,6 @@
 import type { ImageBlock } from "@slack/types";
 import { useState } from "react";
+import { useBlockKit } from "../context";
 import { ImageActions } from "../data/HoverActions";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
@@ -32,22 +33,26 @@ function ExpandCaret({ expanded }: { expanded: boolean }) {
 }
 
 /**
- * `image_url` renders directly. `slack_file` references a file in a workspace's file store —
- * without an authenticated `files.info` call we can't resolve it to a URL, so we render the
- * documented fallback (alt text in a placeholder box) instead of a broken `<img>`.
+ * `image_url` renders directly. `slack_file` references a file in a workspace's file store, which
+ * the app resolves through `resolvers.slackFile` (e.g. with `files.info`); a resolved file renders
+ * like an `image_url`, and without a resolver (or for a file it doesn't know) the documented
+ * fallback shows instead (alt text in a placeholder box) rather than a broken `<img>`.
  *
  * Slack always shows a title row above the image with an expand caret and a "(N kB)" file-size
- * caption — the caption comes from fetching the file's real bytes, which isn't available to us
- * without a network round-trip, so we render the row (title + caret) but omit the byte count.
- * Keeping the row's height/spacing matches Slack's vertical rhythm even where the text differs.
+ * caption, the size coming from the file's bytes. We show it when the resolver gives a size; for
+ * an `image_url` we can't know the size without a network round-trip, so the row keeps its
+ * height and spacing without it.
  *
  * The caret is a toggle, as in Slack: pressing it hides the image (instantly, no animation) and
  * leaves only the title row, and pressing it again brings the image back.
  */
 export function Image({ block }: BlockProps<ImageBlock>) {
   const json = block as unknown as Json;
-  const imageUrl = "image_url" in block ? block.image_url : undefined;
+  const directUrl = "image_url" in block ? block.image_url : undefined;
   const slackFile = json.slack_file as { url?: string; id?: string } | undefined;
+  const { resolvers } = useBlockKit();
+  const resolved = slackFile ? resolvers.slackFile?.(slackFile) : undefined;
+  const imageUrl = directUrl ?? resolved?.url;
   const [expanded, setExpanded] = useState(true);
 
   return (
@@ -60,7 +65,7 @@ export function Image({ block }: BlockProps<ImageBlock>) {
             </span>
           )}
           <span className="sbk-image__trigger">
-            {" "}
+            {resolved?.size !== undefined && `(${formatFileSize(resolved.size)})`}{" "}
             <button
               type="button"
               className="sbk-image__toggle"
@@ -93,4 +98,13 @@ export function Image({ block }: BlockProps<ImageBlock>) {
       )}
     </figure>
   );
+}
+
+/**
+ * Slack's file-size caption: whole kilobytes, as measured ("(71 kB)" for 72,704 bytes). Larger
+ * files read in megabytes with one decimal; no Builder sample shows that case.
+ */
+function formatFileSize(bytes: number): string {
+  const kb = bytes / 1024;
+  return kb < 1024 ? `${Math.round(kb)} kB` : `${(kb / 1024).toFixed(1)} MB`;
 }

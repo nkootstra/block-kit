@@ -51,8 +51,9 @@ see the [`image` block](/blocks/image) instead.
 />
 
 :::note
-When `image_url` is missing, the rendered `<img>` has no `src` attribute rather than a broken-image
-placeholder. There's no fallback image.
+A `slack_file` image element shows the URL `resolvers.slackFile` returns for it, as the image block
+does. When there's no URL (no `image_url`, and no resolved file), the rendered `<img>` has no `src`
+attribute rather than a broken-image placeholder. There's no fallback image.
 :::
 
 ## Examples
