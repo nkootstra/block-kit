@@ -140,7 +140,31 @@ function renderSectionChildren(elements: RichTextElement[], ctx: RenderCtx): Rea
     );
   }
 
-  return elements.map((el, i) => <Fragment key={i}>{renderLeaf(el, ctx, 22, i === 0)}</Fragment>);
+  return mergeTextRuns(elements).map((el, i) => (
+    <Fragment key={i}>{renderLeaf(el, ctx, 22, i === 0)}</Fragment>
+  ));
+}
+
+/**
+ * Slack writes consecutive `text` elements with the same style as one text node ("item 2: " and
+ * "this is a list item" become "item 2: this is a list item"), so they render, wrap and select as
+ * one run of text.
+ */
+function mergeTextRuns(elements: RichTextElement[]): RichTextElement[] {
+  const merged: RichTextElement[] = [];
+  for (const el of elements) {
+    const prev = merged[merged.length - 1];
+    if (
+      el.type === "text" &&
+      prev?.type === "text" &&
+      JSON.stringify(prev.style ?? {}) === JSON.stringify(el.style ?? {})
+    ) {
+      merged[merged.length - 1] = { ...prev, text: prev.text + el.text };
+    } else {
+      merged.push(el);
+    }
+  }
+  return merged;
 }
 
 function renderLeaf(
@@ -179,7 +203,7 @@ function renderLeaf(
       const name = ctx.resolvers.usergroup?.(el.usergroup_id);
       content = name ? (
         <MentionLink type="usergroup" id={el.usergroup_id}>
-          @{name}
+          {`@${name}`}
         </MentionLink>
       ) : (
         <span className="sbk-mention--loading" aria-label="Loading user group" />
@@ -190,7 +214,7 @@ function renderLeaf(
       const name = ctx.resolvers.channel?.(el.channel_id);
       content = name ? (
         <MentionLink type="channel" id={el.channel_id}>
-          #{name}
+          {`#${name}`}
         </MentionLink>
       ) : (
         <span className="sbk-mention--private">
@@ -201,7 +225,7 @@ function renderLeaf(
       break;
     }
     case "broadcast":
-      content = <span className="sbk-mention--broadcast">@{el.range}</span>;
+      content = <span className="sbk-mention--broadcast">{`@${el.range}`}</span>;
       break;
     case "date": {
       const text = formatSlackDate(el.timestamp, el.format, { timeZone: ctx.timeZone });
