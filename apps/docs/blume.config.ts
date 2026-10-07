@@ -25,7 +25,15 @@ export default defineConfig({
     description:
       "What changed in each release of @nkootstra/block-kit, the React renderer for Slack Block Kit, newest first, with the pull requests behind each change.",
   },
-  navigation: { actions: [{ href: "/changelog", label: "Changelog" }] },
+  // A tab owns the section under its path, so the release pages stay out of the docs sidebar (and
+  // out of the last docs page's "next" link) while /changelog, its RSS feed, llms.txt, the sitemap
+  // and search still list every release (https://github.com/haydenbleasel/blume/issues/336).
+  navigation: {
+    tabs: [
+      { label: "Docs", path: "/" },
+      { label: "Changelog", path: "/changelog" },
+    ],
+  },
   // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
   agents: { skills: "./skills" },
   // Tells search engines and agents what the site documents: a free, MIT-licensed library.
