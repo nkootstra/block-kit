@@ -3136,6 +3136,32 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
     }
   });
+
+  // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
+  // one (512px; blocks 432px): what changes when a message is narrow.
+  describe("narrow messages", () => {
+    const DESKTOP = { width: 800, height: 900 };
+    const PHONE = { width: 390, height: 844 };
+
+    // The video box is min(360px, block - 24px) wide at Slack's 360:283 shape: 360 x 283 on
+    // desktop, 296 x 233 in a 320px block.
+    for (const [label, viewport] of [
+      ["desktop", DESKTOP],
+      ["a phone", PHONE],
+    ] as const) {
+      it(`sizes a video's box like Slack on ${label}`, async () => {
+        const page = await harness.open(await fixture("extra/media/video"), { viewport });
+        const [block, frame] = await Promise.all(
+          [".sbk-block", ".sbk-video__frame"].map((s) => page.locator(s).first().boundingBox()),
+        );
+        const width = Math.min(360, block!.width - 24);
+        expect([Math.round(frame!.width * 10) / 10, Math.round(frame!.height * 10) / 10]).toEqual([
+          Math.round(width * 10) / 10,
+          Math.round(((width * 283) / 360) * 10) / 10,
+        ]);
+      });
+    }
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */

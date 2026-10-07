@@ -1,6 +1,6 @@
+/* The block spans the message; text and box share Slack's column: 360px, or the block less 24px. */
 .sbk-video {
   padding: 8px 0;
-  max-width: 360px;
   line-height: 22px;
 }
 
@@ -28,10 +28,12 @@
 }
 
 .sbk-video__description {
+  max-width: min(360px, calc(100% - 24px));
   color: var(--sbk-text-body);
 }
 
 .sbk-video__title {
+  max-width: min(360px, calc(100% - 24px));
   color: var(--sbk-link);
 }
 
@@ -58,11 +60,10 @@
 .sbk-video__frame {
   display: block;
   position: relative;
-  /* Slack renders a fixed 360x283 box regardless of the thumbnail's own aspect ratio, letterboxing
-     the thumbnail inside it. */
-  width: 360px;
-  height: 283px;
-  max-width: 100%;
+  /* Slack's c-aspect_box: a 360:283 box, letterboxing the thumbnail whatever its own shape, as wide
+     as 360px or the block less 24px, whichever is narrower (296 x 233 in a phone's 320px block). */
+  width: min(360px, calc(100% - 24px));
+  aspect-ratio: 360 / 283;
   background: #000;
   overflow: hidden;
 }
