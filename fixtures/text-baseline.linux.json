@@ -239,7 +239,6 @@
   ],
   "catalog/table/simple-table": [],
   "extra/actions/more-elements": [
-    "extra|Search tickets|0",
     "extra|Pick a channel|0",
     "extra|January 1st, 2026|0"
   ],
@@ -276,8 +275,7 @@
   ],
   "interactive/open-modal": [
     "missing|New request|0",
-    "extra|New request|0",
-    "extra|Search fruit|0"
+    "extra|New request|0"
   ],
   "interactive/update-message": [],
   "message/approval": [],
