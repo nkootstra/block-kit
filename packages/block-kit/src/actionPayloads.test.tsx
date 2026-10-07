@@ -10,7 +10,7 @@
  * Every difference that remains is listed in KNOWN_DIFFERENCES, so the check fails both on a
  * new difference and on a listed one that no longer happens: a fix removes its entries.
  */
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -78,13 +78,115 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     fireEvent.change(input, { target: { value: "hello" } });
     await keyDownAsync(input, "Enter");
   },
+  "extra/payloads/buttons@click-plain": () =>
+    clickAsync(screen.getByRole("button", { name: "Plain" })),
+  "extra/payloads/buttons@click-primary": () =>
+    clickAsync(screen.getByRole("button", { name: "Approve" })),
+  "extra/payloads/buttons@click-danger": () =>
+    clickAsync(screen.getByRole("button", { name: "Deny" })),
+  "extra/payloads/buttons@click-url": () => clickAsync(screen.getByText("Open link")),
+  "extra/payloads/overflow-url@pick-link": async () => {
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    await clickAsync(screen.getByText("Open docs"));
+  },
+  "extra/payloads/selects@change-single": async () => {
+    fireEvent.click(screen.getAllByRole("combobox")[0]!);
+    await clickAsync(screen.getByRole("option", { name: "Bravo" }));
+  },
+  "extra/payloads/selects@keyboard-single": async () => {
+    const field = screen.getAllByRole("combobox")[0]!;
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+  },
+  "extra/payloads/selects@pick-accessory": async () => {
+    fireEvent.click(screen.getAllByRole("combobox")[1]!);
+    await clickAsync(screen.getByRole("option", { name: "Two" }));
+  },
+  "extra/payloads/selects@pick-multi": () => pickColours("Red"),
+  "extra/payloads/selects@pick-two-multi": () => pickColours("Red", "Green"),
+  "extra/payloads/selects@remove-chip-multi": async () => {
+    await pickColours("Red", "Green");
+    await clickAsync(screen.getByRole("button", { name: /Remove Green/ }));
+  },
+  "extra/payloads/pickers@pick-date-accessory": async () => {
+    fireEvent.click(screen.getAllByRole("textbox", { name: "Date" })[0]!);
+    await clickAsync(screen.getByRole("button", { name: /April 15th, 1990/ }));
+  },
+  "extra/payloads/pickers@type-time": async () => {
+    const field = screen.getAllByRole("combobox")[0]!;
+    fireEvent.click(field);
+    fireEvent.change(field, { target: { value: "3:15 pm" } });
+    await keyDownAsync(field, "Enter");
+  },
+  "extra/payloads/pickers@pick-datetime-date": async () => {
+    fireEvent.click(screen.getByRole("button", { name: "January 1st, 2026" }));
+    await clickAsync(screen.getByRole("button", { name: /January 15th, 2026/ }));
+  },
+  "extra/payloads/pickers@pick-datetime-time": async () => {
+    fireEvent.click(screen.getAllByRole("combobox").at(-1)!);
+    await clickAsync(screen.getByRole("option", { name: "3:00 PM" }));
+  },
+  "extra/payloads/pickers@clear-datetime": async () => {
+    fireEvent.click(screen.getAllByRole("combobox").at(-1)!);
+    await clickAsync(screen.getByRole("option", { name: "Clear selection" }));
+  },
+  "extra/payloads/choices@uncheck-initial": () =>
+    clickAsync(screen.getByRole("checkbox", { name: "Email" })),
+  "extra/payloads/choices@check-with-description": () =>
+    clickAsync(screen.getByRole("checkbox", { name: /SMS/ })),
+  "extra/payloads/choices@pick-radio-mrkdwn": () =>
+    clickAsync(screen.getByRole("radio", { name: "High" })),
+  "extra/payloads/choices@check-accessory": () =>
+    clickAsync(screen.getByRole("checkbox", { name: "Notify me" })),
+  "extra/payloads/dispatch-inputs@enter-number": async () => {
+    const input = screen.getByPlaceholderText("Enter a number");
+    fireEvent.change(input, { target: { value: "42" } });
+    await keyDownAsync(input, "Enter");
+  },
+  "extra/payloads/dispatch-inputs@type-characters": async () => {
+    const input = screen.getAllByRole("textbox").at(-1)!;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "hi" } });
+    });
+  },
+  "extra/context-actions/feedback-row@pick-positive": () =>
+    clickAsync(screen.getByRole("radio", { name: "Good response" })),
+  "extra/context-actions/feedback-row@click-icon": () =>
+    clickAsync(screen.getByRole("button", { name: "Remove this response" })),
+};
+
+/** Picks options from the "Colours" multi-select in its input block. */
+async function pickColours(...names: string[]) {
+  for (const name of names) {
+    // The list stays open after a pick, as Slack's does; open it only when it isn't.
+    if (!screen.queryByRole("option", { name: new RegExp(name) })) {
+      fireEvent.click(document.querySelector<HTMLElement>(".sbk-input button")!);
+    }
+    await clickAsync(screen.getByRole("option", { name: new RegExp(name) }));
+  }
+}
+
+/**
+ * Provider settings a recording depends on. The Builder that recorded the date and time pickers
+ * ran in Europe/Amsterdam, which `selected_date_time` is computed in.
+ */
+const PROVIDER: Record<string, { timeZone?: string }> = {
+  "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
+  "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
+  "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
 };
 
 /**
  * Differences between block-kit and the recordings, as `path: Slack <value>, ours <value>`.
  * Remove an entry when a change makes block-kit match Slack there.
  */
-const KNOWN_DIFFERENCES: Record<string, string[]> = {};
+const KNOWN_DIFFERENCES: Record<string, string[]> = {
+  // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
+  // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
+  "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
+};
 
 interface Recording {
   name: string;
@@ -177,6 +279,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
       let initial: StateValues = {};
       render(
         <BlockKitProvider
+          {...PROVIDER[name]}
           onPayload={(p) => (payload = p)}
           onStateChange={(s) => {
             if (!payload) initial = s;
@@ -207,7 +310,11 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
       let payload: BlockActionsPayload | undefined;
       let action: unknown;
       render(
-        <BlockKitProvider onAction={(a) => (action = a)} onPayload={(p) => (payload = p)}>
+        <BlockKitProvider
+          {...PROVIDER[name]}
+          onAction={(a) => (action = a)}
+          onPayload={(p) => (payload = p)}
+        >
           <Message blocks={fixtureBlocks(name)} />
         </BlockKitProvider>,
       );

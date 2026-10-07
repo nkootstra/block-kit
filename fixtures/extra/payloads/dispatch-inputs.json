@@ -1,0 +1,47 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "count",
+      "dispatch_action": true,
+      "label": {
+        "type": "plain_text",
+        "text": "Count"
+      },
+      "element": {
+        "type": "number_input",
+        "action_id": "number",
+        "is_decimal_allowed": false
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "site",
+      "dispatch_action": true,
+      "label": {
+        "type": "plain_text",
+        "text": "Site"
+      },
+      "element": {
+        "type": "url_text_input",
+        "action_id": "url"
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "live",
+      "dispatch_action": true,
+      "label": {
+        "type": "plain_text",
+        "text": "Live"
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "typed",
+        "dispatch_action_config": {
+          "trigger_actions_on": ["on_character_entered"]
+        }
+      }
+    }
+  ]
+}

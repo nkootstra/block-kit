@@ -1,0 +1,36 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "buttons",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "plain",
+          "value": "plain-value",
+          "text": { "type": "plain_text", "text": "Plain" }
+        },
+        {
+          "type": "button",
+          "action_id": "primary",
+          "style": "primary",
+          "value": "primary-value",
+          "text": { "type": "plain_text", "text": "Approve" }
+        },
+        {
+          "type": "button",
+          "action_id": "danger",
+          "style": "danger",
+          "value": "danger-value",
+          "text": { "type": "plain_text", "text": "Deny" }
+        },
+        {
+          "type": "button",
+          "action_id": "link",
+          "url": "https://example.com",
+          "text": { "type": "plain_text", "text": "Open link" }
+        }
+      ]
+    }
+  ]
+}
