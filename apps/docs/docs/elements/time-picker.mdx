@@ -207,7 +207,10 @@ their values for display.
 
 ## Interactivity
 
-Picking a time, from the list or typed, fires an action with `selected_time`:
+Picking a time, from the list or typed, fires an action with `selected_time`. In an input block,
+the list is as wide as the field. Where the time may be left empty (an `optional` input block, or
+any input block in a message), the list starts with "Clear selection" once a time is set, and
+clearing sends `null`:
 
 ```json
 {
