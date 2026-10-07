@@ -413,6 +413,63 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
   });
 
   describe("multi-select section accessory", () => {
+    // Captured in Block Kit Builder (`catalog/section/multi-static-select@dialog`): a 520 x 208
+    // dialog with a 68px header, the field 14px below it (468 x 36, 8px corners), and a 76px
+    // footer of 36px modal buttons.
+    it("lays the selection dialog out at Slack's 520 x 208", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: plain("Pick some"),
+            accessory: {
+              type: "multi_static_select",
+              action_id: "m",
+              placeholder: plain("Select options"),
+              options: [option("Alpha"), option("Bravo")],
+            },
+          },
+        ],
+      });
+      await page.click(".sbk-section__accessory .sbk-select__control");
+      await settle(page);
+      const geometry = await page.evaluate(() => {
+        const dialog = document.querySelector(".sbk-select-dialog")!.getBoundingClientRect();
+        const rel = (selector: string) => {
+          const r = document.querySelector(selector)!.getBoundingClientRect();
+          return [r.x - dialog.x, r.y - dialog.y, r.width, r.height].map(Math.round);
+        };
+        const buttons = [...document.querySelectorAll(".sbk-select-dialog__footer button")].map(
+          (b) => {
+            const r = b.getBoundingClientRect();
+            const c = getComputedStyle(b);
+            // The label's width depends on the font, so check Slack's 80px minimum instead.
+            return [c.minWidth, Math.round(r.height), c.fontSize, c.borderTopLeftRadius];
+          },
+        );
+        return {
+          dialog: [Math.round(dialog.width), Math.round(dialog.height)],
+          header: rel(".sbk-select-dialog__header"),
+          close: rel(".sbk-select-dialog__close"),
+          field: rel(".sbk-select-dialog__field"),
+          fieldRadius: getComputedStyle(document.querySelector(".sbk-select-dialog__field")!)
+            .borderTopLeftRadius,
+          buttons,
+        };
+      });
+      expect(geometry).toEqual({
+        dialog: [520, 208],
+        header: [0, 0, 520, 68],
+        close: [468, 16, 36, 36],
+        field: [24, 82, 468, 36],
+        fieldRadius: "8px",
+        buttons: [
+          ["80px", 36, "15px", "8px"],
+          ["80px", 36, "15px", "8px"],
+        ],
+      });
+    });
+
     // Captured in Block Kit Builder (`@dialog` references): users and conversations multi-selects
     // open the same selection dialog, titled with their placeholder.
     for (const [type, title] of [
@@ -464,7 +521,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       // The list stays open over the footer while picking, as Slack's does; a press elsewhere in
       // the dialog closes it.
       await page.click(".sbk-select-dialog__title");
-      await page.click(".sbk-select-dialog .sbk-button--primary");
+      await page.getByRole("button", { name: "Confirm" }).click();
       await settle(page);
       expect(await page.locator(".sbk-select-dialog").count()).toBe(0);
       expect(await page.locator(".sbk-section__accessory .sbk-select__control").textContent()).toBe(

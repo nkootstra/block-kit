@@ -155,15 +155,16 @@ export function SelectDialog({
           )}
         </div>
         <div className="sbk-select-dialog__footer">
-          <button type="button" className="sbk-button" onClick={onCancel}>
-            <span className="sbk-button__label">Cancel</span>
+          {/* Slack's dialog buttons are its 36px modal buttons, not the 28px message ones. */}
+          <button type="button" className="sbk-modal__button" onClick={onCancel}>
+            Cancel
           </button>
           <button
             type="button"
-            className="sbk-button sbk-button--primary"
+            className="sbk-modal__button sbk-modal__button--primary"
             onClick={() => onConfirm(draft)}
           >
-            <span className="sbk-button__label">Confirm</span>
+            Confirm
           </button>
         </div>
       </div>
