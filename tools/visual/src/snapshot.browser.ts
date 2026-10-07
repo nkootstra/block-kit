@@ -347,6 +347,26 @@ describe("snapshot.js", () => {
       ]);
     });
 
+    // Measured on Slack's confirm dialog: `max-width: calc(100% - 32px)` against the window. Frozen
+    // in a reference whose dialog wrapper is only as wide as the dialog, it shrank the dialog to 488.
+    it("keeps a dialog's measured width when its max-width is relative to the window", async () => {
+      await page.setContent(`<!doctype html><body style="margin:0;font:15px sans-serif">
+        <div class="p-bkb_preview__message" style="width:400px;height:60px"></div>
+        <div class="ReactModalPortal"><div class="ReactModal__Overlay c-dialog" style="position:fixed;inset:0">
+          <div role="dialog" class="ReactModal__Content c-dialog__content" style="position:fixed;left:300px;top:200px;width:520px;max-width:calc(100% - 32px);height:166px;box-sizing:border-box;background:#fff">Are you sure?</div>
+        </div></div>
+      </body>`);
+      const html = await snapshot(page);
+      const replay = await browser.newPage();
+      await replay.setContent(html);
+      const width = await replay.evaluate(
+        () =>
+          document.querySelector('[data-sbk-layer="dialog"] > *')!.getBoundingClientRect().width,
+      );
+      await replay.close();
+      expect(width).toBe(520);
+    });
+
     it("freezes an open dialog on its own, below the preview", async () => {
       await page.setContent(`<!doctype html><body style="margin:0;font:15px sans-serif">
         <div class="p-bkb_preview__message" style="width:400px;height:60px"></div>

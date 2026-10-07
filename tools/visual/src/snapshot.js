@@ -348,10 +348,14 @@ async (win = window) => {
     const src = kind === "dialog" ? dialog : visual(content);
     const r = src.getBoundingClientRect();
     const el = freeze(src, null);
-    // It was positioned by the portal; in the reference its layer places it.
+    // It was positioned by the portal; in the reference its layer places it. A dialog's max size is
+    // relative to the window (Slack's confirm: max-width calc(100% - 32px)); in the reference it
+    // would resolve against its wrapper, so its measured size stands instead.
     el.setAttribute(
       "style",
-      `${el.getAttribute("style")};position:relative;inset:auto;margin:0;transform:none`,
+      `${el.getAttribute("style")};position:relative;inset:auto;margin:0;transform:none${
+        kind === "dialog" ? ";max-width:none;max-height:none" : ""
+      }`,
     );
     layers.push({
       kind,
