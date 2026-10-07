@@ -3,6 +3,9 @@ title: Fallback canary
 description: How this renderer falls back for a block type it doesn't recognize, and the synthetic block used to test that path.
 seo:
   noindex: true
+# A test fixture rather than a real Slack block: out of the sidebar, reachable by its URL.
+sidebar:
+  hidden: true
 ---
 
 Slack Block Kit has a fallback convention: when a client doesn't recognize a block's `type`, it can render

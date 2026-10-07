@@ -1,7 +1,8 @@
 // Serves the static `blume build` output from Workers Static Assets, which also reads the
 // `_headers` and `_redirects` files the build writes. Page routes and the docs API run
-// `worker/index.ts` first, which answers agents with Markdown or JSON (pages and 404s); build
-// assets and raw files skip the Worker.
+// `worker/index.ts` first, which answers agents with Markdown or JSON (pages and 404s) and gives
+// Markdown copies (`.md`, `.mdx`) a canonical link; build assets and other raw files skip the
+// Worker.
 {
   "name": "block-kit-docs",
   "compatibility_date": "2026-09-28",
@@ -18,15 +19,14 @@
       "!/_astro/*",
       "!/og/*",
       "!/.well-known/*",
-      "!/*.mdx",
       "!/*.txt",
       "!/*.xml",
       "!/*.png",
       "!/*.svg",
     ],
   },
-  // `docs.block-kit.dev` is the docs' domain. The old `block-kit.kootstra.io` serves the same site
-  // until its visitors are moved over; canonical links already point at the new domain.
+  // `docs.block-kit.dev` is the docs' domain. The old `block-kit.kootstra.io` stays routed to the
+  // Worker, which redirects every request on it to the same URL on the new domain.
   "routes": [
     { "pattern": "docs.block-kit.dev", "custom_domain": true },
     { "pattern": "block-kit.kootstra.io", "custom_domain": true },

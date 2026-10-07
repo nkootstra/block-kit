@@ -1,0 +1,29 @@
+---
+title: Reference overview
+description: The API of @nkootstra/block-kit in detail, from the BlockKitProvider props and exported components to hooks, interaction payloads and custom blocks.
+seo:
+  title: "Block Kit for React API reference"
+---
+
+The guides show how the pieces fit together; these pages list every prop, component, hook and
+payload type in full, for when you need the exact signature.
+
+<CardGroup cols={2}>
+  <Card title="BlockKitProvider" href="/reference/block-kit-provider" icon="settings">
+    Every prop of the provider that connects rendered blocks to your app: handlers, resolvers, theme
+    and links.
+  </Card>
+  <Card title="Components" href="/reference/components" icon="component">
+    Every component the package exports, from `Message` and `View` to `Mrkdwn`, and when to use
+    each.
+  </Card>
+  <Card title="Hooks" href="/reference/hooks" icon="anchor">
+    Read the provider's state from your own components, and build custom surfaces.
+  </Card>
+  <Card title="Payloads" href="/reference/payloads" icon="send">
+    Build the interaction payloads Slack sends to your app's request URL.
+  </Card>
+  <Card title="Custom blocks" href="/reference/custom-blocks" icon="puzzle">
+    Render your own block and element types, or replace a built-in one.
+  </Card>
+</CardGroup>
