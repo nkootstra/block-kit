@@ -88,6 +88,8 @@
   text-decoration: none;
 }
 
-.sbk-profile-card__name-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .sbk-profile-card__name-link:hover {
+    text-decoration: underline;
+  }
 }

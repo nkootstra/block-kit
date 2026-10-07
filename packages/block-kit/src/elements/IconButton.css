@@ -17,10 +17,16 @@
 
 /* Slack's `c-icon_button--default`: solid gray fill and full-strength text on hover, a darker
    multiply overlay while pressed. */
-.sbk-icon-button:hover,
 .sbk-icon-button:active {
   color: var(--sbk-text);
   background-color: var(--sbk-icon-button-hover-bg);
+}
+
+@media (hover: hover) {
+  .sbk-icon-button:hover {
+    color: var(--sbk-text);
+    background-color: var(--sbk-icon-button-hover-bg);
+  }
 }
 
 .sbk-icon-button:active {

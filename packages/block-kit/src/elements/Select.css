@@ -24,8 +24,10 @@
   background-color: var(--sbk-surface-sec);
 }
 
-.sbk-select__control:hover .sbk-select__chevron {
-  color: var(--sbk-text);
+@media (hover: hover) {
+  .sbk-select__control:hover .sbk-select__chevron {
+    color: var(--sbk-text);
+  }
 }
 
 /* In an input block, Slack's multi-select closed control uses a taller (36px) box than a
@@ -325,9 +327,11 @@
 }
 
 /* Slack's `removeToken:hover`: the "x" darkens on a faint tint. */
-.sbk-select__chip-remove:hover {
-  color: var(--sbk-text);
-  background-color: var(--sbk-hover-overlay);
+@media (hover: hover) {
+  .sbk-select__chip-remove:hover {
+    color: var(--sbk-text);
+    background-color: var(--sbk-hover-overlay);
+  }
 }
 
 .sbk-select__menu {

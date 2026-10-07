@@ -46,8 +46,10 @@
   cursor: pointer;
 }
 
-.sbk-calendar__nav:hover {
-  background: rgba(29, 155, 209, 0.1);
+@media (hover: hover) {
+  .sbk-calendar__nav:hover {
+    background: rgba(29, 155, 209, 0.1);
+  }
 }
 
 .sbk-calendar__nav:active {
@@ -91,17 +93,28 @@
 
 /* Slack's hover, which keyboard focus shares: a light-blue border raised above the neighbouring
    grid lines, and a light-blue wash on any day but the selected one. */
-.sbk-calendar__cell:not(.sbk-calendar__cell--empty):hover,
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
   z-index: 1;
   border-color: rgba(29, 155, 209, 0.3);
 }
 
-.sbk-calendar__cell:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--selected):hover,
+@media (hover: hover) {
+  .sbk-calendar__cell:not(.sbk-calendar__cell--empty):hover {
+    z-index: 1;
+    border-color: rgba(29, 155, 209, 0.3);
+  }
+}
+
 .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus {
   background: rgba(29, 155, 209, 0.2);
+}
+
+@media (hover: hover) {
+  .sbk-calendar__cell:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--selected):hover {
+    background: rgba(29, 155, 209, 0.2);
+  }
 }
 
 /* The grid's outer corners, rounded as in Slack. */
@@ -169,7 +182,12 @@
   cursor: pointer;
 }
 
-.sbk-calendar__clear:hover,
 .sbk-calendar__clear:focus-visible {
   color: var(--sbk-link);
+}
+
+@media (hover: hover) {
+  .sbk-calendar__clear:hover {
+    color: var(--sbk-link);
+  }
 }

@@ -26,8 +26,10 @@
   background-color: var(--sbk-surface-sec);
 }
 
-.sbk-timepicker__control:hover .sbk-timepicker__chevron {
-  color: var(--sbk-text);
+@media (hover: hover) {
+  .sbk-timepicker__control:hover .sbk-timepicker__chevron {
+    color: var(--sbk-text);
+  }
 }
 
 .sbk-timepicker__icon {

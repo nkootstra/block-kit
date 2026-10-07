@@ -18,9 +18,11 @@
 }
 
 /* The trigger is a small outline `c-button` in Slack, so it shares Button.css's hover. */
-.sbk-overflow__button:hover {
-  background: var(--sbk-button-hover-bg);
-  box-shadow: var(--sbk-button-hover-shadow);
+@media (hover: hover) {
+  .sbk-overflow__button:hover {
+    background: var(--sbk-button-hover-bg);
+    box-shadow: var(--sbk-button-hover-shadow);
+  }
 }
 
 .sbk-overflow__button:active {

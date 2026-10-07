@@ -41,8 +41,10 @@
   text-decoration: none;
 }
 
-.sbk-video__title a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .sbk-video__title a:hover {
+    text-decoration: underline;
+  }
 }
 
 /* Slack's caret that expands the inline player. */
@@ -77,10 +79,15 @@
   transition: opacity 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
-.sbk-video__frame:hover::before,
 .sbk-video__frame:focus-within::before,
 .sbk-video__frame:focus-visible::before {
   opacity: 1;
+}
+
+@media (hover: hover) {
+  .sbk-video__frame:hover::before {
+    opacity: 1;
+  }
 }
 
 .sbk-video__thumb {

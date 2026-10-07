@@ -68,8 +68,10 @@
   cursor: pointer;
 }
 
-.sbk-modal__close:hover {
-  background: var(--sbk-icon-button-hover-bg);
+@media (hover: hover) {
+  .sbk-modal__close:hover {
+    background: var(--sbk-icon-button-hover-bg);
+  }
 }
 
 /* Slack pads the body 20px on the right, then a transparent 4px border and an 8px scrollbar track
@@ -98,8 +100,10 @@
   border-radius: 4px;
 }
 
-.sbk-modal__body:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(29, 28, 29, 0.52);
+@media (hover: hover) {
+  .sbk-modal__body:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(29, 28, 29, 0.52);
+  }
 }
 
 /* Builder's modal blocks are spaced further apart than the flat 4px message gap (measured via
@@ -146,8 +150,10 @@
 }
 
 /* Same `c-button` hover model as elements/Button.css. */
-.sbk-modal__button:hover {
-  box-shadow: var(--sbk-button-hover-shadow);
+@media (hover: hover) {
+  .sbk-modal__button:hover {
+    box-shadow: var(--sbk-button-hover-shadow);
+  }
 }
 
 .sbk-modal__button:active {
@@ -160,23 +166,36 @@
   color: #fff;
 }
 
-.sbk-modal__button--primary:hover,
 .sbk-modal__button--primary:active {
   background-image: linear-gradient(var(--sbk-button-overlay), var(--sbk-button-overlay));
   background-blend-mode: multiply;
 }
 
-.sbk-modal__button--primary:hover {
-  --sbk-button-overlay: #0a403221;
+@media (hover: hover) {
+  .sbk-modal__button--primary:hover {
+    background-image: linear-gradient(var(--sbk-button-overlay), var(--sbk-button-overlay));
+    background-blend-mode: multiply;
+  }
+}
+
+@media (hover: hover) {
+  .sbk-modal__button--primary:hover {
+    --sbk-button-overlay: #0a403221;
+  }
 }
 
 .sbk-modal__button--primary:active {
   --sbk-button-overlay: #0a403238;
 }
 
-.sbk-modal__button--secondary:hover,
 .sbk-modal__button--secondary:active {
   background-color: var(--sbk-button-hover-bg);
+}
+
+@media (hover: hover) {
+  .sbk-modal__button--secondary:hover {
+    background-color: var(--sbk-button-hover-bg);
+  }
 }
 
 .sbk-home {

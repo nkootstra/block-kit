@@ -1466,6 +1466,65 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(await touchAction(page, [".sbk-text-input"])).toEqual({ ".sbk-text-input": "auto" });
     });
   });
+
+  // A touch screen has no pointer resting anywhere, but after a tap the engine keeps the tapped
+  // element in :hover until the next tap lands elsewhere, so a hover wash would stay painted on it.
+  describe("hover on touch screens", () => {
+    const controls: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            { type: "button", action_id: "b", text: plain("Go") },
+            { type: "overflow", action_id: "o", options: [option("Edit"), option("Share")] },
+            { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+          ],
+        },
+      ],
+    };
+    const fill = (page: Page, selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const NEXT_MONTH = '.sbk-calendar__nav[aria-label="Next month"]';
+
+    it("leaves no hover wash on the calendar's month button after a tap", async () => {
+      const page = await harness.open(controls, { touch: true });
+      await page.tap(".sbk-datepicker__input");
+      await page.tap(NEXT_MONTH);
+      await settle(page);
+      expect(await fill(page, NEXT_MONTH)).toBe("rgba(0, 0, 0, 0)");
+    });
+
+    it("leaves the overflow button as it was before the tap", async () => {
+      const page = await harness.open(controls, { touch: true });
+      const before = await fill(page, ".sbk-overflow__button");
+      await page.tap(".sbk-overflow__button");
+      await page.keyboard.press("Escape");
+      await settle(page);
+      expect(await fill(page, ".sbk-overflow__button")).toBe(before);
+    });
+
+    // Chromium's emulated tap leaves the button in :active as well as :hover afterwards, which
+    // paints Slack's pressed grey (rightly, for a pressed button); a real touch ends :active when
+    // the finger lifts. Firefox and WebKit end it, so they show whether the hover fill stays.
+    it.if(engine !== "chromium")("leaves a button as it was before the tap", async () => {
+      const page = await harness.open(controls, { touch: true });
+      const before = await fill(page, ".sbk-button");
+      await page.tap(".sbk-button");
+      await settle(page);
+      expect(await fill(page, ".sbk-button")).toBe(before);
+    });
+
+    it("still washes the month button under a mouse pointer", async () => {
+      const page = await harness.open(controls);
+      await page.click(".sbk-datepicker__input");
+      await page.hover(NEXT_MONTH);
+      await settle(page);
+      expect(await fill(page, NEXT_MONTH)).toBe("rgba(29, 155, 209, 0.1)");
+    });
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */

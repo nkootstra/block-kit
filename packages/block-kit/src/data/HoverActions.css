@@ -64,10 +64,16 @@ a.sbk-hover-actions__button {
   color: var(--sbk-content-sec);
 }
 
-.sbk-hover-actions__button:hover,
 .sbk-hover-actions__button[aria-expanded="true"] {
   background: var(--sbk-row-hover-bg);
   color: var(--sbk-text);
+}
+
+@media (hover: hover) {
+  .sbk-hover-actions__button:hover {
+    background: var(--sbk-row-hover-bg);
+    color: var(--sbk-text);
+  }
 }
 
 .sbk-hover-actions__button:focus-visible {

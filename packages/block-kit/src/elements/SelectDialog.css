@@ -56,9 +56,11 @@
   cursor: pointer;
 }
 
-.sbk-select-dialog__close:hover {
-  color: var(--sbk-text);
-  background: var(--sbk-hover-overlay);
+@media (hover: hover) {
+  .sbk-select-dialog__close:hover {
+    color: var(--sbk-text);
+    background: var(--sbk-hover-overlay);
+  }
 }
 
 .sbk-select-dialog__close svg {

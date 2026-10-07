@@ -149,6 +149,8 @@ div.sbk-task-card__pill {
   text-decoration: none;
 }
 
-.sbk-task-card__source-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .sbk-task-card__source-link:hover {
+    text-decoration: underline;
+  }
 }

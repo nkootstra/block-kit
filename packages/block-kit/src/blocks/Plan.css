@@ -217,6 +217,8 @@ div.sbk-plan__task-header {
   text-decoration: none;
 }
 
-.sbk-plan__task-source-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .sbk-plan__task-source-link:hover {
+    text-decoration: underline;
+  }
 }
