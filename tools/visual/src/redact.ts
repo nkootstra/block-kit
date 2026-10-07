@@ -128,6 +128,133 @@ function replaceName(html: string, name: string, placeholder: string): string {
   return out;
 }
 
+const VOID_ELEMENTS = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+]);
+/** The sizes the snapshot freezes on an element, measured on whatever text it held then. */
+const FROZEN_SIZE = new Set(["width", "max-width", "min-width", "flex-basis"]);
+const isPlaceholderName = (text: string) =>
+  MEMBER_PLACEHOLDER.test(text) || CHANNEL_PLACEHOLDER.test(text) || text === WORKSPACE_PLACEHOLDER;
+
+/** A style attribute's declarations, split on `;` outside parentheses (data: URLs hold `;`). */
+function declarations(style: string): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < style.length; i++) {
+    const c = style[i];
+    if (c === "(") depth++;
+    else if (c === ")") depth--;
+    else if (c === ";" && depth === 0) {
+      out.push(style.slice(start, i));
+      start = i + 1;
+    }
+  }
+  out.push(style.slice(start));
+  return out.filter((d) => d.trim() !== "");
+}
+
+/**
+ * The snapshot froze each element's width around the real name. A placeholder of another length
+ * would be cut off or leave a gap, and whatever follows it (a presence dot, a status) would sit
+ * where the real name ended. So the sizes frozen on the placeholder's own element, and on a
+ * wrapper holding only that element, are released; the row around them keeps its width.
+ */
+function releaseNameWidths(html: string): string {
+  interface Open {
+    name: string;
+    start: number;
+    end: number;
+    elements: number;
+    text: boolean;
+    holdsName: boolean;
+  }
+  const stack: Open[] = [];
+  const release = new Set<number>();
+  const tag = /<(\/?)([a-zA-Z][\w-]*)\b[^>]*>/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+  const textBetween = (from: number, to: number) => {
+    const text = unescapeHtml(html.slice(from, to)).replace(/\s+/g, " ").trim();
+    const top = stack.at(-1);
+    if (!text || !top) return;
+    top.text = true;
+    if (isPlaceholderName(text)) top.holdsName = true;
+  };
+  while ((match = tag.exec(html))) {
+    textBetween(last, match.index);
+    last = tag.lastIndex;
+    const closing = match[1] === "/";
+    const name = (match[2] ?? "").toLowerCase();
+    if (!closing) {
+      const parent = stack.at(-1);
+      if (parent) parent.elements++;
+      if (name === "script" || name === "style") {
+        const end = html.indexOf(`</${name}`, tag.lastIndex);
+        tag.lastIndex = last = end < 0 ? html.length : end;
+        stack.push({
+          name,
+          start: match.index,
+          end: last,
+          elements: 0,
+          text: true,
+          holdsName: false,
+        });
+        continue;
+      }
+      if (VOID_ELEMENTS.has(name) || match[0].endsWith("/>")) continue;
+      stack.push({
+        name,
+        start: match.index,
+        end: tag.lastIndex,
+        elements: 0,
+        text: false,
+        holdsName: false,
+      });
+      continue;
+    }
+    // Close back to the matching element.
+    let open: Open | undefined;
+    while ((open = stack.pop()) && open.name !== name) {}
+    if (!open) continue;
+    if (open.holdsName && open.elements === 0) {
+      release.add(open.start);
+      const parent = stack.at(-1);
+      if (parent) (parent as Open & { child?: number }).child = open.start;
+    }
+    const child = (open as Open & { child?: number }).child;
+    if (child !== undefined && open.elements === 1 && !open.text) release.add(open.start);
+  }
+  if (release.size === 0) return html;
+  let out = "";
+  let at = 0;
+  for (const start of [...release].sort((a, b) => a - b)) {
+    const end = html.indexOf(">", start) + 1;
+    const opening = html.slice(start, end).replace(/\bstyle="([^"]*)"/, (_, style: string) => {
+      const kept = declarations(style).filter(
+        (d) => !FROZEN_SIZE.has(d.slice(0, d.indexOf(":")).trim().toLowerCase()),
+      );
+      return `style="${kept.join(";")}"`;
+    });
+    out += html.slice(at, start) + opening;
+    at = end;
+  }
+  return out + html.slice(at);
+}
+
 /**
  * Swaps the workspace's members, channels, name, avatars and IDs for stable placeholders: the
  * same name gets the same placeholder in every theme and width of a fixture. Idempotent.
@@ -154,6 +281,8 @@ export function redact(html: string, mapping: Record<string, string> = {}): stri
     for (const name of workspaces) next = replaceName(next, name, WORKSPACE_PLACEHOLDER);
     return next;
   });
+
+  out = releaseNameWidths(out);
 
   const own = fixtureIds(out);
   const ids = new Map<string, string>();

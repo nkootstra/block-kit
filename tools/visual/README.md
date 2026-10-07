@@ -165,7 +165,10 @@ files (`files.slack.com`, `slack-files.com` and permalink URLs, also URL-encoded
 `U0000001`. IDs the fixture's own payload uses
 (`U0123456789`) are kept. Slack marks all of these up, so no list of real names is needed; a name
 that only appears as plain text goes in `tools/visual/redact.local.json`
-(`{ "Real name": "Placeholder" }`), which is ignored by git.
+(`{ "Real name": "Placeholder" }`), which is ignored by git. The snapshot froze each name's
+element at the real name's width, so redaction also releases the width, `flex-basis`, `max-width`
+and `min-width` on a placeholder's own element and on a wrapper holding only it; the placeholder
+lays out at its own width, and whatever follows it (a presence dot) moves with it.
 
 `references:check` fails on a reference that still contains a member, channel or workspace name,
 an avatar URL, a profile link, a file URL, the workspace's subdomain, or a Slack ID its fixture
@@ -178,7 +181,10 @@ allows it: `actions` (an actions block in a message), `accessory` (a section's a
 `modal-input` (an input block in a modal) and `home` (an actions block on App Home). They're
 generated from `contexts.ts`, which lists the elements and where Slack allows each, from Slack's
 Block Kit reference; `bun tools/visual/src/contexts.ts` rewrites them, and `contexts.test.ts` fails
-when they drift. They're captured and compared like any other fixture.
+when they drift. They're captured and compared like any other fixture. The generator only writes
+and deletes the fixture JSON; a reference left without a fixture is dropped through the lock.
+Block Kit Builder refuses a multi-select in an `actions` block (in a message and on App Home) and
+keeps showing the previous payload, so those pairings are left out.
 
 ## Coverage
 
@@ -231,7 +237,10 @@ it up to date, and `bun run references:check` (part of CI) fails when:
 
 - a fixture's payload changed since its reference was captured: recapture it;
 - a reference's HTML was edited by hand: express the change as a normalize rule instead;
-- a reference isn't in the lock file, or the lock file lists one that no longer exists.
+- a reference isn't in the lock file, or the lock file lists one that no longer exists;
+- a reference shows text another fixture's payload writes and its own doesn't (`stale.ts`): Block
+  Kit Builder refused the payload and kept showing the previous one, while the snapshot still
+  recorded the refused payload from the URL.
 
 A fixture without a reference is listed but doesn't fail; it just isn't compared yet.
 

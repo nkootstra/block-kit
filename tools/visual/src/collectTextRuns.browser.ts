@@ -33,6 +33,40 @@ describe("collectTextRuns", () => {
     ]);
   });
 
+  // Slack shows some values in an <input> (the datetime picker's "January 1st, 2026") where we
+  // draw text, and the other way round; both read as the same run, where the text paints.
+  it("reads an input's value as a run, where the same text in the same box would sit", async () => {
+    const box =
+      "box-sizing:border-box;width:300px;height:36px;padding:0 8px;border:1px solid #888;font:15px sans-serif";
+    const [fromInput] = await runs(`<input value="January 1st, 2026" style="${box}">`);
+    const [fromText] = await runs(
+      `<div style="${box};display:flex;align-items:center">January 1st, 2026</div>`,
+    );
+    expect(fromInput?.text).toBe("January 1st, 2026");
+    const near = (a = 0, b = 0) => Math.abs(a - b) <= 0.5;
+    expect([
+      near(fromInput?.x, fromText?.x),
+      near(fromInput?.y, fromText?.y),
+      near(fromInput?.width, fromText?.width),
+    ]).toEqual([true, true, true]);
+  });
+
+  it("keeps a field's value in document order among the text runs", async () => {
+    const found = await runs('<p>Before</p><input value="Middle"><p>After</p>');
+    expect(found.map((r) => r.text)).toEqual(["Before", "Middle", "After"]);
+  });
+
+  it("reads nothing from an empty input or its placeholder", async () => {
+    expect(await runs('<input value="" placeholder="Select a date">')).toEqual([]);
+  });
+
+  // A typeable select keeps its value in the input but paints it in a layer over the field, with
+  // the input's own text transparent (Slack's c-select_input__content, our *__content): only the
+  // layer counts.
+  it("reads nothing from an input whose text is transparent", async () => {
+    expect(await runs('<input value="1:37 PM" style="color:rgba(29, 28, 29, 0)">')).toEqual([]);
+  });
+
   it("positions a run relative to the root and reads its font", async () => {
     const [run] = await runs(
       '<p style="margin:0;padding:8px 12px;font-size:13px;font-weight:700;font-style:italic">Hint</p>',

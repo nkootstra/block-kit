@@ -78,9 +78,111 @@ export function collectTextRuns(selector: string): TextRun[] {
 
   const runs: TextRun[] = [];
   const range = document.createRange();
+
+  // A field's value has no text node, so it's laid out in a stand-in box with the field's own
+  // geometry and font (single-line fields centre their line; a textarea starts at the top) and
+  // measured there. Slack shows some values in an <input> where we draw text, and the other way
+  // round; this way both read as the same run.
+  const FIELD_STYLES = [
+    "box-sizing",
+    "width",
+    "height",
+    "padding-top",
+    "padding-right",
+    "padding-bottom",
+    "padding-left",
+    "border-top-width",
+    "border-right-width",
+    "border-bottom-width",
+    "border-left-width",
+    "border-top-style",
+    "border-right-style",
+    "border-bottom-style",
+    "border-left-style",
+    "font-family",
+    "font-size",
+    "font-weight",
+    "font-style",
+    "font-stretch",
+    "letter-spacing",
+    "word-spacing",
+    "line-height",
+    "text-indent",
+    "text-transform",
+    "white-space",
+  ];
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
+  const fieldValueRect = (field: HTMLInputElement | HTMLTextAreaElement, text: string) => {
+    const style = getComputedStyle(field);
+    const box = field.getBoundingClientRect();
+    const standIn = document.createElement("div");
+    for (const prop of FIELD_STYLES) standIn.style.setProperty(prop, style.getPropertyValue(prop));
+    standIn.style.position = "fixed";
+    standIn.style.left = `${box.left}px`;
+    standIn.style.top = `${box.top}px`;
+    standIn.style.margin = "0";
+    standIn.style.visibility = "hidden";
+    standIn.style.overflow = "hidden";
+    standIn.style.display = "flex";
+    standIn.style.alignItems = field.localName === "textarea" ? "flex-start" : "center";
+    standIn.style.justifyContent =
+      style.textAlign === "center"
+        ? "center"
+        : /right|end/.test(style.textAlign)
+          ? "flex-end"
+          : "flex-start";
+    const textNode = document.createTextNode(text);
+    standIn.append(textNode);
+    document.body.append(standIn);
+    range.selectNodeContents(textNode);
+    const rect = range.getBoundingClientRect();
+    standIn.remove();
+    return rect;
+  };
+
+  const fieldRun = (field: HTMLInputElement | HTMLTextAreaElement, root: Element) => {
+    if (
+      !(
+        field.localName === "textarea" ||
+        /^(text|search|email|url|tel|number|)$/.test((field as HTMLInputElement).type)
+      ) ||
+      field.value.trim() === ""
+    )
+      return;
+    const style = getComputedStyle(field);
+    if (style.visibility !== "visible" || style.display === "none") return;
+    // A typeable select paints its value in a layer over the field and hides the input's own
+    // text; that layer's text node is the run.
+    const fill = parse(style.getPropertyValue("-webkit-text-fill-color")) ?? parse(style.color);
+    if (!fill || (fill[3] ?? 1) === 0 || Number(style.opacity) === 0) return;
+    const text = field.value.replace(/\s+/g, " ").trim();
+    const rect = fieldValueRect(field, text);
+    if (rect.width === 0 || rect.height === 0) return;
+    runs.push({
+      text,
+      x: rect.x - origin.x,
+      y: rect.y - origin.y,
+      width: rect.width,
+      fontSize: Number.parseFloat(style.fontSize),
+      fontWeight: Number(style.fontWeight),
+      fontStyle: style.fontStyle,
+      color: style.color,
+      opacity: Number(style.opacity),
+      background: style.backgroundColor,
+      motion: motionOf(field, root),
+    });
+  };
+
   for (const root of roots) {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    // Runs come in document order: text nodes, and fields' values where the fields sit.
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const name = (node as Element).localName;
+        if (name === "input" || name === "textarea")
+          fieldRun(node as HTMLInputElement | HTMLTextAreaElement, root);
+        continue;
+      }
       const text = (node.textContent ?? "").replace(/\s+/g, " ").trim();
       const el = node.parentElement;
       if (!text || !el) continue;

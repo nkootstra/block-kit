@@ -16,6 +16,17 @@ describe("context fixtures", () => {
     expect(allowed("static_select", "home")).toBe(true);
   });
 
+  it("leaves out the multi-selects Block Kit Builder refuses in an actions block", () => {
+    // The Builder drops a multi-select in a message's or App Home's actions block and keeps
+    // showing the previous payload, so a capture there records some other fixture.
+    for (const element of ["multi_static_select", "multi_users_select"]) {
+      expect(allowed(element, "actions")).toBe(false);
+      expect(allowed(element, "home")).toBe(false);
+      expect(allowed(element, "accessory")).toBe(true);
+      expect(allowed(element, "modal-input")).toBe(true);
+    }
+  });
+
   it("puts an element in the block its context names", () => {
     expect(fixtureFor("static_select", "accessory")).toMatchObject({
       blocks: [{ type: "section", accessory: { type: "static_select" } }],
@@ -42,5 +53,24 @@ describe("context fixtures", () => {
     expect([...onDisk.keys()].sort()).toEqual([...expected.keys()].sort());
     for (const [name, payload] of expected)
       expect({ name, payload: onDisk.get(name) }).toEqual({ name, payload });
+  });
+});
+
+describe("writeContexts", () => {
+  it("rewrites the fixtures but leaves the captured references next to them alone", async () => {
+    const { mkdtemp, mkdir, writeFile, exists } = await import("node:fs/promises").then(
+      async (fs) => ({ ...fs, exists: (p: string) => Bun.file(p).exists() }),
+    );
+    const { tmpdir } = await import("node:os");
+    const { writeContexts } = await import("./contexts");
+    const dir = await mkdtemp(join(tmpdir(), "contexts-"));
+    await mkdir(join(dir, "button"), { recursive: true });
+    await writeFile(join(dir, "button", "actions.reference.html"), "<p>captured</p>");
+    await mkdir(join(dir, "gone"), { recursive: true });
+    await writeFile(join(dir, "gone", "actions.json"), "{}");
+    await writeContexts(dir);
+    expect(await exists(join(dir, "button", "actions.reference.html"))).toBe(true);
+    expect(await exists(join(dir, "button", "actions.json"))).toBe(true);
+    expect(await exists(join(dir, "gone", "actions.json"))).toBe(false);
   });
 });
