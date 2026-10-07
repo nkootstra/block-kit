@@ -158,9 +158,13 @@ async function runReal(items: { name: string; payload: unknown }[]) {
     };
     try {
       const results = await w.capture({ items: list, snap: w.snap, settle: 100, viewport: false });
-      return { results, log: w.log.filter((l) => !l.startsWith("ignored")) };
+      return { results, error: undefined, log: w.log.filter((l) => !l.startsWith("ignored")) };
     } catch (e) {
-      return { error: String(e), log: w.log.filter((l) => !l.startsWith("ignored")) };
+      return {
+        results: {} as Record<string, string>,
+        error: String(e),
+        log: w.log.filter((l) => !l.startsWith("ignored")),
+      };
     }
   }, items);
 }
