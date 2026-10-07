@@ -178,6 +178,49 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
       `resize the window so the viewport is ${viewport}px wide (it's ${win.innerWidth})`,
     );
 
+  // Late in a long session the Builder can load a stylesheet that repeats rules it already has.
+  // Repeating a rule moves it later in the cascade, so it can win where it lost on a fresh page:
+  // `.c-date_time_picker { margin: 0 -8px }` came after `.p-block_kit_datetime_picker { margin: 0 }`
+  // and shifted every datetime picker 8px. The page's own sheets are inventoried on the first call
+  // (kept on the window, since a runner calls this once per item); a sheet that appears later may
+  // add rules, but not repeat a selector's property an earlier sheet declares.
+  const declarations = (sheet) => {
+    const found = new Set();
+    const walk = (rules, context) => {
+      for (const rule of rules) {
+        if (rule.selectorText !== undefined && rule.style)
+          for (const property of rule.style)
+            found.add(`${context}${rule.selectorText} { ${property}`);
+        else if (rule.cssRules) walk(rule.cssRules, `${context}@${rule.conditionText ?? ""} `);
+      }
+    };
+    try {
+      walk(sheet.cssRules, "");
+    } catch {
+      // A cross-origin sheet can't be read; there's nothing to compare.
+    }
+    return found;
+  };
+  const styles = (win.sbkCaptureStyles ??= { seen: new Set(), declared: new Set() });
+  const repeatedRules = () => {
+    const repeated = [];
+    for (const sheet of doc.styleSheets) {
+      if (styles.seen.has(sheet)) continue;
+      const first = styles.seen.size === 0;
+      styles.seen.add(sheet);
+      const own = declarations(sheet);
+      if (!first) for (const rule of own) if (styles.declared.has(rule)) repeated.push(rule);
+      for (const rule of own) styles.declared.add(rule);
+    }
+    return repeated;
+  };
+  if (styles.seen.size === 0) {
+    for (const sheet of doc.styleSheets) {
+      styles.seen.add(sheet);
+      for (const rule of declarations(sheet)) styles.declared.add(rule);
+    }
+  }
+
   const results = {};
   let previous = "";
   let previousPayload;
@@ -210,6 +253,13 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
     win.sbkCaptureWaiting = undefined;
     // Let transitions (80–160ms in Slack) finish before freezing the computed styles.
     await sleep(settle);
+    const repeated = repeatedRules();
+    if (repeated.length > 0)
+      throw new Error(
+        `${name}: the Builder loaded a stylesheet that repeats ${repeated.length} of its rules ` +
+          `(${repeated.slice(0, 3).join("; ")}), which reorders the cascade; reload the Builder, ` +
+          "paste snapshot.js and capture.js again, and resume",
+      );
     results[name] = await snap(win);
     previous = preview()?.innerHTML ?? "";
 

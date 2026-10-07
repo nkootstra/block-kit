@@ -143,6 +143,11 @@ to the preview):
    with a real click and set `window.sbkCaptureReady = true`.
    Keep the Builder tab visible: macOS pauses a hidden tab and the preview never settles. When the
    run is done, switch the Builder back to light.
+   Paste the scripts into a freshly loaded Builder. Late in a long session the Builder can load a
+   stylesheet that repeats rules it already has, which reorders the cascade (it once shifted every
+   datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
+   refuses to snapshot once a later sheet repeats one of their rules: reload the Builder, paste the
+   scripts again and resume from the item it names.
 
 3. Copy the resulting `refs` JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.

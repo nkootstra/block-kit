@@ -279,3 +279,75 @@ describe("capture.js", () => {
     );
   });
 });
+
+/**
+ * A stand-in whose page, like the Builder late in a long session, can append a stylesheet that
+ * repeats an earlier rule. Repeating `.picker { margin: 0 -8px }` moves it after
+ * `.slack-picker { margin: 0 }` in the cascade, so it wins where it lost on a fresh page.
+ */
+const DRIFT_BUILDER = `<!doctype html><html class="sk-client-theme--light"><head>
+  <style>.picker { margin: 0 -8px; } .slack-picker { margin: 0; }</style>
+</head><body>
+  <div class="p-bkb_preview__message" style="width:512px"><div class="picker slack-picker">Pick</div></div>
+  <script>
+    window.log = [];
+    window.adapter = {
+      load: async (payload) => {
+        if (payload.append) {
+          const style = document.createElement("style");
+          style.textContent = payload.append;
+          document.head.append(style);
+        }
+      },
+      theme: () => "light",
+      setTheme: async () => {},
+      previewSize: () => "desktop",
+      setPreviewSize: async () => {},
+    };
+    window.snap = async () => { window.log.push("snap"); return "<html></html>"; };
+  </script>
+</body></html>`;
+
+async function runDrift(appends: string[]) {
+  page = await browser.newPage();
+  await page.setContent(DRIFT_BUILDER);
+  await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+  return page.evaluate(async (list) => {
+    const w = window as unknown as {
+      capture: (o: unknown) => Promise<unknown>;
+      adapter: unknown;
+      snap: unknown;
+      log: string[];
+    };
+    // One capture call per item, the way a page-side runner drives it, so the stylesheet
+    // inventory has to outlive a single call.
+    for (const [i, append] of list.entries()) {
+      try {
+        await w.capture({
+          items: [{ name: `catalog/section/plain-text-${i}`, payload: { append } }],
+          snap: w.snap,
+          adapter: w.adapter,
+          settle: 0,
+        });
+      } catch (e) {
+        return { error: String(e), log: w.log };
+      }
+    }
+    return { error: undefined, log: w.log };
+  }, appends);
+}
+
+describe("capture.js against stylesheets the Builder loads during a session", () => {
+  it("captures when a later stylesheet only adds rules of its own", async () => {
+    const { error, log } = await runDrift(["", ".helper { color: red; }", ""]);
+    expect(error).toBeUndefined();
+    expect(log).toEqual(["snap", "snap", "snap"]);
+  });
+
+  it("refuses to snapshot once a later stylesheet repeats a rule the page already has", async () => {
+    const { error, log } = await runDrift(["", ".picker { margin: 0 -8px; }"]);
+    expect(error).toMatch(/plain-text-1: .*\.picker \{ margin/);
+    expect(error).toMatch(/reload the Builder/);
+    expect(log).toEqual(["snap"]);
+  });
+});
