@@ -116,7 +116,11 @@ describe("<Select> static_select", () => {
     fireEvent.click(input);
     expect(screen.queryByPlaceholderText("Search options")).toBeNull();
     fireEvent.change(input, { target: { value: "option c" } });
-    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Option C"]);
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__option-text")?.textContent),
+    ).toEqual(["Option C"]);
     expect(screen.getByText("Option C").closest("[data-active]")).toBeTruthy();
   });
 
@@ -138,7 +142,8 @@ describe("<Select> static_select", () => {
     );
     const input = screen.getByRole("combobox");
     fireEvent.click(input);
-    fireEvent.change(input, { target: { value: "an" } });
+    // Slack matches the start of a word, so "ban" (not "an") finds Banana.
+    fireEvent.change(input, { target: { value: "ban" } });
     await keyDownAsync(input, "Enter");
     expect(onAction).toHaveBeenCalledWith(
       expect.objectContaining({ selected_option: sent("b", "Banana") }),
@@ -309,8 +314,11 @@ describe("<Select> users_select / channels_select", () => {
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
-    // Opening highlights the first option; two more presses land on "C", one more wraps to "A".
+    // Opening highlights the first option (Slack's typed highlight); the first press keeps it on
+    // "A" as the keyboard highlight, two more land on "C".
     expect(screen.getByText("A").closest("[data-active]")).toBeTruthy();
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    expect(screen.getByText("A").closest("[data-active]:not([data-typed])")).toBeTruthy();
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     expect(screen.getByText("C").closest("[data-active]")).toBeTruthy();
@@ -441,7 +449,131 @@ describe("<Select> external_select with onOptions", () => {
       </BlockKitProvider>,
     );
     fireEvent.click(screen.getByRole("button", { name: /Pick a fruit/ }));
-    await vi.waitFor(() => expect(screen.getByText("No results")).toBeTruthy());
+    await vi.waitFor(() => expect(screen.getByText("😕 Nothing could be found.")).toBeTruthy());
+  });
+});
+
+// Measured in Block Kit Builder (see the PR): what Slack's option lists show while you type.
+describe("<Select> list states", () => {
+  const static3 = {
+    type: "static_select",
+    action_id: "a1",
+    placeholder: { type: "plain_text", text: "Pick one" },
+    options: [opt("a", "Alpha"), opt("b", "Bravo"), opt("c", "Charlie")],
+  } as unknown as SelectElement;
+
+  function renderSelect(element: SelectElement, props = {}) {
+    render(
+      <BlockKitProvider {...props}>
+        <Select element={element} blockId="b1" />
+      </BlockKitProvider>,
+    );
+    return screen.queryByRole("combobox") as HTMLElement;
+  }
+  const rows = () => screen.queryAllByRole("option").map((o) => o.textContent);
+
+  it("matches what's typed against the start of each word, keeping the options' order", () => {
+    const input = renderSelect({
+      ...static3,
+      options: [
+        opt("ny", "New York"),
+        opt("oa", "Old Alpha"),
+        opt("ab", "Alpha-Beta"),
+        opt("xa", "x(alpha)"),
+      ],
+    } as unknown as SelectElement);
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "al" } });
+    expect(rows()).toEqual(["Old AlphaEnter", "Alpha-Beta", "x(alpha)"]);
+    fireEvent.change(input, { target: { value: "york" } });
+    expect(rows()).toEqual(["New YorkEnter"]);
+  });
+
+  it("says nothing could be found when no option matches", () => {
+    const input = renderSelect(static3);
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "rav" } });
+    expect(rows()).toEqual(["😕 Nothing could be found."]);
+    expect(screen.getByRole("option").getAttribute("aria-disabled")).toBe("true");
+  });
+
+  it("marks the first row with an Enter key on open and while typing", () => {
+    const input = renderSelect(static3);
+    fireEvent.click(input);
+    expect(rows()).toEqual(["AlphaEnter", "Bravo", "Charlie"]);
+    fireEvent.change(input, { target: { value: "b" } });
+    expect(rows()).toEqual(["BravoEnter"]);
+  });
+
+  it("drops the Enter key once the arrow keys take over, the first press staying on that row", () => {
+    const input = renderSelect(static3);
+    fireEvent.click(input);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(rows()).toEqual(["Alpha", "Bravo", "Charlie"]);
+    expect(screen.getByText("Alpha").closest("[data-active]")).toBeTruthy();
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(screen.getByText("Bravo").closest("[data-active]")).toBeTruthy();
+  });
+
+  it("keeps what was typed after Escape, and offers the same matches when reopened", () => {
+    const input = renderSelect(static3) as HTMLInputElement;
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: "br" } });
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(input.getAttribute("aria-expanded")).toBe("false");
+    expect(input.value).toBe("br");
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(rows()).toEqual(["BravoEnter"]);
+  });
+
+  it("asks for the minimum number of characters before an external select searches", () => {
+    renderSelect(
+      { type: "external_select", action_id: "e1", min_query_length: 2 } as unknown as SelectElement,
+      { onOptions: () => ({ options: [] }) },
+    );
+    fireEvent.click(screen.getByRole("button"));
+    expect(rows()).toEqual(["Type a minimum of 2 characters to see options."]);
+    fireEvent.change(screen.getByPlaceholderText("Search options"), { target: { value: "x" } });
+    expect(rows()).toEqual(["Type a minimum of 2 characters to see options."]);
+  });
+
+  it("ticks the options a multi-select already has", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              ...static3,
+              type: "multi_static_select",
+              initial_options: [opt("a", "Alpha")],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(document.querySelector(".sbk-select__control")!);
+    const alpha = screen.getByRole("option", { name: /Alpha/ });
+    expect(alpha.querySelector(".sbk-select__check")).toBeTruthy();
+    expect(
+      screen.getByRole("option", { name: /Bravo/ }).querySelector(".sbk-select__check"),
+    ).toBeNull();
+  });
+
+  it("separates option groups with a divider", () => {
+    const input = renderSelect({
+      ...static3,
+      options: undefined,
+      option_groups: [
+        {
+          label: { type: "plain_text", text: "Group one" },
+          options: [opt("a", "Alpha"), opt("b", "Bravo")],
+        },
+        { label: { type: "plain_text", text: "Group two" }, options: [opt("c", "Charlie")] },
+      ],
+    } as unknown as SelectElement);
+    fireEvent.click(input);
+    expect(document.querySelectorAll(".sbk-select__divider")).toHaveLength(1);
   });
 });
 

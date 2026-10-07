@@ -7,7 +7,7 @@ import type { OptionsResponse } from "../payloads";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { useInvalidProps } from "./inputBlockContext";
+import { useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { MENU_GAP, Popover } from "./Popover";
 import { SectionAccessoryContext } from "./accessoryContext";
@@ -117,6 +117,21 @@ function responseGroups(response: OptionsResponse | undefined): OptionGroupView[
     }));
   }
   return [{ options: response.options as PlainTextOption[] }];
+}
+
+/**
+ * Whether `text` matches what's typed, as Slack's lists filter: case-insensitively, at the start of
+ * the text or of any word in it (after a space, hyphen, bracket or other punctuation), never in the
+ * middle of a word.
+ */
+export function matchesQuery(text: string, query: string): boolean {
+  const q = query.toLowerCase();
+  if (!q) return true;
+  const t = text.toLowerCase();
+  for (let i = t.indexOf(q); i !== -1; i = t.indexOf(q, i + 1)) {
+    if (i === 0 || !/[\p{L}\p{N}]/u.test(t[i - 1]!)) return true;
+  }
+  return false;
 }
 
 /** Slack's default `min_query_length` for an `external_select`. */
@@ -280,22 +295,22 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     await commit(items.filter((i) => i.id !== id));
   }
 
-  const filteredOptions =
-    source === "static"
-      ? allOptions(element).filter((o) => o.text.text.toLowerCase().includes(query.toLowerCase()))
-      : [];
+  const matches = (o: PlainTextOption) => matchesQuery(o.text.text, query);
+  const filteredOptions = source === "static" ? allOptions(element).filter(matches) : [];
 
   // Visible static options, grouped as rendered, plus a flat list for keyboard navigation.
-  const matches = (o: PlainTextOption) => o.text.text.toLowerCase().includes(query.toLowerCase());
   const visibleGroups: OptionGroupView[] = remote
     ? (remoteGroups ?? [])
     : source !== "static"
       ? []
       : element.option_groups
-        ? element.option_groups.map((group) => ({
-            label: group.label.text,
-            options: (group.options as PlainTextOption[]).filter(matches),
-          }))
+        ? element.option_groups
+            .map((group) => ({
+              label: group.label.text,
+              options: (group.options as PlainTextOption[]).filter(matches),
+            }))
+            // A group with nothing left to offer loses its header too.
+            .filter((group) => group.options.length > 0)
         : [{ options: filteredOptions }];
   const flatOptions = visibleGroups.flatMap((g) => g.options);
   const isSelected = (option: PlainTextOption) =>
@@ -308,6 +323,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   // As a section accessory, Slack's multi_static_select is a small button ("Select options", then
   // "N selected") that opens a "Select options" dialog and sends once, on Confirm.
   const inAccessory = useContext(SectionAccessoryContext);
+  const inInputBlock = useInInputBlock();
   const dialogMode = inAccessory && multi && source === "static";
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -329,6 +345,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     },
     listRef,
     returnFocusRef: typeable ? undefined : triggerRef,
+    keepQuery: typeable,
+    typedHighlight: true,
   });
   useFocusOnLoad<HTMLElement>(
     element as { focus_on_load?: boolean },
@@ -342,15 +360,27 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       : undefined;
   const placeholder = element.placeholder?.text ?? "Select an item";
 
+  // What the list says when it has no rows to offer: Slack's minimum-query hint for a search that
+  // hasn't started, else "Nothing could be found."
+  const searchesApp = source === "external";
+  const belowMinimum = searchesApp && minQueryLength > 0 && query.length < minQueryLength;
+  const emptyMessage = belowMinimum
+    ? `Type a minimum of ${minQueryLength} characters to see options.`
+    : !loading && flatOptions.length === 0 && (!remote || remoteGroups !== undefined)
+      ? "nothing"
+      : undefined;
+  // In an input block, Slack's multi-select list is 22px wider than the field and starts 12px left.
+  const wideMulti = multi && inInputBlock;
+
   const menu = open && (
     <Popover
       anchorRef={rootRef}
       onDismiss={() => combo.setOpen(false)}
-      offsetX={typeable ? -12 : 0}
+      offsetX={typeable || wideMulti ? -12 : 0}
       gap={MENU_GAP}
     >
       <div
-        className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}`}
+        className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}${wideMulti ? " sbk-select__menu--wide" : ""}`}
         role="listbox"
         id={combo.listId}
         ref={listRef}
@@ -369,34 +399,49 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             />
           </div>
         )}
-        {(() => {
-          let index = 0;
-          return visibleGroups.map((group, gi) => {
-            const rows = group.options.map((option) => {
-              const i = index++;
-              return (
-                <SelectOption
-                  key={option.value ?? i}
-                  option={option}
-                  selected={isSelected(option)}
-                  onSelect={() => selectItem(optionToItem(option))}
-                  navProps={combo.optionProps(i)}
-                />
+        {!belowMinimum &&
+          (() => {
+            let index = 0;
+            return visibleGroups.map((group, gi) => {
+              const rows = group.options.map((option) => {
+                const i = index++;
+                return (
+                  <SelectOption
+                    key={option.value ?? i}
+                    option={option}
+                    selected={isSelected(option)}
+                    check={multi && isSelected(option)}
+                    typed={combo.typed && combo.active === i}
+                    onSelect={() => selectItem(optionToItem(option))}
+                    navProps={combo.optionProps(i)}
+                  />
+                );
+              });
+              return group.label === undefined ? (
+                rows
+              ) : (
+                <div className="sbk-select__group" key={gi}>
+                  {gi > 0 && <div className="sbk-select__divider" role="separator" />}
+                  <div className="sbk-select__group-label">{group.label}</div>
+                  {rows}
+                </div>
               );
             });
-            return group.label === undefined ? (
-              rows
+          })()}
+        {remote && loading && !belowMinimum && <div className="sbk-select__status">Loading…</div>}
+        {emptyMessage && (
+          <div
+            className="sbk-select__option sbk-select__option--disabled"
+            role="option"
+            aria-disabled="true"
+            aria-selected="false"
+          >
+            {emptyMessage === "nothing" ? (
+              <span className="sbk-select__no-results">😕 Nothing could be found.</span>
             ) : (
-              <div className="sbk-select__group" key={gi}>
-                <div className="sbk-select__group-label">{group.label}</div>
-                {rows}
-              </div>
-            );
-          });
-        })()}
-        {remote && loading && <div className="sbk-select__status">Loading…</div>}
-        {remote && !loading && remoteGroups !== undefined && flatOptions.length === 0 && (
-          <div className="sbk-select__status">No results</div>
+              emptyMessage
+            )}
+          </div>
         )}
         {showSearchOnly && items.length > 0 && multi && (
           <div className="sbk-select__group-label">Selected</div>
@@ -455,7 +500,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     const display = unresolved ? undefined : closedLabel;
     // Slack keeps the chosen option in the input but draws it in a layer over the field
     // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
-    const overlay = display !== undefined && !open;
+    const overlay = display !== undefined && !open && !query;
     return (
       <div className={`sbk-select sbk-select--typeable${sizeClass}`} ref={rootRef}>
         {/* A label, so a press on the chevron or padding lands in the input as on Slack's field. */}
@@ -559,11 +604,17 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
 function SelectOption({
   option,
   selected,
+  check,
+  typed,
   onSelect,
   navProps,
 }: {
   option: PlainTextOption;
   selected: boolean;
+  /** A multi-select's chosen option, which Slack ticks. */
+  check?: boolean;
+  /** The typed highlight, which shows an Enter key to pick it. */
+  typed?: boolean;
   onSelect: () => void;
   navProps?: ReturnType<ReturnType<typeof useCombobox>["optionProps"]>;
 }) {
@@ -572,15 +623,41 @@ function SelectOption({
       className={`sbk-select__option${selected ? " sbk-select__option--selected" : ""}`}
       role="option"
       aria-selected={selected}
+      data-typed={typed || undefined}
       onClick={onSelect}
       {...navProps}
     >
-      <span className="sbk-select__option-text">
-        <Text text={option.text} />
+      {check && (
+        <svg
+          className="sbk-select__check"
+          viewBox="0 0 16 22"
+          width="16"
+          height="22"
+          aria-hidden="true"
+        >
+          <path
+            d="M4.5 11.2 7 13.7l4.5-5.1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+      <span className="sbk-select__option-label">
+        <span className="sbk-select__option-text">
+          <Text text={option.text} />
+        </span>
+        {option.description && (
+          <span className="sbk-select__option-description">
+            <Text text={option.description} />
+          </span>
+        )}
       </span>
-      {option.description && (
-        <span className="sbk-select__option-description">
-          <Text text={option.description} />
+      {typed && (
+        <span className="sbk-select__shortcut" aria-hidden="true">
+          <span className="sbk-select__keycap">Enter</span>
         </span>
       )}
     </div>

@@ -115,10 +115,19 @@ the other, never both.
 Like Slack's, a single `static_select` is typed into: its field is a text input
 (`role="combobox"`) that shows the chosen option. Clicking it opens a 322px list, starting 12px left
 of the field, with the first option (or the chosen one) highlighted. Typing narrows the list to the
-options that contain what you typed, so there's no separate search box; the arrow keys move the
-highlight, Enter picks it and closes the list, and Escape or Tab close it. A
-`multi_static_select` and the other sources still open from a button, with a search box where
-there's something to search.
+options with a word that starts with what you typed ("york" finds "New York", "ork" finds
+nothing), so there's no separate search box. When nothing matches, the list says "😕 Nothing could
+be found." Escape and Tab close the list and keep what you typed, for the next time it opens.
+
+The highlight works as in Slack: the row a list opens on, and the first match while you type, is a
+grey row with an **Enter** key on it, and Enter picks it. The first arrow key turns that row into
+the blue keyboard highlight, and later presses move it. Option groups get a 28px heading each, with
+their options indented under it and a rule between groups.
+
+A `multi_static_select` and the other sources still open from a button, with a search box where
+there's something to search. A multi-select ticks the options it already has; in an `input` block
+its list is 22px wider than the field and starts 12px to its left. An `external_select` asks for
+"Type a minimum of N characters to see options." until the query reaches its `min_query_length`.
 
 <Preview
   payload={{

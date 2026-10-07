@@ -75,6 +75,12 @@
   --sbk-on-highlight: #fff;
   --sbk-blend-interaction: multiply;
   --sbk-calendar-grid: rgb(221, 221, 221);
+  /* A select list's Enter key on its typed highlight, and the rule between option groups. */
+  --sbk-keycap-bg: rgb(234, 234, 234);
+  --sbk-keycap-border: rgba(94, 93, 96, 0.13);
+  --sbk-menu-divider: rgb(221, 221, 221);
+  /* "😕 Nothing could be found.": the list's text at 70%. */
+  --sbk-menu-faint-text: rgba(29, 28, 29, 0.7);
   /* A calendar day's number, and today's number and ring. */
   --sbk-calendar-day: #1d1c1d;
   --sbk-calendar-today: #1264a3;
