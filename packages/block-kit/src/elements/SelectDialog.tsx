@@ -10,20 +10,25 @@ import { useCombobox } from "./useCombobox";
 const optionId = (option: PlainTextOption) => option.value ?? option.text.text;
 
 /**
- * Slack's "Select options" dialog, which a `multi_static_select` in a section accessory opens
- * instead of an inline menu. Picks are a draft: the option list stays open while choosing, and
- * nothing is sent until Confirm. Cancel, the close button and Escape discard the draft.
+ * Slack's selection dialog, which a multi-select in a section accessory opens instead of an inline
+ * menu, titled with the select's placeholder. Picks are a draft: the option list stays open while
+ * choosing, and nothing is sent until Confirm. Cancel, the close button and Escape discard the
+ * draft. A users, conversations or channels select has no options to list; `addTyped` turns what's
+ * typed into one on Enter.
  */
 export function SelectDialog({
   options,
   initial,
   placeholder,
+  addTyped,
   onConfirm,
   onCancel,
 }: {
   options: PlainTextOption[];
   initial: PlainTextOption[];
   placeholder: string;
+  /** Turns a typed id into a chip on Enter, for a select with no options to list. */
+  addTyped?: (typed: string) => PlainTextOption;
   onConfirm: (selected: PlainTextOption[]) => void;
   onCancel: () => void;
 }) {
@@ -52,6 +57,13 @@ export function SelectDialog({
       const option = rows[i];
       if (option) toggle(option);
     },
+    onSubmitQuery: addTyped
+      ? (typed) => {
+          const option = addTyped(typed);
+          if (!chosen(option)) setDraft((current) => [...current, option]);
+          setQuery("");
+        }
+      : undefined,
     listRef,
   });
 
@@ -78,7 +90,7 @@ export function SelectDialog({
       >
         <div className="sbk-select-dialog__header">
           <h2 className="sbk-select-dialog__title" id={titleId}>
-            Select options
+            {placeholder}
           </h2>
           <button
             type="button"

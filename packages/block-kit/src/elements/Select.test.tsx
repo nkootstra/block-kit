@@ -391,8 +391,8 @@ describe("<Select> external_select with onOptions", () => {
       </BlockKitProvider>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /Pick a fruit/ }));
-    const search = screen.getByPlaceholderText("Search options");
+    const search = screen.getByRole("combobox", { name: /Pick a fruit/ });
+    fireEvent.click(search);
     fireEvent.change(search, { target: { value: "a" } });
     await new Promise((r) => setTimeout(r, 300));
     expect(onOptions).not.toHaveBeenCalled();
@@ -435,7 +435,7 @@ describe("<Select> external_select with onOptions", () => {
     }
     render(<Host />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Pick a fruit/ }));
+    fireEvent.click(screen.getByRole("combobox", { name: /Pick a fruit/ }));
     await vi.waitFor(() => expect(screen.getByRole("option", { name: "result" })).toBeTruthy());
     await new Promise((r) => setTimeout(r, 300));
     expect(calls).toEqual([""]);
@@ -448,7 +448,7 @@ describe("<Select> external_select with onOptions", () => {
         <Message blocks={actionsBlock} />
       </BlockKitProvider>,
     );
-    fireEvent.click(screen.getByRole("button", { name: /Pick a fruit/ }));
+    fireEvent.click(screen.getByRole("combobox", { name: /Pick a fruit/ }));
     await vi.waitFor(() => expect(screen.getByText("😕 Nothing could be found.")).toBeTruthy());
   });
 });
@@ -497,9 +497,50 @@ describe("<Select> list states", () => {
     expect(screen.getByRole("option").getAttribute("aria-disabled")).toBe("true");
   });
 
-  it("marks the first row with an Enter key on open and while typing", () => {
+  // Captured in Block Kit Builder (`@open` references): a list opened with a click highlights its
+  // first row in blue, with no Enter key.
+  it("highlights the first row in blue, without an Enter key, when a click opens the list", () => {
     const input = renderSelect(static3);
     fireEvent.click(input);
+    expect(rows()).toEqual(["Alpha", "Bravo", "Charlie"]);
+    const active = screen.getByText("Alpha").closest("[data-active]");
+    expect([Boolean(active), active?.hasAttribute("data-typed")]).toEqual([true, false]);
+  });
+
+  // Captured in Block Kit Builder (`extra/modal/form@open`): with an option chosen, a click opens
+  // the list on its first row; the chosen one is marked with a check in blue, and the field is
+  // emptied to the placeholder.
+  describe("with an option chosen", () => {
+    const chosen = { ...static3, initial_option: opt("b", "Bravo") } as unknown as SelectElement;
+
+    it("opens on the first row, marking the chosen one with a check", () => {
+      const input = renderSelect(chosen);
+      fireEvent.click(input);
+      expect(screen.getByText("Alpha").closest("[data-active]")).toBeTruthy();
+      const bravo = screen.getByText("Bravo").closest('[role="option"]')!;
+      expect([
+        bravo.getAttribute("aria-selected"),
+        Boolean(bravo.querySelector(".sbk-select__check")),
+      ]).toEqual(["true", true]);
+    });
+
+    it("empties the field to the placeholder while the list is open", () => {
+      const input = renderSelect(chosen) as HTMLInputElement;
+      fireEvent.click(input);
+      expect([input.value, input.placeholder]).toEqual(["", "Pick one"]);
+    });
+  });
+
+  it("moves on from the clicked-open highlight with the first arrow key", () => {
+    const input = renderSelect(static3);
+    fireEvent.click(input);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(screen.getByText("Bravo").closest("[data-active]")).toBeTruthy();
+  });
+
+  it("marks the first row with an Enter key when the keyboard opens the list and while typing", () => {
+    const input = renderSelect(static3);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
     expect(rows()).toEqual(["AlphaEnter", "Bravo", "Charlie"]);
     fireEvent.change(input, { target: { value: "b" } });
     expect(rows()).toEqual(["BravoEnter"]);
@@ -507,7 +548,7 @@ describe("<Select> list states", () => {
 
   it("drops the Enter key once the arrow keys take over, the first press staying on that row", () => {
     const input = renderSelect(static3);
-    fireEvent.click(input);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
     fireEvent.keyDown(input, { key: "ArrowDown" });
     expect(rows()).toEqual(["Alpha", "Bravo", "Charlie"]);
     expect(screen.getByText("Alpha").closest("[data-active]")).toBeTruthy();
@@ -531,9 +572,13 @@ describe("<Select> list states", () => {
       { type: "external_select", action_id: "e1", min_query_length: 2 } as unknown as SelectElement,
       { onOptions: () => ({ options: [] }) },
     );
-    fireEvent.click(screen.getByRole("button"));
+    // Captured in Block Kit Builder (`extra/actions/more-elements@open`): Slack's external select
+    // is typed into, like the static one, with no search box in its list.
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
     expect(rows()).toEqual(["Type a minimum of 2 characters to see options."]);
-    fireEvent.change(screen.getByPlaceholderText("Search options"), { target: { value: "x" } });
+    expect(screen.queryByPlaceholderText("Search options")).toBeNull();
+    fireEvent.change(input, { target: { value: "x" } });
     expect(rows()).toEqual(["Type a minimum of 2 characters to see options."]);
   });
 
