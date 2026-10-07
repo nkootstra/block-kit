@@ -694,12 +694,87 @@ h2 {
   color: var(--muted);
 }
 
-.compare__controls input {
-  flex: 1;
-  min-width: 0;
-  height: 44px;
-  margin: 0;
-  accent-color: var(--accent);
+/* The Divider slider, as wide as the image so its thumb sits under the divider line. A range
+   input's thumb centre travels from half a thumb in from each end, so the input is one thumb
+   wider than the image and pulled half a thumb out on each side: the centre then runs from the
+   image's left edge to its right edge. The thumb has a fixed size in every engine for that, and
+   the frame's 12px padding holds the half thumb that sticks out. The visible track is drawn on
+   the wrapper, so it spans exactly the image. */
+.compare__slider {
+  --thumb: 20px;
+  position: relative;
+  max-width: 512px;
+  margin: 6px auto 0;
+}
+
+.compare__slider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  translate: 0 -50%;
+  border-radius: 999px;
+  background: var(--line);
+  pointer-events: none;
+}
+
+.compare__slider input {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% + var(--thumb));
+  height: 32px;
+  margin: 0 calc(var(--thumb) / -2);
+  padding: 0;
+  background: transparent;
+  appearance: none;
+  cursor: ew-resize;
+}
+
+.compare__slider input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.compare__slider input::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
+.compare__slider input::-webkit-slider-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc((4px - var(--thumb)) / 2);
+  border: 2px solid var(--bg);
+  border-radius: 999px;
+  background: var(--accent);
+  appearance: none;
+}
+
+.compare__slider input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 2px solid var(--bg);
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.compare__slider input:focus {
+  outline: none;
+}
+
+.compare__slider input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.compare__slider input:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .compare__note {
