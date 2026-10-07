@@ -726,6 +726,24 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ]).toEqual([24, 0]);
     });
 
+    // Measured in Block Kit Builder: reopened, the field holds the chosen time as selected text,
+    // so what's typed replaces it.
+    it("replaces the chosen time with what's typed after reopening", async () => {
+      const page = await harness.open(picker);
+      await page.click(".sbk-timepicker__control");
+      await settle(page);
+      expect(
+        await page.locator(".sbk-timepicker__input").evaluate((el) => {
+          const input = el as HTMLInputElement;
+          return [input.value, input.selectionStart, input.selectionEnd];
+        }),
+      ).toEqual(["1:37 PM", 0, 7]);
+      await page.keyboard.type("3:15 pm");
+      await page.keyboard.press("Enter");
+      await settle(page);
+      expect(await page.locator(".sbk-timepicker__content-text").textContent()).toBe("3:15 PM");
+    });
+
     it("names the time zone as Slack does", async () => {
       const page = await harness.open({
         blocks: [

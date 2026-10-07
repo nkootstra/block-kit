@@ -4,6 +4,7 @@ import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { timeZoneLabel } from "./dateFormat";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
@@ -100,13 +101,20 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   });
   useFocusOnLoad(element, combo.inputRef);
 
-  // Reopened, Slack's field holds the chosen time as text, selected, so typing replaces it.
+  // Reopened, Slack's field holds the chosen time as text, selected, so typing replaces it. The
+  // text is selected once it's in the field, a render after the query is set.
+  const selectOnOpen = useRef(false);
   useEffect(() => {
     if (!combo.open || !time) return;
+    selectOnOpen.current = true;
     setQuery(formatTime(time));
-    combo.inputRef.current?.select();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combo.open]);
+  useClientLayoutEffect(() => {
+    if (!selectOnOpen.current) return;
+    selectOnOpen.current = false;
+    combo.inputRef.current?.select();
+  }, [query]);
 
   const display = time ? formatTime(time) : undefined;
   const input = combo.inputProps(display, element.placeholder?.text ?? "Select time");
