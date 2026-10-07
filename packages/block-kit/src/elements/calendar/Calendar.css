@@ -79,7 +79,7 @@
   padding: 10px 0;
   font: inherit;
   line-height: 20px;
-  color: var(--sbk-text);
+  color: var(--sbk-calendar-day);
   background: var(--sbk-bg);
   border: 1px solid var(--sbk-calendar-grid);
   cursor: pointer;
@@ -135,7 +135,7 @@
 }
 
 .sbk-calendar__cell--today {
-  color: var(--sbk-link);
+  color: var(--sbk-calendar-today);
 }
 
 /* Today gets a 32px ring centred in its cell (white when today is also selected). */
@@ -146,7 +146,7 @@
   left: 50%;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--sbk-highlight);
+  border: 1px solid var(--sbk-calendar-today);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
