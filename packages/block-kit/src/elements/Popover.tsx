@@ -68,9 +68,10 @@ export function Popover({
       const fitsBelow = below + height <= window.innerHeight;
       const fitsAbove = above >= 0;
       let top = !fitsBelow && fitsAbove ? above : below;
-      // Taller than the room on either side: keep it on screen rather than past the window's edge.
+      // Taller than the room on either side: keep it on screen rather than past the window's edge,
+      // with the default gap to spare even for a popover that overlaps its anchor (`MENU_GAP`).
       if (!fitsBelow && !fitsAbove) {
-        top = Math.max(gap, Math.min(below, window.innerHeight - height - gap));
+        top = Math.max(DEFAULT_GAP, Math.min(below, window.innerHeight - height - DEFAULT_GAP));
       }
       // The content is positioned inside a layer as wide as the anchor (a calendar right-aligned to
       // it, a menu left-aligned), so size the layer first and measure where the content lands.

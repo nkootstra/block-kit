@@ -143,6 +143,16 @@
   cursor: pointer;
 }
 
+/* The datetimepicker's time list is wider than the timepicker's, as in Slack. */
+.sbk-timepicker__menu--wide {
+  width: 230px;
+}
+
+/* Slack's "Clear selection" row, which leads a datetimepicker's list once a value is chosen. */
+.sbk-timepicker__option--clear {
+  color: var(--sbk-content-sec);
+}
+
 .sbk-timepicker__option--selected {
   color: var(--sbk-menu-selected-text);
 }
