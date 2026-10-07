@@ -71,12 +71,15 @@
 }
 
 /* A 34px icon button, like the modal's close button. */
+/* Slack's `c-icon_button`: 36 x 36, reaching 8px into the header's padding, which makes the header
+   68px (Block Kit Builder, `extra/actions/more-elements@confirm`). */
 .sbk-confirm__close {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+  margin-right: -8px;
   padding: 0;
   border: none;
   border-radius: 8px;
