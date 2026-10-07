@@ -8,7 +8,7 @@
   border: none;
   background: none;
   border-radius: 8px;
-  color: rgb(69, 68, 71);
+  color: var(--sbk-content-sec);
   cursor: pointer;
   transition-property: color, background-color, border-color;
   transition-duration: 80ms;

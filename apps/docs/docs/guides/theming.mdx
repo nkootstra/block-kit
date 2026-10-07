@@ -104,10 +104,15 @@ stylesheet to restyle without touching the components. The main tokens:
     "--sbk-danger": { type: "color", description: "Danger-styled button background." },
     "--sbk-border": { type: "color", description: "Default hairline border color." },
     "--sbk-divider": { type: "color", description: "Divider block color." },
-    "--sbk-code-text": { type: "color", description: "Inline code and fenced code block text." },
+    "--sbk-code-text": { type: "color", description: "Inline code text." },
     "--sbk-code-bg": {
       type: "color",
-      description: "Inline code and fenced code block background.",
+      description: "Inline code and rich text preformatted block background.",
+    },
+    "--sbk-pre-text": { type: "color", description: "Rich text preformatted block text." },
+    "--sbk-code-block-bg": {
+      type: "color",
+      description: "The Markdown block's fenced code box background.",
     },
     "--sbk-focus-ring": {
       type: "color",
@@ -115,13 +120,20 @@ stylesheet to restyle without touching the components. The main tokens:
     },
     "--sbk-menu-bg": {
       type: "color",
-      description: "Overflow menu, calendar and other popover background.",
+      description: "Calendar and other popover background.",
+    },
+    "--sbk-c-menu-bg": {
+      type: "color",
+      description: "Overflow and data table sort menu background (Slack's `c-menu`).",
     },
     "--sbk-surface-sec": {
       type: "color",
-      description: "Secondary surface: select and time lists, code blocks.",
+      description: "Secondary surface: select and time lists.",
     },
-    "--sbk-select-border": { type: "color", description: "Select field border." },
+    "--sbk-select-border": {
+      type: "color",
+      description: "Border of select, text, date and time fields.",
+    },
     "--sbk-calendar-today": {
       type: "color",
       description: "Today's number and ring in the date picker calendar.",

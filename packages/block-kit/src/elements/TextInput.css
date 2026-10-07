@@ -5,7 +5,7 @@
   font: 13px / 18px var(--sbk-font);
   color: var(--sbk-text);
   background: var(--sbk-bg);
-  border: 1px solid rgb(124, 122, 127);
+  border: 1px solid var(--sbk-select-border);
   border-radius: 8px;
 }
 
