@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useBlockKit } from "../context";
+import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
 import { EmailIcon, LinkGlyphIcon } from "../icons";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
@@ -64,7 +65,17 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   }
 
   function fire(next: string) {
+    clearTimeout(typing.current);
     dispatch({ type: element.type, action_id: actionId, block_id: blockId, value: next });
+  }
+
+  // on_character_entered: one action with the full value once typing pauses, as Slack coalesces
+  // keystrokes. An Enter dispatch sends at once and drops the pending one.
+  const typing = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(typing.current), []);
+  function fireAfterPause(next: string) {
+    clearTimeout(typing.current);
+    typing.current = setTimeout(() => fire(next), CHARACTER_DISPATCH_DELAY);
   }
 
   function onChange(next: string) {
@@ -74,7 +85,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
     }
     setLocalValue(next);
     report(next);
-    if (dispatchEnabled && triggers.includes("on_character_entered")) fire(next);
+    if (dispatchEnabled && triggers.includes("on_character_entered")) fireAfterPause(next);
   }
 
   // Slack doesn't cut typing off at max_length: it counts the characters left inside the field,

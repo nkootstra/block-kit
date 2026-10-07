@@ -75,7 +75,8 @@ an emoji picker. Typing into the field works normally.
     },
     dispatch_action_config: {
       type: "DispatchActionConfig",
-      description: "Configures which edits fire a `block_actions` payload while typing.",
+      description:
+        "When the field sends a `block_actions` payload (with the input block's `dispatch_action`): `on_enter_pressed`, the default, or `on_character_entered`, once typing pauses.",
     },
     focus_on_load: {
       type: "boolean",
@@ -143,8 +144,10 @@ before it scrolls.
 
 ## Interactivity
 
-Typing calls `onAction` with the current content wrapped as a `rich_text` block, under
-`rich_text_value`:
+In an input block with `dispatch_action: true`, the field calls `onAction` with its content wrapped
+as a `rich_text` block, under `rich_text_value`, on the trigger in `dispatch_action_config`: Enter
+by default (Shift+Enter adds a line), or `on_character_entered`, once typing pauses for 300ms.
+Without `dispatch_action`, typing only updates `state.values`, as in Slack:
 
 ```json
 {

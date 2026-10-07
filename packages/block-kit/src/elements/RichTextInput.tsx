@@ -1,7 +1,8 @@
 import type { RichTextBlock, RichTextInput as RichTextInputElement } from "@slack/types";
-import { useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import type { ElementProps } from "../types";
+import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
 import { RichTextComposerActions, RichTextToolbar } from "./RichTextToolbar";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
@@ -34,6 +35,10 @@ function fromRichText(value: RichTextBlock | undefined): string {
     .join("");
 }
 
+type DispatchConfig = {
+  trigger_actions_on?: ("on_enter_pressed" | "on_character_entered")[];
+};
+
 export function RichTextInput({ element, blockId }: ElementProps<RichTextInputElement>) {
   const { setValue, dispatch } = useBlockKit();
   const ref = useRef<HTMLDivElement>(null);
@@ -54,17 +59,40 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function onInput() {
-    const text = ref.current?.innerText ?? "";
-    setEmpty(text.trim() === "");
-    const richText = toRichText(text);
-    setValue(blockId, actionId, { type: "rich_text_input", rich_text_value: richText });
+  // Slack's dispatch_action_config, as for text inputs: Enter by default (Shift+Enter still adds
+  // a line), or once typing pauses for on_character_entered. Only an input block with
+  // dispatch_action lets either through.
+  const config = element as { __dispatchAction?: boolean; dispatch_action_config?: DispatchConfig };
+  const dispatchEnabled = config.__dispatchAction === true;
+  const triggers = config.dispatch_action_config?.trigger_actions_on ?? ["on_enter_pressed"];
+  const typing = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(typing.current), []);
+
+  function fire() {
+    clearTimeout(typing.current);
     dispatch({
       type: "rich_text_input",
       action_id: actionId,
       block_id: blockId,
-      rich_text_value: richText,
+      rich_text_value: toRichText(ref.current?.innerText ?? ""),
     });
+  }
+
+  function onInput() {
+    const text = ref.current?.innerText ?? "";
+    setEmpty(text.trim() === "");
+    setValue(blockId, actionId, { type: "rich_text_input", rich_text_value: toRichText(text) });
+    if (dispatchEnabled && triggers.includes("on_character_entered")) {
+      clearTimeout(typing.current);
+      typing.current = setTimeout(fire, CHARACTER_DISPATCH_DELAY);
+    }
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== "Enter" || e.shiftKey || !dispatchEnabled) return;
+    if (!triggers.includes("on_enter_pressed")) return;
+    e.preventDefault();
+    fire();
   }
 
   const placeholder = element.placeholder?.text;
@@ -82,6 +110,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
           {...invalid}
           aria-label={placeholder ?? actionId}
           onInput={onInput}
+          onKeyDown={onKeyDown}
           style={{
             minHeight: element.min_lines ? `${element.min_lines * 22}px` : undefined,
             maxHeight: element.max_lines ? `${element.max_lines * 22}px` : undefined,
