@@ -114,10 +114,20 @@ jobs:
           path: apps/docs/dist
       # The Worker bundles Blume's MCP handler and its dependencies. No lifecycle scripts run here.
       - run: bun install --frozen-lockfile --ignore-scripts
+      # Runs on main can finish out of order: the Release workflow's rebuild of an older commit can
+      # still be deploying after a later merge's run has. Only main's head deploys, so an older build
+      # never replaces a newer one; the run for the head deploys it.
       - name: Deploy to Cloudflare Workers
         working-directory: apps/docs
-        run: bunx wrangler@4 deploy
+        run: |
+          head=$(git ls-remote "$REPO" refs/heads/main | cut -f1)
+          if [ "$head" != "$GITHUB_SHA" ]; then
+            echo "::notice::main is at $head now, so this run ($GITHUB_SHA) leaves the deploy to that one."
+            exit 0
+          fi
+          bunx wrangler@4 deploy
         env:
+          REPO: ${{ github.server_url }}/${{ github.repository }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
@@ -146,10 +156,18 @@ jobs:
         with:
           name: site-dist
           path: apps/site/dist
-      # Static files only, so nothing needs installing besides Wrangler itself.
+      # Static files only, so nothing needs installing besides Wrangler itself. Only main's head
+      # deploys, as in deploy-docs.
       - name: Deploy to Cloudflare Workers
         working-directory: apps/site
-        run: bunx wrangler@4 deploy
+        run: |
+          head=$(git ls-remote "$REPO" refs/heads/main | cut -f1)
+          if [ "$head" != "$GITHUB_SHA" ]; then
+            echo "::notice::main is at $head now, so this run ($GITHUB_SHA) leaves the deploy to that one."
+            exit 0
+          fi
+          bunx wrangler@4 deploy
         env:
+          REPO: ${{ github.server_url }}/${{ github.repository }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
