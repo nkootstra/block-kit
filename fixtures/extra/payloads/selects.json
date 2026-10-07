@@ -1,0 +1,120 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "selects",
+      "elements": [
+        {
+          "type": "static_select",
+          "action_id": "single",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Pick one"
+          },
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "Alpha"
+            },
+            "value": "alpha"
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Alpha"
+              },
+              "value": "alpha"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Bravo"
+              },
+              "value": "bravo"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Charlie"
+              },
+              "value": "charlie"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "block_id": "accessory",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A select as an accessory"
+      },
+      "accessory": {
+        "type": "static_select",
+        "action_id": "side",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Choose"
+        },
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "One"
+            },
+            "value": "one"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Two"
+            },
+            "value": "two"
+          }
+        ]
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "colours",
+      "dispatch_action": true,
+      "label": {
+        "type": "plain_text",
+        "text": "Colours"
+      },
+      "element": {
+        "type": "multi_static_select",
+        "action_id": "multi",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Pick some"
+        },
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Red"
+            },
+            "value": "red"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Green"
+            },
+            "value": "green"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Blue"
+            },
+            "value": "blue"
+          }
+        ]
+      }
+    }
+  ]
+}

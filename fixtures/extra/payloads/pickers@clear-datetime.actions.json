@@ -1,0 +1,43 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U00000000",
+    "username": "user",
+    "name": "user",
+    "team_id": "T00000000"
+  },
+  "api_app_id": "<api_app_id>",
+  "token": "<token>",
+  "container": {
+    "type": "message",
+    "text": "The contents of the original message where the action originated"
+  },
+  "trigger_id": "<trigger_id>",
+  "team": {
+    "id": "T00000000",
+    "domain": "workspace"
+  },
+  "enterprise": null,
+  "is_enterprise_install": false,
+  "state": {
+    "values": {
+      "when": {
+        "moment": {
+          "type": "datetimepicker",
+          "selected_date_time": null
+        }
+      }
+    }
+  },
+  "response_url": "<response_url>",
+  "actions": [
+    {
+      "type": "datetimepicker",
+      "block_id": "when",
+      "action_id": "moment",
+      "selected_date_time": null,
+      "initial_date_time": 1767261600,
+      "action_ts": "<action_ts>"
+    }
+  ]
+}

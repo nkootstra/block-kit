@@ -1,0 +1,64 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U00000000",
+    "username": "user",
+    "name": "user",
+    "team_id": "T00000000"
+  },
+  "api_app_id": "<api_app_id>",
+  "token": "<token>",
+  "container": {
+    "type": "message",
+    "text": "The contents of the original message where the action originated"
+  },
+  "trigger_id": "<trigger_id>",
+  "team": {
+    "id": "T00000000",
+    "domain": "workspace"
+  },
+  "enterprise": null,
+  "is_enterprise_install": false,
+  "state": {
+    "values": {
+      "choices": {
+        "level": {
+          "type": "radio_buttons",
+          "selected_option": {
+            "text": {
+              "type": "mrkdwn",
+              "text": "*High*",
+              "verbatim": false
+            },
+            "value": "high"
+          }
+        }
+      }
+    }
+  },
+  "response_url": "<response_url>",
+  "actions": [
+    {
+      "type": "radio_buttons",
+      "block_id": "choices",
+      "action_id": "level",
+      "selected_option": {
+        "text": {
+          "type": "mrkdwn",
+          "text": "*High*",
+          "verbatim": false
+        },
+        "value": "high"
+      },
+      "initial_option": {
+        "text": {
+          "type": "plain_text",
+          "text": "Medium",
+          "emoji": true
+        },
+        "value": "medium"
+      },
+      "action_ts": "<action_ts>"
+    }
+  ]
+}

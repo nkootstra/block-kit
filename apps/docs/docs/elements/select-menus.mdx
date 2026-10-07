@@ -616,7 +616,8 @@ the id string.
 }
 ```
 
-A select with a `placeholder` sends it back in the action too, as Slack does.
+A select with a `placeholder` sends it back in the action too, and a single select with an
+`initial_option` echoes that as well, as Slack does.
 
 `state.values.assign.priority` holds the same `selected_option` shape, tagged with `type`:
 

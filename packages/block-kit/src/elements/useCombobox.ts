@@ -29,6 +29,7 @@ export function useCombobox({
   keepQuery = false,
   typedHighlight = false,
   highlightOnType = true,
+  holdFirstArrow = true,
 }: {
   /** What's typed; the owner filters its rows by it, so it owns the state. */
   query: string;
@@ -65,6 +66,11 @@ export function useCombobox({
    * until an arrow key, and Enter reads the typed time.
    */
   highlightOnType?: boolean;
+  /**
+   * Whether the first arrow key stays on the typed highlight's row. Slack's does when the list
+   * opens without a value or after typing, but opened on a chosen option it moves straight on.
+   */
+  holdFirstArrow?: boolean;
 }) {
   const [ownOpen, setOwnOpen] = useState(false);
   const open = controlledOpen ?? ownOpen;
@@ -116,7 +122,7 @@ export function useCombobox({
     ) {
       setTyped(false);
       // The first arrow key only turns the typed highlight into the keyboard one, on the same row.
-      if ((e.key === "ArrowDown" || e.key === "ArrowUp") && nav.active >= 0) {
+      if ((e.key === "ArrowDown" || e.key === "ArrowUp") && nav.active >= 0 && holdFirstArrow) {
         e.preventDefault();
         return;
       }

@@ -1,0 +1,86 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U00000000",
+    "username": "user",
+    "name": "user",
+    "team_id": "T00000000"
+  },
+  "api_app_id": "<api_app_id>",
+  "token": "<token>",
+  "container": {
+    "type": "message",
+    "text": "The contents of the original message where the action originated"
+  },
+  "trigger_id": "<trigger_id>",
+  "team": {
+    "id": "T00000000",
+    "domain": "workspace"
+  },
+  "enterprise": null,
+  "is_enterprise_install": false,
+  "state": {
+    "values": {
+      "choices": {
+        "boxes": {
+          "type": "checkboxes",
+          "selected_options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Email",
+                "emoji": true
+              },
+              "value": "email"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "SMS",
+                "emoji": true
+              },
+              "value": "sms",
+              "description": {
+                "type": "plain_text",
+                "text": "Text messages",
+                "emoji": true
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "response_url": "<response_url>",
+  "actions": [
+    {
+      "type": "checkboxes",
+      "block_id": "choices",
+      "action_id": "boxes",
+      "selected_options": [
+        {
+          "text": {
+            "type": "plain_text",
+            "text": "Email",
+            "emoji": true
+          },
+          "value": "email"
+        },
+        {
+          "text": {
+            "type": "plain_text",
+            "text": "SMS",
+            "emoji": true
+          },
+          "value": "sms",
+          "description": {
+            "type": "plain_text",
+            "text": "Text messages",
+            "emoji": true
+          }
+        }
+      ],
+      "action_ts": "<action_ts>"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "block_id": "menu",
+      "text": { "type": "mrkdwn", "text": "Overflow with a link" },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "more",
+        "options": [
+          { "text": { "type": "plain_text", "text": "Edit" }, "value": "edit" },
+          {
+            "text": { "type": "plain_text", "text": "Open docs" },
+            "value": "docs",
+            "url": "https://example.com/docs"
+          }
+        ]
+      }
+    }
+  ]
+}
