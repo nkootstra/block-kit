@@ -154,6 +154,59 @@ async function runReal(items: { name: string; payload: unknown }[]) {
   }, items);
 }
 
+/** A stand-in whose confirm dialog, like Slack's, ignores Escape and closes from its buttons. */
+const CONFIRM_BUILDER = `<!doctype html><html class="sk-client-theme--light"><body>
+  <div class="p-bkb_preview__message" style="width:512px"><button class="c-button">Delete</button></div>
+  <script>
+    window.log = [];
+    document.querySelector(".c-button").addEventListener("click", () => {
+      const portal = document.createElement("div");
+      portal.className = "ReactModalPortal";
+      portal.innerHTML = '<div class="ReactModal__Overlay c-dialog"><div role="dialog" class="ReactModal__Content c-dialog__content">Are you sure? <button>Cancel</button><button>Delete</button></div></div>';
+      portal.querySelector("button").addEventListener("click", () => portal.remove());
+      document.body.append(portal);
+    });
+    window.adapter = {
+      load: async () => {},
+      theme: () => "light",
+      setTheme: async () => {},
+      previewSize: () => "desktop",
+      setPreviewSize: async () => {},
+    };
+    window.snap = async () => {
+      window.log.push("snap " + (document.querySelector(".ReactModalPortal") ? "dialog" : "closed"));
+      return "<html></html>";
+    };
+  </script>
+</body></html>`;
+
+describe("capture.js with Slack's confirm dialog", () => {
+  it("closes a confirm dialog that ignores Escape before the next capture", async () => {
+    page = await browser.newPage();
+    await page.setContent(CONFIRM_BUILDER);
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const log = await page.evaluate(async () => {
+      const w = window as unknown as {
+        capture: (o: unknown) => Promise<unknown>;
+        adapter: unknown;
+        snap: unknown;
+        log: string[];
+      };
+      await w.capture({
+        items: [
+          { name: "extra/actions/more-elements@confirm", payload: {} },
+          { name: "extra/actions/more-elements", payload: {} },
+        ],
+        snap: w.snap,
+        adapter: w.adapter,
+        settle: 0,
+      });
+      return w.log;
+    });
+    expect(log).toEqual(["snap dialog", "snap closed"]);
+  });
+});
+
 describe("capture.js against the real Builder's controls", () => {
   it("switches theme, preview size and surface through the Builder's own menus", async () => {
     const { log } = await runReal([

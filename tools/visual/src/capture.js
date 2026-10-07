@@ -214,6 +214,11 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
     previous = preview()?.innerHTML ?? "";
 
     if (want.interaction) {
+      // Slack's confirm dialog ignores Escape; close it from its own Cancel (or Close) button.
+      const dismiss = [...doc.querySelectorAll(".ReactModalPortal button")].find((b) =>
+        /^(Cancel|Close)$/.test(b.textContent.trim() || b.getAttribute("aria-label") || ""),
+      );
+      if (dismiss) press(dismiss);
       doc.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
       doc.activeElement?.dispatchEvent?.(
         new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),

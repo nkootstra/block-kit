@@ -333,6 +333,20 @@ describe("snapshot.js", () => {
       expect(html).toContain("#sbk-reference{width:400px}");
     });
 
+    // Measured on Slack's confirm dialog in the Builder: the role sits on the modal content itself
+    // (`.ReactModal__Content.c-dialog__content[role=dialog]`, in a `.c-dialog` overlay).
+    it("treats modal content that is itself the dialog as a dialog", async () => {
+      await page.setContent(`<!doctype html><body style="margin:0;font:15px sans-serif">
+        <div class="p-bkb_preview__message" style="width:400px;height:60px"></div>
+        <div class="ReactModalPortal"><div class="ReactModal__Overlay c-dialog" style="position:fixed;inset:0">
+          <div role="dialog" class="ReactModal__Content c-dialog__content" style="position:absolute;left:300px;top:200px;width:520px;height:166px;background:#fff">Are you sure?</div>
+        </div></div>
+      </body>`);
+      expect(metaOf(await snapshot(page)).layers).toMatchObject([
+        { kind: "dialog", width: 520, height: 166 },
+      ]);
+    });
+
     it("freezes an open dialog on its own, below the preview", async () => {
       await page.setContent(`<!doctype html><body style="margin:0;font:15px sans-serif">
         <div class="p-bkb_preview__message" style="width:400px;height:60px"></div>

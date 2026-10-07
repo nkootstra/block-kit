@@ -341,7 +341,9 @@ async (win = window) => {
   for (const content of doc.querySelectorAll(".ReactModalPortal .ReactModal__Content")) {
     if (content.getBoundingClientRect().height === 0) continue;
     const overlay = content.closest(".ReactModal__Overlay");
-    const dialog = content.querySelector('[role="dialog"], [role="alertdialog"]');
+    // Slack's confirm dialog carries the role on the modal content itself.
+    const DIALOG = '[role="dialog"], [role="alertdialog"]';
+    const dialog = content.matches(DIALOG) ? content : content.querySelector(DIALOG);
     const kind = /popover/.test(overlay?.className ?? "") || !dialog ? "popover" : "dialog";
     const src = kind === "dialog" ? dialog : visual(content);
     const r = src.getBoundingClientRect();
