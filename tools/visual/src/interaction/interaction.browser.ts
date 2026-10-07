@@ -2554,6 +2554,50 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(await fill(page, NEXT_MONTH)).toBe("rgba(29, 155, 209, 0.1)");
     });
   });
+
+  // Measured in Block Kit Builder (catalog/data-visualization/area-multi-series and its @dark
+  // reference): each area's fill, at 0.7 opacity, in both themes.
+  describe("chart fills", () => {
+    const AREA_FILLS = {
+      light: ["rgb(255, 237, 229)", "rgb(227, 255, 243)"],
+      dark: ["rgb(56, 16, 0)", "rgb(5, 36, 27)"],
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      it(`fills each area with Slack's ${theme} tint`, async () => {
+        const page = await harness.open({
+          ...(await fixture("catalog/data-visualization/area-multi-series")),
+          theme,
+        });
+        const fills = await page.evaluate(() =>
+          [...document.querySelectorAll("path[fill-opacity]")].map((p) => {
+            const c = getComputedStyle(p);
+            return [c.fill, c.fillOpacity];
+          }),
+        );
+        expect(fills).toEqual(AREA_FILLS[theme].map((fill) => [fill, "0.7"]));
+      });
+
+      // Slack separates pie slices with a 2px line in the page colour: #fff, or #1a1d21 in dark.
+      it(`separates pie slices with the ${theme} page colour`, async () => {
+        const page = await harness.open({
+          ...(await fixture("catalog/data-visualization/pie-multi-segment")),
+          theme,
+        });
+        const strokes = await page.evaluate(() => [
+          ...new Set(
+            [...document.querySelectorAll('svg[aria-label="Pie chart"] path')].map((p) => {
+              const c = getComputedStyle(p);
+              return `${c.stroke} ${c.strokeWidth}`;
+            }),
+          ),
+        ]);
+        expect(strokes).toEqual([
+          `${theme === "dark" ? "rgb(26, 29, 33)" : "rgb(255, 255, 255)"} 2px`,
+        ]);
+      });
+    }
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
