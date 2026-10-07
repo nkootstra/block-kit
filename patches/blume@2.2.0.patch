@@ -1,0 +1,16 @@
+diff --git a/src/components/layout/RootLayout.astro b/src/components/layout/RootLayout.astro
+index ca01383fd4cd174711fa2b8662a6b4860d6df987..72495b7e8ee6419dc97cc9cb68866195144f3286 100644
+--- a/src/components/layout/RootLayout.astro
++++ b/src/components/layout/RootLayout.astro
+@@ -1255,6 +1255,11 @@ const localeRedirect = localeTargets
+           if (pre.querySelector("[data-blume-copy]")) {
+             continue;
+           }
++          // Skip a <pre> rendered by an island: the framework hydrates it later and expects the
++          // server's markup, so an added button breaks hydration.
++          if (pre.closest("astro-island")) {
++            continue;
++          }
+           // Skip nested <pre>: Twoslash renders each hover popup's type signature
+           // as a <pre> inside the code block, which shouldn't get its own button.
+           if (pre.parentElement?.closest("pre")) {
