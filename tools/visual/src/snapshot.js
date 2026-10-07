@@ -440,9 +440,22 @@ async (win = window) => {
     layers: layers.map(({ el, ...box }) => box),
   };
 
-  const bodyBg = win.getComputedStyle(
-    doc.querySelector(".p-bkb_preview__content") || doc.body,
-  ).backgroundColor;
+  // The page behind the message: the first background around the preview. In the Builder's dark
+  // theme the preview is transparent and the message card around it is rgb(26, 29, 33); in light
+  // the card is white.
+  const TRANSPARENT = "rgba(0, 0, 0, 0)";
+  const backgroundOf = (el) => {
+    for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
+      const bg = win.getComputedStyle(node).backgroundColor;
+      if (bg !== TRANSPARENT) return bg;
+    }
+    return TRANSPARENT;
+  };
+  const content = doc.querySelector(".p-bkb_preview__content");
+  const bodyBg =
+    content && win.getComputedStyle(content).backgroundColor !== TRANSPARENT
+      ? win.getComputedStyle(content).backgroundColor
+      : backgroundOf(root);
   // Popovers sit in #sbk-reference at their offset from the preview; the page is padded so one
   // that stuck out to the left of (or above) the preview still lands on the page.
   const popovers = layers.filter((l) => l.kind === "popover");
