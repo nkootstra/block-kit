@@ -1364,6 +1364,108 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(await page.evaluate(() => document.activeElement?.className)).toContain("sbk-button");
     });
   });
+
+  // iOS Safari zooms the page on a quick second tap unless the control opts out with
+  // `touch-action: manipulation`, which keeps pinch zoom. Every control a second tap can mean
+  // something on (a stepper, an option, a toggle) opts out, in the blocks and in the layers
+  // portalled to <body>; text fields keep double-tap to select a word.
+  describe("double-tap zoom", () => {
+    const controls: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            { type: "button", action_id: "b", text: plain("Go") },
+            { type: "overflow", action_id: "o", options: [option("Edit"), option("Share")] },
+            { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+            { type: "checkboxes", action_id: "c", options: [option("Alpha")] },
+            { type: "radio_buttons", action_id: "r", options: [option("Bravo")] },
+          ],
+        },
+        {
+          type: "input",
+          label: plain("Note"),
+          element: { type: "plain_text_input", action_id: "t" },
+        },
+      ],
+    };
+    const touchAction = (page: Page, selectors: string[]) =>
+      page.evaluate(
+        (list) =>
+          Object.fromEntries(
+            list.map((s) => [s, getComputedStyle(document.querySelector(s)!).touchAction]),
+          ),
+        selectors,
+      );
+    const manipulation = (selectors: string[]) =>
+      Object.fromEntries(selectors.map((s) => [s, "manipulation"]));
+
+    it("opts buttons, toggles and their labels out", async () => {
+      const page = await harness.open(controls);
+      const selectors = [
+        ".sbk-button",
+        ".sbk-overflow__button",
+        ".sbk-checkboxes__option",
+        ".sbk-checkboxes__input",
+        ".sbk-radio-buttons__option",
+        ".sbk-radio-buttons__input",
+      ];
+      expect(await touchAction(page, selectors)).toEqual(manipulation(selectors));
+    });
+
+    it("opts a popover's options and the calendar's steppers and days out", async () => {
+      const page = await harness.open(controls);
+      await page.click(".sbk-overflow__button");
+      expect(await touchAction(page, [".sbk-overflow__option"])).toEqual(
+        manipulation([".sbk-overflow__option"]),
+      );
+      await page.keyboard.press("Escape");
+      await page.click(".sbk-datepicker__input");
+      const calendar = [
+        ".sbk-calendar__nav",
+        ".sbk-calendar__cell:not(.sbk-calendar__cell--empty)",
+      ];
+      expect(await touchAction(page, calendar)).toEqual(manipulation(calendar));
+    });
+
+    it("opts a modal's and a confirm dialog's buttons out", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "button",
+                action_id: "open",
+                text: plain("Open"),
+                confirm: {
+                  title: plain("Sure?"),
+                  text: plain("Really."),
+                  confirm: plain("Yes"),
+                  deny: plain("No"),
+                },
+              },
+            ],
+          },
+        ],
+        opens: { type: "modal", title: plain("New entry"), submit: plain("Save"), blocks: [] },
+      });
+      await page.click(".sbk-button");
+      await page.waitForSelector(".sbk-confirm");
+      expect(await touchAction(page, [".sbk-confirm__button"])).toEqual(
+        manipulation([".sbk-confirm__button"]),
+      );
+      await page.click(".sbk-confirm__button--primary, .sbk-confirm__button:last-child");
+      await page.waitForSelector(".sbk-modal-layer .sbk-modal");
+      const modal = [".sbk-modal__close", ".sbk-modal__button"];
+      expect(await touchAction(page, modal)).toEqual(manipulation(modal));
+    });
+
+    it("leaves text fields alone, where a double tap selects a word", async () => {
+      const page = await harness.open(controls);
+      expect(await touchAction(page, [".sbk-text-input"])).toEqual({ ".sbk-text-input": "auto" });
+    });
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
