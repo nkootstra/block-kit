@@ -51,7 +51,6 @@
   ],
   "catalog/callout/callout": [
     "missing|(2 MB)|0",
-    "missing|lumen|0",
     "extra|Contact|0"
   ],
   "catalog/card-and-carousel/card": [],
@@ -165,17 +164,7 @@
   "catalog/rich-text/emoji": [],
   "catalog/rich-text/italic": [],
   "catalog/rich-text/kitchen-sink": [],
-  "catalog/rich-text/list": [
-    "missing|item 2: this is a list item|0",
-    "missing|item 4: we are near the end|0",
-    "missing|item 5: this is the end|0",
-    "extra|item 2:|0",
-    "extra|this is a list item|0",
-    "extra|item 4:|0",
-    "extra|we are near the end|0",
-    "extra|item 5:|0",
-    "extra|this is the end|0"
-  ],
+  "catalog/rich-text/list": [],
   "catalog/rich-text/preformatted": [],
   "catalog/rich-text/strikethrough": [],
   "catalog/section/button": [
@@ -276,10 +265,7 @@
   "extra/modal/form": [],
   "extra/modal/rich-and-file": [],
   "extra/rich-text/mentions-and-styles": [
-    "missing|@here|0",
     "missing|· colour #1264A3|0",
-    "extra|@|0",
-    "extra|here|0",
     "extra|· colour|0",
     "extra|#1264A3|0"
   ],
@@ -295,14 +281,8 @@
   "interactive/update-message": [],
   "message/approval": [],
   "message/mrkdwn": [
-    "missing|@U123|0",
-    "missing|@here|0",
     "missing|const answer = 42;|0",
     "missing|console.log(answer < 100);|0",
-    "extra|@|0",
-    "extra|U123|0",
-    "extra|@|1",
-    "extra|here|0",
     "extra|const answer = 42; console.log(answer < 100);|0"
   ],
   "message/section-accessory": [
