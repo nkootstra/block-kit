@@ -18,12 +18,12 @@ const TEXT_INPUT_TYPES = new Set([
   "number_input",
 ]);
 
-/** Slack's Builder preview synthesizes a "Press 'enter' to submit" hint below a single-line text
- * input whose owning `input` block dispatches on the (default) `on_enter_pressed` trigger, when
- * the block doesn't already carry its own explicit `hint`. It does NOT synthesize anything for
- * `on_character_entered`-only dispatch, or for multiline inputs (Enter inserts a newline there). */
+/** Slack's Builder preview adds a "Press 'enter' to submit" hint below a single-line text input
+ * whose owning `input` block dispatches on the (default) `on_enter_pressed` trigger; with the
+ * block's own `hint`, both share one line. Nothing is added for `on_character_entered`-only
+ * dispatch, or for multiline inputs (Enter inserts a newline there). */
 function dispatchHint(block: InputBlock): boolean {
-  if (block.dispatch_action !== true || block.hint) return false;
+  if (block.dispatch_action !== true) return false;
   const element = block.element as Json;
   if (typeof element.type !== "string" || !TEXT_INPUT_TYPES.has(element.type)) return false;
   if (element.multiline === true) return false;
@@ -71,21 +71,26 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
           </InputOptionalContext.Provider>
         </InputBlockContext.Provider>
       </div>
-      {block.hint && (
+      {(block.hint || showDispatchHint) && (
         <div className="sbk-input__hint">
-          <span className="sbk-input__hint-text">
-            <Text text={block.hint} />
-          </span>
-        </div>
-      )}
-      {showDispatchHint && (
-        <div className="sbk-input__hint">
-          <span className="sbk-input__hint-text sbk-input__hint-text--dispatch">
-            <span className="sbk-input__hint-icon">
-              <ReturnIcon />
-            </span>{" "}
-            Press 'enter' to submit
-          </span>
+          {block.hint && (
+            <span className="sbk-input__hint-text">
+              <Text text={block.hint} />
+              {/* Slack ends the hint with a period when the enter hint follows it. */}
+              {showDispatchHint && !block.hint.text.trimEnd().endsWith(".") && "."}
+            </span>
+          )}
+          {showDispatchHint && (
+            <>
+              {block.hint && " "}
+              <span className="sbk-input__hint-text sbk-input__hint-text--dispatch">
+                <span className="sbk-input__hint-icon">
+                  <ReturnIcon />
+                </span>{" "}
+                Press 'enter' to submit
+              </span>
+            </>
+          )}
         </div>
       )}
       {error && (

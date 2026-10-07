@@ -348,9 +348,9 @@ newline instead.
 }
 ```
 
-When the field doesn't already carry its own `hint`, a single-line `on_enter_pressed`-dispatching
-input shows a synthesized "Press 'enter' to submit" hint below it, matching Slack's Builder
-preview:
+A single-line `on_enter_pressed`-dispatching input shows a "Press 'enter' to submit" hint below
+it, matching Slack's Builder preview. With the block's own `hint`, both share one line, the hint
+ending in a period:
 
 <Preview
   payload={{

@@ -21,7 +21,7 @@
   font-size: 15px;
 }
 
-.sbk-text-input__wrap .sbk-text-input.sbk-text-input--medium {
+.sbk-text-input__wrap--icon .sbk-text-input.sbk-text-input--medium {
   padding-left: 32px;
 }
 
@@ -41,7 +41,7 @@
   position: relative;
 }
 
-.sbk-text-input__wrap .sbk-text-input {
+.sbk-text-input__wrap--icon .sbk-text-input {
   padding-left: 28px;
 }
 
@@ -52,4 +52,31 @@
   transform: translateY(-50%);
   color: var(--sbk-muted);
   pointer-events: none;
+}
+
+/* Slack's character count: the characters left, inside the field on the right while typing,
+   negative and red past max_length. The field keeps room for it so text never runs under it. */
+.sbk-text-input--counted {
+  padding-right: 40px;
+}
+
+.sbk-text-input__count {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font: 13px / 18px var(--sbk-font);
+  color: var(--sbk-content-ter);
+  pointer-events: none;
+}
+
+/* In a textarea the count sits in the bottom corner, below the text. */
+.sbk-text-input__wrap--multiline .sbk-text-input__count {
+  top: auto;
+  bottom: 8px;
+  transform: none;
+}
+
+.sbk-text-input__count--over {
+  color: var(--sbk-danger);
 }

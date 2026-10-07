@@ -918,6 +918,99 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Slack counts the characters left inside the field while typing, below zero and red past
+  // max_length, with the red ring; and puts a hint and the dispatch hint on one line.
+  describe("text input limits", () => {
+    const limited = (multiline = false): Mount => ({
+      blocks: [
+        {
+          type: "input",
+          label: plain("Title"),
+          element: { type: "plain_text_input", action_id: "t", max_length: 5, multiline },
+        },
+      ],
+    });
+    const FIELD = ".sbk-text-input";
+    const COUNT = ".sbk-text-input__count";
+
+    /** The count's box relative to the field's, and its colour. */
+    const count = (page: Page) =>
+      page.evaluate(
+        ([fieldSel, countSel]) => {
+          const field = document.querySelector(fieldSel)!.getBoundingClientRect();
+          const el = document.querySelector(countSel)!;
+          const box = el.getBoundingClientRect();
+          return {
+            text: el.textContent,
+            color: getComputedStyle(el).color,
+            inside:
+              box.left >= field.left &&
+              box.right <= field.right &&
+              box.top >= field.top &&
+              box.bottom <= field.bottom,
+            rightGap: Math.round(field.right - box.right),
+          };
+        },
+        [FIELD, COUNT] as const,
+      );
+
+    it("counts the characters left in grey, inside the field on the right", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("abc");
+      const c = await count(page);
+      expect([c.text, c.inside, c.color]).toEqual(["2", true, CONTENT_TER]);
+      expect(c.rightGap).toBeLessThan(24);
+    });
+
+    it("counts below zero in red past the limit, with the red ring", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("abcdefg");
+      await settle(page);
+      const c = await count(page);
+      expect([c.text, c.color]).toEqual(["-2", RED]);
+      expect((await style(page, FIELD)).boxShadow.startsWith(`${RED} 0px 0px 0px 1px`)).toBe(true);
+      // Typing isn't cut off at the limit.
+      expect(await page.locator(FIELD).inputValue()).toBe("abcdefg");
+    });
+
+    it("keeps focus in the field when the count first appears", async () => {
+      const page = await harness.open(limited());
+      await page.click(FIELD);
+      await page.keyboard.type("ab");
+      expect(await page.evaluate(() => document.activeElement?.className)).toContain(
+        "sbk-text-input",
+      );
+    });
+
+    it("counts inside a multiline field too", async () => {
+      const page = await harness.open(limited(true));
+      await page.click(FIELD);
+      await page.keyboard.type("abc");
+      expect((await count(page)).inside).toBe(true);
+    });
+
+    it("puts the hint and \"Press 'enter' to submit\" on one line", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("Search"),
+            dispatch_action: true,
+            hint: plain("A hint"),
+            element: { type: "plain_text_input", action_id: "q" },
+          },
+        ],
+      });
+      const tops = await page.$$eval(".sbk-input__hint-text", (els) =>
+        els.map((el) => Math.round(el.getBoundingClientRect().top)),
+      );
+      expect(tops.length).toBe(2);
+      expect(tops[0]).toBe(tops[1]);
+    });
+  });
+
   describe("card icon", () => {
     // Slack's sample icons are square, so no reference shows this: a 2:1 icon must letterbox
     // (36 x 18 in the 36px slot), not be cropped to fill it.

@@ -52,7 +52,7 @@ they don't appear in an `actions` block or as a section accessory.
     placeholder: {
       type: "PlainTextElement",
       description:
-        "Grey placeholder text shown when the field is empty. Maximum length is 150 characters.",
+        'Grey placeholder text shown when the field is empty. Maximum length is 150 characters. Without one, the field shows Slack\'s default: "Enter a number" for `number_input`, "Enter a URL" for `url_text_input`, and "Write something" otherwise.',
     },
     multiline: {
       type: "boolean",
@@ -63,11 +63,12 @@ they don't appear in an `actions` block or as a section accessory.
     min_length: {
       type: "number",
       description:
-        "`plain_text_input` only. Minimum number of characters required on submit. Maximum value is 3000.",
+        "`plain_text_input` only. Minimum number of characters required. Below it (once something is typed) the field turns invalid, with the red focus ring, and Enter sends no action. Maximum value is 3000.",
     },
     max_length: {
       type: "number",
-      description: "`plain_text_input` only. Maximum number of characters allowed.",
+      description:
+        "`plain_text_input` only. Maximum number of characters allowed. As in Slack, typing isn't cut off: the field counts the characters left on its right while typing, below zero and in red past the limit, turns invalid there, and Enter sends no action.",
     },
     is_decimal_allowed: {
       type: "boolean",
@@ -203,9 +204,10 @@ reads when the surface is submitted. Typing doesn't fire an action. Set the bloc
 />
 
 `trigger_actions_on` accepts `on_enter_pressed` (the default) and `on_character_entered`. With the
-default, single-line fields also pick up a "Press 'enter' to submit" hint automatically, unless the
-block already has its own `hint`. Multiline fields never show it, since Enter inserts a newline
-there instead of submitting.
+default, single-line fields also pick up a "Press 'enter' to submit" hint automatically. When the
+block has its own `hint`, both share one line, as in Slack: the hint gets a closing period, then
+the enter hint follows. Multiline fields never show it, since Enter inserts a newline there
+instead of submitting.
 
 ### Initial value
 
