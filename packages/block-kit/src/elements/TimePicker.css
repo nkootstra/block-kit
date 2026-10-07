@@ -129,9 +129,7 @@
   /* The grey `c-select_options_list__wrapper` surface, as in Select.css. */
   background: var(--sbk-surface-sec);
   border-radius: 4px;
-  box-shadow:
-    0 0 0 1px rgba(29, 28, 29, 0.13),
-    0 5px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sbk-select-list-shadow);
 }
 
 /* Same `c-select_options_list__option` rows as Select.css. */

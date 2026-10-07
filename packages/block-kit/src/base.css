@@ -51,6 +51,10 @@
   --sbk-menu-separator: rgba(29, 28, 29, 0.13);
   --sbk-menu-secondary-text: #454447;
   --sbk-popover-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+  /* The select and time lists' `c-select_options_list__wrapper` ring and shadow. */
+  --sbk-select-list-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 5px 10px rgba(0, 0, 0, 0.12);
+  /* A select field's border (`c-select_input`). */
+  --sbk-select-border: rgb(124, 122, 127);
   --sbk-spinner-track: #5e5d60;
   /* Tooltips (`c-tooltip__tip`). */
   --sbk-tooltip-bg: #1d1c1d;
@@ -71,6 +75,9 @@
   --sbk-on-highlight: #fff;
   --sbk-blend-interaction: multiply;
   --sbk-calendar-grid: rgb(221, 221, 221);
+  /* A calendar day's number, and today's number and ring. */
+  --sbk-calendar-day: #1d1c1d;
+  --sbk-calendar-today: #1264a3;
   --sbk-avatar-placeholder: #dddddd;
   --sbk-hover-actions-icon: #616061;
 }

@@ -13,7 +13,7 @@
   font: 13px var(--sbk-font);
   color: var(--sbk-text);
   background: var(--sbk-bg);
-  border: 1px solid rgb(124, 122, 127);
+  border: 1px solid var(--sbk-select-border);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -346,9 +346,7 @@
      menus) with a hairline ring plus a soft drop shadow, no border. */
   background: var(--sbk-surface-sec);
   border-radius: 4px;
-  box-shadow:
-    0 0 0 1px rgba(29, 28, 29, 0.13),
-    0 5px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sbk-select-list-shadow);
   padding: 12px 0;
 }
 

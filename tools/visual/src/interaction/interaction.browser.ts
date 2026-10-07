@@ -401,11 +401,12 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         expect((await style(page, menu)).backgroundColor).toBe(SURFACE_SEC);
       });
 
-      it(`${name}: opens a dark grey menu in the dark theme`, async () => {
+      // Slack's dark `base-sec` equals its `base-pry`, #1a1d21 (measured in Block Kit Builder).
+      it(`${name}: opens a menu on the page colour in the dark theme`, async () => {
         const page = await harness.open({ ...triggers, theme: "dark" });
         await page.click(control);
         await settle(page);
-        expect((await style(page, menu)).backgroundColor).toBe("rgb(33, 36, 40)");
+        expect((await style(page, menu)).backgroundColor).toBe("rgb(26, 29, 33)");
       });
     }
   });
@@ -1469,6 +1470,153 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
 
   // A touch screen has no pointer resting anywhere, but after a tap the engine keeps the tapped
   // element in :hover until the next tap lands elsewhere, so a hover wash would stay painted on it.
+  // Colours measured in Block Kit Builder in both themes (the dark pass of the state audit). Each
+  // theme gets the same probes, so a dark fix can't move a light colour.
+  describe("theme colours", () => {
+    const controls = (theme: "light" | "dark"): Mount => ({
+      theme,
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "static_select",
+              action_id: "s",
+              placeholder: plain("Pick one"),
+              options: [option("Alpha"), option("Bravo")],
+            },
+            { type: "timepicker", action_id: "t", initial_time: "13:00" },
+            { type: "datepicker", action_id: "d" },
+            { type: "button", action_id: "b", text: plain("Go") },
+          ],
+        },
+      ],
+    });
+
+    /** The computed properties of the first match, as `name: value` for a readable diff. */
+    const read = (page: Page, selector: string, props: string[], pseudo?: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate(
+          (el, [names, pseudoEl]) => {
+            const c = getComputedStyle(el, (pseudoEl as string | undefined) ?? null);
+            return Object.fromEntries((names as string[]).map((n) => [n, c.getPropertyValue(n)]));
+          },
+          [props, pseudo] as const,
+        );
+
+    const EXPECTED = {
+      light: {
+        selectBorder: "rgb(124, 122, 127)",
+        listBg: "rgb(248, 248, 248)",
+        listShadow: "rgba(29, 28, 29, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.12) 0px 5px 10px 0px",
+        highlight: { "background-color": "rgb(18, 100, 163)", color: "rgb(255, 255, 255)" },
+        buttonHover: "rgb(248, 248, 248)",
+        iconButtonHover: "rgb(234, 234, 234)",
+        calendarBg: "rgb(255, 255, 255)",
+        calendarShadow:
+          "rgba(29, 28, 29, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 4px 12px 0px",
+        day: "rgb(29, 28, 29)",
+        grid: "rgb(221, 221, 221)",
+        today: "rgb(18, 100, 163)",
+      },
+      dark: {
+        selectBorder: "rgb(121, 124, 129)",
+        listBg: "rgb(26, 29, 33)",
+        listShadow:
+          "rgba(232, 232, 232, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.12) 0px 5px 10px 0px",
+        highlight: { "background-color": "rgb(18, 100, 163)", color: "rgb(255, 255, 255)" },
+        buttonHover: "rgb(26, 29, 33)",
+        iconButtonHover: "rgb(33, 36, 40)",
+        calendarBg: "rgb(26, 29, 33)",
+        calendarShadow:
+          "rgba(232, 232, 232, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 4px 12px 0px",
+        day: "rgb(209, 210, 211)",
+        grid: "rgb(53, 55, 59)",
+        today: "rgb(29, 155, 209)",
+      },
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      const want = EXPECTED[theme];
+
+      describe(theme, () => {
+        it("draws the select field's border", async () => {
+          const page = await harness.open(controls(theme));
+          expect(await read(page, ".sbk-select__control", ["border-top-color"])).toEqual({
+            "border-top-color": want.selectBorder,
+          });
+        });
+
+        it("opens the select list on Slack's surface, ring and highlight", async () => {
+          const page = await harness.open(controls(theme));
+          await page.click(".sbk-select__control");
+          await settle(page);
+          expect(await read(page, ".sbk-select__menu", ["background-color", "box-shadow"])).toEqual(
+            { "background-color": want.listBg, "box-shadow": want.listShadow },
+          );
+          expect(
+            await read(page, ".sbk-select__option[data-active]", ["background-color", "color"]),
+          ).toEqual(want.highlight);
+        });
+
+        it("opens the time list on the same surface and ring", async () => {
+          const page = await harness.open(controls(theme));
+          await page.click(".sbk-timepicker__control");
+          await settle(page);
+          expect(
+            await read(page, ".sbk-timepicker__menu", ["background-color", "box-shadow"]),
+          ).toEqual({ "background-color": want.listBg, "box-shadow": want.listShadow });
+        });
+
+        it("fills a hovered default button", async () => {
+          const page = await harness.open(controls(theme));
+          await page.hover(".sbk-button");
+          await settle(page);
+          expect(await read(page, ".sbk-button", ["background-color"])).toEqual({
+            "background-color": want.buttonHover,
+          });
+        });
+
+        it("fills a hovered icon button", async () => {
+          const page = await harness.open({
+            ...(await fixture("catalog/agents/message-feedback")),
+            theme,
+          });
+          await page.hover(".sbk-icon-button");
+          await settle(page);
+          expect(await read(page, ".sbk-icon-button", ["background-color"])).toEqual({
+            "background-color": want.iconButtonHover,
+          });
+        });
+
+        it("draws the calendar's surface, days, grid and today", async () => {
+          const page = await harness.open(controls(theme));
+          await page.click(".sbk-datepicker__input");
+          await page.mouse.move(790, 690);
+          await settle(page);
+          expect(
+            await read(page, ".sbk-datepicker__popup", ["background-color", "box-shadow"]),
+          ).toEqual({ "background-color": want.calendarBg, "box-shadow": want.calendarShadow });
+          // With no initial date the calendar opens on this month, so today is in view.
+          const day =
+            ".sbk-calendar__cell:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--today)";
+          expect(await read(page, day, ["color", "border-top-color"])).toEqual({
+            color: want.day,
+            "border-top-color": want.grid,
+          });
+          expect({
+            text: (await read(page, ".sbk-calendar__cell--today", ["color"])).color,
+            ring: (await read(page, ".sbk-calendar__cell--today", ["border-top-color"], "::after"))[
+              "border-top-color"
+            ],
+          }).toEqual({ text: want.today, ring: want.today });
+        });
+      });
+    }
+  });
+
   describe("hover on touch screens", () => {
     const controls: Mount = {
       blocks: [
