@@ -5,6 +5,8 @@ import { useClientLayoutEffect } from "../useClientLayoutEffect";
 
 /** Space between the anchor and the popover, as in Slack's menus. */
 const DEFAULT_GAP = 4;
+/** The least space kept between a popover and the window's left and right edges. */
+const EDGE = 8;
 
 export interface PopoverProps {
   /** The element the popover opens from; it's placed below it, or above when there's no room. */
@@ -27,6 +29,8 @@ export interface PopoverProps {
  * The layer a menu or calendar opens in. Slack mounts its popovers at the top of the page, so a
  * message list, a modal body or a carousel never clips them; this portals to `<body>` the same way
  * and keeps the popover pinned to its anchor as the page scrolls or resizes, or its content does.
+ * Where keeping its alignment would run it past the window's left or right edge (a narrow phone
+ * screen), it shifts just enough to stay inside.
  * The layer is as wide as the anchor, so a child sized `width: 100%` matches the control it opened
  * from.
  */
@@ -65,7 +69,24 @@ export function Popover({
       if (!fitsBelow && !fitsAbove) {
         top = Math.max(gap, Math.min(below, window.innerHeight - height - gap));
       }
-      setPosition({ top, left: a.left + offsetX, width: a.width });
+      // The content is positioned inside a layer as wide as the anchor (a calendar right-aligned to
+      // it, a menu left-aligned), so size the layer first and measure where the content lands.
+      layer.style.width = `${a.width}px`;
+      const content = layer.firstElementChild?.getBoundingClientRect();
+      const layerLeft = layer.getBoundingClientRect().left;
+      let left = a.left + offsetX;
+      if (content) {
+        // Keep Slack's alignment while it fits; otherwise shift just enough to stay in the window,
+        // the left edge winning when the content is wider than the window.
+        const contentLeft = left + content.left - layerLeft;
+        const room = document.documentElement.clientWidth - EDGE;
+        const shift = Math.max(
+          EDGE - contentLeft,
+          Math.min(0, room - (contentLeft + content.width)),
+        );
+        left += shift;
+      }
+      setPosition({ top, left, width: a.width });
     }
     place();
     window.addEventListener("scroll", place, true);

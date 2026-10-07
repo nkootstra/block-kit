@@ -751,8 +751,17 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     };
 
     // Measured in Block Kit Builder: 250px wide, its left edge under the trigger's, 4px below it.
+    // An accessory sits too near the window's right edge for that (the menu would shift inside
+    // it), so this trigger sits on the left, in an actions block.
     it("opens a 250px menu left-aligned 4px below the trigger", async () => {
-      const page = await harness.open(overflow);
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "actions",
+            elements: [{ type: "overflow", action_id: "o", options: [option("Edit")] }],
+          },
+        ],
+      });
       await page.click(".sbk-overflow__button");
       const trigger = (await page.locator(".sbk-overflow__button").boundingBox())!;
       const menu = (await page.locator(".sbk-overflow__menu").boundingBox())!;
@@ -784,6 +793,87 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  // A phone-width window: a popover that keeps Slack's alignment would run past an edge (the
+  // right-aligned calendar off the left, the left-aligned menus off the right), so it shifts
+  // just enough to stay inside the window instead.
+  describe("popovers in a narrow window", () => {
+    const NARROW = { width: 390, height: 844 };
+    const cases = [
+      {
+        name: "datepicker calendar",
+        mount: {
+          blocks: [
+            {
+              type: "actions",
+              elements: [{ type: "datepicker", action_id: "d", initial_date: "1990-04-28" }],
+            },
+          ],
+        },
+        trigger: ".sbk-datepicker__input",
+        popover: ".sbk-datepicker__popup",
+      },
+      {
+        name: "overflow menu",
+        mount: {
+          blocks: [
+            {
+              type: "section",
+              text: plain("A section with an overflow menu."),
+              accessory: { type: "overflow", action_id: "o", options: [option("Edit")] },
+            },
+          ],
+        },
+        trigger: ".sbk-overflow__button",
+        popover: ".sbk-overflow__menu",
+      },
+      {
+        name: "select menu",
+        mount: {
+          blocks: [
+            {
+              type: "section",
+              text: plain("Pick one"),
+              accessory: {
+                type: "static_select",
+                action_id: "s",
+                placeholder: plain("Pick one"),
+                options: [option("Alpha"), option("Bravo")],
+              },
+            },
+          ],
+        },
+        trigger: ".sbk-select__control",
+        popover: ".sbk-select__menu",
+      },
+      {
+        name: "time picker list",
+        mount: {
+          blocks: [
+            {
+              type: "section",
+              text: plain("Pick a time"),
+              accessory: { type: "timepicker", action_id: "t", initial_time: "13:37" },
+            },
+          ],
+        },
+        trigger: ".sbk-timepicker__control",
+        popover: ".sbk-timepicker__menu",
+      },
+    ] satisfies { name: string; mount: Mount; trigger: string; popover: string }[];
+
+    for (const { name, mount, trigger, popover } of cases) {
+      it(`keeps the ${name} inside the window`, async () => {
+        const page = await harness.open(mount, { viewport: NARROW });
+        await page.click(trigger);
+        const box = (await page.locator(popover).boundingBox())!;
+        expect({
+          left: box.x >= 0,
+          right: box.x + box.width <= NARROW.width,
+        }).toEqual({ left: true, right: true });
+      });
+    }
+  });
+
   describe("datepicker calendar", () => {
     const datepicker: Mount = {
       blocks: [
@@ -797,8 +887,18 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     // Measured in Block Kit Builder: the popup's right edge meets the field's, and it opens below.
     // (Slack's popup is 349 x 372 and ours 350 x 376; no reference shows an open calendar yet to
     // tell which inner spacing differs, so the size waits for one.)
+    // A field at the start of an actions block leaves no room for that on its left (the calendar
+    // would shift inside the window), so this one is a section's accessory, on the right.
     it("opens below the field with its right edge on the field's", async () => {
-      const page = await harness.open(datepicker);
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: plain("Pick a date"),
+            accessory: { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+          },
+        ],
+      });
       await page.click(".sbk-datepicker__input");
       const field = (await page.locator(".sbk-datepicker").boundingBox())!;
       const popup = (await page.locator(".sbk-datepicker__popup").boundingBox())!;

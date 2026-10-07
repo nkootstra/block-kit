@@ -24,7 +24,7 @@ window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens }) => {
       }}
       surface={view ? (view.type as "modal" | "home") : "message"}
     >
-      <div id="sbk-render" style={{ width: 600 }}>
+      <div id="sbk-render" style={{ width: "100%", maxWidth: 600 }}>
         {/* Payloads come in as plain JSON; the library validates them as it renders. */}
         {view ? (
           <View view={view as unknown as AnyView} />
