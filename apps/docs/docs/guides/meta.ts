@@ -5,6 +5,7 @@ export default defineMeta({
   icon: "book-open",
   order: 4,
   pages: [
+    "index",
     "interactivity",
     "modals",
     "external-data",

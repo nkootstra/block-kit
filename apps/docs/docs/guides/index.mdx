@@ -1,0 +1,61 @@
+---
+title: Guides overview
+description: Task-by-task guides for wiring rendered Block Kit into your React app, from handling actions and modals to mentions, theming and server rendering.
+seo:
+  title: "Block Kit for React guides"
+---
+
+The [quickstart](/quickstart) renders a message. These guides take it from there: each one covers
+a single job a real app has to do, with a working preview and the code behind it.
+
+## Interactivity
+
+<CardGroup cols={2}>
+  <Card title="Handling actions" href="/guides/interactivity" icon="mouse-pointer-click">
+    Respond to clicks, selects and inputs with `onAction`, read `state.values`, and update or delete
+    the message they came from.
+  </Card>
+  <Card title="Modals" href="/guides/modals" icon="app-window">
+    Open, push and update modals from an action, validate and submit them, and react to
+    `response_action`.
+  </Card>
+  <Card title="External data" href="/guides/external-data" icon="database">
+    Fill an `external_select`'s options from your own data with `onOptions`.
+  </Card>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="plug">
+    Send real, signed Slack interaction payloads from the browser to an existing Bolt app.
+  </Card>
+  <Card title="Validation" href="/guides/validation" icon="circle-check">
+    The checks Slack runs on a modal before `view_submission`, and how to trigger or override them.
+  </Card>
+</CardGroup>
+
+## Content
+
+<CardGroup cols={2}>
+  <Card title="Mentions and resolvers" href="/guides/mentions-and-resolvers" icon="at-sign">
+    Turn user, channel and user group ids into names, backed by the real Slack Web API.
+  </Card>
+  <Card title="Linking to your app" href="/guides/linking-to-your-app" icon="link">
+    Send mentions to your own pages and route every link through your router.
+  </Card>
+  <Card title="Emoji" href="/guides/emoji" icon="smile">
+    Standard, custom and skin-toned `:shortcode:` emoji, and the `plain_text` emoji flag.
+  </Card>
+  <Card title="mrkdwn" href="/guides/mrkdwn" icon="type">
+    Slack's mrkdwn syntax, its parser and formatting helpers, and the `Mrkdwn` and `Text`
+    components.
+  </Card>
+</CardGroup>
+
+## Look and rendering
+
+<CardGroup cols={2}>
+  <Card title="Theming" href="/guides/theming" icon="palette">
+    Light and dark mode, the `--sbk-*` CSS custom properties, fonts, and isolation from your app's
+    styles.
+  </Card>
+  <Card title="Server rendering" href="/guides/server-rendering" icon="server">
+    Use the package with SSR and React Server Components without hydration mismatches.
+  </Card>
+</CardGroup>

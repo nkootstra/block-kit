@@ -9,12 +9,16 @@
 // the Worker off the build assets and raw files, which are served straight from the assets.
 // `/mcp` is the docs' MCP server, Blume's own handler over the snapshot `scripts/mcp.ts` writes
 // next to the build (Blume generates the server only on a server build).
-// Pull request Previews set `ROBOTS` (`previews.vars` in wrangler.jsonc) to keep search engines off
-// their pages.
+// For search engines:
+// - The old `block-kit.kootstra.io` domain answers every request with a permanent redirect to the
+//   same URL on `docs.block-kit.dev`.
+// - A host other than `docs.block-kit.dev` (a Preview, a workers.dev URL) is marked noindex, and
+//   Previews can set `ROBOTS` (`previews.vars` in wrangler.jsonc) to any other directive.
+// - A page's Markdown copies (`.md`, `.mdx`, or Markdown by content negotiation) name the HTML page
+//   as canonical in a `Link` header.
+// - The 404 page answers with a 404 status at its own URL too, and the trailing-slash redirect
+//   Workers Static Assets sends is made permanent (308 rather than 307).
 // Every page also links the raster favicons Google Search needs (see RASTER_ICONS below).
-// The banner in blume.config.ts tells visitors of the old domain that the docs moved. Every
-// build has it, so the Worker keeps it only on `block-kit.kootstra.io`, pointing its link at the
-// same page on the new domain, and removes it everywhere else.
 
 import type { McpData } from "blume/ai/mcp/data.ts";
 import { createMcpFetchHandler } from "blume/ai/mcp/server.ts";
@@ -25,14 +29,21 @@ interface Env {
 }
 
 const site = "https://docs.block-kit.dev";
+
+const host = new URL(site).hostname;
 const oldHost = "block-kit.kootstra.io";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const response = withMoveBanner(request, await respond(request, env));
-    if (!env.ROBOTS) return response;
+    const url = new URL(request.url);
+    if (url.hostname === oldHost) {
+      return Response.redirect(`${site}${url.pathname}${url.search}`, 301);
+    }
+    const response = withFavicons(await respond(request, env));
+    const robots = env.ROBOTS ?? (url.hostname === host ? undefined : "noindex");
+    if (!robots) return response;
     const result = new Response(response.body, response);
-    result.headers.set("X-Robots-Tag", env.ROBOTS);
+    result.headers.set("X-Robots-Tag", robots);
     return result;
   },
 };
@@ -56,10 +67,18 @@ async function respond(request: Request, env: Env): Promise<Response> {
 
   if (wantsMarkdown) {
     const markdown = await env.ASSETS.fetch(new Request(markdownUrl, request));
-    if (markdown.ok) return withVaryAccept(markdown);
+    if (markdown.ok) return withVaryAccept(withCanonical(markdown, markdownUrl.pathname));
   }
 
   const response = await env.ASSETS.fetch(request);
+  const { pathname } = new URL(request.url);
+  if (response.status === 307) return permanent(response);
+  if (response.ok && /\.mdx?$/.test(pathname)) {
+    return withVaryAccept(withCanonical(response, pathname));
+  }
+  if (response.ok && pathname === "/404") {
+    return withVaryAccept(new Response(response.body, { status: 404, headers: response.headers }));
+  }
   if (response.status !== 404) return withVaryAccept(response);
 
   if (wantsJsonError(request, accept)) {
@@ -79,32 +98,35 @@ const RASTER_ICONS =
   '<link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">' +
   '<link rel="icon" href="/favicon.ico" sizes="32x32">';
 
-/**
- * Keeps the moved-docs banner on the old domain, linked to the same page, and drops it elsewhere,
- * and adds the raster favicons to every page.
- */
-function withMoveBanner(request: Request, response: Response): Response {
+/** Adds the raster favicons to every page. */
+function withFavicons(response: Response): Response {
   if (!response.headers.get("Content-Type")?.startsWith("text/html")) return response;
-  const url = new URL(request.url);
-  const rewriter = new HTMLRewriter().on("head", {
-    element(head) {
-      head.append(RASTER_ICONS, { html: true });
-    },
+  return new HTMLRewriter()
+    .on("head", {
+      element(head) {
+        head.append(RASTER_ICONS, { html: true });
+      },
+    })
+    .transform(response);
+}
+
+/**
+ * Names the HTML page a Markdown copy at `markdownPath` (`/blocks/section.md`, `/index.mdx`) belongs
+ * to as its canonical URL, so search engines index the page rather than the copy.
+ */
+function withCanonical(response: Response, markdownPath: string): Response {
+  const page = markdownPath.replace(/\.mdx?$/, "").replace(/^\/index$/, "/");
+  const result = new Response(response.body, response);
+  result.headers.set("Link", `<${site}${page}>; rel="canonical"`);
+  return result;
+}
+
+/** The same redirect, made permanent: a page URL's trailing slash is dropped for good. */
+function permanent(redirect: Response): Response {
+  return new Response(null, {
+    status: 308,
+    headers: { Location: redirect.headers.get("Location") ?? "/" },
   });
-  if (url.hostname === oldHost) {
-    rewriter.on("[data-blume-banner] a", {
-      element(link) {
-        link.setAttribute("href", `${site}${url.pathname}${url.search}`);
-      },
-    });
-  } else {
-    rewriter.on("[data-blume-banner]", {
-      element(banner) {
-        banner.remove();
-      },
-    });
-  }
-  return rewriter.transform(response);
 }
 
 /** The `.md` twin of a page URL, or `null` for a URL that names a file. */

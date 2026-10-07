@@ -30,6 +30,5 @@ export default defineMeta({
     "plan",
     "task-card",
     "condition",
-    "fallback-canary",
   ],
 });

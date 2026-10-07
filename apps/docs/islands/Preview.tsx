@@ -44,16 +44,30 @@ export interface PreviewProps {
 /** What `DemoLink` was last asked to open, reported to the preview that renders it. */
 const OpenLink = createContext<(link: { href: string; target?: string }) => void>(() => {});
 
-/** A stand-in for a router's link: records the click instead of navigating away from the docs. */
+/**
+ * A stand-in for a router's link: records the click instead of navigating away from the docs. A path
+ * in the reader's app (`/channels/C0GENERAL`) has no page on the docs site, so it gets no `href`,
+ * which would hand crawlers a broken URL; it stays a focusable link that Enter opens.
+ */
 function DemoLink({ href, className, target, rel, children }: LinkProps) {
   const open = useContext(OpenLink);
+  const inApp = href.startsWith("/");
   return (
     <a
-      href={href}
+      href={inApp ? undefined : href}
+      role={inApp ? "link" : undefined}
+      tabIndex={inApp ? 0 : undefined}
+      // A link with an href shows the pointer; keep it, as a linked mention does in an app.
+      style={inApp ? { cursor: "pointer" } : undefined}
       className={className}
       target={target}
       rel={rel}
       onClick={(event) => {
+        event.preventDefault();
+        open({ href, target });
+      }}
+      onKeyDown={(event) => {
+        if (!inApp || event.key !== "Enter") return;
         event.preventDefault();
         open({ href, target });
       }}

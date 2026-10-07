@@ -13,10 +13,8 @@ const files: Record<string, [body: string, contentType: string]> = {
     '<!doctype html><html><head><link rel="icon" href="/icon.svg"></head><body>page</body></html>',
     "text/html",
   ],
-  "/guides/theming": [
-    '<!doctype html><header><div data-blume-banner><span>Moved</span><a href="https://docs.block-kit.dev">Go</a></div></header>theming',
-    "text/html",
-  ],
+  "/blocks/section.mdx": ["---\ntitle: Section\n---", "text/markdown; charset=utf-8"],
+  "/404": ["<!doctype html>Page not found", "text/html"],
   "/api/docs/pages.json": ['{"pages":[]}', "application/json"],
   "/404.md": ["# Page not found", "text/markdown; charset=utf-8"],
   "/404.json": ['{"status":404,"code":"PAGE_NOT_FOUND"}', "application/json"],
@@ -25,7 +23,15 @@ const files: Record<string, [body: string, contentType: string]> = {
 const env = {
   ASSETS: {
     async fetch(request: Request) {
-      const file = files[new URL(request.url).pathname];
+      const { pathname } = new URL(request.url);
+      // Workers Static Assets drops a page URL's trailing slash with a 307 (`html_handling`).
+      if (pathname.length > 1 && pathname.endsWith("/")) {
+        return new Response(null, {
+          status: 307,
+          headers: { Location: pathname.slice(0, -1) },
+        });
+      }
+      const file = files[pathname];
       if (!file) {
         return new Response("<!doctype html>404", {
           status: 404,
@@ -248,21 +254,58 @@ describe("Favicons", () => {
   });
 });
 
-describe("Moved-docs banner", () => {
-  const page = (host: string) =>
-    worker.fetch(new Request(`https://${host}/guides/theming?tab=dark`), env).then((r) => r.text());
+describe("Old domain", () => {
+  test("moves every request to the same URL on the docs domain, permanently", async () => {
+    for (const path of ["/", "/guides/theming?tab=dark", "/blocks/section.md"]) {
+      const response = await worker.fetch(new Request(`https://block-kit.kootstra.io${path}`), env);
+      expect(response.status).toBe(301);
+      expect(response.headers.get("Location")).toBe(`${site}${path}`);
+    }
+  });
+});
 
-  test("links the old domain's banner to the same page on the new domain", async () => {
-    const html = await page("block-kit.kootstra.io");
-    expect(html).toContain("data-blume-banner");
-    expect(html).toContain('href="https://docs.block-kit.dev/guides/theming?tab=dark"');
+describe("Markdown copies", () => {
+  test("name their HTML page as canonical", async () => {
+    for (const [path, accept, canonical] of [
+      ["/blocks/section", "text/markdown", `${site}/blocks/section`],
+      ["/", "text/markdown", `${site}/`],
+      ["/blocks/section.md", undefined, `${site}/blocks/section`],
+      ["/blocks/section.mdx", undefined, `${site}/blocks/section`],
+      ["/index.md", undefined, `${site}/`],
+    ] as const) {
+      const response = await get(path, accept);
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Link")).toBe(`<${canonical}>; rel="canonical"`);
+    }
   });
 
-  test("removes the banner on the new domain and on Previews", async () => {
-    for (const host of ["docs.block-kit.dev", "pr-1-block-kit-docs.example.workers.dev"]) {
-      const html = await page(host);
-      expect(html).not.toContain("data-blume-banner");
-      expect(html).toContain("theming");
-    }
+  test("leave HTML pages to their own canonical link", async () => {
+    expect((await get("/blocks/section", browser)).headers.get("Link")).toBeNull();
+  });
+});
+
+describe("Search engines", () => {
+  test("may index the docs domain", async () => {
+    expect((await get("/", browser)).headers.get("X-Robots-Tag")).toBeNull();
+  });
+
+  test("are kept off any other host, such as a workers.dev URL", async () => {
+    const response = await worker.fetch(
+      new Request("https://block-kit-docs.example.workers.dev/", { headers: { Accept: browser } }),
+      env,
+    );
+    expect(response.headers.get("X-Robots-Tag")).toBe("noindex");
+  });
+
+  test("get a real 404 status from the 404 page itself", async () => {
+    const response = await get("/404", browser);
+    expect(response.status).toBe(404);
+    expect(await response.text()).toContain("Page not found");
+  });
+
+  test("see a page URL's trailing slash dropped with a permanent redirect", async () => {
+    const response = await get("/blocks/section/", browser);
+    expect(response.status).toBe(308);
+    expect(response.headers.get("Location")).toBe("/blocks/section");
   });
 });
