@@ -2159,31 +2159,6 @@
     "reference": "1d1415cfdecb9c5e137a02cd6bd24deb48f127042d7279155ea82ad78d33abb2",
     "captured": "2026-10-07"
   },
-  "contexts/datetimepicker/accessory": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "f05a307fdb96bb833316f035ecb1e2ac41eadf653f87b63adec8016a044861b0",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@dark": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "ad9d9a67188ff0a2d0bdd0b120295d9b26b64a731883675f06d5910a93d06ea8",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@mobile": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "0476481247d478e1fac550bd90a4763e79a7a026d1ed54131a4a06dca45b88b8",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@open": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "0eeeafb6ee238d09a8648206eb62108ccc762ee67c6076232cd2026910d20ad2",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@open+dark": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "162867ed633a2c5b1d3f78d165cc9d4481a95fc94ea418f920cfdf1b0d77951e",
-    "captured": "2026-10-07"
-  },
   "contexts/datetimepicker/actions": {
     "payload": "bf0d11b69273acc23582ed86e09190fc1807d2975c0e83890b232f090903e90d",
     "reference": "72c39f68c90ff629a578e4fa1e31f4bfbd441774fc52096eb86e51cf60051672",
