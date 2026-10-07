@@ -102,6 +102,16 @@ describe("<TimePicker>", () => {
     });
   }
 
+  // Two names the Builder shows garbled: Fort Nelson as another zone's "(UTC+01:00) Amsterdam, …"
+  // and Tonga with its apostrophe still HTML-escaped. Ours read cleanly.
+  it("names Fort Nelson like the other UTC-7 zones without daylight saving", () => {
+    expect(zoneLine("America/Fort_Nelson")).toBe("Time zone: Arizona, Vancouver");
+  });
+
+  it("names Tonga with a plain apostrophe", () => {
+    expect(zoneLine("Pacific/Tongatapu")).toBe("Time zone: Nuku'alofa");
+  });
+
   describe("as a typeable picker", () => {
     it("shows the chosen time in an overlay over the input, as Slack's c-select_input__content does", () => {
       renderPicker(vi.fn(), "13:37");
