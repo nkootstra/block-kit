@@ -3262,6 +3262,53 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
     }
   });
+
+  // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
+  // one (512px; blocks 432px).
+  describe("narrow datetime picker", () => {
+    const DESKTOP = { width: 800, height: 900 };
+    const PHONE = { width: 390, height: 844 };
+
+    // Slack's c-date_time_picker wraps: each field is 208px at most two to a row, 8px apart, and
+    // grows to fill a row on its own when two don't fit (312px each in a phone's 320px block).
+    for (const [label, viewport, stacked] of [
+      ["side by side on desktop", DESKTOP, false],
+      ["stacked on a phone", PHONE, true],
+    ] as const) {
+      it(`lays out a datetime picker's fields ${label}`, async () => {
+        const page = await harness.open(await fixture("contexts/datetimepicker/actions"), {
+          viewport,
+        });
+        const [picker, date, time] = await Promise.all(
+          [
+            ".sbk-datetimepicker",
+            ".sbk-datetimepicker__control",
+            ".sbk-datetimepicker__column + .sbk-datetimepicker__column .sbk-datetimepicker__control",
+          ].map((s) => page.locator(s).first().boundingBox()),
+        );
+        const round = (n: number) => Math.round(n);
+        expect(
+          stacked
+            ? [
+                round(time!.x - date!.x),
+                round(time!.y - (date!.y + date!.height)),
+                round(date!.width),
+                round(time!.width),
+              ]
+            : [
+                round(time!.x - (date!.x + date!.width)),
+                round(time!.y - date!.y),
+                round(date!.width),
+                round(time!.width),
+              ],
+        ).toEqual(
+          stacked
+            ? [0, 8, round(picker!.width), round(picker!.width)]
+            : [8, 0, round((picker!.width - 8) / 2), round((picker!.width - 8) / 2)],
+        );
+      });
+    }
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
