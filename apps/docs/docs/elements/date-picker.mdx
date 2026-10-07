@@ -165,9 +165,9 @@ element unchanged.
 
 ## Interactivity
 
-Picking a day fires an action with `selected_date`. In an `optional` input block, where the date
-may be left empty, the calendar also has Slack's "Clear selection" footer once a date is set, and
-clearing sends `null`:
+Picking a day fires an action with `selected_date`. Where the date may be left empty, the calendar
+also has Slack's "Clear selection" footer once a date is set, and clearing sends `null`. That's an
+`optional` input block, or any input block in a message, where Slack treats inputs as optional:
 
 ```json
 {

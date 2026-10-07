@@ -148,7 +148,13 @@
   width: 230px;
 }
 
-/* Slack's "Clear selection" row, which leads a datetimepicker's list once a value is chosen. */
+/* In an input block, Slack's list is the field's width plus 22px (454 for a 432px field). */
+.sbk-timepicker__menu--input {
+  width: calc(100% + 22px);
+}
+
+/* Slack's "Clear selection" row, which leads the list once a value is chosen where it may be left
+   empty: a datetimepicker's, or a clearable input block's timepicker. */
 .sbk-timepicker__option--clear {
   color: var(--sbk-content-sec);
 }

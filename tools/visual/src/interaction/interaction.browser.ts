@@ -699,6 +699,42 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ],
     };
 
+    // From catalog/input/timepicker@open: in an input block the list is the field's width plus 22px
+    // (454 for a 432px field), starts 12px left of it, and opens with a 28px "Clear selection" row
+    // above 12:00 AM.
+    it("opens an input block's list 22px wider than the field, Clear selection first", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("When"),
+            element: { type: "timepicker", action_id: "t", initial_time: "13:37" },
+          },
+        ],
+      });
+      await page.click(".sbk-timepicker__control");
+      await settle(page);
+      const geometry = await page.evaluate(() => {
+        const field = document.querySelector(".sbk-timepicker__control")!.getBoundingClientRect();
+        const menu = document.querySelector(".sbk-timepicker__menu")!.getBoundingClientRect();
+        const rows = [...document.querySelectorAll(".sbk-timepicker__menu [role=option]")];
+        return {
+          widthOverField: Math.round(menu.width - field.width),
+          left: Math.round(menu.x - field.x),
+          first: rows[0]?.textContent,
+          rowGap: Math.round(
+            rows[1]!.getBoundingClientRect().y - rows[0]!.getBoundingClientRect().y,
+          ),
+        };
+      });
+      expect(geometry).toEqual({
+        widthOverField: 22,
+        left: -12,
+        first: "Clear selection",
+        rowGap: 28,
+      });
+    });
+
     it("opens a 212px list that starts 12px left of the field and is at most 264px tall", async () => {
       const page = await harness.open(picker);
       await page.click(".sbk-timepicker__control");
@@ -1359,10 +1395,32 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       `.sbk-calendar__cell[data-date="1990-04-${String(n).padStart(2, "0")}"]`;
     const NAV = ".sbk-calendar__nav";
 
-    // Measured in Block Kit Builder: the popup's right edge meets the field's, and its top overlaps
-    // the field's bottom by 4px, as Slack's menus do. A field at the start of an actions block
-    // leaves no room for that on its left (the calendar would shift inside the window), so this one
-    // is a section's accessory, on the right.
+    // From the open-calendar references: Slack's weekday cells start at 24.5px into the popup, in a
+    // 29.5625px row whose 13px labels sit on a 19.0668px line, and the first week's day buttons
+    // start at 101.0625px (they overlap the row's bottom half-pixel border).
+    it("places the weekday row and the first week as Slack does", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      const geometry = await page.evaluate(() => {
+        const popup = document.querySelector(".sbk-datepicker__popup")!.getBoundingClientRect();
+        const weekday = document.querySelector(".sbk-calendar__weekdays > *")!;
+        const cell = weekday.getBoundingClientRect();
+        const day = document
+          .querySelector(".sbk-calendar__cell:not(.sbk-calendar__cell--empty)")!
+          .getBoundingClientRect();
+        return {
+          weekdayLeft: cell.x - popup.x,
+          weekdayLineHeight: parseFloat(getComputedStyle(weekday).lineHeight),
+          firstDayTop: day.y - popup.y,
+        };
+      });
+      // Engines round sub-pixel layout differently (Firefox works in 1/60px), so compare to a few
+      // hundredths of a pixel.
+      expect(geometry.weekdayLeft).toBe(24.5);
+      expect(geometry.weekdayLineHeight).toBeCloseTo(19.0668, 2);
+      expect(geometry.firstDayTop).toBeCloseTo(101.0625, 1);
+    });
+
     it("opens over the field's bottom edge with its right edge on the field's", async () => {
       const page = await harness.open({
         blocks: [

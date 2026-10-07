@@ -2,7 +2,7 @@ import type { Datepicker } from "@slack/types";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
-import { Message } from "../Message";
+import { Input } from "../blocks/Input";
 import { DatePicker } from "./DatePicker";
 import { blurAsync, clickAsync, keyDownAsync } from "./test-utils";
 
@@ -71,16 +71,16 @@ describe("<DatePicker>", () => {
 
   it("spells the date out inside an input block, as Slack does", () => {
     render(
-      <Message
-        blocks={
-          [
-            {
-              type: "input",
-              label: { type: "plain_text", text: "Birthday" },
-              element: { type: "datepicker", action_id: "a1", initial_date: "1990-04-28" },
-            },
-          ] as never
+      <Input
+        block={
+          {
+            type: "input",
+            label: { type: "plain_text", text: "Birthday" },
+            element: { type: "datepicker", action_id: "a1", initial_date: "1990-04-28" },
+          } as never
         }
+        blockId="b1"
+        index={0}
       />,
     );
     expect((screen.getByPlaceholderText("Select a date") as HTMLInputElement).value).toBe(
@@ -124,18 +124,18 @@ describe("<DatePicker>", () => {
   ) {
     render(
       <BlockKitProvider {...props}>
-        <Message
-          blocks={
-            [
-              {
-                type: "input",
-                block_id: "b1",
-                optional,
-                label: { type: "plain_text", text: "Due" },
-                element: { type: "datepicker", action_id: "a1", initial_date: "2024-06-15" },
-              },
-            ] as never
+        <Input
+          block={
+            {
+              type: "input",
+              block_id: "b1",
+              optional,
+              label: { type: "plain_text", text: "Due" },
+              element: { type: "datepicker", action_id: "a1", initial_date: "2024-06-15" },
+            } as never
           }
+          blockId="b1"
+          index={0}
         />
       </BlockKitProvider>,
     );
@@ -154,8 +154,16 @@ describe("<DatePicker>", () => {
     expect(input.value).toBe("");
   });
 
-  it("offers no Clear selection for a required input's datepicker, as in Slack", () => {
+  // In Block Kit Builder's references, a required input's datepicker on the message surface has the
+  // footer too: Slack treats inputs there as optional (it shows no "(optional)" suffix either).
+  // In a modal, only an optional input's does.
+  it("offers Clear selection for a required input's datepicker on the message surface", () => {
     inInput(false);
+    expect(screen.queryByText("Clear selection")).not.toBeNull();
+  });
+
+  it("offers no Clear selection for a required input's datepicker in a modal, as in Slack", () => {
+    inInput(false, { surface: "modal" });
     expect(screen.queryByText("Clear selection")).toBeNull();
   });
 
