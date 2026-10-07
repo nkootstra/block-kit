@@ -14,6 +14,7 @@ export {
   type MessageApi,
   type MessageUpdate,
   type PayloadContext,
+  type ResolvedSlackFile,
   type Resolvers,
   type StackedView,
   type StateValues,

@@ -62,9 +62,11 @@ screenshot, photo, or diagram inline in a message, modal, or App Home surface.
 />
 
 :::note
-Outside a real Slack workspace, this library can't resolve a `slack_file` reference to actual image
-bytes, which needs an authenticated `files.info` call. It renders Slack's documented fallback
-instead: a placeholder box with the `alt_text`. `image_url` renders normally.
+Slack files aren't public, so a `slack_file` needs your app to resolve it, e.g. with an authenticated
+`files.info` call. Pass `resolvers.slackFile` to the provider: it returns a URL the browser can load
+and, optionally, the size in bytes, which shows as Slack's "(71 kB)" caption next to the caret. A
+file it can't resolve (or no resolver) renders Slack's documented fallback: a placeholder box with
+the `alt_text`. `image_url` renders normally.
 :::
 
 ## Examples
@@ -121,8 +123,16 @@ at the same vertical offset either way.
   }}
 />
 
-Since a `slack_file` needs a live workspace to resolve, this renders as the alt-text fallback rather
-than the actual photo.
+This preview has no `resolvers.slackFile`, so it renders the alt-text fallback. With one, the file
+shows like an `image_url`:
+
+```tsx
+<BlockKitProvider
+  resolvers={{
+    slackFile: (file) => files.get(file.id ?? file.url ?? ""), // { url, size } or undefined
+  }}
+>
+```
 
 ## Related
 

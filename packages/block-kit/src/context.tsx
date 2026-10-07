@@ -78,6 +78,19 @@ export interface Resolvers {
   userProfile?: (id: string) => UserProfile | undefined;
   channel?: (id: string) => string | undefined;
   usergroup?: (id: string) => string | undefined;
+  /**
+   * A `slack_file` image's URL, and its size in bytes for Slack's "(N kB)" caption, e.g. from
+   * `files.info`. Slack files aren't public, so without this an image block shows a placeholder.
+   */
+  slackFile?: (file: { id?: string; url?: string }) => ResolvedSlackFile | undefined;
+}
+
+/** What {@link Resolvers.slackFile} returns for a file it knows. */
+export interface ResolvedSlackFile {
+  /** A URL the browser can load, e.g. the file's `url_private` behind your own proxy. */
+  url: string;
+  /** The file's size in bytes. */
+  size?: number;
 }
 
 export interface EmojiOptions {

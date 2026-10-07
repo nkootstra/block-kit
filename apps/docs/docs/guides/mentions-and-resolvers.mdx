@@ -72,6 +72,11 @@ const resolvers: Resolvers = {
       type: "(id: string) => string | undefined",
       description: 'Name for a usergroup (subteam) mention, e.g. <!subteam^S0ENG> → "engineering".',
     },
+    slackFile: {
+      type: "(file: { id?: string; url?: string }) => { url: string; size?: number } | undefined",
+      description:
+        "A slack_file image's loadable URL and its size in bytes, e.g. from files.info. The image block and image element show it like an image_url, with Slack's \"(71 kB)\" caption when the size is known. Without it, an image block shows the alt-text placeholder.",
+    },
   }}
 />
 
