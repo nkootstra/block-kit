@@ -27,4 +27,33 @@ describe("foreignText", () => {
     const html = reference({ blocks: [] }, "<p>Type a minimum of 3 characters to see options.</p>");
     expect(foreignText(html, known)).toEqual([]);
   });
+
+  // CodeQL: script and style content must never count as text, whatever the tag's letter case or
+  // spacing, and a crafted tag can't smuggle their content out.
+  it("ignores text inside script and style tags in any letter case", () => {
+    const html = reference(
+      { blocks: [] },
+      "<SCRIPT>A section with an accessory</SCRIPT><Style>Pick an item from the list</Style >",
+    );
+    expect(foreignText(html, known)).toEqual([]);
+  });
+
+  it("ignores script content when the closing tag has spaces or attributes", () => {
+    const html = reference(
+      { blocks: [] },
+      '<script type="text/plain">A section with an accessory</script >' +
+        "<style media=x>Pick an item from the list</style\n>",
+    );
+    expect(foreignText(html, known)).toEqual([]);
+  });
+
+  it("doesn't let a split tag leak script content", () => {
+    const html = reference({ blocks: [] }, "<scr<script>ipt>A section with an accessory</script>");
+    expect(foreignText(html, known)).toEqual([]);
+  });
+
+  it("still finds foreign text after a script block", () => {
+    const html = reference({ blocks: [] }, "<SCRIPT>x</SCRIPT><p>A section with an accessory</p>");
+    expect(foreignText(html, known)).toEqual(["A section with an accessory"]);
+  });
 });

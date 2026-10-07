@@ -18,6 +18,50 @@ const unescapeHtml = (s: string) =>
     )
     .replace(/&amp;/g, "&");
 
+/** Elements whose content is never visible text. */
+const RAW_TEXT = new Set(["script", "style"]);
+
+/**
+ * The text between tags, skipping script and style content. A small tokenizer rather than regex
+ * stripping, so tag-name case, closing-tag spacing or a split tag can't let their content through.
+ * A `<` that doesn't open a tag (another `<` comes before its `>`) is text.
+ */
+export function textNodes(html: string): string[] {
+  const lower = html.toLowerCase();
+  const texts: string[] = [];
+  let text = "";
+  let i = 0;
+  while (i < html.length) {
+    const open = html.indexOf("<", i);
+    if (open === -1) {
+      text += html.slice(i);
+      break;
+    }
+    text += html.slice(i, open);
+    const close = html.indexOf(">", open + 1);
+    const nextOpen = html.indexOf("<", open + 1);
+    if (close === -1 || (nextOpen !== -1 && nextOpen < close)) {
+      text += "<";
+      i = open + 1;
+      continue;
+    }
+    if (text) texts.push(text);
+    text = "";
+    const name = /^\/?\s*([a-z][a-z0-9-]*)/.exec(lower.slice(open + 1, close))?.[1] ?? "";
+    const closing = lower[open + 1] === "/";
+    if (!closing && RAW_TEXT.has(name)) {
+      const end = lower.indexOf(`</${name}`, close + 1);
+      if (end === -1) break;
+      const endClose = html.indexOf(">", end);
+      i = endClose === -1 ? html.length : endClose + 1;
+      continue;
+    }
+    i = close + 1;
+  }
+  if (text) texts.push(text);
+  return texts;
+}
+
 /** Every string in a payload. */
 export function payloadStrings(value: unknown, out: string[] = []): string[] {
   if (typeof value === "string") out.push(value);
@@ -39,12 +83,9 @@ export function fixtureSentences(payloads: Iterable<unknown>): Set<string> {
 export function foreignText(html: string, sentences: Set<string>): string[] {
   const payload = JSON.parse(html.match(META)?.[1] ?? "{}").payload ?? null;
   const own = new Set(payloadStrings(payload).map((s) => s.trim()));
-  const body = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, "");
   const found = new Set<string>();
-  for (const [, raw] of body.matchAll(/>([^<]+)</g)) {
-    const text = unescapeHtml(raw ?? "")
-      .replace(/\s+/g, " ")
-      .trim();
+  for (const raw of textNodes(html)) {
+    const text = unescapeHtml(raw).replace(/\s+/g, " ").trim();
     if (text && sentences.has(text) && !own.has(text)) found.add(text);
   }
   return [...found];
