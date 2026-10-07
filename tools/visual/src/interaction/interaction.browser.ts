@@ -1821,6 +1821,30 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       await page.waitForSelector(".sbk-confirm");
       return page;
     };
+    // Captured in Block Kit Builder (`extra/actions/more-elements@confirm`): a 520 x 166 dialog with
+    // a 68px header whose 36px close button reaches 8px into the padding.
+    it("lays the confirm dialog out at Slack's 520 x 166, with a 36px close button", async () => {
+      const page = await open();
+      await settle(page);
+      const geometry = await page.evaluate(() => {
+        const dialog = document.querySelector(".sbk-confirm")!.getBoundingClientRect();
+        const rel = (selector: string) => {
+          const r = document.querySelector(selector)!.getBoundingClientRect();
+          return [r.x - dialog.x, r.y - dialog.y, r.width, r.height].map(Math.round);
+        };
+        return {
+          dialog: [Math.round(dialog.width), Math.round(dialog.height)],
+          header: rel(".sbk-confirm__header"),
+          close: rel(".sbk-confirm__close"),
+        };
+      });
+      expect(geometry).toEqual({
+        dialog: [520, 166],
+        header: [0, 0, 520, 68],
+        close: [468, 16, 36, 36],
+      });
+    });
+
     const css = (page: Page, selector: string, pseudo?: string) =>
       page
         .locator(selector)
@@ -1851,7 +1875,8 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
       expect((await css(page, ".sbk-confirm__header")).padding).toBe("16px 24px");
       expect((await css(page, ".sbk-confirm__title")).font).toBe("900 22px/30px");
-      expect((await css(page, ".sbk-confirm__close")).size).toBe("34 x 34");
+      // Measured in Block Kit Builder (`extra/actions/more-elements@confirm`).
+      expect((await css(page, ".sbk-confirm__close")).size).toBe("36 x 36");
       const body = await css(page, ".sbk-confirm__text");
       expect({ padding: body.padding, font: body.font }).toEqual({
         padding: "0px 24px",
