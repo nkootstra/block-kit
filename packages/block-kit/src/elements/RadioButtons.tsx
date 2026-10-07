@@ -29,6 +29,8 @@ export function RadioButtons({ element, blockId }: ElementProps<RadioButtonsElem
       action_id: actionId,
       block_id: blockId,
       selected_option: option,
+      // Slack echoes the element's initial_option back in the action.
+      ...(element.initial_option !== undefined ? { initial_option: element.initial_option } : {}),
     });
   };
 

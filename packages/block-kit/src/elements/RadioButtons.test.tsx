@@ -34,7 +34,7 @@ describe("<RadioButtons>", () => {
         />
       </BlockKitProvider>,
     );
-    expect(state.b1?.a1).toEqual({ type: "radio_buttons", selected_option: option("b", "B") });
+    expect(state.b1?.a1).toEqual({ type: "radio_buttons", selected_option: sent("b", "B") });
   });
 
   it("selects exactly one option at a time and dispatches selected_option", async () => {
@@ -67,6 +67,56 @@ describe("<RadioButtons>", () => {
       expect.objectContaining({ selected_option: sent("b", "B") }),
       expect.anything(),
     );
+  });
+
+  // Slack echoes the element's initial_option in every radio action, the way Bolt's
+  // RadioButtonsAction declares it and the Builder's Actions Preview showed it
+  // (state audit, "Radio buttons": "selected_option (with description) plus initial_option echoed").
+  it("echoes initial_option in the action, as Slack does", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <RadioButtons
+          element={
+            {
+              type: "radio_buttons",
+              action_id: "a1",
+              options: [option("a", "A"), option("b", "B")],
+              initial_option: option("b", "B"),
+            } as unknown as RadioButtonsElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    await clickAsync(screen.getAllByRole("radio")[0]!);
+    expect(onAction).toHaveBeenLastCalledWith(
+      expect.objectContaining({ selected_option: sent("a", "A"), initial_option: sent("b", "B") }),
+      expect.anything(),
+    );
+  });
+
+  // The Builder's state.values option objects carry `emoji: true` on their plain_text, as the
+  // actions do (state audit, "state.values and the payload envelope": "Option objects in state:
+  // emoji:true").
+  it("reports options in state with Slack's emoji: true", async () => {
+    let state: StateValues = {};
+    render(
+      <BlockKitProvider onStateChange={(s) => (state = s)}>
+        <RadioButtons
+          element={
+            {
+              type: "radio_buttons",
+              action_id: "a1",
+              options: [option("a", "A"), option("b", "B")],
+            } as unknown as RadioButtonsElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    await clickAsync(screen.getAllByRole("radio")[0]!);
+    expect(state.b1?.a1).toEqual({ type: "radio_buttons", selected_option: sent("a", "A") });
   });
 
   it("shares a name across options within one radio group so only one can be checked natively", () => {

@@ -40,6 +40,9 @@ export function IconButton({ element, blockId }: ElementProps<IconButtonElement>
       action_id: element.action_id ?? "",
       block_id: blockId,
       ...(element.value !== undefined ? { value: element.value } : {}),
+      // Slack echoes the button's icon and text.
+      icon: element.icon,
+      text: element.text,
     });
   }
 

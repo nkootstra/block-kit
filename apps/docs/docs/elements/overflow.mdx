@@ -146,7 +146,8 @@ Each option is a [plain-text option](/elements/select-menus) object:
 ## Interactivity
 
 Picking an item (after any confirm dialog is accepted) closes the menu, calls `onAction` with the
-chosen option under `selected_option`, and opens the option's `url` in a new tab if it has one:
+chosen option's `text` and `value` under `selected_option`, and opens the option's `url` in a new
+tab if it has one. As in Slack, the action doesn't carry the `url`:
 
 ```json
 {
@@ -156,8 +157,7 @@ chosen option under `selected_option`, and opens the option's `url` in a new tab
   "action_ts": "1706000000.000100",
   "selected_option": {
     "text": { "type": "plain_text", "text": "Open docs", "emoji": true },
-    "value": "value-2",
-    "url": "https://api.slack.com"
+    "value": "value-2"
   }
 }
 ```

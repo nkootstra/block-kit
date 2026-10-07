@@ -35,7 +35,7 @@ describe("<Select> static_select", () => {
         />
       </BlockKitProvider>,
     );
-    expect(state.b1?.a1).toEqual({ type: "static_select", selected_option: opt("a", "A") });
+    expect(state.b1?.a1).toEqual({ type: "static_select", selected_option: sent("a", "A") });
   });
 
   it("opens the menu, selects an option, and dispatches selected_option", async () => {
