@@ -38,10 +38,54 @@
   padding: 4px 7px 4px 11px;
 }
 
-/* Slack's medium time select: 12px side padding, text on a 22.5px line 33px in. */
+/* Slack's medium time select: 12px side padding, text on a 22.5px line 33px in. The time is
+   typed into an input between the icons, as in the timepicker. */
 .sbk-datetimepicker__control--time {
+  position: relative;
   padding: 4px 11px;
   line-height: 22.5px;
+}
+
+.sbk-datetimepicker__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--sbk-text);
+  text-overflow: ellipsis;
+  background: transparent;
+  border: 0;
+  outline: none;
+  cursor: inherit;
+}
+
+.sbk-datetimepicker__input::placeholder {
+  color: var(--sbk-muted);
+  opacity: 1;
+}
+
+/* While the layer below shows the chosen time, the input's own copy of it is transparent. */
+.sbk-datetimepicker__input--behind {
+  color: transparent;
+}
+
+/* Slack's `c-select_input__content`: the chosen time drawn over the field where the input's text
+   sits, 33px in past the clock and clear of the chevron. Our border is inside the box, so the
+   insets are 1px less. Presses go through to the input. */
+.sbk-datetimepicker__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 36px 0 32px;
+  pointer-events: none;
+}
+
+.sbk-datetimepicker__content-text {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sbk-datetimepicker__icon {
@@ -77,49 +121,4 @@
   font-size: 13px;
   line-height: 18px;
   color: var(--sbk-badge-text);
-}
-
-.sbk-datetimepicker__popup {
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  left: 0;
-  /* Slack's datepicker dropdown: 16px padding, hairline ring plus a soft drop shadow. */
-  padding: 16px;
-  background: var(--sbk-menu-bg);
-  border-radius: 6px;
-  box-shadow: var(--sbk-popover-shadow);
-}
-
-.sbk-datetimepicker__time-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border-top: 1px solid var(--sbk-border);
-}
-
-.sbk-datetimepicker__time-input {
-  flex: 1;
-  height: 28px;
-  padding: 4px 8px;
-  border: 1px solid rgb(124, 122, 127);
-  border-radius: 8px;
-  font: 13px var(--sbk-font);
-}
-
-.sbk-datetimepicker__apply {
-  height: 28px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 4px;
-  background: var(--sbk-primary);
-  color: #fff;
-  font: 700 13px var(--sbk-font);
-  cursor: pointer;
-}
-
-.sbk-datetimepicker__apply:disabled {
-  opacity: 0.5;
-  cursor: default;
 }

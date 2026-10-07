@@ -887,6 +887,92 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured in Block Kit Builder: a datetimepicker is a date field and a time field, each with its
+  // own popover.
+  describe("datetime picker", () => {
+    const picker = (initial?: number): Mount => ({
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "datetimepicker",
+              action_id: "dt",
+              ...(initial === undefined ? {} : { initial_date_time: initial }),
+            },
+          ],
+        },
+      ],
+    });
+    const DATE = ".sbk-datetimepicker__control--date";
+    const TIME = ".sbk-datetimepicker__control--time";
+    const box = async (page: Page, selector: string) =>
+      (await page.locator(selector).first().boundingBox())!;
+
+    it("shows Slack's placeholders, Select a date and Time", async () => {
+      const page = await harness.open(picker());
+      const texts = await page.evaluate(() => [
+        document.querySelector(".sbk-datetimepicker__control--date")?.textContent,
+        (document.querySelector(".sbk-datetimepicker__control--time input") as HTMLInputElement)
+          ?.placeholder,
+      ]);
+      expect(texts).toEqual(["Select a date", "Time"]);
+    });
+
+    it("opens the datepicker's 349 x 372 calendar from the date field, with no Apply", async () => {
+      // A datetimepicker can't be a section accessory, so give the field room on its left for a
+      // calendar aligned to its right edge; otherwise it would shift inside the window.
+      const page = await harness.open(picker(), { viewport: { width: 1000, height: 700 } });
+      await page.addStyleTag({ content: "#sbk-render { margin-left: 300px; }" });
+      await page.click(DATE);
+      await settle(page);
+      const field = await box(page, DATE);
+      const popup = await box(page, ".sbk-datepicker__popup");
+      expect({
+        size: [popup.width, popup.height],
+        right: Math.round(popup.x + popup.width - (field.x + field.width)),
+        gap: Math.round(popup.y - (field.y + field.height)),
+        apply: await page.getByText("Apply").count(),
+      }).toEqual({ size: [349, 372], right: -4, gap: -4, apply: 0 });
+    });
+
+    it("opens a 230px hourly list from the time field, 12px to its left", async () => {
+      const page = await harness.open(picker());
+      await page.click(TIME);
+      await settle(page);
+      const field = await box(page, TIME);
+      const menu = await box(page, ".sbk-timepicker__menu");
+      expect({
+        size: [menu.width, menu.height],
+        left: Math.round(menu.x - field.x),
+        gap: Math.round(menu.y - (field.y + field.height)),
+        first: await page.locator(".sbk-timepicker__option").first().textContent(),
+      }).toEqual({ size: [230, 264], left: -12, gap: -4, first: "12:00 AM" });
+    });
+
+    it("leads the time list with a grey Clear selection once a value is chosen", async () => {
+      // 2026-01-01 10:00 UTC
+      const page = await harness.open(picker(1_767_261_600));
+      await page.click(TIME);
+      await settle(page);
+      const first = page.locator(".sbk-timepicker__option").first();
+      expect([
+        await first.textContent(),
+        await first.evaluate((el) => getComputedStyle(el).color),
+      ]).toEqual(["Clear selection", "rgb(69, 68, 71)"]);
+    });
+
+    it("fills the time and sends the action as soon as a day is picked", async () => {
+      const page = await harness.open(picker());
+      await page.click(DATE);
+      await page.locator(".sbk-calendar__cell:not(.sbk-calendar__cell--empty)").nth(14).click();
+      await settle(page);
+      const time = await page.locator(".sbk-datetimepicker__content-text").textContent();
+      expect(time).toMatch(/^\d{1,2}:\d{2} [AP]M$/);
+      expect(await page.locator(".sbk-datepicker__popup").count()).toBe(0);
+    });
+  });
+
   describe("datepicker calendar", () => {
     const datepicker: Mount = {
       blocks: [

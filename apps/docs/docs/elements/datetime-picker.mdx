@@ -1,14 +1,16 @@
 ---
 title: Datetime picker
-description: A combined date and time control, rendered like Slack's datetimepicker.
+description: A date field and a time field that set one timestamp, like Slack's datetimepicker.
 seo:
-  description: "Render Slack's datetimepicker element in React: a combined date and time control that reports selected_date_time as a Unix timestamp, like Slack's."
+  description: "Render Slack's datetimepicker element in React: a date field and a time field that report selected_date_time as one Unix timestamp, like Slack's."
   title: "Slack datetime picker element"
 ---
 
-`datetimepicker` opens a calendar plus a time field so a user can pick a date and time together,
-represented as a single Unix timestamp. Slack allows it in `actions` blocks, section accessories,
-and `input` blocks, but not in App Home.
+`datetimepicker` shows a date field and a time field side by side, which set a single Unix
+timestamp together. The date field opens the same calendar as the [date picker](/elements/date-picker)
+and the time field the same hourly list as the [time picker](/elements/time-picker), typeable for a
+time off the hour. Slack allows it in `actions` blocks, section accessories, and `input` blocks, but
+not in App Home.
 
 <Preview
   actions
@@ -49,7 +51,7 @@ and `input` blocks, but not in App Home.
     },
     confirm: {
       type: "ConfirmationDialog",
-      description: "A confirmation dialog shown before Apply takes effect.",
+      description: "A confirmation dialog shown before a picked date or time takes effect.",
     },
     focus_on_load: {
       type: "boolean",
@@ -61,8 +63,8 @@ and `input` blocks, but not in App Home.
 />
 
 :::note
-`datetimepicker` has no `placeholder` field: Slack always shows "Select a date" and "Select a
-time" in its two boxes until a value is chosen.
+`datetimepicker` has no `placeholder` field: Slack always shows "Select a date" and "Time" in its
+two fields until a value is chosen.
 :::
 
 ## Examples
@@ -81,8 +83,9 @@ time" in its two boxes until a value is chosen.
   }}
 />
 
-The date box and time box each show their own placeholder ("Select a date" / "Select a time")
-until the user picks a day and clicks Apply.
+The fields show their placeholders ("Select a date" / "Time") until the user picks either part.
+Picking a day first fills the time with the current time, to the minute; picking a time first
+fills the date with today, which the date field calls "Today".
 
 ### With an initial value
 
@@ -149,21 +152,26 @@ until the user picks a day and clicks Apply.
   }}
 />
 
-The dialog appears when the user clicks Apply in the popup, before the new value takes effect.
+The dialog appears after the user picks a date or a time, before the new value takes effect.
 
 ## Interactivity
 
-Picking a day and time and clicking Apply fires an action with `selected_date_time`, a Unix
-timestamp in seconds:
+Every change fires an action straight away, as in Slack: picking a day, picking or typing a time,
+and "Clear selection". `selected_date_time` is a Unix timestamp in seconds, and `null` once cleared.
+When the element has an `initial_date_time`, the action echoes it:
 
 ```json
 {
   "type": "datetimepicker",
   "action_id": "starts_at",
   "block_id": "when",
-  "selected_date_time": 1718872500
+  "selected_date_time": 1718872500,
+  "initial_date_time": 1718461800
 }
 ```
+
+Once a value is chosen, "Clear selection" leads the time list and is the calendar's footer.
+It empties both fields and sends `"selected_date_time": null`.
 
 The same shape lands in `state.values[block_id][action_id]`:
 
@@ -180,8 +188,8 @@ before any interaction.
 ### Time zone
 
 `BlockKitProvider`'s `timeZone` prop (an IANA zone like `Europe/Amsterdam`) is the zone the picker
-works in. The closed control shows the date and time in it, the popup opens on that wall-clock date
-and time, and the date and time the user picks are read in it: picking 11:00 on 1 January 2026 with
+works in. The fields show the date and time in it, the calendar opens on that wall-clock date, "Today"
+and the current time are read in it, and the date and time the user picks are read in it: picking 11:00 on 1 January 2026 with
 `Europe/Amsterdam` sends `1767261600` (10:00 UTC). The hint underneath names the zone (e.g. "Time
 zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"). `selected_date_time` itself is always a
 Unix timestamp, exactly as Slack sends it. On a daylight saving change, a time the clocks skip moves

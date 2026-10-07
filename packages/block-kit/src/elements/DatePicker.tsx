@@ -4,11 +4,10 @@ import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { CalendarIcon, ChevronDownIcon } from "../icons";
 import type { ElementProps } from "../types";
-import { Calendar } from "./calendar/Calendar";
+import { CalendarPopover, focusCalendarDay } from "./calendar/CalendarPopover";
 import { ordinal } from "./dateFormat";
 import { useInInputBlock, useInOptionalInput, useInvalidProps } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { MENU_GAP, Popover } from "./Popover";
 
 /**
  * Formats `YYYY-MM-DD` the way Slack's closed datepicker control shows it: "04/28/1990" in an
@@ -47,7 +46,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const actionId = element.action_id ?? "";
 
   function focusDay() {
-    popupRef.current?.querySelector<HTMLElement>(".sbk-calendar__grid [tabindex='0']")?.focus();
+    focusCalendarDay(popupRef.current);
   }
 
   function close() {
@@ -133,31 +132,21 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
         <ChevronDownIcon className="sbk-datepicker__chevron" />
       </div>
       {open && (
-        <Popover
+        <CalendarPopover
           anchorRef={rootRef}
-          gap={MENU_GAP}
+          popupRef={popupRef}
+          value={date}
+          onSelect={pick}
+          // Slack offers "Clear selection" only where the date may be left empty.
+          onClear={clearable ? clear : undefined}
           onDismiss={() => setOpen(false)}
-          onPlaced={() => {
-            if (focusCalendar.current) focusDay();
+          onEscape={close}
+          focusOnOpen={() => {
+            const focus = focusCalendar.current;
             focusCalendar.current = false;
+            return focus;
           }}
-        >
-          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Escape closes the dialog, wherever focus is in it */}
-          <div
-            className="sbk-datepicker__popup"
-            ref={popupRef}
-            role="dialog"
-            aria-label="Choose a date"
-            onKeyDown={(e) => {
-              if (e.key !== "Escape") return;
-              e.preventDefault();
-              close();
-            }}
-          >
-            {/* Slack offers "Clear selection" only where the date may be left empty. */}
-            <Calendar value={date} onSelect={pick} onClear={clearable ? clear : undefined} />
-          </div>
-        </Popover>
+        />
       )}
       {dialog}
     </div>

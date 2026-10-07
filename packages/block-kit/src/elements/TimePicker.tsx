@@ -10,7 +10,7 @@ import { useCombobox } from "./useCombobox";
 import { MENU_GAP, Popover } from "./Popover";
 
 /** Formats `HH:mm` the way Slack's timepicker shows it, e.g. "1:37 PM". */
-function formatTime(time: string): string {
+export function formatTime(time: string): string {
   const [h = 0, m = 0] = time.split(":").map(Number);
   const period = h >= 12 ? "PM" : "AM";
   const hour12 = h % 12 === 0 ? 12 : h % 12;
@@ -46,7 +46,7 @@ export function parseTime(input: string): string | undefined {
 const squash = (text: string) => text.toLowerCase().replace(/\s+/g, "");
 
 /** The rows for a query: the hours whose label starts with it, after a typed time the list lacks. */
-function timesFor(query: string): string[] {
+export function timesFor(query: string): string[] {
   if (!query.trim()) return HOURS;
   const typed = parseTime(query);
   const hours = HOURS.filter((t) => squash(formatTime(t)).startsWith(squash(query)));
