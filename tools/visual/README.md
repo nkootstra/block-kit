@@ -35,7 +35,9 @@ steps off, a 0.5px border or a run that moved by a pixel or two. Every fixture t
 text-run check (`src/textRuns.ts`):
 
 1. Every visible text node on both sides becomes a run, positioned relative to the rendered root
-   (`src/collectTextRuns.ts`).
+   (`src/collectTextRuns.ts`). Text an ancestor with `overflow: hidden`, `auto` or `scroll` cuts
+   off entirely (a time list's options scrolled out of its box) isn't on screen and isn't read;
+   text an edge only cuts through still is.
 2. Runs are matched in order by their text, with a longest common subsequence, so a run only one
    side has doesn't shift the rest.
 3. Each pair is compared by position and width (±0.5px), font size, weight and style, and colour as
