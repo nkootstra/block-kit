@@ -9,11 +9,13 @@
 import { join } from "node:path";
 import { FIXTURES, readLock, readReferences, sha256, writeLock } from "./lock";
 import { normalize } from "./normalize";
+import { readRedactions } from "./redact";
 
+const redactions = await readRedactions();
 const lock = await readLock();
 let changed = 0;
 for (const [name, html] of await readReferences()) {
-  const next = normalize(html);
+  const next = normalize(html, redactions);
   if (next === html) continue;
   await Bun.write(join(FIXTURES, `${name}.reference.html`), next);
   const entry = lock[name];

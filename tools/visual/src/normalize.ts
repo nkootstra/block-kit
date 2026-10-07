@@ -1,3 +1,5 @@
+import { redact } from "./redact";
+
 /**
  * Fixes known artifacts of the snapshot so references render the way the Builder did:
  *
@@ -22,38 +24,41 @@
  *   so each capture laid the rest of the line out differently. It's always 120px here.
  * - Links were diffed against an <a> without an href, which isn't underlined, so a link Slack
  *   leaves plain never got `text-decoration:none` and picks up the browser's underline here.
+ * - The Builder workspace's members, channels, name and IDs are swapped for placeholders
+ *   (redact.ts); `mapping` adds the maintainer's local redact.local.json.
  */
-export function normalize(html: string): string {
-  return uprightPseudos(
-    wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))),
-  )
-    .replace(/<span\b[^>]*>/g, (tag) =>
-      /class="c-timestamp|data-qa="timestamp_label"/.test(tag)
-        ? tag.replace(/style="([^"]*)"/, (_, style: string) => {
-            const kept = style
-              .split(";")
-              .filter(
-                (decl) =>
-                  !/^(width|height|min-width|max-width|flex-basis|flex-grow|flex-shrink|perspective-origin|transform-origin):/.test(
-                    decl,
-                  ),
-              );
-            return `style="${kept.join(";")}"`;
-          })
-        : tag,
-    )
-    .replace(/<span\b[^>]*\bclass="c-missing_text[^>]*>/g, (tag) =>
-      tag.replace(/(style="(?:[^"]*;)?)width:[\d.]+px/, "$1width:120px"),
-    )
-    .replace(/<a\b[^>]*\bhref="[^>]*>/g, (tag) =>
-      /text-decoration:/.test(tag) ? tag : tag.replace(/style="/, 'style="text-decoration:none;'),
-    )
-    .replace(/<div\b[^>]*\bclass="dragWrapper[^>]*>/g, (tag) =>
-      tag.replace(/box-shadow:[^;"]*;?/, ""),
-    )
-    .replace(/<(input|textarea)\b[^>]*>/g, (tag) =>
-      /box-sizing:/.test(tag) ? tag : tag.replace(/style="/, 'style="box-sizing:border-box;'),
-    );
+export function normalize(html: string, mapping: Record<string, string> = {}): string {
+  return redact(
+    uprightPseudos(wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))))
+      .replace(/<span\b[^>]*>/g, (tag) =>
+        /class="c-timestamp|data-qa="timestamp_label"/.test(tag)
+          ? tag.replace(/style="([^"]*)"/, (_, style: string) => {
+              const kept = style
+                .split(";")
+                .filter(
+                  (decl) =>
+                    !/^(width|height|min-width|max-width|flex-basis|flex-grow|flex-shrink|perspective-origin|transform-origin):/.test(
+                      decl,
+                    ),
+                );
+              return `style="${kept.join(";")}"`;
+            })
+          : tag,
+      )
+      .replace(/<span\b[^>]*\bclass="c-missing_text[^>]*>/g, (tag) =>
+        tag.replace(/(style="(?:[^"]*;)?)width:[\d.]+px/, "$1width:120px"),
+      )
+      .replace(/<a\b[^>]*\bhref="[^>]*>/g, (tag) =>
+        /text-decoration:/.test(tag) ? tag : tag.replace(/style="/, 'style="text-decoration:none;'),
+      )
+      .replace(/<div\b[^>]*\bclass="dragWrapper[^>]*>/g, (tag) =>
+        tag.replace(/box-shadow:[^;"]*;?/, ""),
+      )
+      .replace(/<(input|textarea)\b[^>]*>/g, (tag) =>
+        /box-sizing:/.test(tag) ? tag : tag.replace(/style="/, 'style="box-sizing:border-box;'),
+      ),
+    mapping,
+  );
 }
 
 /** `content` of Slack's `.c-icon--<type>::before`, as read from its stylesheet. */

@@ -18,7 +18,9 @@ import {
 } from "./lock";
 import { isReferenceName } from "./names";
 import { normalize } from "./normalize";
+import { readRedactions } from "./redact";
 
+const redactions = await readRedactions();
 const refs = JSON.parse(await Bun.stdin.text()) as Record<string, string>;
 const [lock, payloads] = await Promise.all([readLock(), readPayloads()]);
 const captured = new Date().toISOString().slice(0, 10);
@@ -34,7 +36,7 @@ for (const [name, html] of Object.entries(refs)) {
     continue;
   }
   const file = join(FIXTURES, `${name}.reference.html`);
-  const normalized = normalize(html);
+  const normalized = normalize(html, redactions);
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, normalized);
   lock[name] = { payload: hashPayload(payload), reference: sha256(normalized), captured };

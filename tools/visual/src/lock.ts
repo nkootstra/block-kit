@@ -7,6 +7,7 @@
 import { join, resolve } from "node:path";
 import { Glob } from "bun";
 import { isReferenceName } from "./names";
+import { leaks } from "./redact";
 
 export const FIXTURES = resolve(import.meta.dir, "../../../fixtures");
 export const LOCK = join(FIXTURES, "references.lock.json");
@@ -121,6 +122,11 @@ export function verify(
         name,
         message:
           "reference HTML differs from the captured snapshot; edit it through a normalize rule",
+      });
+    } else if (leaks(html).length > 0) {
+      problems.push({
+        name,
+        message: `shows the Builder workspace: ${leaks(html).join(", ")}; re-import it so redact.ts replaces them`,
       });
     } else if (entry.payload !== hashPayload(payload)) {
       problems.push({
