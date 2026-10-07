@@ -271,3 +271,52 @@ describe("<RichText>", () => {
     });
   });
 });
+
+describe("text nodes, as Slack writes them", () => {
+  const textNodes = (el: Element) =>
+    [...el.querySelectorAll("*"), el].flatMap((n) =>
+      [...n.childNodes].filter((c) => c.nodeType === 3 && c.textContent).map((c) => c.textContent),
+    );
+  const block = (elements: unknown[]) => ({
+    type: "rich_text",
+    elements: [{ type: "rich_text_section", elements }],
+  });
+
+  it("joins consecutive text elements with the same style into one text node", () => {
+    const { container } = render(
+      <RichText
+        block={
+          block([
+            { type: "text", text: "item 2: " },
+            { type: "text", text: "this is a list item" },
+            { type: "text", text: " bold", style: { bold: true } },
+            { type: "text", text: " also bold", style: { bold: true } },
+          ]) as never
+        }
+        blockId="b1"
+        index={0}
+      />,
+    );
+    expect(textNodes(container)).toEqual(["item 2: this is a list item", " bold also bold"]);
+  });
+
+  it("writes broadcast, usergroup and channel mentions as single text nodes", () => {
+    const { container } = render(
+      <BlockKitProvider resolvers={{ usergroup: () => "eng", channel: () => "general" }}>
+        <RichText
+          block={
+            block([
+              { type: "broadcast", range: "here" },
+              { type: "usergroup", usergroup_id: "S1" },
+              { type: "channel", channel_id: "C1" },
+            ]) as never
+          }
+          blockId="b1"
+          index={0}
+        />
+      </BlockKitProvider>,
+    );
+    const nodes = textNodes(container);
+    for (const text of ["@here", "@eng", "#general"]) expect(nodes).toContain(text);
+  });
+});
