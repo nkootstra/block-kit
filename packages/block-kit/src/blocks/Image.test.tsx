@@ -99,11 +99,12 @@ describe("<Image>", () => {
   describe("slack_file, through resolvers.slackFile", () => {
     const resolvers: Resolvers = {
       slackFile: (file) =>
-        file.id === "F123" ? { url: "https://files.example/taco.jpg", size: 72_704 } : undefined,
+        file.id === "F123" ? { url: "https://files.example/taco.jpg", size: 400_401 } : undefined,
     };
     const withResolvers = (ui: React.ReactElement) =>
       render(<BlockKitProvider resolvers={resolvers}>{ui}</BlockKitProvider>);
 
+    // Slack counts decimal kilobytes: its Builder shows "(400 kB)" for a 400,401-byte file.
     it("shows a resolved file as the image, with Slack's (N kB) size beside the caret", () => {
       const block = { type: "image", slack_file: { id: "F123" }, alt_text: "a shared file" };
       const { container } = withResolvers(<Image block={block as never} blockId="b1" index={0} />);
@@ -112,7 +113,7 @@ describe("<Image>", () => {
         "https://files.example/taco.jpg",
         "a shared file",
       ]);
-      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("(71 kB)");
+      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("(400 kB)");
       expect(container.querySelector(".sbk-image__fallback")).toBeNull();
     });
 

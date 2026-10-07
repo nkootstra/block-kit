@@ -13,12 +13,13 @@ declare global {
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens }) => {
+window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens, slackFiles }) => {
   root.render(
     <BlockKitProvider
       timeZone="UTC"
       theme={theme}
       errors={errors}
+      resolvers={{ slackFile: (file) => slackFiles?.[file.url ?? file.id ?? ""] }}
       onAction={(_action, { views }) => {
         if (opens) views.open(opens as unknown as Parameters<typeof views.open>[0]);
       }}
