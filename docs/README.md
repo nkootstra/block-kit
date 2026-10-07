@@ -103,23 +103,26 @@ The Worker bundles the snapshot and answers with Blume's MCP handler, so a deplo
 
 Blume gives every page but the home page a machine-readable date, so search engines dated the home page from whatever `<time>` they found on it. Until Blume does this itself, [`apps/docs/scripts/home-date.ts`](../apps/docs/scripts/home-date.ts) runs last in the build and gives the home page its git date: a `WebPage` node with `dateModified` in its JSON-LD, and a `<time datetime>` around its "Last updated on" date. It fails the build when Blume's markup changes, which is the sign to remove it.
 
-Every push to `main` deploys:
+The docs deploy with releases, never on a plain push to `main`, so they don't describe a package npm doesn't have yet:
 
-1. The `check` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) builds the whole workspace, docs included, and uploads `apps/docs/dist` as an artifact.
-2. Once every check passes, the `deploy-docs` job downloads that build, installs the dependencies the Worker bundles, and runs `wrangler deploy` in `apps/docs`.
+1. After publishing, the Release workflow runs [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) on the new `vX.Y.Z` tag with `deploy`. The `check` job builds the whole workspace, docs included (its changelog now shows the release), and uploads `apps/docs/dist` as an artifact.
+2. Once every check passes, the `deploy-docs` job asks [`scripts/deploy-guard.ts`](../scripts/deploy-guard.ts) whether to deploy: only the latest release's tag does, so re-running an older release's CI can't replace newer docs. It then downloads that build, installs the dependencies the Worker bundles, and runs `wrangler deploy` in `apps/docs`.
+
+For a docs-only fix between releases, run Actions → CI → Run workflow on `main` with `deploy` checked. The guard deploys only `main`'s head, and refuses when `packages/block-kit` changed since the latest release: release those changes instead, which deploys the docs too.
 
 ### Landing page deployment
 
-`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). A small Worker, [`apps/site/worker/index.ts`](../apps/site/worker/index.ts), runs first on page routes for agents, as the docs' does: `Accept: text/markdown` on the home page gets `/index.md`, and a missing page answers 404 with `/404.md` to Markdown requests and an RFC 9457 problem document (`/404.json`) to JSON ones. All three are built from `src/lib/markdown.ts`. Browsers get the HTML, and every page response varies on `Accept`. It deploys less often than the docs: the `check` job compares the push with the commit before it, and only when `apps/site` or `packages/block-kit` (which its live demos render with) changed does it upload the build and run the `deploy-site` job. A manual CI run always deploys it. It uses the same Cloudflare secrets as the docs.
+`block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). A small Worker, [`apps/site/worker/index.ts`](../apps/site/worker/index.ts), runs first on page routes for agents, as the docs' does: `Accept: text/markdown` on the home page gets `/index.md`, and a missing page answers 404 with `/404.md` to Markdown requests and an RFC 9457 problem document (`/404.json`) to JSON ones. All three are built from `src/lib/markdown.ts`. Browsers get the HTML, and every page response varies on `Accept`. Its live demos render with the package, so it deploys with releases too, by the same `deploy` CI run and the same guard, in the `deploy-site` job. It uses the same Cloudflare secrets as the docs.
 
 ### Pull request previews
 
-A pull request that affects the docs gets a preview on a `workers.dev` URL, deployed only once a maintainer approves it ([`.github/workflows/docs-preview.yml`](../.github/workflows/docs-preview.yml)):
+A pull request that affects the docs gets a preview on a `workers.dev` URL when a maintainer comments `/preview` on it ([`.github/workflows/docs-preview.yml`](../.github/workflows/docs-preview.yml)):
 
 1. CI builds the docs when the change affects them and uploads the build as `docs-preview`. That run has no secrets, also for pull requests from forks.
-2. When CI passes, the workflow comments on the pull request that a preview is waiting, linking to the run, and waits for a required reviewer of the `docs-preview` environment.
-3. After approval it deploys the build as the [Workers Preview](https://developers.cloudflare.com/workers/previews/) `pr-<number>` with `wrangler preview`, and updates the comment with the URL. Every push needs a new approval, and a commit that is no longer the pull request's head is skipped.
-4. Closing the pull request deletes the Preview.
+2. When CI passes, the workflow updates its comment on the pull request: the build is ready, and a maintainer can comment `/preview`.
+3. A comment that is exactly `/preview` starts the deploy. The workflow checks the commenter's repository role with the collaborators API and accepts only admin, maintain or write ([`scripts/preview-command.ts`](../scripts/preview-command.ts)); the comment's `author_association` isn't enough, since it says how someone relates to the repository, not whether they may push. Anyone else, and any bot, gets a reply that only maintainers can deploy previews. It reacts 👀 when it starts, 🚀 once deployed and 😕 when it refuses or fails.
+4. It deploys the pull request's current head, using the build of CI's successful run for that commit, as the [Workers Preview](https://developers.cloudflare.com/workers/previews/) `pr-<number>` with `wrangler preview`, and updates the comment with the URL and commit. If CI hasn't finished yet, it replies to comment again once it's green. A new push needs a new `/preview`.
+5. Closing the pull request deletes the Preview.
 
 The deploy takes only the built files from the pull request; the Worker and `wrangler.jsonc` come from `main`, so a pull request can't change what runs with the Cloudflare token. Changes to the Worker therefore show up in previews once they merge. Previews set `ROBOTS` (`previews.vars` in `wrangler.jsonc`), which makes the Worker send `X-Robots-Tag: noindex`.
 
@@ -136,7 +139,7 @@ The deploy takes only the built files from the pull request; the Worker and `wra
    | `CLOUDFLARE_API_TOKEN`  | The token from step 2                                              |
    | `CLOUDFLARE_ACCOUNT_ID` | The account ID shown on the account's **Workers & Pages** overview |
 
-4. Create the `docs-preview` environment under **Settings → Environments** and add the maintainers as **Required reviewers**. Previews use the same repository secrets; the environment is what makes them wait for approval.
+4. Previews use the same repository secrets and need no environment: the `/preview` comment check decides who can deploy them.
 
 To deploy by hand from a local build instead, log in once with `bunx wrangler login`, then:
 

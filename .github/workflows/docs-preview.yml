@@ -1,22 +1,27 @@
 name: Docs preview
 
-# Deploys a pull request's docs as a Cloudflare Workers Preview once a maintainer approves it, and
-# keeps one comment on the pull request up to date with its state and URL.
+# Deploys a pull request's docs as a Cloudflare Workers Preview when a maintainer comments
+# `/preview` on it, and keeps one comment on the pull request up to date with its state and URL.
 # - CI builds the docs when a pull request affects them and uploads the build as `docs-preview`.
 #   That run has no secrets, also for pull requests from forks.
-# - When CI passes, `announce` comments that a preview is waiting, linking to this run. `deploy`
-#   then waits for a required reviewer of the docs-preview environment to approve it. Every push
-#   runs CI again and needs its own approval, so approving one commit never deploys a later one, and
-#   `deploy` skips a commit that is no longer the pull request's head.
-# - `deploy` takes only the built files from the pull request. The Worker, wrangler.jsonc and
-#   Wrangler come from main, so a pull request can't change what runs with the Cloudflare token or
-#   where it deploys. Changes to the Worker show up in previews once they merge.
-# - Closing the pull request deletes its Preview and marks its docs-preview deployments inactive.
-#   That runs on pull_request_target, which never checks out the pull request's code.
+# - When CI passes, `announce` updates the comment: the build is ready, comment `/preview`.
+# - `preview` runs on a pull request comment that is exactly `/preview`. It deploys only for a
+#   commenter whose repository role is admin, maintain or write (checked with the collaborators
+#   API; scripts/preview-command.ts), and only the pull request's current head, once CI built it.
+#   It reacts 👀 when it starts, 🚀 when deployed and 😕 when it refuses or fails, and replies why.
+# - The deploy takes only the built files from the pull request. issue_comment runs this file from
+#   the default branch, and the job checks out main, so the Worker, wrangler.jsonc, Wrangler and
+#   the scripts come from main: a pull request can't change what runs with the Cloudflare token or
+#   where it deploys. Nothing from the comment or the pull request reaches a shell except through
+#   quoted environment variables. Changes to the Worker show up in previews once they merge.
+# - Closing the pull request deletes its Preview and marks its old docs-preview deployments
+#   inactive. That runs on pull_request_target, which never checks out the pull request's code.
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
+  issue_comment:
+    types: [created]
   pull_request_target:
     types: [closed]
 
@@ -37,8 +42,6 @@ jobs:
     permissions:
       actions: read
       pull-requests: write
-    outputs:
-      pr: ${{ steps.pr.outputs.number }}
     steps:
       - id: pr
         env:
@@ -70,13 +73,11 @@ jobs:
           REPO: ${{ github.repository }}
           PR: ${{ steps.pr.outputs.number }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           body="$MARKER
           ### Docs preview
 
-          The docs for $HEAD_SHA are ready to preview. A maintainer can deploy them by approving the
-          [docs-preview deployment]($RUN_URL)."
+          The docs for $HEAD_SHA are built. A maintainer can deploy them by commenting \`/preview\`."
           id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" \
             --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith(env.MARKER))) | .id' |
             head -n 1)
@@ -86,61 +87,108 @@ jobs:
             gh api "repos/$REPO/issues/$PR/comments" -f body="$body" > /dev/null
           fi
 
-  deploy:
+  preview:
     name: Deploy the preview
-    needs: announce
-    if: needs.announce.outputs.pr != ''
+    # The exact match is checked below; this only skips jobs for unrelated comments.
+    if: >-
+      github.event_name == 'issue_comment' && github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/preview')
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
+      issues: write
       pull-requests: write
-    environment:
-      name: docs-preview
-      url: ${{ steps.deploy.outputs.url }}
     concurrency:
-      group: docs-preview-${{ needs.announce.outputs.pr }}
+      group: docs-preview-${{ github.event.issue.number }}
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
-      PR: ${{ needs.announce.outputs.pr }}
-      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      PR: ${{ github.event.issue.number }}
+      COMMENT_ID: ${{ github.event.comment.id }}
     steps:
-      # Approval can come long after the run started; deploy only what is still the head.
-      - id: current
-        run: |
-          state=$(gh api "repos/$REPO/pulls/$PR" --jq '"\(.state) \(.head.sha)"')
-          if [ "$state" != "open $HEAD_SHA" ]; then
-            echo "Pull request #$PR moved on from $HEAD_SHA ($state); its newer run deploys instead."
-            exit 0
-          fi
-          echo "deploy=true" >> "$GITHUB_OUTPUT"
-
-      # The default branch: the Worker and wrangler.jsonc this deploys with.
-      - if: steps.current.outputs.deploy
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The default branch: the scripts, the Worker and wrangler.jsonc this deploys with.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - if: steps.current.outputs.deploy
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
+
+      # Who may deploy: the commenter's repository role, not the comment's author_association,
+      # which says how someone relates to the repository rather than whether they may push.
+      - id: gate
+        env:
+          BODY: ${{ github.event.comment.body }}
+          LOGIN: ${{ github.event.comment.user.login }}
+          USER_TYPE: ${{ github.event.comment.user.type }}
+        run: |
+          ROLE=$(gh api "repos/$REPO/collaborators/$LOGIN/permission" --jq .role_name 2>/dev/null ||
+            echo none)
+          export ROLE
+          bun scripts/preview-command.ts
+
+      - if: steps.gate.outputs.command == 'true' && steps.gate.outputs.allowed != 'true'
+        run: |
+          gh api -X POST "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content=confused > /dev/null
+          gh api "repos/$REPO/issues/$PR/comments" -f body="Only maintainers can deploy previews." > /dev/null
+
+      - if: steps.gate.outputs.allowed == 'true'
+        run: gh api -X POST "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content=eyes > /dev/null
+
+      # The pull request's head now, and the CI run that built its docs. A /preview before CI
+      # finishes gets a reply to comment again once it's green.
+      - id: build
+        if: steps.gate.outputs.allowed == 'true'
+        run: |
+          reply() {
+            gh api "repos/$REPO/issues/$PR/comments" -f body="$1" > /dev/null
+            gh api -X POST "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content=confused > /dev/null
+          }
+          state=$(gh api "repos/$REPO/pulls/$PR" --jq '"\(.state) \(.head.sha)"')
+          sha=${state#* }
+          if [ "${state%% *}" != open ]; then
+            reply "This pull request is closed, so there's nothing to preview."
+            exit 0
+          fi
+          run=$(gh api "repos/$REPO/actions/workflows/ci.yml/runs?head_sha=$sha&event=pull_request&per_page=1" \
+            --jq '.workflow_runs[0] | "\(.id) \(.status) \(.conclusion)"')
+          read -r run_id status conclusion <<< "$run"
+          if [ -z "$run_id" ] || [ "$run_id" = null ] || [ "$status" != completed ]; then
+            reply "CI hasn't finished for $sha yet. Comment \`/preview\` again once it's green."
+            exit 0
+          fi
+          if [ "$conclusion" != success ]; then
+            reply "CI failed for $sha, so there's no build to preview."
+            exit 0
+          fi
+          artifact=$(gh api "repos/$REPO/actions/runs/$run_id/artifacts" \
+            --jq '.artifacts[] | select(.name == "docs-preview") | .id')
+          if [ -z "$artifact" ]; then
+            reply "This pull request doesn't change the docs, so there's nothing to preview."
+            exit 0
+          fi
+          {
+            echo "sha=$sha"
+            echo "run=$run_id"
+          } >> "$GITHUB_OUTPUT"
+
       # main's lockfile: the Worker bundles Blume's MCP handler and its dependencies. No lifecycle
       # scripts run here.
-      - if: steps.current.outputs.deploy
+      - if: steps.build.outputs.run
         run: bun install --frozen-lockfile --ignore-scripts
       # The build comes from the pull request, so it lands outside the workspace, where it can't
       # replace a file this job runs. Wrangler uploads every file under dist/, so a symlink could
       # publish a file from the runner; refuse any.
-      - if: steps.current.outputs.deploy
+      - if: steps.build.outputs.run
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: docs-preview
           path: ${{ runner.temp }}/docs-preview
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.build.outputs.run }}
           github-token: ${{ github.token }}
-      - if: steps.current.outputs.deploy
+      - if: steps.build.outputs.run
         run: |
           build="$RUNNER_TEMP/docs-preview"
           if [ -n "$(find "$build" ! -type f ! -type d -print -quit)" ]; then
@@ -150,10 +198,11 @@ jobs:
           cp -R "$build" apps/docs/dist
 
       - id: deploy
-        if: steps.current.outputs.deploy
+        if: steps.build.outputs.run
         name: Deploy to a Cloudflare Workers Preview
         working-directory: apps/docs
         env:
+          HEAD_SHA: ${{ steps.build.outputs.sha }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler.ndjson
@@ -169,13 +218,14 @@ jobs:
       - if: steps.deploy.outputs.url
         env:
           URL: ${{ steps.deploy.outputs.url }}
+          HEAD_SHA: ${{ steps.build.outputs.sha }}
         run: |
           body="$MARKER
           ### Docs preview
 
           The docs for $HEAD_SHA are deployed to $URL
 
-          A new commit needs a maintainer's approval before its preview replaces this one."
+          After a new push, a maintainer can comment \`/preview\` to update it."
           id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" \
             --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith(env.MARKER))) | .id' |
             head -n 1)
@@ -184,6 +234,10 @@ jobs:
           else
             gh api "repos/$REPO/issues/$PR/comments" -f body="$body" > /dev/null
           fi
+          gh api -X POST "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content=rocket > /dev/null
+
+      - if: failure() && steps.gate.outputs.allowed == 'true'
+        run: gh api -X POST "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content=confused > /dev/null
 
   cleanup:
     name: Delete the preview
@@ -214,7 +268,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          # No maintainer may have approved a deploy; Cloudflare answers 10025 for a missing Preview.
+          # No maintainer may have deployed one; Cloudflare answers 10025 for a missing Preview.
           if ! npx --yes wrangler@4 preview delete --worker-name "$WORKER" --name "pr-$PR" \
             --skip-confirmation 2>&1 | tee "$RUNNER_TEMP/delete.log"; then
             grep -q "code: 10025" "$RUNNER_TEMP/delete.log" || exit 1
