@@ -32,7 +32,14 @@ function pageAssets() {
 
 export interface Harness {
   /** A fresh page with the payload drawn, ready for pointer and keyboard input. */
-  open(mount: Mount, options?: { scale?: number; reducedMotion?: boolean }): Promise<Page>;
+  open(
+    mount: Mount,
+    options?: {
+      scale?: number;
+      reducedMotion?: boolean;
+      viewport?: { width: number; height: number };
+    },
+  ): Promise<Page>;
   /** Closes every page opened so far, so one test's state never reaches the next. */
   closePages(): Promise<void>;
   close(): Promise<void>;
@@ -44,9 +51,9 @@ export async function createHarness(engine: Engine): Promise<Harness> {
   const browser: Browser = await ENGINES[engine].launch();
   const pages: Page[] = [];
   return {
-    async open(mount, { scale = 1, reducedMotion = false } = {}) {
+    async open(mount, { scale = 1, reducedMotion = false, viewport } = {}) {
       const page = await browser.newPage({
-        viewport: { width: 800, height: 700 },
+        viewport: viewport ?? { width: 800, height: 700 },
         deviceScaleFactor: scale,
         reducedMotion: reducedMotion ? "reduce" : "no-preference",
         locale: "en-US",
@@ -59,7 +66,8 @@ export async function createHarness(engine: Engine): Promise<Harness> {
       await page.evaluate((m) => window.mountBlockKit(m), mount);
       await page.evaluate(() => document.fonts.ready.then(() => undefined));
       // Park the pointer where nothing is, so no state starts out hovered.
-      await page.mouse.move(790, 690);
+      const size = page.viewportSize()!;
+      await page.mouse.move(size.width - 10, size.height - 10);
       return page;
     },
     async closePages() {

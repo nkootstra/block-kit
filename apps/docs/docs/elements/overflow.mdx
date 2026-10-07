@@ -162,7 +162,8 @@ chosen option under `selected_option`, and opens the option's `url` in a new tab
 }
 ```
 
-The menu opens 250px wide, its left edge under the button's, as Slack's does. Opening it moves
+The menu opens 250px wide, its left edge under the button's, as Slack's does; near the window's
+right edge it shifts left to stay inside the window, as every menu and calendar does. Opening it moves
 focus into the menu: the first ArrowDown highlights the first item, the arrow keys and Home/End move
 the highlight, and Enter picks it. Escape or picking an item closes the menu and returns focus to
 the button; an outside click closes it without moving focus. Like a button, overflow doesn't write
