@@ -1,4 +1,5 @@
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { ordinal } from "../dateFormat";
 
 export interface CalendarProps {
   /** `YYYY-MM-DD`, or undefined for no selection. */
@@ -50,6 +51,15 @@ function NavButton({
       </svg>
     </button>
   );
+}
+
+/** A day's name in full, as Slack labels its day buttons: "Saturday, April 28th, 1990". */
+function dayLabel(iso: string): string {
+  const [y = 0, m = 1, d = 1] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  const weekday = date.toLocaleString("en-US", { weekday: "long", timeZone: "UTC" });
+  const month = date.toLocaleString("en-US", { month: "long", timeZone: "UTC" });
+  return `${weekday}, ${month} ${ordinal(d)}, ${y}`;
 }
 
 /** The day `delta` days after the `YYYY-MM-DD` date, as `YYYY-MM-DD`. */
@@ -188,6 +198,7 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
                 aria-pressed={iso === value}
                 aria-current={iso === today ? "date" : undefined}
                 data-date={iso}
+                aria-label={dayLabel(iso)}
                 tabIndex={iso === tabStop ? 0 : -1}
                 onFocus={() => setFocused(iso)}
                 onClick={() => onSelect(iso)}

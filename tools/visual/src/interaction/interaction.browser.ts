@@ -714,15 +714,30 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(Math.round((menu?.y ?? 0) - ((field?.y ?? 0) + (field?.height ?? 0)))).toBe(-4);
     });
 
-    it("lists the hours and narrows them to what's typed", async () => {
+    // Measured in Block Kit Builder: typing neither filters nor highlights Slack's time list.
+    it("keeps all 24 hours, with nothing highlighted, while typing", async () => {
       const page = await harness.open(picker);
       await page.click(".sbk-timepicker__control");
       await page.keyboard.type("3");
       await settle(page);
-      expect(await page.locator(".sbk-timepicker__option").allTextContents()).toEqual([
-        "3:00 AM",
-        "3:00 PM",
-      ]);
+      expect([
+        await page.locator(".sbk-timepicker__option").count(),
+        await page.locator(".sbk-timepicker__option[data-active]").count(),
+      ]).toEqual([24, 0]);
+    });
+
+    it("names the time zone as Slack does", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "actions",
+            elements: [{ type: "timepicker", action_id: "t", timezone: "Europe/Madrid" }],
+          },
+        ],
+      });
+      expect(await page.locator(".sbk-timepicker__hint").textContent()).toBe(
+        "Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
+      );
     });
   });
 
@@ -917,6 +932,17 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         );
       });
     }
+
+    // Measured in Block Kit Builder's dark theme: the error ring stays #e01e5a, while the focus ring
+    // turns #2ba5ce.
+    it("keeps Slack's #e01e5a error ring in dark mode", async () => {
+      const page = await harness.open({ ...invalid, theme: "dark" });
+      await tabTo(page, ".sbk-text-input");
+      await settle(page);
+      expect(
+        (await style(page, ".sbk-text-input")).boxShadow.startsWith(`${RED} 0px 0px 0px 1px`),
+      ).toBe(true);
+    });
   });
 
   // Slack counts the characters left inside the field while typing, below zero and red past
@@ -1438,6 +1464,54 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         fill: BLUE,
         text: "rgb(255, 255, 255)",
       });
+    });
+
+    // Measured in Block Kit Builder: Slack's keyboard-focused day also carries the focus ring.
+    it("rings a keyboard-focused day with Slack's focus ring", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.mouse.move(790, 690);
+      await page.keyboard.press("ArrowLeft");
+      await settle(page);
+      expect((await style(page, DAY(27))).boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`)).toBe(
+        true,
+      );
+    });
+
+    // Slack's `c-date_picker__select_btn`: a 28px "Open calendar" button over the field's right
+    // end, next in the tab order, that opens the calendar on the selected day.
+    it("opens from its own 28px Open calendar button, reached with Tab", async () => {
+      const page = await harness.open(datepicker);
+      const toggle = page.getByRole("button", { name: "Open calendar" });
+      const [field, button] = await Promise.all([
+        page.locator(".sbk-datepicker__input").boundingBox(),
+        toggle.boundingBox(),
+      ]);
+      expect([
+        button?.width,
+        button?.height,
+        Math.round(field!.x + field!.width - (button!.x + button!.width)),
+      ]).toEqual([28, 28, 0]);
+      await page.click(".sbk-datepicker__input");
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("Tab");
+      expect(await page.evaluate(() => document.activeElement?.getAttribute("aria-label"))).toBe(
+        "Open calendar",
+      );
+      await page.keyboard.press("Enter");
+      expect(await focused(page)).toBe("28");
+    });
+
+    // Measured in Block Kit Builder: typed dates are taken on Enter (the calendar stays open) or as
+    // focus leaves the field, and shown in the field's format afterwards.
+    it("takes a typed date, then shows it in the field's format", async () => {
+      const page = await harness.open(datepicker);
+      await page.click(".sbk-datepicker__input");
+      await page.locator(".sbk-datepicker__input").fill("May 3, 1990");
+      await page.keyboard.press("Enter");
+      expect(await page.locator(".sbk-datepicker__popup").count()).toBe(1);
+      await page.keyboard.press("Escape");
+      expect(await page.locator(".sbk-datepicker__input").inputValue()).toBe("05/03/1990");
     });
 
     it("shows a keyboard-focused day like a hovered one", async () => {

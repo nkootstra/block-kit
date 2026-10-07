@@ -1,3 +1,5 @@
+import { slackTimeZoneName } from "./timeZoneNames";
+
 /** "1st", "2nd", "3rd", "11th"… as Slack writes the day in a long date ("January 1st, 2026"). */
 export function ordinal(day: number): string {
   if (day % 10 === 1 && day !== 11) return `${day}st`;
@@ -6,54 +8,20 @@ export function ordinal(day: number): string {
   return `${day}th`;
 }
 
-/** Slack names time zones by their Windows display name (minus the UTC offset), not the IANA id. */
-const TIME_ZONE_LABELS: Record<string, string> = {
-  "Europe/Amsterdam": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Europe/Berlin": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Europe/Zurich": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Europe/Rome": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Europe/Stockholm": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Europe/Vienna": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Europe/Brussels": "Brussels, Copenhagen, Madrid, Paris",
-  "Europe/Copenhagen": "Brussels, Copenhagen, Madrid, Paris",
-  "Europe/Madrid": "Brussels, Copenhagen, Madrid, Paris",
-  "Europe/Paris": "Brussels, Copenhagen, Madrid, Paris",
-  "Europe/Belgrade": "Belgrade, Bratislava, Budapest, Ljubljana, Prague",
-  "Europe/Budapest": "Belgrade, Bratislava, Budapest, Ljubljana, Prague",
-  "Europe/Prague": "Belgrade, Bratislava, Budapest, Ljubljana, Prague",
-  "Europe/Warsaw": "Sarajevo, Skopje, Warsaw, Zagreb",
-  "Europe/Dublin": "Dublin, Edinburgh, Lisbon, London",
-  "Europe/Lisbon": "Dublin, Edinburgh, Lisbon, London",
-  "Europe/London": "Dublin, Edinburgh, Lisbon, London",
-  "Europe/Athens": "Athens, Bucharest",
-  "Europe/Bucharest": "Athens, Bucharest",
-  "Europe/Helsinki": "Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius",
-  "Europe/Kyiv": "Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius",
-  "Europe/Istanbul": "Istanbul",
-  "Europe/Moscow": "Moscow, St. Petersburg",
-  "America/New_York": "Eastern Time (US and Canada)",
-  "America/Chicago": "Central Time (US and Canada)",
-  "America/Denver": "Mountain Time (US and Canada)",
-  "America/Phoenix": "Arizona",
-  "America/Los_Angeles": "Pacific Time (US and Canada)",
-  "America/Anchorage": "Alaska",
-  "Pacific/Honolulu": "Hawaii",
-  "America/Halifax": "Atlantic Time (Canada)",
-  "America/Sao_Paulo": "Brasilia",
-  "Asia/Dubai": "Abu Dhabi, Muscat",
-  "Asia/Kolkata": "Chennai, Kolkata, Mumbai, New Delhi",
-  "Asia/Shanghai": "Beijing, Chongqing, Hong Kong, Urumqi",
-  "Asia/Hong_Kong": "Beijing, Chongqing, Hong Kong, Urumqi",
-  "Asia/Singapore": "Kuala Lumpur, Singapore",
-  "Asia/Tokyo": "Osaka, Sapporo, Tokyo",
-  "Australia/Sydney": "Canberra, Melbourne, Sydney",
-  "Australia/Melbourne": "Canberra, Melbourne, Sydney",
-  "Pacific/Auckland": "Auckland, Wellington",
-};
-
-/** The label Slack shows under a datetimepicker; unknown zones fall back to their IANA id. */
+/**
+ * The name Slack shows for a time zone ("Eastern Time (US and Canada)"), from the names measured
+ * in Block Kit Builder. An alias the Builder wasn't asked about is looked up by its canonical id;
+ * a zone it doesn't name falls back to the IANA id.
+ */
 export function timeZoneLabel(timeZone: string): string {
-  return TIME_ZONE_LABELS[timeZone] ?? timeZone;
+  const direct = slackTimeZoneName(timeZone);
+  if (direct) return direct;
+  try {
+    const canonical = new Intl.DateTimeFormat("en-US", { timeZone }).resolvedOptions().timeZone;
+    return slackTimeZoneName(canonical) ?? timeZone;
+  } catch {
+    return timeZone;
+  }
 }
 
 /** A timestamp's wall-clock date ("2026-01-01") and time ("11:00") in `timeZone`. */
@@ -93,4 +61,57 @@ export function fromWallClock(date: string, time: string, timeZone: string): num
     return wall.date === date && wall.time === time;
   });
   return matches.length > 0 ? Math.min(...matches) : before;
+}
+
+const MONTHS = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+];
+
+/** `YYYY-MM-DD` for a real calendar date, or undefined (e.g. April 31st). */
+function isoDate(year: number, month: number, day: number): string | undefined {
+  const d = new Date(Date.UTC(year, month - 1, day));
+  if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
+    return undefined;
+  }
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/** A two-digit year as Slack reads it: 69–99 in the 1900s, 00–68 in the 2000s. */
+function fullYear(year: string): number {
+  const n = Number(year);
+  if (year.length > 2) return n;
+  return n >= 69 ? 1900 + n : 2000 + n;
+}
+
+/**
+ * Reads a date typed into a datepicker field, as Slack's does: "05/01/1990", "5/4/90",
+ * "1990-05-02", "May 3, 1990" or the field's own long form, "April 28th, 1990". Returns
+ * `YYYY-MM-DD`, or undefined for anything else.
+ */
+export function parseTypedDate(input: string): string | undefined {
+  const text = input.trim();
+  let m = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(text);
+  if (m) return isoDate(fullYear(m[3]!), Number(m[1]), Number(m[2]));
+  m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(text);
+  if (m) return isoDate(Number(m[1]), Number(m[2]), Number(m[3]));
+  m = /^([a-z]+)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})$/i.exec(text);
+  if (m) {
+    const name = m[1]!.toLowerCase();
+    const index = MONTHS.findIndex(
+      (month) => month === name || (name.length >= 3 && month.startsWith(name)),
+    );
+    if (index >= 0) return isoDate(Number(m[3]), index + 1, Number(m[2]));
+  }
+  return undefined;
 }

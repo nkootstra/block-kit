@@ -9,6 +9,11 @@ seo:
 `datepicker` opens a calendar popup for choosing one date. Use it in an `actions` block or a
 section's accessory for a quick date pick, or in an `input` block to collect a date in a modal.
 
+As in Slack, you can also type a date into the field: `05/01/1990`, `5/1/90`, `1990-05-01`,
+`May 1, 1990` or the field's own long form, `May 1st, 1990`. Enter takes it and keeps the calendar
+open, leaving the field takes it too, and text that isn't a date is ignored; Escape puts the chosen
+date back.
+
 <Preview
   actions
   payload={{
@@ -191,9 +196,13 @@ element mounts. You don't need an interaction first to read it back.
 
 As in Slack, the calendar opens with its right edge on the field's (on a screen too narrow for that,
 it shifts just enough to stay inside the window), and opening it with a click focuses the selected day (or today). Tabbing into the field opens the calendar too but leaves focus
-in the field, so Tab keeps moving through the form; ArrowDown moves into the calendar. There, the
+in the field, so you can type a date or Tab on; the next Tab reaches the field's own "Open calendar"
+button, which opens the calendar on the selected day, as Slack's does. ArrowDown in the field also
+moves into the calendar, which Slack's field doesn't do; it's kept as a shortcut. There, the
 arrow keys move a day left or right and a week up or down, turning the month when they cross its
-edge, and Enter picks the focused day. The month grid is a single tab stop. Picking a day or
+edge, and Enter picks the focused day. The focused day shows the focus ring over Slack's hover wash,
+and each day is named in full for screen readers ("Saturday, April 28th, 1990"), as in Slack. The
+month grid is a single tab stop. Picking a day or
 pressing Escape closes the calendar and returns focus to the field. The
 [datetime picker](/elements/datetime-picker)'s calendar uses the same arrow keys.
 

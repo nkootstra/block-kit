@@ -48,7 +48,8 @@ const timeText = () =>
 
 async function pickDay(day: string) {
   fireEvent.click(dateButton());
-  await clickAsync(screen.getByRole("button", { name: day }));
+  // Day buttons are named in full ("Saturday, April 28th, 1990"); match on the day's number.
+  await clickAsync(screen.getByRole("button", { name: new RegExp(` ${day}(st|nd|rd|th), `) }));
 }
 
 async function pickTime(label: string) {

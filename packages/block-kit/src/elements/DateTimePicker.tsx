@@ -7,7 +7,7 @@ import type { ElementProps } from "../types";
 import { CalendarPopover, focusCalendarDay } from "./calendar/CalendarPopover";
 import { fromWallClock, ordinal, timeZoneLabel, wallClock } from "./dateFormat";
 import { MENU_GAP, Popover } from "./Popover";
-import { formatTime, parseTime, timesFor } from "./TimePicker";
+import { formatTime, parseTime, TIMES } from "./TimePicker";
 import { useCombobox } from "./useCombobox";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -106,7 +106,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   }
 
   const [query, setQuery] = useState("");
-  const rows = [...(value && !query.trim() ? [CLEAR] : []), ...timesFor(query)];
+  const rows = [...(value && !query.trim() ? [CLEAR] : []), ...TIMES];
   const combo = useCombobox({
     query,
     onQueryChange: setQuery,
@@ -122,6 +122,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
       if (time) pickTime(time);
     },
     listRef,
+    highlightOnType: false,
   });
 
   const timeDisplay = value ? formatTime(value.time) : undefined;
