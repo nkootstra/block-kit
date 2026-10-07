@@ -368,7 +368,9 @@ describe("snapshot.js", () => {
       await page.setContent(
         `<!doctype html><html><body style="margin:0;background:rgb(13, 15, 14)"><div style="background:rgb(26, 29, 33)"><div class="p-bkb_preview__message" style="width:400px;color:#d1d2d3"><div class="p-bkb_preview__content"><p>Text</p></div></div></div></body></html>`,
       );
-      expect(await snapshot(page)).toContain("html,body{margin:0;padding:0;background:rgb(26, 29, 33)}");
+      expect(await snapshot(page)).toContain(
+        "html,body{margin:0;padding:0;background:rgb(26, 29, 33)}",
+      );
     });
 
     // Measured in the Builder: after its theme toggle is used, the html class can be missing, while
