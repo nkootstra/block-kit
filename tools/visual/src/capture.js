@@ -233,8 +233,10 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
     const desktopOnly = { home: "App Home", modal: "modals" }[payload?.type];
     if (want.mobile && desktopOnly)
       throw new Error(`${name}: the Builder previews ${desktopOnly} only at desktop width`);
-    if (builder.previewSize() !== size) await builder.setPreviewSize(size);
+    // Load first: it switches the surface, and App Home and modals disable the size menu, so a
+    // mobile message right after a modal couldn't set its width the other way round.
     await builder.load(payload);
+    if (builder.previewSize() !== size) await builder.setPreviewSize(size);
     if (builder.previewSize() !== size)
       throw new Error(`${name}: the Builder's preview is ${builder.previewSize()}, not ${size}`);
     // The same payload again (another theme or width of it) can render the same HTML, so don't wait
