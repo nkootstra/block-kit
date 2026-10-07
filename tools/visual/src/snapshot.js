@@ -169,6 +169,15 @@ async (win = window) => {
         const value = String(map.get(prop));
         if (value !== "none") out[prop] = value;
       }
+      // A flex or grid item's min-width/min-height defaults to `auto`, its content size; outside
+      // such a container the same tag defaults to 0px. So an authored `min-width: 0` (Slack's
+      // select input) equals the probe's default and was left out, and the replay fell back to
+      // auto: an input's 20-character content width. Typed OM tells 0px authored from auto.
+      if (parentStyle && /(flex|grid)$/.test(parentStyle.display)) {
+        for (const prop of ["min-width", "min-height"]) {
+          if (String(map.get(prop)) !== "auto") out[prop] = { keep: cs.getPropertyValue(prop) };
+        }
+      }
     }
     return out;
   };
@@ -176,14 +185,20 @@ async (win = window) => {
   // A pseudo-element inherits from its host, not from a plain span: pass the host's computed style
   // as `host` so a value that differs from it (an icon's upright glyph in an italic <i>) is kept.
   // For an element, `host` is its parent and only inherited properties are compared. `overrides`
-  // replaces computed values (see sizeOverrides); null leaves the property out.
+  // replaces computed values (see sizeOverrides): null leaves the property out, and `{ keep }`
+  // writes the value down even when it equals the default.
   const diff = (cs, base, host, inheritedOnly = false, overrides = {}) => {
     const out = [];
     for (let i = 0; i < cs.length; i++) {
       const prop = cs[i];
       if (SKIP.test(prop)) continue;
-      if (overrides[prop] === null) continue;
-      const value = overrides[prop] ?? cs.getPropertyValue(prop);
+      const override = overrides[prop];
+      if (override === null) continue;
+      if (typeof override === "object") {
+        out.push(`${prop}:${override.keep}`);
+        continue;
+      }
+      const value = override ?? cs.getPropertyValue(prop);
       if (
         value !== base[prop] ||
         (host && (!inheritedOnly || INHERITED.test(prop)) && value !== host.getPropertyValue(prop))

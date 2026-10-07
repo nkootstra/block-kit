@@ -132,6 +132,51 @@ describe("snapshot.js", () => {
     expect(Math.abs(replayed.row!.width - live.row!.width)).toBeLessThan(0.5);
   });
 
+  /** An element's computed min-width and min-height, live and replayed. */
+  async function minSizes(body: string, id: string) {
+    const read = () =>
+      page.evaluate((id) => {
+        const cs = getComputedStyle(document.getElementById(id)!);
+        return { minWidth: cs.minWidth, minHeight: cs.minHeight };
+      }, id);
+    await page.setContent(
+      `<!doctype html><body style="margin:0;font:15px sans-serif"><div class="p-bkb_preview__message" style="width:400px">${body}</div></body>`,
+    );
+    const live = await read();
+    await page.setContent(await snapshot(page));
+    return { live, replayed: await read() };
+  }
+
+  it("keeps a typeable select's input at the min-width it was given", async () => {
+    // Slack's c-select_input (and our typeable fields): an <input> flex item with min-width: 0,
+    // shrunk below the ~20 characters its default `size` asks for. 0px equals the input's tag
+    // default outside a flex container, so the snapshot dropped it, and on replay min-width fell
+    // back to auto, the input's content size: wider than the field wherever that wins.
+    const { live, replayed } = await minSizes(
+      `<div style="display:flex;width:120px"><input id="input" style="flex:1 1 0;min-width:0"><span style="display:block;flex:none;width:20px;height:20px"></span></div>`,
+      "input",
+    );
+    expect(live.minWidth).toBe("0px");
+    expect(replayed.minWidth).toBe("0px");
+  });
+
+  it("keeps a grid item at the min-height it was given", async () => {
+    const { live, replayed } = await minSizes(
+      `<div style="display:grid;grid-template-rows:20px"><div id="cell" style="min-height:0"><div style="height:40px"></div></div></div>`,
+      "cell",
+    );
+    expect(live.minHeight).toBe("0px");
+    expect(replayed.minHeight).toBe("0px");
+  });
+
+  it("leaves a flex item's min-width at auto when the page did", async () => {
+    const { live, replayed } = await minSizes(
+      `<div style="display:flex"><span id="item" style="display:block">Text</span></div>`,
+      "item",
+    );
+    expect(replayed.minWidth).toBe(live.minWidth);
+  });
+
   it("keeps an item on an implicit grid row where Slack draws it", async () => {
     // Slack's composer puts its footer on the row after the explicit grid (grid-row-start: -1).
     // The resolved track list includes that implicit row; frozen as an explicit row, it pushes
