@@ -46,6 +46,7 @@ import { chromium, type Page } from "playwright";
 import { PNG } from "pngjs";
 import { collectTextRuns } from "./collectTextRuns";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
+import { pad, parseRgb } from "./pad";
 import { parseReferenceName } from "./names";
 import { stateFor } from "./states";
 import {
@@ -224,14 +225,6 @@ async function shotBox(page: Page, selector: string, box: Box): Promise<PNG> {
   );
 }
 
-function pad(png: PNG, width: number, height: number): PNG {
-  if (png.width === width && png.height === height) return png;
-  const out = new PNG({ width, height, fill: true });
-  out.data.fill(255);
-  PNG.bitblt(png, out, 0, 0, png.width, png.height, 0, 0);
-  return out;
-}
-
 // A snapshot only records the fonts Slack had loaded by then, and a few were taken before Lato
 // Black arrived, so their bold sender names fall back to a faux bold. Pool every snapshot's faces
 // (one per family/weight/style) and give each page the full set.
@@ -349,8 +342,10 @@ for (const name of names) {
 
   const width = Math.max(reference.width, actual.width);
   const height = Math.max(reference.height, actual.height);
-  const a = pad(reference, width, height);
-  const b = pad(actual, width, height);
+  // Pad with the page's background: white for light references, the reference's own for dark.
+  const background = parseRgb(pageBackground);
+  const a = pad(reference, width, height, background);
+  const b = pad(actual, width, height, background);
   const diff = new PNG({ width, height });
   const mismatch = pixelmatch(a.data, b.data, diff.data, width, height, { threshold: 0.1 });
 
