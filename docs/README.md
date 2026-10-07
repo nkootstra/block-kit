@@ -103,6 +103,8 @@ The Worker bundles the snapshot and answers with Blume's MCP handler, so a deplo
 
 Every page, the home page included, carries a machine-readable date: Blume puts `dateModified` in each page's JSON-LD (a `WebPage` node on the home page) and wraps the "Last updated on" date in `<time datetime>`, so search engines don't date a page from a `<time>` inside a preview.
 
+Blume's page script gives every `.prose pre` a "Copy code" button when the page loads, including the `<pre>` a preview renders for a preformatted block. Previews are React islands that hydrate later, so the extra button made React discard their server HTML (error #418 on `/blocks/rich-text`). [`patches/blume@2.2.0.patch`](../patches/blume@2.2.0.patch) makes the script skip a `<pre>` inside an island, and `apps/docs/components/blume-copy-buttons.test.ts` fails if an upgrade drops it. Regenerate the patch with `bun patch blume` when upgrading Blume.
+
 The docs deploy with releases, never on a plain push to `main`, so they don't describe a package npm doesn't have yet:
 
 1. After publishing, the Release workflow runs [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) on the new `vX.Y.Z` tag with `deploy`. The `check` job builds the whole workspace, docs included (its changelog now shows the release), and uploads `apps/docs/dist` as an artifact.

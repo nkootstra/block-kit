@@ -141,6 +141,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "blume@2.2.0": "patches/blume@2.2.0.patch",
+  },
   "overrides": {
     "@scalar/json-magic": {
       "undici": "7.29.1",
