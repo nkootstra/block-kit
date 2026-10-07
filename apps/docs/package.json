@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "blume dev",
-    "build": "blume build && bun scripts/mcp.ts && bun scripts/home-date.ts && bun scripts/headers.ts",
+    "build": "blume build && bun scripts/mcp.ts && bun scripts/headers.ts",
     "preview": "blume preview",
     "type-check": "blume check && tsc -p worker && tsc -p scripts",
     "validate": "blume validate",
@@ -17,7 +17,7 @@
     "@nkootstra/block-kit": "workspace:*",
     "@pierre/diffs": "1.5.1",
     "@slack/types": "^3.1.0",
-    "blume": "2.1.1",
+    "blume": "2.2.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

@@ -101,7 +101,7 @@ The Worker also serves the docs' MCP server at `/mcp`. Blume only generates its 
 
 The Worker bundles the snapshot and answers with Blume's MCP handler, so a deploy needs the dependencies installed.
 
-Blume gives every page but the home page a machine-readable date, so search engines dated the home page from whatever `<time>` they found on it. Until Blume does this itself, [`apps/docs/scripts/home-date.ts`](../apps/docs/scripts/home-date.ts) runs last in the build and gives the home page its git date: a `WebPage` node with `dateModified` in its JSON-LD, and a `<time datetime>` around its "Last updated on" date. It fails the build when Blume's markup changes, which is the sign to remove it.
+Every page, the home page included, carries a machine-readable date: Blume puts `dateModified` in each page's JSON-LD (a `WebPage` node on the home page) and wraps the "Last updated on" date in `<time datetime>`, so search engines don't date a page from a `<time>` inside a preview.
 
 The docs deploy with releases, never on a plain push to `main`, so they don't describe a package npm doesn't have yet:
 
