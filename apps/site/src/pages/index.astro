@@ -223,19 +223,22 @@ const structuredData = {
               </div>
               <div class="compare__line" aria-hidden="true"><span class="compare__handle"></span></div>
             </div>
+            <!-- Directly under the image and as wide, so the thumb sits under the divider. -->
+            <div class="compare__slider">
+              <label for="split" class="sr-only">Divider</label>
+              <input
+                id="split"
+                type="range"
+                min="0"
+                max="100"
+                value="50"
+                aria-valuetext="50% Slack, 50% block-kit"
+                data-compare-range
+              />
+            </div>
             <p class="compare__caption">Captured in Slack's light theme.</p>
           </div>
           <div class="compare__controls">
-            <label for="split">Divider</label>
-            <input
-              id="split"
-              type="range"
-              min="0"
-              max="100"
-              value="50"
-              aria-valuetext="50% Slack, 50% block-kit"
-              data-compare-range
-            />
             <button type="button" class="ghost" aria-pressed="false" aria-describedby="compare-note" data-compare-diff>
               Difference
             </button>
