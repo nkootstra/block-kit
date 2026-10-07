@@ -9,7 +9,7 @@
       "accessory": {
         "type": "image",
         "slack_file": {
-          "url": "<insert slack file url here>"
+          "url": "https://files.slack.com/files-pri/T0000001-F0000001/file"
         },
         "alt_text": "alt text"
       }
