@@ -6,6 +6,10 @@
   --sbk-font-mono:
     "Slack-Roboto-Mono", "Roboto Mono", Monaco, Menlo, Consolas, "Courier New", monospace;
   --sbk-text: #1d1c1d;
+  /* The text messages and blocks inherit; Slack draws it a little softer than --sbk-text in dark. */
+  --sbk-text-body: #1d1c1d;
+  /* "This content could not be displayed.", at half opacity. */
+  --sbk-block-error-text: #1d1c1d;
   --sbk-link: #1264a3;
   --sbk-code-text: rgb(192, 19, 67);
   --sbk-code-bg: rgba(29, 28, 29, 0.04);
@@ -19,6 +23,10 @@
   --sbk-broadcast-bg: rgba(255, 198, 0, 0.18);
   --sbk-bg: #fff;
   --sbk-muted: #616061;
+  /* Secondary text: the timestamp, context, image titles, video bylines and card subtext. */
+  --sbk-text-sec: #616061;
+  /* The "|" between a video's provider and author. */
+  --sbk-video-separator: rgb(221, 221, 221);
   --sbk-badge-text: #454447;
   --sbk-badge-bg: rgba(29, 28, 29, 0.06);
   --sbk-border: rgba(29, 28, 29, 0.13);
@@ -106,7 +114,7 @@
   font-family: var(--sbk-font);
   font-size: 15px;
   line-height: 22px;
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
   font-variant-ligatures: common-ligatures;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -210,7 +218,7 @@
   font-family: var(--sbk-font);
   font-size: 15px;
   line-height: 22px;
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
   overflow-wrap: anywhere;
 }
 

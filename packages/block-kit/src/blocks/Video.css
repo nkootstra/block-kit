@@ -5,7 +5,7 @@
 }
 
 .sbk-video__byline {
-  color: var(--sbk-muted);
+  color: var(--sbk-text-sec);
   white-space: nowrap;
 }
 
@@ -19,16 +19,16 @@
 
 .sbk-video__provider {
   font-weight: 900;
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
 }
 
 .sbk-video__separator {
-  color: rgb(221, 221, 221);
+  color: var(--sbk-video-separator);
   white-space: pre;
 }
 
 .sbk-video__description {
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
 }
 
 .sbk-video__title {

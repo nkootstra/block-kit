@@ -12,6 +12,7 @@
 }
 
 .sbk-dataviz {
+  color: var(--sbk-text);
   display: flex;
   flex-direction: column;
   /* Slack insets the chart card 8px from the block edges. */

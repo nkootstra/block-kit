@@ -2,7 +2,7 @@
   font-family: var(--sbk-font);
   font-size: 15px;
   line-height: 22px;
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
   overflow-wrap: anywhere;
 }
 

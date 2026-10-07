@@ -63,7 +63,7 @@
 
 /* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
 .sbk-input__element .sbk-select--multi .sbk-select__placeholder {
-  color: rgb(94, 93, 96);
+  color: var(--sbk-content-ter);
 }
 
 .sbk-input__element .sbk-select--multi .sbk-select__chevron {
@@ -183,6 +183,11 @@
   padding: 0 32px 0 11px;
 }
 
+/* An input block's chosen value takes the softer body text, as in Slack's modals. */
+.sbk-input__element .sbk-select__content-text {
+  color: var(--sbk-text-body);
+}
+
 .sbk-select__content-text {
   display: block;
   overflow: hidden;
@@ -215,7 +220,7 @@
 
 .sbk-select__missing-channel {
   padding: 0 2px 1px 0;
-  color: rgba(29, 28, 29, 0.7);
+  color: var(--sbk-mention-private-text);
   background: rgba(29, 28, 29, 0.13);
   border-radius: 3px;
 }

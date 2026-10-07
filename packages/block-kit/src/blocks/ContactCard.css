@@ -55,6 +55,6 @@
 .sbk-block-error__message {
   font-size: 12.5px;
   line-height: 18.33px;
-  color: var(--sbk-text);
+  color: var(--sbk-block-error-text);
   opacity: 0.5;
 }

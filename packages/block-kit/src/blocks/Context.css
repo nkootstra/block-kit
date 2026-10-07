@@ -8,7 +8,7 @@
   margin: 4px 0;
   font-size: 15px;
   line-height: 22px;
-  color: var(--sbk-muted);
+  color: var(--sbk-text-sec);
 }
 
 .sbk-context .sbk-mrkdwn,
