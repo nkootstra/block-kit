@@ -183,8 +183,9 @@ generated from `contexts.ts`, which lists the elements and where Slack allows ea
 Block Kit reference; `bun tools/visual/src/contexts.ts` rewrites them, and `contexts.test.ts` fails
 when they drift. They're captured and compared like any other fixture. The generator only writes
 and deletes the fixture JSON; a reference left without a fixture is dropped through the lock.
-Block Kit Builder refuses a multi-select in an `actions` block (in a message and on App Home) and
-keeps showing the previous payload, so those pairings are left out.
+Block Kit Builder refuses a multi-select in an `actions` block (in a message and on App Home) and a
+datetime picker as a section accessory, and keeps showing the previous payload, so those pairings
+are left out.
 
 ## Coverage
 
@@ -240,7 +241,8 @@ it up to date, and `bun run references:check` (part of CI) fails when:
 - a reference isn't in the lock file, or the lock file lists one that no longer exists;
 - a reference shows text another fixture's payload writes and its own doesn't (`stale.ts`): Block
   Kit Builder refused the payload and kept showing the previous one, while the snapshot still
-  recorded the refused payload from the URL.
+  recorded the refused payload from the URL. The same goes for a reference that shows not one word
+  of its own payload's sentences (a confirm dialog's text aside, which waits for a click).
 
 A fixture without a reference is listed but doesn't fail; it just isn't compared yet.
 
