@@ -2408,6 +2408,57 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured in Block Kit Builder (extra/modal/rich-and-file and its @dark reference): the rich
+  // text composer's box, formatting bar, its buttons and separators, in both themes.
+  describe("rich text input surfaces", () => {
+    const SURFACES = {
+      light: {
+        box: ["rgb(255, 255, 255)", "rgba(29, 28, 29, 0.13)"],
+        toolbar: "rgb(248, 248, 248)",
+        tool: "rgba(29, 28, 29, 0.7)",
+        separator: "rgb(234, 234, 234)",
+      },
+      dark: {
+        box: ["rgb(34, 37, 41)", "rgb(86, 88, 86)"],
+        toolbar: "rgb(34, 37, 41)",
+        tool: "rgba(232, 232, 232, 0.7)",
+        separator: "rgb(33, 36, 40)",
+      },
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      it(`paints the composer in Slack's ${theme} colours`, async () => {
+        const page = await harness.open({
+          theme,
+          view: {
+            type: "modal",
+            title: plain("New entry"),
+            blocks: [
+              {
+                type: "input",
+                label: plain("Summary"),
+                element: { type: "rich_text_input", action_id: "summary" },
+              },
+            ],
+          },
+        });
+        const got = await page.evaluate(() => {
+          const c = (sel: string) => getComputedStyle(document.querySelector(sel)!);
+          return {
+            box: [
+              c(".sbk-rich-text-input").backgroundColor,
+              c(".sbk-rich-text-input").borderTopColor,
+            ],
+            toolbar: c(".sbk-rich-text-input__toolbar").backgroundColor,
+            tool: c(".sbk-rich-text-input__tool").color,
+            separator: c(".sbk-rich-text-input__separator").backgroundColor,
+          };
+        });
+        expect(got).toEqual({ ...SURFACES[theme], box: [...SURFACES[theme].box] });
+      });
+    }
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,
