@@ -492,12 +492,199 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       const page = await harness.open(select);
       await page.click(".sbk-select__control");
       await settle(page);
-      const active = () => page.locator(".sbk-select__option[data-active]").allTextContents();
+      const active = () =>
+        page.locator(".sbk-select__option[data-active] .sbk-select__option-text").allTextContents();
       expect(await active()).toEqual(["Alpha"]);
-      await page.keyboard.type("ar");
+      // Slack matches the start of a word: "ch" finds Charlie, "ar" would find nothing.
+      await page.keyboard.type("ch");
       await settle(page);
-      expect(await page.locator(".sbk-select__option").allTextContents()).toEqual(["Charlie"]);
+      expect(await page.locator(".sbk-select__option-text").allTextContents()).toEqual(["Charlie"]);
       expect(await active()).toEqual(["Charlie"]);
+    });
+  });
+
+  // Measured in Block Kit Builder (light theme): the states Slack's option lists show as you type.
+  describe("select list states", () => {
+    const select: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "static_select",
+              action_id: "s",
+              placeholder: plain("Pick one"),
+              options: [option("Alpha"), option("Bravo"), option("Charlie")],
+            },
+          ],
+        },
+      ],
+    };
+    const grouped: Mount = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "static_select",
+              action_id: "g",
+              placeholder: plain("Grouped"),
+              option_groups: [
+                { label: plain("Group one"), options: [option("Alpha"), option("Bravo")] },
+                { label: plain("Group two"), options: [option("Charlie")] },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const multi: Mount = {
+      blocks: [
+        {
+          type: "input",
+          label: plain("Multi"),
+          element: {
+            type: "multi_static_select",
+            action_id: "m",
+            placeholder: plain("Pick some"),
+            initial_options: [option("Alpha")],
+            options: [option("Alpha"), option("Bravo"), option("Charlie")],
+          },
+        },
+      ],
+    };
+    type Box = { x: number; y: number; width: number; height: number };
+    const box = (page: Page, selector: string): Promise<Box> =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          return { x: r.x, y: r.y, width: r.width, height: r.height };
+        });
+    const css = (page: Page, selector: string, props: string[]) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate(
+          (el, ps) =>
+            Object.fromEntries(ps.map((p) => [p, getComputedStyle(el).getPropertyValue(p)])),
+          props,
+        );
+    const TYPED = ".sbk-select__option[data-active][data-typed]";
+
+    it("opens on a grey typed highlight with Slack's Enter key 24px from the right", async () => {
+      const page = await harness.open(select);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      expect(await css(page, TYPED, ["background-color", "color"])).toEqual({
+        "background-color": "rgba(29, 28, 29, 0.06)",
+        color: TEXT,
+      });
+      const [menu, row, key] = (await Promise.all(
+        [".sbk-select__menu", TYPED, `${TYPED} .sbk-select__keycap`].map((s) => box(page, s)),
+      )) as [Box, Box, Box];
+      expect(Math.round(menu.x + menu.width - (key.x + key.width))).toBe(24);
+      expect([Math.round(key.height), Math.round(key.y - row.y)]).toEqual([20, 6]);
+      expect(Math.abs(key.width - 38.7)).toBeLessThan(1.5);
+      expect(
+        await css(page, `${TYPED} .sbk-select__keycap`, [
+          "background-color",
+          "border-bottom",
+          "border-radius",
+          "font-size",
+        ]),
+      ).toEqual({
+        "background-color": "rgb(234, 234, 234)",
+        "border-bottom": "1px solid rgba(94, 93, 96, 0.13)",
+        "border-radius": "4px",
+        "font-size": "13px",
+      });
+    });
+
+    it("turns the typed highlight into the blue keyboard one, without the key, on an arrow key", async () => {
+      const page = await harness.open(select);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      await page.keyboard.press("ArrowDown");
+      await settle(page);
+      expect(await page.locator(".sbk-select__keycap").count()).toBe(0);
+      expect(
+        await css(page, ".sbk-select__option[data-active]", ["background-color", "color"]),
+      ).toEqual({ "background-color": BLUE, color: "rgb(255, 255, 255)" });
+      expect(await page.locator(".sbk-select__option[data-active]").textContent()).toBe("Alpha");
+    });
+
+    it("says nothing could be found in a 52px list when nothing matches", async () => {
+      const page = await harness.open(select);
+      await page.click(".sbk-select__control");
+      await page.keyboard.type("zz");
+      await settle(page);
+      const menu = await box(page, ".sbk-select__menu");
+      expect([menu.width, menu.height]).toEqual([322, 52]);
+      expect(await page.locator(".sbk-select__option").textContent()).toBe(
+        "😕 Nothing could be found.",
+      );
+      expect((await css(page, ".sbk-select__no-results", ["color"])).color).toBe(
+        "rgba(29, 28, 29, 0.7)",
+      );
+    });
+
+    it("heads option groups with 28px labels and splits them with a 16px rule", async () => {
+      const page = await harness.open(grouped);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      expect((await box(page, ".sbk-select__menu")).height).toBe(180);
+      expect(
+        await css(page, ".sbk-select__group-label", [
+          "height",
+          "font-size",
+          "color",
+          "padding-left",
+        ]),
+      ).toEqual({
+        height: "28px",
+        "font-size": "15px",
+        color: "rgb(69, 68, 71)",
+        "padding-left": "24px",
+      });
+      expect(
+        (await css(page, ".sbk-select__group .sbk-select__option", ["padding-left"]))[
+          "padding-left"
+        ],
+      ).toBe("32px");
+      expect((await box(page, ".sbk-select__divider")).height).toBe(16);
+      const rule = await page
+        .locator(".sbk-select__divider")
+        .evaluate((el) => getComputedStyle(el, "::before").borderTopColor);
+      expect(rule).toBe("rgb(221, 221, 221)");
+    });
+
+    it("opens an input block's multi-select list 22px wider than the field, 12px to its left", async () => {
+      const page = await harness.open(multi);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = (await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((s) => box(page, s)),
+      )) as [Box, Box];
+      expect(Math.round(menu.width - field.width)).toBe(22);
+      expect(Math.round(menu.x - field.x)).toBe(-12);
+    });
+
+    it("ticks a multi-select's chosen option in Slack's blue, in the 16px before its label", async () => {
+      const page = await harness.open(multi);
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const chosen = ".sbk-select__option--selected";
+      const [row, check, label] = (await Promise.all(
+        [chosen, `${chosen} .sbk-select__check`, `${chosen} .sbk-select__option-text`].map((s) =>
+          box(page, s),
+        ),
+      )) as [Box, Box, Box];
+      expect([Math.round(check.x - row.x), Math.round(check.width)]).toEqual([6, 16]);
+      expect(Math.round(label.x - row.x)).toBe(24);
+      expect((await css(page, `${chosen} .sbk-select__check`, ["color"])).color).toBe(BLUE);
+      expect(await page.locator(".sbk-select__check").count()).toBe(1);
     });
   });
 
@@ -1642,6 +1829,9 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           expect(await read(page, ".sbk-select__menu", ["background-color", "box-shadow"])).toEqual(
             { "background-color": want.listBg, "box-shadow": want.listShadow },
           );
+          // The blue highlight is the keyboard's; the list opens on Slack's grey typed highlight.
+          await page.keyboard.press("ArrowDown");
+          await settle(page);
           expect(
             await read(page, ".sbk-select__option[data-active]", ["background-color", "color"]),
           ).toEqual(want.highlight);

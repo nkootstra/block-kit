@@ -2,6 +2,7 @@ import {
   type ChangeEvent,
   type KeyboardEvent,
   type RefObject,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -25,6 +26,8 @@ export function useCombobox({
   returnFocusRef,
   open: controlledOpen,
   onOpenChange,
+  keepQuery = false,
+  typedHighlight = false,
 }: {
   /** What's typed; the owner filters its rows by it, so it owns the state. */
   query: string;
@@ -45,6 +48,17 @@ export function useCombobox({
   /** Whether the list is open, for an owner that needs it before the hook runs; owned here if not. */
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /**
+   * Keep what was typed when the list closes, in the field and for the next open, as Slack's
+   * select does after Escape or a press elsewhere. Otherwise closing clears it.
+   */
+  keepQuery?: boolean;
+  /**
+   * Slack's select lists start in a "typed" highlight (`--pseudo-active`: a grey row with an Enter
+   * key) when they open and while you type; the first arrow key turns that same row into the blue
+   * keyboard highlight, and later ones move it. `typed` reports which one is showing.
+   */
+  typedHighlight?: boolean;
 }) {
   const [ownOpen, setOwnOpen] = useState(false);
   const open = controlledOpen ?? ownOpen;
@@ -54,9 +68,14 @@ export function useCombobox({
   const listId = `${id}-list`;
   const optionId = (index: number) => `${id}-option-${index}`;
 
+  const [typed, setTyped] = useState(true);
+  useEffect(() => {
+    if (open) setTyped(true);
+  }, [open]);
+
   function setOpen(next: boolean) {
     setOpenState(next);
-    if (!next) onQueryChange("");
+    if (!next && !keepQuery) onQueryChange("");
   }
 
   const nav = useMenuNavigation({
@@ -83,6 +102,19 @@ export function useCombobox({
       onSubmitQuery?.(query.trim());
       return;
     }
+    if (
+      typedHighlight &&
+      open &&
+      typed &&
+      ["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)
+    ) {
+      setTyped(false);
+      // The first arrow key only turns the typed highlight into the keyboard one, on the same row.
+      if ((e.key === "ArrowDown" || e.key === "ArrowUp") && nav.active >= 0) {
+        e.preventDefault();
+        return;
+      }
+    }
     nav.onKeyDown(e);
   }
 
@@ -104,11 +136,12 @@ export function useCombobox({
       "aria-label": placeholder,
       // While open, the chosen value stays visible as the placeholder until something is typed.
       placeholder: open ? (display ?? placeholder) : placeholder,
-      value: open ? query : (display ?? ""),
+      value: open || (keepQuery && query) ? query : (display ?? ""),
       onClick: () => setOpenState(true),
       onChange: (e: ChangeEvent<HTMLInputElement>) => {
         onQueryChange(e.target.value);
         setOpenState(true);
+        setTyped(true);
         nav.setActive(0);
       },
       onKeyDown,
@@ -117,7 +150,16 @@ export function useCombobox({
 
   /** Props for the row at `index`, tying it to the input's aria-activedescendant. */
   function optionProps(index: number) {
-    return { id: optionId(index), ...nav.itemProps(index) };
+    const item = nav.itemProps(index);
+    return {
+      id: optionId(index),
+      ...item,
+      // Moving the pointer over the list hands the highlight to it.
+      onMouseMove: () => {
+        if (typedHighlight) setTyped(false);
+        item.onMouseMove();
+      },
+    };
   }
 
   return {
@@ -129,5 +171,7 @@ export function useCombobox({
     inputProps,
     optionProps,
     active: nav.active,
+    /** Whether the highlighted row is the typed highlight (with `typedHighlight`). */
+    typed: typedHighlight && typed,
   };
 }

@@ -376,28 +376,52 @@
   background: transparent;
 }
 
-/* Slack's `c-menu_item__header`. */
+/* Slack's `c-select_options_list__group_header`: a 28px row in the list's 15px text, secondary
+   colour, with the group's options indented 8px under it. */
 .sbk-select__group-label {
-  padding: 4px 24px;
-  font-size: 13px;
-  line-height: 1.38463;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 24px;
+  font: 15px / 1.46668 var(--sbk-font);
   color: var(--sbk-menu-secondary-text);
 }
 
-.sbk-select__group + .sbk-select__group {
-  margin-top: 8px;
+.sbk-select__group .sbk-select__option {
+  padding-left: 32px;
+}
+
+/* Slack's `c-select_options_list__divider`: a 16px row between groups holding a 1px rule. */
+.sbk-select__divider {
+  display: flex;
+  align-items: center;
+  height: 16px;
+}
+
+.sbk-select__divider::before {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--sbk-menu-divider);
 }
 
 /* Slack's `c-select_options_list__option`: 15px rows, 24px side padding, 28px minimum height. */
 .sbk-select__option {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
   min-height: 28px;
   padding: 0 24px;
   font: 15px / 1.46668 var(--sbk-font);
   color: var(--sbk-text);
   cursor: pointer;
+}
+
+.sbk-select__option-label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
 }
 
 .sbk-select__option:has(.sbk-select__option-description) {
@@ -416,6 +440,66 @@
   background: var(--sbk-menu-highlight-bg);
 }
 
+/* Slack's `--pseudo-active`: the row a list opens on, and the first match while you type, is a
+   grey wash with an Enter key on its right; the arrow keys turn it into the blue highlight above. */
+.sbk-select__option[data-active][data-typed] {
+  color: var(--sbk-text);
+  background: var(--sbk-hover-overlay);
+}
+
+.sbk-select__option--selected[data-active][data-typed] {
+  color: var(--sbk-menu-selected-text);
+}
+
+/* `c-select_options_list__option_shortcut`: 16px after the label, holding a 20px key that sits on
+   the bottom of the row's 23.2px line box. */
+.sbk-select__shortcut {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  height: 23.2031px;
+  margin-left: 16px;
+}
+
+.sbk-select__keycap {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 20px;
+  padding: 0 4px;
+  font: 13px / 13px var(--sbk-font);
+  color: var(--sbk-text);
+  background: var(--sbk-keycap-bg);
+  border-bottom: 1px solid var(--sbk-keycap-border);
+  border-radius: 4px;
+}
+
+/* A multi-select ticks the options it has: Slack's check glyph sits in the 24px padding, in the
+   16px before the label. */
+.sbk-select__check {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sbk-menu-selected-text);
+}
+
+/* In an input block, Slack's multi-select list is 22px wider than the field (the Popover starts it
+   12px to the left). */
+.sbk-select__menu--wide {
+  width: calc(100% + 22px);
+}
+
+/* A row with nothing to pick: Slack's minimum-query hint or "Nothing could be found." */
+.sbk-select__option--disabled {
+  color: var(--sbk-menu-secondary-text);
+  cursor: default;
+}
+
+.sbk-select__no-results {
+  color: var(--sbk-menu-faint-text);
+}
+
 .sbk-select__option[data-active] .sbk-select__option-description {
   color: inherit;
 }
@@ -427,7 +511,7 @@
   color: var(--sbk-menu-secondary-text);
 }
 
-/* An external select's "Loading…" / "No results" row while it waits on the app's options. */
+/* An external select's "Loading…" row while it waits on the app's options. */
 .sbk-select__status {
   display: flex;
   align-items: center;

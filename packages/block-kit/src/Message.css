@@ -282,6 +282,14 @@
     --sbk-on-highlight: #f8f8f8;
     --sbk-blend-interaction: lighten;
     --sbk-calendar-grid: #35373b;
+    --sbk-keycap-bg: #35373b;
+    --sbk-keycap-border: #797c8121;
+    --sbk-menu-divider: #35373b;
+    --sbk-menu-faint-text: #d1d2d3b3;
+    --sbk-menu-faint-text: #d1d2d3b3;
+    --sbk-keycap-bg: #35373b;
+    --sbk-keycap-border: #797c8121;
+    --sbk-menu-divider: #35373b;
     --sbk-calendar-day: #d1d2d3;
     --sbk-calendar-today: #1d9bd1;
     --sbk-avatar-placeholder: #35373b;
