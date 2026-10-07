@@ -286,8 +286,9 @@ like Slack does when the surface loads), and again on every selection:
 }
 ```
 
-Without `initial_option`, nothing is written to `state.values` until the first pick. Unlike
-checkboxes, there's no empty state to report.
+Without `initial_option`, nothing is written to `state.values` until the first pick in a message.
+In a modal or Home tab input block, an untouched group is reported as
+`{ "type": "radio_buttons", "selected_option": null }`, as Slack's `view_submission` does.
 
 ## Related
 

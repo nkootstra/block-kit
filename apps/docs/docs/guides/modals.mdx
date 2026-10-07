@@ -143,8 +143,10 @@ reject.
 ## onSubmit and response_action
 
 A modal with `submit` calls `onSubmit` when its Submit button is pressed, with the same
-`view_submission` payload Slack sends. Return a `response_action` to react like an app would; return
-nothing to just close the modal.
+`view_submission` payload Slack sends. Its `view.state.values` lists every input block, as Slack's
+does: an input the user left untouched is there with its empty value (`value: null`,
+`selected_option: null`, `selected_options: []`, …), so check the value, not whether the key exists.
+Return a `response_action` to react like an app would; return nothing to just close the modal.
 
 ```tsx
 <BlockKitProvider

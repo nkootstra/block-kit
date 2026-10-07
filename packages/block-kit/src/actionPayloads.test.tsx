@@ -15,6 +15,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { BlockKitProvider, type StateValues } from "./context";
+import { CHARACTER_DISPATCH_DELAY } from "./elements/characterDispatch";
 import { clickAsync, keyDownAsync } from "./elements/test-utils";
 import { Message } from "./Message";
 import type { BlockActionsPayload } from "./payloads";
@@ -148,7 +149,10 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   "extra/payloads/dispatch-inputs@type-characters": async () => {
     const input = screen.getAllByRole("textbox").at(-1)!;
     await act(async () => {
+      fireEvent.change(input, { target: { value: "h" } });
       fireEvent.change(input, { target: { value: "hi" } });
+      // Slack sends one action once typing pauses (CHARACTER_DISPATCH_DELAY).
+      await new Promise((resolve) => setTimeout(resolve, CHARACTER_DISPATCH_DELAY + 50));
     });
   },
   "extra/context-actions/feedback-row@pick-positive": () =>

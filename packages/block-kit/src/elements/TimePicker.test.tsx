@@ -20,6 +20,27 @@ function renderPicker(onAction = vi.fn(), initial_time?: string) {
 }
 
 describe("<TimePicker>", () => {
+  // Measured in Block Kit Builder: Slack labels the field "Time" for screen readers, whatever its
+  // placeholder says.
+  it("labels the field Time, as Slack does, while keeping its placeholder", () => {
+    render(
+      <BlockKitProvider>
+        <TimePicker
+          element={
+            {
+              type: "timepicker",
+              action_id: "a1",
+              placeholder: { type: "plain_text", text: "Select time" },
+            } as unknown as Timepicker
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const field = screen.getByRole("combobox", { name: "Time" }) as HTMLInputElement;
+    expect(field.placeholder).toBe("Select time");
+  });
+
   it("shows the placeholder when no time is selected", () => {
     render(
       <BlockKitProvider>
