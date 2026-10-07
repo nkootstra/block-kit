@@ -1,6 +1,9 @@
+/* The menu opens from this box, so it keeps the button's height in a stretching flex row (a
+   section accessory beside wrapping text) instead of growing with the row. */
 .sbk-overflow {
   position: relative;
   display: inline-block;
+  align-self: flex-start;
 }
 
 .sbk-overflow__button {
@@ -54,10 +57,17 @@
   padding: 0 24px;
   font: 15px / 28px var(--sbk-font);
   color: var(--sbk-text);
+  cursor: pointer;
+}
+
+/* Slack's `c-menu_item__label`: one line, cut off with an ellipsis, 1px above its row. */
+.sbk-overflow__label {
+  position: relative;
+  top: -1px;
+  display: block;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  cursor: pointer;
 }
 
 /* Highlighted (pointer or keyboard) `c-menu_item__button`: white on blue. */
