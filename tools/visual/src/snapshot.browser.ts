@@ -361,6 +361,20 @@ describe("snapshot.js", () => {
         expect(metaOf(await snapshot(page)).theme).toBe(theme);
       }
     });
+
+    // Measured in the Builder: after its theme toggle is used, the html class can be missing, while
+    // the toggle's label always names the theme it switches to.
+    it("reads the Builder's theme from its toggle when the html class is missing", async () => {
+      for (const [label, theme] of [
+        ["Switch to light mode", "dark"],
+        ["Switch to dark mode", "light"],
+      ] as const) {
+        await page.setContent(
+          `<!doctype html><html><body style="margin:0"><button aria-label="${label}"></button><div class="p-bkb_preview__message" style="width:400px"><p>Text</p></div></body></html>`,
+        );
+        expect(metaOf(await snapshot(page)).theme).toBe(theme);
+      }
+    });
   });
 
   it("keeps a size the page sets explicitly", async () => {

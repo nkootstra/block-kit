@@ -430,10 +430,13 @@ async (win = window) => {
     devicePixelRatio: win.devicePixelRatio,
     rects,
     motion,
-    // The Builder's theme: a dark reference is compared with our dark theme.
-    theme: /sk-client-theme--dark/.test(`${doc.documentElement.className} ${doc.body.className}`)
-      ? "dark"
-      : "light",
+    // The Builder's theme: a dark reference is compared with our dark theme. The toggle's label names
+    // the theme it switches to; the html class can be missing once the toggle has been used.
+    theme:
+      doc.querySelector('[aria-label="Switch to light mode"]') ||
+      /sk-client-theme--dark/.test(`${doc.documentElement.className} ${doc.body.className}`)
+        ? "dark"
+        : "light",
     layers: layers.map(({ el, ...box }) => box),
   };
 
