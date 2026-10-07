@@ -112,6 +112,11 @@
   color: var(--blume-muted-foreground);
 }
 
+/* Why an input block's interaction shows state instead of an action. */
+.bkd-preview__log-note {
+  color: var(--blume-muted-foreground);
+}
+
 .bkd-preview__log-count {
   font-weight: 400;
   color: var(--blume-muted-foreground);

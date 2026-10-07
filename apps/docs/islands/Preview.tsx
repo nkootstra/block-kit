@@ -15,13 +15,14 @@ import {
   type OptionsResponse,
   type Resolvers,
   type SlackMessageLike,
+  type StateValues,
   type UserProfile,
   View,
 } from "@nkootstra/block-kit";
 import { Editor } from "@pierre/diffs/edit";
 import { File as DiffsFile, type EditorFactory, EditProvider } from "@pierre/diffs/react";
 import type { AnyBlock } from "@slack/types";
-import { createContext, useContext, useId, useState, useSyncExternalStore } from "react";
+import { createContext, useContext, useId, useRef, useState, useSyncExternalStore } from "react";
 
 export interface PreviewProps {
   /** What Block Kit Builder accepts: `{ blocks }`, a bare array of blocks, or a modal/home view. */
@@ -157,7 +158,21 @@ export default function Preview({
   links = false,
 }: PreviewProps) {
   const [tab, setTab] = useState<"preview" | "json">(code ? "json" : "preview");
-  const [last, setLast] = useState<{ action: BlockAction; count: number } | null>(null);
+  // The latest thing the log shows: an action, or (for an input block, which sends none) the state
+  // update the interaction made.
+  const [last, setLast] = useState<
+    | { kind: "action"; action: BlockAction; count: number }
+    | { kind: "state"; values: StateValues; count: number }
+    | null
+  >(null);
+  // Elements write their initial values to state on mount; only log the updates a reader makes.
+  const interacted = useRef(false);
+  // An element in an actions block writes its state and then dispatches; log the state only when
+  // no action follows it.
+  const pendingState = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const log = (
+    next: { kind: "action"; action: BlockAction } | { kind: "state"; values: StateValues },
+  ) => setLast((prev) => ({ ...next, count: prev?.kind === next.kind ? prev.count + 1 : 1 }));
   const [opened, setOpened] = useState<{ href: string; target?: string } | null>(null);
   const colorMode = useColorMode();
   const mounted = useMounted();
@@ -200,7 +215,11 @@ export default function Preview({
         ))}
       </div>
       {tab === "preview" ? (
-        <div className="bkd-preview__stage">
+        <div
+          className="bkd-preview__stage"
+          onPointerDownCapture={() => (interacted.current = true)}
+          onKeyDownCapture={() => (interacted.current = true)}
+        >
           <OpenLink.Provider value={setOpened}>
             <BlockKitProvider
               timeZone="UTC"
@@ -209,8 +228,14 @@ export default function Preview({
               mentionHref={links ? demoMentionHref : undefined}
               linkComponent={links ? DemoLink : undefined}
               onOptions={onOptions}
+              onStateChange={(values) => {
+                if (!actions || !interacted.current) return;
+                clearTimeout(pendingState.current);
+                pendingState.current = setTimeout(() => log({ kind: "state", values }));
+              }}
               onAction={(action, { views }) => {
-                if (actions) setLast((prev) => ({ action, count: (prev?.count ?? 0) + 1 }));
+                clearTimeout(pendingState.current);
+                if (actions) log({ kind: "action", action });
                 if (opens && action.type === "button") views.open(opens as ModalView);
               }}
             >
@@ -298,16 +323,30 @@ export default function Preview({
       {actions && tab === "preview" && (
         <div className="bkd-preview__log">
           <span className="bkd-preview__log-title">
-            onAction
+            {last?.kind === "state" ? "state.values" : "onAction"}
             {last && last.count > 1 && (
-              <span className="bkd-preview__log-count"> · called {last.count} times, latest:</span>
+              <span className="bkd-preview__log-count">
+                {" "}
+                · {last.kind === "state" ? "updated" : "called"} {last.count} times, latest:
+              </span>
             )}
           </span>
+          {last?.kind === "state" && (
+            <span className="bkd-preview__log-note">
+              No <code>onAction</code>: Slack sends none for an <code>input</code> block. Its value
+              goes into the view's state, which your app receives when the form is submitted. Set{" "}
+              <code>"dispatch_action": true</code> on the block to get an action as well.
+            </span>
+          )}
           {last ? (
             <DiffsFile
               file={{
-                name: "action.json",
-                contents: JSON.stringify(summarize(last.action), null, 2),
+                name: last.kind === "state" ? "state.json" : "action.json",
+                contents: JSON.stringify(
+                  last.kind === "state" ? last.values : summarize(last.action),
+                  null,
+                  2,
+                ),
               }}
               options={{
                 theme: CODE_THEME,
