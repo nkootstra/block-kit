@@ -28,6 +28,19 @@ describe("verify", () => {
     });
   });
 
+  it("refuses a reference that still shows the Builder workspace's members or IDs", () => {
+    const leaky =
+      '<span data-qa="member_name">Ada Lovelace</span><img src="https://ca.slack-edge.com/T0EXAMPLE01-U0EXAMPLE02-1">';
+    const result = run(
+      { divider: { ...entry, reference: sha256(leaky) } },
+      [["divider", leaky]],
+      [["divider", payload]],
+    );
+    expect(result.problems.map((p) => p.message)).toEqual([
+      expect.stringMatching(/shows the Builder workspace: .*member name "Ada Lovelace"/),
+    ]);
+  });
+
   it("matches a state reference to its fixture's payload", () => {
     const result = run({ "divider@open": entry }, [["divider@open", html]], [["divider", payload]]);
     expect(result.problems).toEqual([]);

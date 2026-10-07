@@ -2,6 +2,16 @@ import { describe, expect, it } from "bun:test";
 import { normalize } from "./normalize";
 
 describe("normalize", () => {
+  it("redacts the Builder workspace's members and IDs (redact.ts)", () => {
+    expect(
+      normalize('<strong data-qa="member_name">Ada Lovelace</strong><span>T0EXAMPLE01</span>'),
+    ).toBe('<strong data-qa="member_name">User One</strong><span>T0000001</span>');
+  });
+
+  it("applies a maintainer's local mapping for names Slack doesn't mark up", () => {
+    expect(normalize("<p>Acme</p>", { Acme: "Example" })).toBe("<p>Example</p>");
+  });
+
   it("drops the Builder's selection highlight from a block captured while selected", () => {
     const html =
       '<div role="group" class="dragWrapper___5blE isDraggable__E_D_S" draggable="true" style="border-top-color:red;' +
