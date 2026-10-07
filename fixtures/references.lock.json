@@ -1429,6 +1429,16 @@
     "reference": "c0b138eabf4c0989870b6c835fce0afc528b14a1b85f1ea44a5e087d46bf8996",
     "captured": "2026-10-07"
   },
+  "catalog/section/multi-conversations-select@dialog": {
+    "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
+    "reference": "9605ec08ffb403f76d839def002acbc2f6b2eefcddfc6c07074c04d5e9f7df34",
+    "captured": "2026-10-07"
+  },
+  "catalog/section/multi-conversations-select@dialog+dark": {
+    "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
+    "reference": "8405edf3107a07ec6d69ced65b6ac9421eaa75e8ba78216b7681c2f635e56bc6",
+    "captured": "2026-10-07"
+  },
   "catalog/section/multi-conversations-select@mobile": {
     "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
     "reference": "fd4ef7d96ef5c2b3274f5bd7e1fcc338ab4c442e9197308beb50fef56e6d6edd",
@@ -1442,6 +1452,16 @@
   "catalog/section/multi-static-select@dark": {
     "payload": "5057310aed1172399b025c526cfd247a33c246f47e60bb2b6e318872d692f4f6",
     "reference": "f928db39af9f2de9a0209462499cc1a714f74ea188557b073a294c0f4da600fc",
+    "captured": "2026-10-07"
+  },
+  "catalog/section/multi-static-select@dialog": {
+    "payload": "5057310aed1172399b025c526cfd247a33c246f47e60bb2b6e318872d692f4f6",
+    "reference": "461892e41e5dc1ef995abc0aa960bd145ed92cff7b60c8f137607b5cb18006b6",
+    "captured": "2026-10-07"
+  },
+  "catalog/section/multi-static-select@dialog+dark": {
+    "payload": "5057310aed1172399b025c526cfd247a33c246f47e60bb2b6e318872d692f4f6",
+    "reference": "bab989acbf22afd3e4719e6abeb0aef6a20754b12df9aedaf04e01da35dcef1b",
     "captured": "2026-10-07"
   },
   "catalog/section/multi-static-select@mobile": {
@@ -2364,6 +2384,16 @@
     "reference": "8bdfc47629a2bf5f2f8a64bbeccf2490a864407a9216ca396c4f6a7e135af95e",
     "captured": "2026-10-07"
   },
+  "contexts/multi_static_select/accessory@dialog": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "4aada13747a9456221caa9c249cfc85ab803698439d78569be546595ed7ec325",
+    "captured": "2026-10-07"
+  },
+  "contexts/multi_static_select/accessory@dialog+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "dcfb93a0670a87ee830922da4caf0a46e03bd5a4f61f330fa96ffa2141cfe47d",
+    "captured": "2026-10-07"
+  },
   "contexts/multi_static_select/accessory@mobile": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
     "reference": "acfb56e22f1213f484e65d17d48c258bde13faf28e3e496d719ad465a2c94de1",
@@ -2442,6 +2472,16 @@
   "contexts/multi_users_select/accessory@dark": {
     "payload": "8284b568186a0327b4e7879837c1fa6697693023e904438027c3f464c0f90ded",
     "reference": "3f389bb86f4242c711b5a268394f227698446964a8bb9acfd41015d0fc65def8",
+    "captured": "2026-10-07"
+  },
+  "contexts/multi_users_select/accessory@dialog": {
+    "payload": "8284b568186a0327b4e7879837c1fa6697693023e904438027c3f464c0f90ded",
+    "reference": "3b710beafe01321f766a0740a0717ac4559a09fe8794855f37feeda161312a88",
+    "captured": "2026-10-07"
+  },
+  "contexts/multi_users_select/accessory@dialog+dark": {
+    "payload": "8284b568186a0327b4e7879837c1fa6697693023e904438027c3f464c0f90ded",
+    "reference": "d393e56b3effd9ab05d2c9394b21b4bf70342411ce4b0b4d37b2680341b423be",
     "captured": "2026-10-07"
   },
   "contexts/multi_users_select/accessory@mobile": {
@@ -2957,6 +2997,16 @@
   "extra/actions/more-elements": {
     "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
     "reference": "56607f61f42ff4c98a93776dcfaa83fbc32b2c7e7a3f9df8b51368d75d388a9c",
+    "captured": "2026-10-07"
+  },
+  "extra/actions/more-elements@confirm": {
+    "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
+    "reference": "23955162ba582c7df2427fe6034c48e1d5b1735bf3706bb1d3e86007a0c7103f",
+    "captured": "2026-10-07"
+  },
+  "extra/actions/more-elements@confirm+dark": {
+    "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
+    "reference": "1cd0f17e10c2f55b02b0bf8f4204ebddfef76ddb10da16e9ade094f7dbd40676",
     "captured": "2026-10-07"
   },
   "extra/actions/more-elements@dark": {
