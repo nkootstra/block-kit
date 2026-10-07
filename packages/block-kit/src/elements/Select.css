@@ -1,5 +1,8 @@
+/* The list opens from this box, so it keeps the field's height in a stretching flex row (a
+   section accessory beside wrapping text) instead of growing with the row. */
 .sbk-select {
   position: relative;
+  align-self: flex-start;
   width: 190px;
 }
 
@@ -489,7 +492,7 @@
   color: var(--sbk-menu-selected-text);
 }
 
-/* In an input block, Slack's multi-select list is 22px wider than the field (the Popover starts it
+/* In an input block, Slack's multi-select and typed-into single select lists are 22px wider than the field (the Popover starts it
    12px to the left). */
 .sbk-select__menu--wide {
   width: calc(100% + 22px);
@@ -501,8 +504,13 @@
   cursor: default;
 }
 
+/* Slack's `no-results-message` inside an option label: one line, cut off with an ellipsis. */
 .sbk-select__no-results {
+  min-width: 0;
+  overflow: hidden;
   color: var(--sbk-menu-faint-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sbk-select__option[data-active] .sbk-select__option-description {

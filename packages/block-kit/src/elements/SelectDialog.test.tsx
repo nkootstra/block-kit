@@ -112,3 +112,57 @@ describe("a multi_static_select section accessory", () => {
     expect(document.activeElement).toBe(button);
   });
 });
+
+// Captured in Block Kit Builder (`contexts/multi_static_select/accessory@dialog`,
+// `contexts/multi_users_select/accessory@dialog`, `catalog/section/multi-conversations-select@dialog`):
+// the dialog is titled with the select's placeholder, and the users and conversations multi-selects
+// open it as section accessories too.
+describe("the selection dialog's title", () => {
+  it("is the select's placeholder", () => {
+    renderAccessory({ placeholder: plain("Select items") });
+    fireEvent.click(trigger("Select items"));
+    expect(screen.getByRole("dialog", { name: "Select items" })).toBeTruthy();
+  });
+});
+
+function renderDirectoryAccessory(type: string, placeholder: string, onAction = vi.fn()) {
+  render(
+    <BlockKitProvider onAction={onAction}>
+      <Message
+        blocks={
+          [
+            {
+              type: "section",
+              block_id: "b1",
+              text: { type: "mrkdwn", text: "Pick some" },
+              accessory: { type, action_id: "a1", placeholder: plain(placeholder) },
+            },
+          ] as never
+        }
+      />
+    </BlockKitProvider>,
+  );
+  return onAction;
+}
+
+describe.each([
+  ["multi_users_select", "Select users", "selected_users", "U123"],
+  ["multi_conversations_select", "Select conversations", "selected_conversations", "C123"],
+  ["multi_channels_select", "Select channels", "selected_channels", "C456"],
+])("a %s section accessory", (type, placeholder, field, id) => {
+  it("opens the selection dialog and sends the typed ids on Confirm", async () => {
+    const onAction = renderDirectoryAccessory(type, placeholder);
+    fireEvent.click(trigger(placeholder));
+    const box = screen.getByRole("dialog", { name: placeholder });
+    const input = within(box).getByRole("combobox");
+    fireEvent.change(input, { target: { value: id } });
+    await keyDownAsync(input, "Enter");
+    expect(onAction).not.toHaveBeenCalled();
+    await clickAsync(within(box).getByRole("button", { name: "Confirm" }));
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ type, action_id: "a1", block_id: "b1", [field]: [id] }),
+      expect.anything(),
+    );
+    expect(trigger("1 selected")).toBeTruthy();
+  });
+});

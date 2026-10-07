@@ -30,6 +30,7 @@ export function useCombobox({
   typedHighlight = false,
   highlightOnType = true,
   holdFirstArrow = true,
+  chosenAsPlaceholder = true,
 }: {
   /** What's typed; the owner filters its rows by it, so it owns the state. */
   query: string;
@@ -57,8 +58,9 @@ export function useCombobox({
   keepQuery?: boolean;
   /**
    * Slack's select lists start in a "typed" highlight (`--pseudo-active`: a grey row with an Enter
-   * key) when they open and while you type; the first arrow key turns that same row into the blue
-   * keyboard highlight, and later ones move it. `typed` reports which one is showing.
+   * key) when the keyboard opens them and while you type; the first arrow key turns that same row
+   * into the blue keyboard highlight, and later ones move it. A list opened with a click starts on
+   * the blue highlight instead. `typed` reports which one is showing.
    */
   typedHighlight?: boolean;
   /**
@@ -71,6 +73,11 @@ export function useCombobox({
    * opens without a value or after typing, but opened on a chosen option it moves straight on.
    */
   holdFirstArrow?: boolean;
+  /**
+   * Whether the chosen value stays visible as the placeholder while the list is open. Slack's
+   * single static select empties the field to its own placeholder instead.
+   */
+  chosenAsPlaceholder?: boolean;
 }) {
   const [ownOpen, setOwnOpen] = useState(false);
   const open = controlledOpen ?? ownOpen;
@@ -81,8 +88,11 @@ export function useCombobox({
   const optionId = (index: number) => `${id}-option-${index}`;
 
   const [typed, setTyped] = useState(true);
+  // Set by a click that opens the list, which starts on the blue highlight rather than the typed one.
+  const pointerOpen = useRef(false);
   useEffect(() => {
-    if (open) setTyped(true);
+    if (open) setTyped(!pointerOpen.current);
+    else pointerOpen.current = false;
   }, [open]);
 
   function setOpen(next: boolean) {
@@ -148,10 +158,14 @@ export function useCombobox({
       "aria-activedescendant": open && nav.active >= 0 ? optionId(nav.active) : undefined,
       "aria-label": label,
       // While open, the chosen value stays visible as the placeholder until something is typed.
-      placeholder: open ? (display ?? placeholder) : placeholder,
+      placeholder: open && chosenAsPlaceholder ? (display ?? placeholder) : placeholder,
       value: open || (keepQuery && query) ? query : (display ?? ""),
-      onClick: () => setOpenState(true),
+      onClick: () => {
+        if (!open) pointerOpen.current = true;
+        setOpenState(true);
+      },
       onChange: (e: ChangeEvent<HTMLInputElement>) => {
+        pointerOpen.current = false;
         onQueryChange(e.target.value);
         setOpenState(true);
         setTyped(true);

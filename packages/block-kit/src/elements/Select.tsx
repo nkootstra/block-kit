@@ -318,14 +318,24 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     items.some((i) => i.id === (option.value ?? option.text.text));
 
   const showSearchOnly = source !== "static"; // external/users/conversations/channels have no local directory
-  // Slack's single static select is typed into (`c-select_input`): the field filters the options,
-  // so there's no search box in the menu. The others open from a button.
-  const typeable = source === "static" && !multi;
-  // As a section accessory, Slack's multi_static_select is a small button ("Select options", then
-  // "N selected") that opens a "Select options" dialog and sends once, on Confirm.
+  // Slack's single static and external selects are typed into (`c-select_input`): the field filters
+  // the options or searches the app, so there's no search box in the menu. The others open from a
+  // button.
+  const typeable = (source === "static" || source === "external") && !multi;
+  // As a section accessory, Slack's multi-selects are a small button (the placeholder, then
+  // "N selected") that opens a selection dialog and sends once, on Confirm. Measured for static,
+  // users and conversations selects; channels follow conversations, and the external one keeps its
+  // list until Slack's is measured.
   const inAccessory = useContext(SectionAccessoryContext);
   const inInputBlock = useInInputBlock();
-  const dialogMode = inAccessory && multi && source === "static";
+  const dialogMode = inAccessory && multi && source !== "external";
+  const directory = source === "users" || source === "conversations" || source === "channels";
+  /** An item as a dialog option: a directory id becomes an option labelled as it's shown. */
+  const itemToOption = (item: Item): PlainTextOption =>
+    item.option ?? {
+      text: { type: "plain_text", text: item.label || resolveLabel(item.id) },
+      value: item.id,
+    };
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const combo = useCombobox({
@@ -334,7 +344,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     query,
     onQueryChange: setQuery,
     count: flatOptions.length,
-    initialIndex: Math.max(0, flatOptions.findIndex(isSelected)),
+    // Slack's typed-into select opens on its first row even with an option chosen (Block Kit
+    // Builder, `extra/modal/form@open`); the chosen one is marked with a check instead.
+    initialIndex: typeable ? 0 : Math.max(0, flatOptions.findIndex(isSelected)),
     // Opened on a chosen option, Slack's first arrow key moves on from it (Block Kit Builder).
     holdFirstArrow: flatOptions.findIndex(isSelected) < 0 || query.trim() !== "",
     onChoose: (i) => {
@@ -350,6 +362,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     returnFocusRef: typeable ? undefined : triggerRef,
     keepQuery: typeable,
     typedHighlight: true,
+    chosenAsPlaceholder: !typeable,
   });
   useFocusOnLoad<HTMLElement>(
     element as { focus_on_load?: boolean },
@@ -372,18 +385,19 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     : !loading && flatOptions.length === 0 && (!remote || remoteGroups !== undefined)
       ? "nothing"
       : undefined;
-  // In an input block, Slack's multi-select list is 22px wider than the field and starts 12px left.
-  const wideMulti = multi && inInputBlock;
+  // In an input block, Slack's multi-select and typed-into single select lists are 22px wider than
+  // the field and start 12px left.
+  const wideList = (multi || typeable) && inInputBlock;
 
   const menu = open && (
     <Popover
       anchorRef={rootRef}
       onDismiss={() => combo.setOpen(false)}
-      offsetX={typeable || wideMulti ? -12 : 0}
+      offsetX={typeable || wideList ? -12 : 0}
       gap={MENU_GAP}
     >
       <div
-        className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}${wideMulti ? " sbk-select__menu--wide" : ""}`}
+        className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}${wideList ? " sbk-select__menu--wide" : ""}`}
         role="listbox"
         id={combo.listId}
         ref={listRef}
@@ -413,7 +427,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                     key={option.value ?? i}
                     option={option}
                     selected={isSelected(option)}
-                    check={multi && isSelected(option)}
+                    check={(multi || typeable) && isSelected(option)}
                     typed={combo.typed && combo.active === i}
                     onSelect={() => selectItem(optionToItem(option))}
                     navProps={combo.optionProps(i)}
@@ -439,11 +453,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             aria-disabled="true"
             aria-selected="false"
           >
-            {emptyMessage === "nothing" ? (
-              <span className="sbk-select__no-results">😕 Nothing could be found.</span>
-            ) : (
-              emptyMessage
-            )}
+            {/* Slack's `no-results-message`, the same faint text for both. */}
+            <span className="sbk-select__no-results">
+              {emptyMessage === "nothing" ? "😕 Nothing could be found." : emptyMessage}
+            </span>
           </div>
         )}
         {showSearchOnly && items.length > 0 && multi && (
@@ -482,14 +495,24 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         </button>
         {dialogOpen && (
           <SelectDialog
-            options={allOptions(element)}
-            initial={items.flatMap((i) => (i.option ? [i.option] : []))}
+            options={directory ? [] : allOptions(element)}
+            initial={items.map(itemToOption)}
             placeholder={placeholder}
+            addTyped={
+              directory
+                ? (typed) => itemToOption({ id: typed, label: resolveLabel(typed) })
+                : undefined
+            }
             onCancel={closeDialog}
             onConfirm={async (selected) => {
               closeDialog();
               if (!(await ask())) return;
-              await commit(selected.map(optionToItem));
+              // A directory item keeps no label, so it's resolved wherever it's shown.
+              await commit(
+                selected.map((o) =>
+                  directory ? { id: o.value ?? o.text.text, label: "" } : optionToItem(o),
+                ),
+              );
             }}
           />
         )}

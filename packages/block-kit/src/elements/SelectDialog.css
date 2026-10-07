@@ -1,7 +1,7 @@
-/* Slack's "Select options" dialog, opened by a multi_static_select section accessory. Its 520px
-   width is measured in Block Kit Builder; the rest follows Slack's dialog (c-sk-modal): an 8px
-   radius, a hairline ring with a deep drop shadow, a dimmed page behind it. No reference captures
-   it yet, so spacing beyond the width isn't verified pixel for pixel. */
+/* Slack's selection dialog (`c-dialog`), opened by a multi-select section accessory: 520 x 208 in
+   Block Kit Builder (`catalog/section/multi-static-select@dialog`), a 68px header, the field 14px
+   below it, and a 76px footer of 36px modal buttons, with an 8px radius, a hairline ring with a
+   deep drop shadow, and a dimmed page behind it. */
 .sbk-select-dialog__overlay {
   position: fixed;
   inset: 0;
@@ -38,15 +38,15 @@
   margin: 0;
   font-size: 22px;
   font-weight: 900;
-  line-height: 1.27;
+  line-height: 30px;
 }
 
 .sbk-select-dialog__close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   margin-right: -8px;
   padding: 0;
   color: var(--sbk-muted);
@@ -72,12 +72,14 @@
   padding: 0 24px;
 }
 
-/* The multi-select field: chips, then the input they're typed after. */
+/* The multi-select field: chips, then the input they're typed after. Slack's sits 14px from the
+   header and the footer, 468px wide. */
 .sbk-select-dialog__field {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   min-height: 36px;
+  margin: 14px 4px 14px 0;
   padding: 0 8px 4px 0;
   border: 1px solid rgb(124, 122, 127);
   border-radius: 8px;
@@ -91,7 +93,7 @@
 .sbk-select-dialog__input {
   flex: 1;
   min-width: 80px;
-  margin: 4px 0 0 8px;
+  margin: 4px 0 0 12px;
   padding: 0;
   font: inherit;
   color: var(--sbk-text);

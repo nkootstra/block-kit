@@ -413,6 +413,86 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
   });
 
   describe("multi-select section accessory", () => {
+    // Captured in Block Kit Builder (`catalog/section/multi-static-select@dialog`): a 520 x 208
+    // dialog with a 68px header, the field 14px below it (468 x 36, 8px corners), and a 76px
+    // footer of 36px modal buttons.
+    it("lays the selection dialog out at Slack's 520 x 208", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: plain("Pick some"),
+            accessory: {
+              type: "multi_static_select",
+              action_id: "m",
+              placeholder: plain("Select options"),
+              options: [option("Alpha"), option("Bravo")],
+            },
+          },
+        ],
+      });
+      await page.click(".sbk-section__accessory .sbk-select__control");
+      await settle(page);
+      const geometry = await page.evaluate(() => {
+        const dialog = document.querySelector(".sbk-select-dialog")!.getBoundingClientRect();
+        const rel = (selector: string) => {
+          const r = document.querySelector(selector)!.getBoundingClientRect();
+          return [r.x - dialog.x, r.y - dialog.y, r.width, r.height].map(Math.round);
+        };
+        const buttons = [...document.querySelectorAll(".sbk-select-dialog__footer button")].map(
+          (b) => {
+            const r = b.getBoundingClientRect();
+            const c = getComputedStyle(b);
+            // The label's width depends on the font, so check Slack's 80px minimum instead.
+            return [c.minWidth, Math.round(r.height), c.fontSize, c.borderTopLeftRadius];
+          },
+        );
+        return {
+          dialog: [Math.round(dialog.width), Math.round(dialog.height)],
+          header: rel(".sbk-select-dialog__header"),
+          close: rel(".sbk-select-dialog__close"),
+          field: rel(".sbk-select-dialog__field"),
+          fieldRadius: getComputedStyle(document.querySelector(".sbk-select-dialog__field")!)
+            .borderTopLeftRadius,
+          buttons,
+        };
+      });
+      expect(geometry).toEqual({
+        dialog: [520, 208],
+        header: [0, 0, 520, 68],
+        close: [468, 16, 36, 36],
+        field: [24, 82, 468, 36],
+        fieldRadius: "8px",
+        buttons: [
+          ["80px", 36, "15px", "8px"],
+          ["80px", 36, "15px", "8px"],
+        ],
+      });
+    });
+
+    // Captured in Block Kit Builder (`@dialog` references): users and conversations multi-selects
+    // open the same selection dialog, titled with their placeholder.
+    for (const [type, title] of [
+      ["multi_users_select", "Select users"],
+      ["multi_conversations_select", "Select conversations"],
+    ] as const) {
+      it(`opens ${type} as a section accessory in the selection dialog`, async () => {
+        const page = await harness.open({
+          blocks: [
+            {
+              type: "section",
+              text: plain("Pick some"),
+              accessory: { type, action_id: "m", placeholder: plain(title) },
+            },
+          ],
+        });
+        await page.click(".sbk-section__accessory .sbk-select__control");
+        await settle(page);
+        expect(await page.getByRole("dialog", { name: title }).count()).toBe(1);
+        expect(await page.locator(".sbk-select__menu").count()).toBe(0);
+      });
+    }
+
     it("opens a 520px Select options dialog, focused, and shows the count after Confirm", async () => {
       const page = await harness.open({
         blocks: [
@@ -441,7 +521,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       // The list stays open over the footer while picking, as Slack's does; a press elsewhere in
       // the dialog closes it.
       await page.click(".sbk-select-dialog__title");
-      await page.click(".sbk-select-dialog .sbk-button--primary");
+      await page.getByRole("button", { name: "Confirm" }).click();
       await settle(page);
       expect(await page.locator(".sbk-select-dialog").count()).toBe(0);
       expect(await page.locator(".sbk-section__accessory .sbk-select__control").textContent()).toBe(
@@ -574,10 +654,118 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         );
     const TYPED = ".sbk-select__option[data-active][data-typed]";
 
-    it("opens on a grey typed highlight with Slack's Enter key 24px from the right", async () => {
+    // Captured in Block Kit Builder (`catalog/section/static-select@open`): as a section's
+    // accessory the list opens over the field's bottom 4px even when the section's text wraps.
+    it("opens a section accessory's list under the field, not under a wrapping section", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: plain(
+              "A section whose text wraps over several lines, so the section is much taller than its select.",
+            ),
+            accessory: {
+              type: "static_select",
+              action_id: "s",
+              placeholder: plain("Pick one"),
+              options: [option("Alpha"), option("Bravo")],
+            },
+          },
+        ],
+      });
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = (await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((s) => box(page, s)),
+      )) as [Box, Box];
+      expect(Math.round(menu.y - (field.y + field.height))).toBe(-4);
+    });
+
+    // Captured in Block Kit Builder (`catalog/input/static-select@open`): in an input block the
+    // single select's list is 22px wider than the field and starts 12px to its left, as the
+    // multi-select's does.
+    it("opens an input block's single select list 22px wider than the field, 12px to its left", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("Label"),
+            element: {
+              type: "static_select",
+              action_id: "s",
+              placeholder: plain("Select an item"),
+              options: [option("Alpha"), option("Bravo")],
+            },
+          },
+        ],
+      });
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = (await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((s) => box(page, s)),
+      )) as [Box, Box];
+      expect([Math.round(menu.x - field.x), Math.round(menu.width - field.width)]).toEqual([
+        -12, 22,
+      ]);
+    });
+
+    // Captured in Block Kit Builder (`extra/actions/more-elements@open`): the external select is
+    // typed into; its list opens at 322 x 52, 12px left of the field and over its bottom 4px, with
+    // the minimum-length hint in the faint no-results text.
+    it("opens a typed-into external select on its faint minimum-length hint", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "external_select",
+                action_id: "e",
+                placeholder: plain("Search tickets"),
+                min_query_length: 2,
+              },
+            ],
+          },
+        ],
+      });
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = (await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((s) => box(page, s)),
+      )) as [Box, Box];
+      expect([
+        Math.round(menu.x - field.x),
+        Math.round(menu.y - (field.y + field.height)),
+        Math.round(menu.width),
+        Math.round(menu.height),
+      ]).toEqual([-12, -4, 322, 52]);
+      const hint = page.getByText("Type a minimum of 2 characters to see options.");
+      expect(await hint.evaluate((el) => getComputedStyle(el).color)).toBe("rgba(29, 28, 29, 0.7)");
+    });
+
+    /** Opens the list from the keyboard: focus the field, then ArrowDown. */
+    async function openWithKeyboard(page: Page) {
+      await page.focus(".sbk-select__control input");
+      await page.keyboard.press("ArrowDown");
+      await settle(page);
+    }
+
+    // Captured in Block Kit Builder (`@open` references): a click opens the list on the blue
+    // highlight, first row, white text, with no Enter key.
+    it("opens on the blue highlight, without the key, when clicked", async () => {
       const page = await harness.open(select);
       await page.click(".sbk-select__control");
       await settle(page);
+      expect(await page.locator(".sbk-select__keycap").count()).toBe(0);
+      expect(
+        await css(page, ".sbk-select__option[data-active]", ["background-color", "color"]),
+      ).toEqual({ "background-color": BLUE, color: "rgb(255, 255, 255)" });
+      expect(await page.locator(".sbk-select__option[data-active]").textContent()).toBe("Alpha");
+    });
+
+    it("opens on a grey typed highlight with Slack's Enter key 24px from the right, from the keyboard", async () => {
+      const page = await harness.open(select);
+      await openWithKeyboard(page);
       expect(await css(page, TYPED, ["background-color", "color"])).toEqual({
         "background-color": "rgba(29, 28, 29, 0.06)",
         color: TEXT,
@@ -605,8 +793,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
 
     it("turns the typed highlight into the blue keyboard one, without the key, on an arrow key", async () => {
       const page = await harness.open(select);
-      await page.click(".sbk-select__control");
-      await settle(page);
+      await openWithKeyboard(page);
       await page.keyboard.press("ArrowDown");
       await settle(page);
       expect(await page.locator(".sbk-select__keycap").count()).toBe(0);
