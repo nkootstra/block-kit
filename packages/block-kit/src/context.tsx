@@ -478,7 +478,8 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
     (blockId: string, actionId: string, value: ElementState | undefined) => {
       const block = { ...stateRef.current[blockId] };
       if (value === undefined) delete block[actionId];
-      else block[actionId] = value;
+      // Kept as Slack reports it in state.values: option and placeholder text with `emoji: true`.
+      else block[actionId] = normalizeEchoes(value);
       const next = { ...stateRef.current, [blockId]: block };
       stateRef.current = next;
       setState(next);

@@ -38,6 +38,37 @@ describe("<IconButton>", () => {
     );
   });
 
+  // The Builder's Actions Preview sent `{type, action_id, block_id, icon, text}` for an icon
+  // button (state audit, "Icon button": "Payload {type:"icon_button", action_id, block_id, icon,
+  // text}").
+  it("sends its icon and text in the action, as Slack does", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <IconButton
+          element={
+            {
+              type: "icon_button",
+              action_id: "ib1",
+              icon: "trash",
+              text: { type: "plain_text", text: "Delete" },
+            } as unknown as IconButtonElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    await clickAsync(screen.getByRole("button", { name: "Delete" }));
+    const { action_ts: _ts, ...action } = onAction.mock.calls[0]![0];
+    expect(action).toEqual({
+      type: "icon_button",
+      action_id: "ib1",
+      block_id: "b1",
+      icon: "trash",
+      text: { type: "plain_text", text: "Delete", emoji: true },
+    });
+  });
+
   it("uses accessibility_label over text as the accessible name when present", () => {
     render(
       <BlockKitProvider>

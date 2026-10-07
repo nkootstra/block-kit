@@ -81,6 +81,38 @@ describe("<Overflow>", () => {
     openSpy.mockRestore();
   });
 
+  // Slack's overflow action carries the option's text and value only, never its url: Bolt's
+  // OverflowAction declares `selected_option: { text, value }`, and the Builder's Actions Preview
+  // sent no url (state audit, "Overflow menu": "sends overflow with selected_option {text, value},
+  // no url").
+  it("leaves a link option's url out of the action, as Slack does", async () => {
+    const onAction = vi.fn();
+    vi.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Overflow
+          element={element({
+            options: [
+              {
+                value: "a",
+                text: { type: "plain_text", text: "Open docs" },
+                url: "https://example.com/docs",
+              },
+            ],
+          })}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    await clickAsync(screen.getByText("Open docs"));
+    expect(onAction.mock.calls[0]![0].selected_option).toEqual({
+      value: "a",
+      text: { type: "plain_text", text: "Open docs", emoji: true },
+    });
+    vi.restoreAllMocks();
+  });
+
   it("closes the menu on outside click", () => {
     render(
       <div>

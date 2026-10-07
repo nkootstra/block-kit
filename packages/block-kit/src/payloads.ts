@@ -144,6 +144,7 @@ export function normalizeEchoes<T extends Record<string, unknown>>(entry: T): T 
   if (out.text !== undefined) out.text = normalizeText(out.text);
   if (out.placeholder !== undefined) out.placeholder = normalizeText(out.placeholder);
   if (out.selected_option) out.selected_option = normalizeOption(out.selected_option);
+  if (out.initial_option) out.initial_option = normalizeOption(out.initial_option);
   if (Array.isArray(out.selected_options)) {
     out.selected_options = out.selected_options.map(normalizeOption);
   }

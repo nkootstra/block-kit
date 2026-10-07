@@ -25,7 +25,11 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
       type: "overflow",
       action_id: actionId,
       block_id: blockId,
-      selected_option: option,
+      // Slack sends the option's text and value; a link option's url only opens the page.
+      selected_option: {
+        text: option.text,
+        ...(option.value !== undefined ? { value: option.value } : {}),
+      },
     });
     if (option.url) window.open(option.url, "_blank", "noopener,noreferrer");
   }

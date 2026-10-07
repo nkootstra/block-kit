@@ -36,7 +36,7 @@ describe("<Checkboxes>", () => {
     );
     expect(state.b1?.a1).toEqual({
       type: "checkboxes",
-      selected_options: [option("a", "A")],
+      selected_options: [sent("a", "A")],
     });
   });
 

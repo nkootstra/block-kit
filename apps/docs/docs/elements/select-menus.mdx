@@ -600,7 +600,10 @@ the id string.
   "type": "static_select",
   "action_id": "priority",
   "block_id": "assign",
-  "selected_option": { "text": { "type": "plain_text", "text": "High" }, "value": "high" }
+  "selected_option": {
+    "text": { "type": "plain_text", "text": "High", "emoji": true },
+    "value": "high"
+  }
 }
 ```
 
@@ -611,7 +614,10 @@ A select with a `placeholder` sends it back in the action too, as Slack does.
 ```json
 {
   "type": "static_select",
-  "selected_option": { "text": { "type": "plain_text", "text": "High" }, "value": "high" }
+  "selected_option": {
+    "text": { "type": "plain_text", "text": "High", "emoji": true },
+    "value": "high"
+  }
 }
 ```
 

@@ -248,7 +248,7 @@ selected does nothing and never asks. See [Confirmation dialogs](/elements/confi
 ## Interactivity
 
 Selecting an option (after any confirm dialog is accepted) calls `onAction` with the chosen option
-under `selected_option`:
+under `selected_option`. When the element sets `initial_option`, Slack echoes it too:
 
 ```json
 {
@@ -256,7 +256,14 @@ under `selected_option`:
   "action_id": "level",
   "block_id": "priority",
   "action_ts": "1706000000.000100",
-  "selected_option": { "text": { "type": "plain_text", "text": "High" }, "value": "high" }
+  "selected_option": {
+    "text": { "type": "plain_text", "text": "High", "emoji": true },
+    "value": "high"
+  },
+  "initial_option": {
+    "text": { "type": "plain_text", "text": "Medium", "emoji": true },
+    "value": "medium"
+  }
 }
 ```
 
@@ -270,7 +277,10 @@ like Slack does when the surface loads), and again on every selection:
   "priority": {
     "level": {
       "type": "radio_buttons",
-      "selected_option": { "text": { "type": "plain_text", "text": "Medium" }, "value": "medium" }
+      "selected_option": {
+        "text": { "type": "plain_text", "text": "Medium", "emoji": true },
+        "value": "medium"
+      }
     }
   }
 }

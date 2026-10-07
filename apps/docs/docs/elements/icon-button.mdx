@@ -175,7 +175,7 @@ The icon button is designed to sit next to [feedback buttons](/elements/feedback
 ## Interactivity
 
 Clicking the button (after any confirm dialog is accepted) calls `onAction` with an `icon_button`
-action:
+action that, like Slack's, echoes the button's `icon` and `text`:
 
 ```json
 {
@@ -183,7 +183,9 @@ action:
   "action_id": "remove",
   "block_id": "b1",
   "action_ts": "1706000000.000100",
-  "value": "row-1"
+  "value": "row-1",
+  "icon": "trash",
+  "text": { "type": "plain_text", "text": "Remove", "emoji": true }
 }
 ```
 
