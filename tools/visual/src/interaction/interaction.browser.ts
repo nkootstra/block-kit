@@ -2459,6 +2459,171 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured from Block Kit Builder's dark references (the @dark captures): Slack draws message
+  // text a little softer (#d1d2d3) than cards, charts, data tables, container titles and alerts
+  // (#f8f8f8), and secondary text (timestamp, context, image titles, video bylines) in #ababad.
+  // Light values are the ones the light references already match.
+  describe("text colours in both themes", () => {
+    /** The computed `color` (or another property) of the first match, after transitions. */
+    const prop = (page: Page, selector: string, name = "color") =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el, n) => getComputedStyle(el).getPropertyValue(n), name);
+    const open = async (name: string, theme: "light" | "dark") =>
+      harness.open({ ...(await fixture(name)), theme });
+
+    const CASES: {
+      what: string;
+      fixture: string;
+      selector: string;
+      property?: string;
+      light: string;
+      dark: string;
+    }[] = [
+      {
+        what: "message body text",
+        fixture: "catalog/section/plain-text",
+        selector: ".sbk-section__text",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(209, 210, 211)",
+      },
+      {
+        what: "the sender name",
+        fixture: "catalog/section/plain-text",
+        selector: ".sbk-message__sender",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(209, 210, 211)",
+      },
+      {
+        what: "the timestamp",
+        fixture: "catalog/section/plain-text",
+        selector: ".sbk-message__time",
+        light: "rgb(97, 96, 97)",
+        dark: "rgb(171, 171, 173)",
+      },
+      {
+        what: "context text",
+        fixture: "catalog/structure/plain-text",
+        selector: ".sbk-context",
+        light: "rgb(97, 96, 97)",
+        dark: "rgb(171, 171, 173)",
+      },
+      {
+        what: "an input label",
+        fixture: "catalog/input/plain-text-input",
+        selector: ".sbk-input__label",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(209, 210, 211)",
+      },
+      {
+        what: "a card title",
+        fixture: "catalog/card-and-carousel/card",
+        selector: ".sbk-card__title",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(248, 248, 248)",
+      },
+      {
+        what: "a card body",
+        fixture: "catalog/card-and-carousel/card",
+        selector: ".sbk-card__body .sbk-mrkdwn",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(248, 248, 248)",
+      },
+      {
+        what: "a card subtitle",
+        fixture: "catalog/card-and-carousel/card",
+        selector: ".sbk-card__subtitle",
+        light: "rgb(94, 93, 96)",
+        dark: "rgb(154, 155, 158)",
+      },
+      {
+        what: "a container title",
+        fixture: "catalog/container/full-width",
+        selector: ".sbk-container__title",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(248, 248, 248)",
+      },
+      {
+        what: "a chart title",
+        fixture: "catalog/data-visualization/bar-single-series",
+        selector: ".sbk-dataviz__title",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(248, 248, 248)",
+      },
+      {
+        what: "a data table cell",
+        fixture: "catalog/table/paginated-data-table",
+        selector: ".sbk-data-table__cell",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(248, 248, 248)",
+      },
+      {
+        what: "the active page button",
+        fixture: "catalog/table/paginated-data-table",
+        selector: ".sbk-data-table__page-btn--active",
+        property: "background-color",
+        light: "rgb(0, 122, 90)",
+        dark: "rgb(23, 126, 86)",
+      },
+      {
+        what: "a video's provider separator",
+        fixture: "extra/media/video",
+        selector: ".sbk-video__separator",
+        light: "rgb(221, 221, 221)",
+        dark: "rgb(53, 55, 59)",
+      },
+      {
+        what: "a multi-select's placeholder in an input block",
+        fixture: "catalog/input/multi-static-select",
+        selector: ".sbk-input__element .sbk-select__placeholder",
+        light: "rgb(94, 93, 96)",
+        dark: "rgb(154, 155, 158)",
+      },
+      {
+        what: "the unrenderable-block message",
+        fixture: "catalog/container/with-callout",
+        selector: ".sbk-block-error__message",
+        light: "rgb(29, 28, 29)",
+        dark: "rgb(232, 232, 232)",
+      },
+    ];
+
+    for (const theme of ["light", "dark"] as const) {
+      for (const c of CASES) {
+        it(`colours ${c.what} in ${theme}`, async () => {
+          const page = await open(c.fixture, theme);
+          await settle(page);
+          expect(await prop(page, c.selector, c.property)).toBe(c[theme]);
+        });
+      }
+    }
+
+    it("draws a private channel mention in Slack's dark grey on its dark tint", async () => {
+      const page = await harness.open({
+        theme: "dark",
+        blocks: [{ type: "section", text: { type: "mrkdwn", text: "See <#C0PRIVATE>" } }],
+      });
+      await settle(page);
+      expect([
+        await prop(page, ".sbk-mention--private"),
+        await prop(page, ".sbk-mention--private", "background-color"),
+      ]).toEqual(["rgba(232, 232, 232, 0.7)", "rgba(232, 232, 232, 0.13)"]);
+    });
+
+    // An input block's radio group ends with the last option's own 8px margin, as in Slack:
+    // catalog/input/radio-buttons is 158px tall in both themes, like the checkboxes beside it.
+    it("adds no extra space below a radio group in an input block", async () => {
+      const page = await open("catalog/input/radio-buttons", "light");
+      const gap = await page.evaluate(() => {
+        const group = document.querySelector(".sbk-radio-buttons")!.getBoundingClientRect();
+        const block = document.querySelector(".sbk-block")!.getBoundingClientRect();
+        return Math.round(block.bottom - group.bottom);
+      });
+      expect(gap).toBe(0);
+    });
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,

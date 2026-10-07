@@ -92,8 +92,30 @@ stylesheet to restyle without touching the components. The main tokens:
       default: '"Slack-Roboto-Mono", "Roboto Mono", monospace',
       description: "Code font.",
     },
-    "--sbk-text": { type: "color", description: "Primary text color." },
-    "--sbk-muted": { type: "color", description: "Secondary/muted text, e.g. timestamps." },
+    "--sbk-text": {
+      type: "color",
+      description:
+        "Primary text color: cards, charts, data tables, container titles, alerts and controls.",
+    },
+    "--sbk-text-body": {
+      type: "color",
+      description:
+        "The text messages and blocks inherit (section, rich text, mrkdwn, sender name, input labels). Same as --sbk-text in light; a little softer in dark, as in Slack.",
+    },
+    "--sbk-text-sec": {
+      type: "color",
+      description:
+        "Secondary text: the timestamp, context, image titles, video bylines and card subtext.",
+    },
+    "--sbk-muted": { type: "color", description: "Muted text, e.g. field placeholders." },
+    "--sbk-video-separator": {
+      type: "color",
+      description: "The | between a video's provider and author.",
+    },
+    "--sbk-block-error-text": {
+      type: "color",
+      description: '"This content could not be displayed.", drawn at half opacity.',
+    },
     "--sbk-bg": { type: "color", description: "Surface background (message, modal, Home tab)." },
     "--sbk-link": { type: "color", description: "Link and mention text color." },
     "--sbk-mention-bg": { type: "color", description: "Resolved user/channel mention background." },

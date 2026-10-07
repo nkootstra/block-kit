@@ -4,9 +4,11 @@
   --sbk-data-table-bg: rgba(29, 28, 29, 0.06);
   --sbk-data-table-sep: rgba(94, 93, 96, 0.13);
   --sbk-data-table-active: #007a5a;
+  --sbk-data-table-active-text: #fff;
 }
 
 .sbk-data-table {
+  color: var(--sbk-text);
   margin: 4px 0;
 }
 
@@ -335,7 +337,7 @@
 }
 
 .sbk-data-table__page-btn--active {
-  color: #fff;
+  color: var(--sbk-data-table-active-text);
   background-color: var(--sbk-data-table-active);
 }
 

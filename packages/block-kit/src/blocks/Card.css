@@ -1,5 +1,11 @@
 .sbk-card {
   margin: 8px 0;
+  color: var(--sbk-text);
+}
+
+/* Cards keep Slack's brighter text colour for their markdown too. */
+.sbk-card .sbk-mrkdwn {
+  color: inherit;
 }
 
 .sbk-card__box {
@@ -87,7 +93,7 @@
 .sbk-card__subtitle {
   font-size: 13px;
   line-height: 16.25px;
-  color: rgb(94, 93, 96);
+  color: var(--sbk-content-ter);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -107,7 +113,7 @@
 .sbk-card__subtext {
   font-size: 13px;
   line-height: 18px;
-  color: var(--sbk-muted);
+  color: var(--sbk-text-sec);
 }
 
 .sbk-card__subtext .sbk-mrkdwn,

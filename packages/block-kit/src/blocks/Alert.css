@@ -15,11 +15,17 @@
 }
 
 .sbk-alert {
+  color: var(--sbk-text);
   display: flex;
   margin: 8px 0;
   padding: 12px 16px;
   border: 1px solid transparent;
   border-radius: 8px;
+}
+
+/* Alert text, markdown included, keeps Slack's brighter text colour. */
+.sbk-alert .sbk-mrkdwn {
+  color: inherit;
 }
 
 .sbk-alert__icon {

@@ -66,6 +66,8 @@
 }
 
 .sbk-container__title {
+  /* Slack draws container titles, charts, data tables and alerts in its brighter text colour. */
+  color: var(--sbk-text);
   font-weight: 700;
   line-height: 22.5px;
   overflow: hidden;
