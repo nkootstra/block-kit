@@ -228,8 +228,15 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
     const want = parse(name);
     if (builder.theme() !== want.theme) await builder.setTheme(want.theme);
     const size = want.mobile ? "mobile" : "desktop";
+    // The Builder disables its preview-size menu for App Home and modals, which it previews only at
+    // desktop width; a mobile name for one would capture the desktop preview.
+    const desktopOnly = { home: "App Home", modal: "modals" }[payload?.type];
+    if (want.mobile && desktopOnly)
+      throw new Error(`${name}: the Builder previews ${desktopOnly} only at desktop width`);
     if (builder.previewSize() !== size) await builder.setPreviewSize(size);
     await builder.load(payload);
+    if (builder.previewSize() !== size)
+      throw new Error(`${name}: the Builder's preview is ${builder.previewSize()}, not ${size}`);
     // The same payload again (another theme or width of it) can render the same HTML, so don't wait
     // for it to differ from the last capture.
     const same = JSON.stringify(payload) === previousPayload;
