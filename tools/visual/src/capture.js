@@ -18,7 +18,7 @@
 // `window.sbkCaptureWaiting` to the name and waits until `window.sbkCaptureReady = true`.
 // The same goes when a scripted click doesn't open the control: perform it with a real click and
 // set `sbkCaptureReady`.
-async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
+async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440 }) => {
   const win = window;
   const doc = document;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -45,6 +45,12 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
     return parsed;
   };
 
+  // A scripted press; React's menus listen for mousedown as well as click.
+  const press = (el) => {
+    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click"])
+      el.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: win }));
+  };
+
   const PREVIEWS = ".p-bkb_preview__message, .p-bkb_preview_modal, .p-bkb_app_home";
   const preview = () => doc.querySelector(PREVIEWS);
   const popoverOpen = () =>
@@ -52,70 +58,67 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
       (c) => c.getBoundingClientRect().height > 0,
     );
 
-  // The real Builder, as measured in it: its JSON editor is a CodeMirror, the surface switch only
-  // takes a payload valid for the target surface, and the theme and preview-size controls sit in
-  // its header. A test passes a stand-in.
+  // The real Builder, as measured in it (October 2026): its JSON editor is a CodeMirror; the surface
+  // and preview-size menus are comboboxes that only open on a key press (a scripted click is
+  // ignored), listing `[role=option]` items; changing the surface can raise an "Are you sure?"
+  // alertdialog; the theme toggle is labelled with the theme it switches to. A test passes a
+  // stand-in.
+  const pick = async (qa, label) => {
+    const box = doc.querySelector(`[data-qa="${qa}"]`);
+    if (!box) throw new Error(`the Builder has no ${qa}`);
+    box.focus();
+    box.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "ArrowDown",
+        keyCode: 40,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    await sleep(500);
+    const option = [...doc.querySelectorAll("[role=option]")].find((o) =>
+      label.test(o.textContent.trim()),
+    );
+    if (!option) throw new Error(`no ${label} option in ${qa}`);
+    press(option);
+    await sleep(600);
+    // Changing the surface asks before dropping blocks the new surface doesn't support.
+    const sure = [
+      ...doc.querySelectorAll('[role="alertdialog"] button, [role="dialog"] button'),
+    ].find((b) => b.textContent.trim() === "I’m Sure" || b.textContent.trim() === "I'm Sure");
+    if (sure) {
+      press(sure);
+      await sleep(600);
+    }
+    return box.textContent.trim();
+  };
   const builder = adapter ?? {
     async load(payload) {
       const cm = doc.querySelector(".CodeMirror").CodeMirror;
       const kind =
         payload.type === "modal" ? "modal" : payload.type === "home" ? "home" : "message";
       const LABEL = { message: /^Message/, modal: /^Modal/, home: /^App Home/ };
-      const NEUTRAL = {
-        message: { blocks: [{ type: "section", text: { type: "mrkdwn", text: "switch" } }] },
-        modal: {
-          type: "modal",
-          title: { type: "plain_text", text: "switch" },
-          blocks: [{ type: "section", text: { type: "mrkdwn", text: "switch" } }],
-        },
-        home: {
-          type: "home",
-          blocks: [{ type: "section", text: { type: "mrkdwn", text: "switch" } }],
-        },
-      };
-      const button = () => doc.querySelector('[data-qa="bkb-surface-select-button"]');
-      if (!LABEL[kind].test(button().textContent.trim())) {
-        cm.setValue(JSON.stringify(NEUTRAL[kind], null, 2));
-        await sleep(1200);
-        for (let i = 0; i < 3 && !LABEL[kind].test(button().textContent.trim()); i++) {
-          button().click();
-          await sleep(600);
-          [...doc.querySelectorAll("[role=option]")]
-            .find((o) => LABEL[kind].test(o.textContent.trim()))
-            ?.click();
-          await sleep(900);
-        }
-        if (!LABEL[kind].test(button().textContent.trim()))
-          throw new Error(`couldn't switch the Builder to ${kind}`);
+      const surface = () =>
+        doc.querySelector('[data-qa="bkb-surface-select-button"]').textContent.trim();
+      if (!LABEL[kind].test(surface())) {
+        await pick("bkb-surface-select-button", LABEL[kind]);
+        if (!LABEL[kind].test(surface())) throw new Error(`couldn't switch the Builder to ${kind}`);
       }
       cm.setValue(JSON.stringify(payload, null, 2));
     },
-    theme: () =>
-      /sk-client-theme--dark/.test(`${doc.documentElement.className} ${doc.body.className}`)
-        ? "dark"
-        : "light",
+    // The toggle reads "Switch to dark mode" while the Builder is light.
+    theme: () => (doc.querySelector('[aria-label="Switch to light mode"]') ? "dark" : "light"),
     async setTheme(theme) {
       doc.querySelector(`[aria-label="Switch to ${theme} mode"]`)?.click();
       await sleep(800);
     },
-    // The size menu next to the surface menu reads "Desktop" or "Mobile".
     previewSize: () =>
-      [...doc.querySelectorAll("button, [role=button]")].some(
-        (b) => b.textContent.trim() === "Mobile",
-      )
+      doc.querySelector('[data-qa="bkb-preview-select-button"]')?.textContent.trim() === "Mobile"
         ? "mobile"
         : "desktop",
     async setPreviewSize(size) {
-      const label = size === "mobile" ? "Mobile" : "Desktop";
-      const other = size === "mobile" ? "Desktop" : "Mobile";
-      [...doc.querySelectorAll("button, [role=button]")]
-        .find((b) => b.textContent.trim() === other)
-        ?.click();
-      await sleep(500);
-      [...doc.querySelectorAll("[role=option], [role=menuitem], button")]
-        .find((o) => o.textContent.trim() === label)
-        ?.click();
-      await sleep(800);
+      await pick("bkb-preview-select-button", size === "mobile" ? /^Mobile$/ : /^Desktop$/);
+      await sleep(400);
     },
   };
 
@@ -123,9 +126,15 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
   const settled = async (before) => {
     let html = "";
     let since = 0;
-    const t0 = performance.now();
+    let t0 = performance.now();
     while (performance.now() - t0 < 60_000) {
       await sleep(Math.min(250, settle || 1));
+      // macOS pauses a hidden tab; wait it out rather than time out.
+      if (doc.visibilityState === "hidden") {
+        t0 = performance.now();
+        since = 0;
+        continue;
+      }
       const root = preview();
       const now = root ? root.innerHTML : "";
       if (!root || now === before || root.innerText.includes("switch")) continue;
@@ -143,11 +152,6 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
     throw new Error("the preview never settled");
   };
 
-  // A scripted press; React's menus listen for mousedown as well as click.
-  const press = (el) => {
-    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click"])
-      el.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: win }));
-  };
   const OPENERS = {
     open: '.c-select_input, [role="combobox"], .c-date_picker_input, button[aria-label="More options"]',
     confirm: "button.c-button, .c-button",
@@ -168,15 +172,26 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
     }
   };
 
+  // References are captured at a 1440px viewport, where the message preview is 512px wide.
+  if (!adapter && viewport && win.innerWidth !== viewport)
+    throw new Error(
+      `resize the window so the viewport is ${viewport}px wide (it's ${win.innerWidth})`,
+    );
+
   const results = {};
   let previous = "";
+  let previousPayload;
   for (const { name, payload } of items) {
     const want = parse(name);
     if (builder.theme() !== want.theme) await builder.setTheme(want.theme);
     const size = want.mobile ? "mobile" : "desktop";
     if (builder.previewSize() !== size) await builder.setPreviewSize(size);
     await builder.load(payload);
-    if (!adapter) await settled(previous);
+    // The same payload again (another theme or width of it) can render the same HTML, so don't wait
+    // for it to differ from the last capture.
+    const same = JSON.stringify(payload) === previousPayload;
+    if (!adapter) await settled(same ? undefined : previous);
+    previousPayload = JSON.stringify(payload);
 
     if (want.interaction && OPENERS[want.interaction]) {
       const opener = preview()?.querySelector(OPENERS[want.interaction]);
@@ -199,6 +214,11 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000 }) => {
     previous = preview()?.innerHTML ?? "";
 
     if (want.interaction) {
+      // Slack's confirm dialog ignores Escape; close it from its own Cancel (or Close) button.
+      const dismiss = [...doc.querySelectorAll(".ReactModalPortal button")].find((b) =>
+        /^(Cancel|Close)$/.test(b.textContent.trim() || b.getAttribute("aria-label") || ""),
+      );
+      if (dismiss) press(dismiss);
       doc.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
       doc.activeElement?.dispatchEvent?.(
         new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),

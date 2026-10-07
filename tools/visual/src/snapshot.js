@@ -341,7 +341,9 @@ async (win = window) => {
   for (const content of doc.querySelectorAll(".ReactModalPortal .ReactModal__Content")) {
     if (content.getBoundingClientRect().height === 0) continue;
     const overlay = content.closest(".ReactModal__Overlay");
-    const dialog = content.querySelector('[role="dialog"], [role="alertdialog"]');
+    // Slack's confirm dialog carries the role on the modal content itself.
+    const DIALOG = '[role="dialog"], [role="alertdialog"]';
+    const dialog = content.matches(DIALOG) ? content : content.querySelector(DIALOG);
     const kind = /popover/.test(overlay?.className ?? "") || !dialog ? "popover" : "dialog";
     const src = kind === "dialog" ? dialog : visual(content);
     const r = src.getBoundingClientRect();
@@ -430,16 +432,32 @@ async (win = window) => {
     devicePixelRatio: win.devicePixelRatio,
     rects,
     motion,
-    // The Builder's theme: a dark reference is compared with our dark theme.
-    theme: /sk-client-theme--dark/.test(`${doc.documentElement.className} ${doc.body.className}`)
-      ? "dark"
-      : "light",
+    // The Builder's theme: a dark reference is compared with our dark theme. The toggle's label names
+    // the theme it switches to; the html class can be missing once the toggle has been used.
+    theme:
+      doc.querySelector('[aria-label="Switch to light mode"]') ||
+      /sk-client-theme--dark/.test(`${doc.documentElement.className} ${doc.body.className}`)
+        ? "dark"
+        : "light",
     layers: layers.map(({ el, ...box }) => box),
   };
 
-  const bodyBg = win.getComputedStyle(
-    doc.querySelector(".p-bkb_preview__content") || doc.body,
-  ).backgroundColor;
+  // The page behind the message: the first background around the preview. In the Builder's dark
+  // theme the preview is transparent and the message card around it is rgb(26, 29, 33); in light
+  // the card is white.
+  const TRANSPARENT = "rgba(0, 0, 0, 0)";
+  const backgroundOf = (el) => {
+    for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
+      const bg = win.getComputedStyle(node).backgroundColor;
+      if (bg !== TRANSPARENT) return bg;
+    }
+    return TRANSPARENT;
+  };
+  const content = doc.querySelector(".p-bkb_preview__content");
+  const bodyBg =
+    content && win.getComputedStyle(content).backgroundColor !== TRANSPARENT
+      ? win.getComputedStyle(content).backgroundColor
+      : backgroundOf(root);
   // Popovers sit in #sbk-reference at their offset from the preview; the page is padded so one
   // that stuck out to the left of (or above) the preview still lands on the page.
   const popovers = layers.filter((l) => l.kind === "popover");
