@@ -120,6 +120,8 @@ const REAL_BUILDER = `<!doctype html><html><body>
       box.textContent = label;
       window.mobile = label === "Mobile";
       window.log.push("size " + label);
+      // The preview re-renders at the new width.
+      if (cm.CodeMirror.value) cm.CodeMirror.setValue(cm.CodeMirror.value);
     });
     menu("bkb-surface-select-button", ["Message Preview", "Modal Preview", "App Home Preview"], (label, box) => {
       const dialog = document.createElement("div");
@@ -239,9 +241,26 @@ describe("capture.js against the real Builder's controls", () => {
       "size Mobile",
       "snap p-bkb_preview__message 400px",
       "theme light",
-      "size Desktop",
       "surface Modal Preview",
       "snap p-bkb_preview_modal 512px",
+    ]);
+  });
+
+  it("captures a mobile message right after a modal, whose surface disables the size menu", async () => {
+    const { error, log } = await runReal([
+      {
+        name: "extra/modal/alert",
+        payload: { type: "modal", title: { type: "plain_text", text: "Hi" }, blocks: [] },
+      },
+      {
+        name: "catalog/section/plain-text@mobile",
+        payload: { blocks: [{ type: "divider" }] },
+      },
+    ]);
+    expect(error).toBeUndefined();
+    expect(log.filter((l) => l.startsWith("snap"))).toEqual([
+      "snap p-bkb_preview_modal 512px",
+      "snap p-bkb_preview__message 400px",
     ]);
   });
 
@@ -282,8 +301,8 @@ describe("capture.js", () => {
       'load {"blocks":[1]}',
       "snap closed light desktop",
       "theme dark",
-      "size mobile",
       'load {"blocks":[1]}',
+      "size mobile",
       "snap open dark mobile",
     ]);
   });
