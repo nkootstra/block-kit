@@ -2982,6 +2982,106 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured in Block Kit Builder (contexts/{datepicker,timepicker}/{actions,home,modal-input}):
+  // Slack draws date and time fields in its small size (28px, 13px text) in messages, and in its
+  // medium size (36px, 15px text) in modals and on App Home.
+  describe("date and time fields by surface", () => {
+    const date = { type: "datepicker", action_id: "d", initial_date: "1990-04-28" };
+    const time = { type: "timepicker", action_id: "t", initial_time: "13:37" };
+    const onHome = (element: object): Mount => ({
+      view: { type: "home", blocks: [{ type: "actions", elements: [element] }] },
+    });
+    const inModal = (element: object): Mount => ({
+      view: {
+        type: "modal",
+        title: plain("Picker"),
+        submit: plain("Submit"),
+        blocks: [{ type: "input", label: plain("Label"), element }],
+      },
+    });
+    const inMessage = (element: object): Mount => ({
+      blocks: [{ type: "actions", elements: [element] }],
+    });
+
+    /** The field's box, its text size, and where its text and right-hand control sit in it. */
+    const dateField = (page: Page) =>
+      page.evaluate(() => {
+        const field = document.querySelector(".sbk-datepicker__input")!;
+        const f = field.getBoundingClientRect();
+        const toggle = document.querySelector(".sbk-datepicker__toggle")!.getBoundingClientRect();
+        const c = getComputedStyle(field);
+        return {
+          height: f.height,
+          width: f.width,
+          font: c.fontSize,
+          textLeft: parseFloat(c.paddingLeft),
+          toggle: [toggle.width, toggle.height],
+        };
+      });
+    const timeField = (page: Page) =>
+      page.evaluate(() => {
+        const field = document.querySelector(".sbk-timepicker__control")!;
+        const f = field.getBoundingClientRect();
+        const text = document
+          .querySelector(".sbk-timepicker__content-text")!
+          .getBoundingClientRect();
+        const chevron = document.querySelector(".sbk-timepicker__chevron")!.getBoundingClientRect();
+        return {
+          height: f.height,
+          width: f.width,
+          font: getComputedStyle(field).fontSize,
+          textX: Math.round(text.left - f.left),
+          chevronRight: Math.round(f.right - chevron.right),
+        };
+      });
+
+    it("keeps the small date field in a message", async () => {
+      const page = await harness.open(inMessage(date));
+      const f = await dateField(page);
+      expect([f.height, f.font, f.toggle]).toEqual([28, "13px", [28, 28]]);
+    });
+
+    it("draws the medium date field on App Home", async () => {
+      const page = await harness.open(onHome(date));
+      expect(await dateField(page)).toEqual({
+        height: 36,
+        width: 227.5,
+        font: "15px",
+        textLeft: 32,
+        toggle: [36, 36],
+      });
+    });
+
+    it("draws the medium date field in a modal's input", async () => {
+      const page = await harness.open(inModal(date));
+      const f = await dateField(page);
+      expect([f.height, f.font, f.toggle]).toEqual([36, "15px", [36, 36]]);
+    });
+
+    it("keeps the small time field in a message", async () => {
+      const page = await harness.open(inMessage(time));
+      const f = await timeField(page);
+      expect([f.height, f.font]).toEqual([28, "13px"]);
+    });
+
+    it("draws the medium time field on App Home", async () => {
+      const page = await harness.open(onHome(time));
+      expect(await timeField(page)).toEqual({
+        height: 36,
+        width: 190,
+        font: "15px",
+        textX: 33,
+        chevronRight: 12,
+      });
+    });
+
+    it("draws the medium time field in a modal's input", async () => {
+      const page = await harness.open(inModal(time));
+      const f = await timeField(page);
+      expect([f.height, f.font]).toEqual([36, "15px"]);
+    });
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,
@@ -3226,6 +3326,32 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         ]);
         expect(strokes).toEqual([
           `${theme === "dark" ? "rgb(26, 29, 33)" : "rgb(255, 255, 255)"} 2px`,
+        ]);
+      });
+    }
+  });
+
+  // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
+  // one (512px; blocks 432px): what changes when a message is narrow.
+  describe("narrow messages", () => {
+    const DESKTOP = { width: 800, height: 900 };
+    const PHONE = { width: 390, height: 844 };
+
+    // The video box is min(360px, block - 24px) wide at Slack's 360:283 shape: 360 x 283 on
+    // desktop, 296 x 233 in a 320px block.
+    for (const [label, viewport] of [
+      ["desktop", DESKTOP],
+      ["a phone", PHONE],
+    ] as const) {
+      it(`sizes a video's box like Slack on ${label}`, async () => {
+        const page = await harness.open(await fixture("extra/media/video"), { viewport });
+        const [block, frame] = await Promise.all(
+          [".sbk-block", ".sbk-video__frame"].map((s) => page.locator(s).first().boundingBox()),
+        );
+        const width = Math.min(360, block!.width - 24);
+        expect([Math.round(frame!.width * 10) / 10, Math.round(frame!.height * 10) / 10]).toEqual([
+          Math.round(width * 10) / 10,
+          Math.round(((width * 283) / 360) * 10) / 10,
         ]);
       });
     }
