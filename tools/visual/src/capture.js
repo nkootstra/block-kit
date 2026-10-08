@@ -18,7 +18,19 @@
 // `window.sbkCaptureWaiting` to the name and waits until `window.sbkCaptureReady = true`.
 // The same goes when a scripted click doesn't open the control: perform it with a real click and
 // set `sbkCaptureReady`.
-async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440 }) => {
+//
+// `substitute` maps placeholder strings in the payloads to the values the Builder should see, e.g. a
+// fixture's placeholder Slack file URL to a real file's link kept in a git-ignored local file
+// (tools/visual/README.md). Only the Builder sees the real value; import.ts redacts it again.
+async ({
+  items,
+  snap,
+  adapter,
+  settle = 1000,
+  timeout = 120_000,
+  viewport = 1440,
+  substitute = {},
+}) => {
   const win = window;
   const doc = document;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -221,6 +233,16 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
     }
   }
 
+  // Every occurrence of each placeholder, in any string in the payload.
+  const swap = (payload) =>
+    JSON.parse(
+      Object.entries(substitute).reduce(
+        (json, [from, to]) =>
+          json.split(JSON.stringify(from).slice(1, -1)).join(JSON.stringify(to).slice(1, -1)),
+        JSON.stringify(payload),
+      ),
+    );
+
   const results = {};
   let previous = "";
   let previousPayload;
@@ -235,7 +257,7 @@ async ({ items, snap, adapter, settle = 1000, timeout = 120_000, viewport = 1440
       throw new Error(`${name}: the Builder previews ${desktopOnly} only at desktop width`);
     // Load first: it switches the surface, and App Home and modals disable the size menu, so a
     // mobile message right after a modal couldn't set its width the other way round.
-    await builder.load(payload);
+    await builder.load(swap(payload));
     if (builder.previewSize() !== size) await builder.setPreviewSize(size);
     if (builder.previewSize() !== size)
       throw new Error(`${name}: the Builder's preview is ${builder.previewSize()}, not ${size}`);

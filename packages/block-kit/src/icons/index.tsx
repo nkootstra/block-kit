@@ -364,3 +364,31 @@ export function EllipsisVerticalIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+/** Slack's `table` glyph, from a chart's "View as table" menu item. */
+export function TableIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        d="M15.5 4h-11A1.5 1.5 0 0 0 3 5.5V7h14V5.5A1.5 1.5 0 0 0 15.5 4M17 8.5H3v3h14zm-14 6V13h14v1.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 14.5m1.5-12a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3v-9a3 3 0 0 0-3-3z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+/** Slack's `image` glyph, from a chart's "Copy as image" menu item. */
+export function ImageIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        d="M16 3.5H4A1.5 1.5 0 0 0 2.5 5v7.287l1.664-1.536a1.25 1.25 0 0 1 1.662-.031l2.635 2.259 4.146-4.147a1.25 1.25 0 0 1 1.79.023l3.103 3.267V5A1.5 1.5 0 0 0 16 3.5M17.5 15c0-.45-.173-.882-.483-1.208l-3.53-3.718-4.13 4.129a1.25 1.25 0 0 1-1.697.065l-2.642-2.264-2.024 1.869c-.315.29-.494.699-.494 1.127A1.5 1.5 0 0 0 4 16.5h12a1.5 1.5 0 0 0 1.5-1.5M1 15a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H4a3 3 0 0 0-3 3zm7-7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}

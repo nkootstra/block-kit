@@ -1539,6 +1539,691 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // A chart's "More actions" menu opens in the page's popover layer, like the overflow menu: the
+  // card clips its content, so a menu inside it was cut off and scrolled the card sideways.
+  describe("chart actions menu", () => {
+    const DESKTOP = { width: 800, height: 700 };
+    const PHONE = { width: 390, height: 844 };
+    // Room to the right of the chart for the menu, as in the Builder's 1440px window.
+    const WIDE = { width: 1440, height: 846 };
+    const chart = async (theme: "light" | "dark"): Promise<Mount> => ({
+      ...(await fixture("catalog/data-visualization/bar-single-series")),
+      theme,
+    });
+    const TRIGGER = ".sbk-hover-actions--chart .sbk-hover-actions__button";
+    const MENU = ".sbk-hover-actions__menu";
+    const card = (page: Page) =>
+      page.evaluate(() => {
+        const el = document.querySelector<HTMLElement>(".sbk-dataviz")!;
+        return { scrollLeft: el.scrollLeft, scrollTop: el.scrollTop, width: el.offsetWidth };
+      });
+    const focusedClass = (page: Page) =>
+      page.evaluate(() => document.activeElement?.className ?? "");
+
+    // Measured in Block Kit Builder (Desktop, both themes): Slack's "More actions" menu is 300px
+    // wide and opens beside its button, top edges aligned; a chart's to the right, flush with the
+    // button, an image's to the left with 4px between them.
+    it("opens a chart's menu 300px wide, right of the button, top edges aligned", async () => {
+      const page = await harness.open(await chart("light"), { viewport: WIDE });
+      await page.hover(".sbk-dataviz");
+      await page.click(TRIGGER);
+      await settle(page);
+      const button = (await page.locator(TRIGGER).boundingBox())!;
+      const menu = (await page.locator(MENU).boundingBox())!;
+      expect({
+        width: menu.width,
+        left: Math.round(menu.x - (button.x + button.width)),
+        top: Math.round(menu.y - button.y),
+      }).toEqual({ width: 300, left: 0, top: 0 });
+    });
+
+    it("opens an image's menu 300px wide, 4px left of the button, top edges aligned", async () => {
+      const image = ".sbk-hover-actions--image";
+      // Served inline at the Builder's size: the harness answers every network request 404.
+      const photo = `data:image/svg+xml,${encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#888"/></svg>',
+      )}`;
+      const page = await harness.open(
+        { blocks: [{ type: "image", image_url: photo, alt_text: "A grey square" }] },
+        { viewport: WIDE },
+      );
+      await page.hover(".sbk-hover-actions-host");
+      await page.click(`${image} button.sbk-hover-actions__button`);
+      await settle(page);
+      const button = (await page
+        .locator(`${image} button.sbk-hover-actions__button`)
+        .boundingBox())!;
+      const menu = (await page.locator(MENU).boundingBox())!;
+      expect({
+        width: menu.width,
+        right: Math.round(button.x - (menu.x + menu.width)),
+        top: Math.round(menu.y - button.y),
+      }).toEqual({ width: 300, right: 4, top: 0 });
+    });
+
+    for (const theme of ["light", "dark"] as const) {
+      for (const [label, viewport] of [
+        ["desktop", DESKTOP],
+        ["a phone", PHONE],
+      ] as const) {
+        describe(`${theme}, ${label}`, () => {
+          it("opens the menu outside the card, inside the window, without moving the card", async () => {
+            const page = await harness.open(await chart(theme), { viewport });
+            const before = await card(page);
+            await page.hover(".sbk-dataviz");
+            await page.click(TRIGGER);
+            await page.keyboard.press("ArrowDown");
+            await page.keyboard.press("ArrowDown");
+            await settle(page);
+            const box = (await page.locator(MENU).boundingBox())!;
+            expect({
+              inCard: await page.evaluate(
+                (s) => Boolean(document.querySelector(`.sbk-dataviz ${s}`)),
+                MENU,
+              ),
+              card: await card(page),
+              inWindow:
+                box.x >= 0 &&
+                box.y >= 0 &&
+                box.x + box.width <= viewport.width &&
+                box.y + box.height <= viewport.height,
+            }).toEqual({ inCard: false, card: before, inWindow: true });
+          });
+
+          it("moves focus into the menu, steps with the arrows and returns it on Escape", async () => {
+            const page = await harness.open(await chart(theme), { viewport });
+            await page.focus(TRIGGER);
+            await page.keyboard.press("Enter");
+            await settle(page);
+            expect(await page.evaluate(() => document.activeElement?.getAttribute("role"))).toBe(
+              "menu",
+            );
+            await page.keyboard.press("ArrowDown");
+            const first = await page.locator(`${MENU} [data-active]`).textContent();
+            await page.keyboard.press("ArrowDown");
+            const second = await page.locator(`${MENU} [data-active]`).textContent();
+            await page.keyboard.press("Escape");
+            expect({
+              first,
+              second,
+              open: await page.locator(MENU).count(),
+              focus: await focusedClass(page),
+            }).toEqual({
+              first: "View as table",
+              second: "Download chart data",
+              open: 0,
+              focus: "sbk-hover-actions__button",
+            });
+          });
+
+          it("closes on a click outside", async () => {
+            const page = await harness.open(await chart(theme), { viewport });
+            await page.hover(".sbk-dataviz");
+            await page.click(TRIGGER);
+            await settle(page);
+            await page.mouse.click(2, viewport.height - 2);
+            expect(await page.locator(MENU).count()).toBe(0);
+          });
+        });
+      }
+    }
+  });
+
+  // Measured in Block Kit Builder (light and dark). A chart's "More actions" menu lists "View as
+  // table" and "Download chart data", each with a 15px icon, then a separator and "Copy as image",
+  // which the Builder shows disabled. "View as table" opens the data in a modal, as a `table` block;
+  // "Download chart data" saves it as a TSV. An image's menu lists "Copy link" and "Hide image",
+  // without icons. None of them reaches the app (Slack sends no block_actions for them), and none
+  // shows a toast.
+  describe("chart and image menu items", () => {
+    const WIDE = { width: 1440, height: 846 };
+    const CHART_TRIGGER = ".sbk-hover-actions--chart .sbk-hover-actions__button";
+    const IMAGE_TRIGGER = ".sbk-hover-actions--image button.sbk-hover-actions__button";
+    const MENU = ".sbk-hover-actions__menu";
+    const DIALOG = ".sbk-chart-table";
+    const PHOTO = `data:image/svg+xml,${encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#888"/></svg>',
+    )}`;
+    const image: Mount = {
+      blocks: [{ type: "image", image_url: PHOTO, alt_text: "A grey square" }],
+    };
+    const chart = async (name = "bar-multi-series", theme: "light" | "dark" = "light") => ({
+      ...(await fixture(`catalog/data-visualization/${name}`)),
+      theme,
+    });
+    const openMenu = async (page: Page, trigger: string) => {
+      await page.focus(trigger);
+      await page.keyboard.press("Enter");
+      await settle(page);
+    };
+    const choose = async (page: Page, label: string) =>
+      page.locator(`${MENU} [role="menuitem"]`, { hasText: label }).click();
+    const focusedLabel = (page: Page) =>
+      page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? null);
+    /** Replaces the clipboard with a recorder: `window.copied` collects what each write receives. */
+    const recordClipboard = (page: Page) =>
+      page.evaluate(() => {
+        const w = window as unknown as { copied: string[] };
+        w.copied = [];
+        const clipboard = {
+          writeText: async (text: string) => void w.copied.push(text),
+          write: async () => void w.copied.push("(image)"),
+        };
+        Object.defineProperty(navigator, "clipboard", { value: clipboard, configurable: true });
+      });
+    const copied = (page: Page) =>
+      page.evaluate(() => (window as unknown as { copied: string[] }).copied);
+
+    it("lists Slack's chart actions, with a separator before a disabled Copy as image", async () => {
+      const page = await harness.open(await chart());
+      await openMenu(page, CHART_TRIGGER);
+      expect(
+        await page.$$eval(`${MENU} > *`, (els) =>
+          els.map((el) =>
+            el.matches("hr")
+              ? "---"
+              : `${el.textContent}${el.querySelector("svg") ? " (icon)" : ""}${
+                  el.getAttribute("aria-disabled") === "true" ? " (disabled)" : ""
+                }`,
+          ),
+        ),
+      ).toEqual([
+        "View as table (icon)",
+        "Download chart data (icon)",
+        "---",
+        "Copy as image (icon) (disabled)",
+      ]);
+    });
+
+    // Each row: the 15px icon 24px in and 6.5px down (Slack's 20px icon box plus 8px), the label
+    // 52px in and raised 1px, as in the overflow menu.
+    it("places each item's icon and label as Slack does", async () => {
+      const page = await harness.open(await chart(), { viewport: WIDE });
+      await openMenu(page, CHART_TRIGGER);
+      const rows = await page.$$eval(`${MENU} [role="menuitem"]`, (els) =>
+        els.map((el) => {
+          const row = el.getBoundingClientRect();
+          const icon = el.querySelector("svg")!.getBoundingClientRect();
+          const label = el.querySelector(".sbk-hover-actions__label")!.getBoundingClientRect();
+          return [
+            icon.x - row.x,
+            icon.y - row.y,
+            icon.width,
+            icon.height,
+            label.x - row.x,
+            label.y - row.y,
+          ];
+        }),
+      );
+      expect(rows).toEqual(Array(3).fill([24, 6.5, 15, 15, 52, -1]));
+    });
+
+    for (const [theme, colour] of [
+      ["light", "rgb(94, 93, 96)"],
+      ["dark", "rgb(154, 155, 158)"],
+    ] as const) {
+      it(`greys out Copy as image in ${theme} and leaves it unhighlighted`, async () => {
+        const page = await harness.open(await chart("bar-multi-series", theme));
+        await openMenu(page, CHART_TRIGGER);
+        for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowDown");
+        const item = page.locator(`${MENU} [role="menuitem"]`, { hasText: "Copy as image" });
+        expect(
+          await item.evaluate((el) => ({
+            active: el.hasAttribute("data-active"),
+            color: getComputedStyle(el).color,
+            background: getComputedStyle(el).backgroundColor,
+          })),
+        ).toEqual({ active: true, color: colour, background: "rgba(0, 0, 0, 0)" });
+      });
+    }
+
+    it("does nothing when Copy as image is chosen", async () => {
+      const page = await harness.open(await chart());
+      await recordClipboard(page);
+      await openMenu(page, CHART_TRIGGER);
+      let downloaded = false;
+      page.on("download", () => (downloaded = true));
+      // Playwright waits for an aria-disabled element to become enabled; click it regardless.
+      await page
+        .locator(`${MENU} [role="menuitem"]`, { hasText: "Copy as image" })
+        .click({ force: true });
+      await page.keyboard.press("Enter");
+      await settle(page);
+      expect({
+        downloaded,
+        copied: await copied(page),
+        open: await page.locator(MENU).count(),
+      }).toEqual({ downloaded: false, copied: [], open: 1 });
+    });
+
+    it("opens the chart's data as a table in a modal, one row per series", async () => {
+      const page = await harness.open(await chart());
+      await openMenu(page, CHART_TRIGGER);
+      await choose(page, "View as table");
+      const dialog = page.locator(DIALOG);
+      expect({
+        role: await dialog.getAttribute("role"),
+        title: await dialog.locator("h1").textContent(),
+        rows: await dialog
+          .locator("tr")
+          .evaluateAll((rows) =>
+            rows.map((row) => [...row.children].map((cell) => cell.textContent)),
+          ),
+        actions: await dialog.locator(".sbk-hover-actions").count(),
+        chart: await page.locator(".sbk-dataviz svg[role='img']").count(),
+      }).toEqual({
+        role: "dialog",
+        title: "Messages sent by platform",
+        rows: [
+          ["Series", "Mon", "Tue", "Wed", "Thu", "Fri"],
+          ["Desktop", "1500", "1400", "1700", "1600", "1280"],
+          ["Mobile", "800", "750", "920", "880", "700"],
+        ],
+        actions: 0,
+        chart: 1,
+      });
+    });
+
+    it("heads a pie's table Label and Value", async () => {
+      const page = await harness.open(await chart("pie-multi-segment"));
+      await openMenu(page, CHART_TRIGGER);
+      await choose(page, "View as table");
+      expect(
+        await page
+          .locator(`${DIALOG} tr`)
+          .evaluateAll((rows) =>
+            rows.map((row) => [...row.children].map((cell) => cell.textContent)),
+          ),
+      ).toEqual([
+        ["Label", "Value"],
+        ["Free", "4200"],
+        ["Pro", "2300"],
+        ["Business+", "1100"],
+        ["Enterprise", "480"],
+      ]);
+    });
+
+    // Measured in a 1440 x 846 window: the modal fills it but for 28px on each side (at most 1280px
+    // wide), its title 28px in and 20px down, the 36px close button 20px from the top and right,
+    // and the table 28px in, straight under the 70px header.
+    it("lays the table modal out as Slack does", async () => {
+      const page = await harness.open(await chart(), { viewport: WIDE });
+      await openMenu(page, CHART_TRIGGER);
+      await choose(page, "View as table");
+      const box = async (s: string) => {
+        const b = (await page.locator(s).first().boundingBox())!;
+        return [b.x, b.y, b.width, b.height].map(Math.round);
+      };
+      expect({
+        dialog: await box(DIALOG),
+        title: (await box(`${DIALOG} h1`)).slice(0, 2),
+        close: await box(`${DIALOG} [aria-label="Close"]`),
+        table: (await box(`${DIALOG} table`)).slice(0, 3),
+      }).toEqual({
+        dialog: [80, 28, 1280, 790],
+        title: [108, 48],
+        close: [1304, 48, 36, 36],
+        table: [108, 98, 1224],
+      });
+    });
+
+    for (const [theme, want] of [
+      [
+        "light",
+        {
+          background: "rgb(255, 255, 255)",
+          title: "rgb(29, 28, 29)",
+          close: "rgb(69, 68, 71)",
+          cell: "rgb(29, 28, 29)",
+          border: "rgba(94, 93, 96, 0.13)",
+          dim: "rgba(0, 0, 0, 0.6)",
+        },
+      ],
+      [
+        "dark",
+        {
+          background: "rgb(26, 29, 33)",
+          title: "rgb(209, 210, 211)",
+          close: "rgb(185, 186, 189)",
+          cell: "rgb(209, 210, 211)",
+          border: "rgba(121, 124, 129, 0.3)",
+          dim: "rgba(0, 0, 0, 0.6)",
+        },
+      ],
+    ] as const) {
+      it(`colours the table modal as Slack does in ${theme}`, async () => {
+        const page = await harness.open(await chart("bar-multi-series", theme));
+        await openMenu(page, CHART_TRIGGER);
+        await choose(page, "View as table");
+        await settle(page);
+        expect(
+          await page.evaluate((s) => {
+            const dialog = document.querySelector(s)!;
+            const c = (el: Element | null, p = "color") =>
+              getComputedStyle(el!).getPropertyValue(p);
+            return {
+              background: c(dialog, "background-color"),
+              title: c(dialog.querySelector("h1")),
+              close: c(dialog.querySelector('[aria-label="Close"]')),
+              cell: c(dialog.querySelector("td")),
+              border: c(dialog.querySelector("td"), "border-right-color"),
+              dim: getComputedStyle(dialog.parentElement!, "::before").backgroundColor,
+            };
+          }, DIALOG),
+        ).toEqual(want);
+      });
+    }
+
+    it("closes the table modal with Escape, the close button or the overlay", async () => {
+      const page = await harness.open(await chart(), { viewport: WIDE });
+      const results: (number | string | null)[] = [];
+      for (const close of ["Escape", "button", "overlay"] as const) {
+        await openMenu(page, CHART_TRIGGER);
+        await choose(page, "View as table");
+        await settle(page);
+        if (close === "Escape") await page.keyboard.press("Escape");
+        else if (close === "button") await page.click(`${DIALOG} [aria-label="Close"]`);
+        else await page.mouse.click(10, 400);
+        results.push(await page.locator(DIALOG).count(), await focusedLabel(page));
+      }
+      // Slack leaves focus on the page; this returns it to the button that opened the menu.
+      expect(results).toEqual([0, "More actions", 0, "More actions", 0, "More actions"]);
+    });
+
+    it("downloads the chart's data as a TSV named after its title", async () => {
+      const page = await harness.open(await chart());
+      await openMenu(page, CHART_TRIGGER);
+      const [download] = await Promise.all([
+        page.waitForEvent("download"),
+        choose(page, "Download chart data"),
+      ]);
+      expect({
+        name: download.suggestedFilename(),
+        tsv: await Bun.file(await download.path()).text(),
+      }).toEqual({
+        name: "messages-sent-by-platform.tsv",
+        tsv: "Series\tMon\tTue\tWed\tThu\tFri\nDesktop\t1500\t1400\t1700\t1600\t1280\nMobile\t800\t750\t920\t880\t700",
+      });
+    });
+
+    it("slugs the file name as Slack does", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "data_visualization",
+            title: "Q3: Revenue (USD) & more!  Ünïcode_x 2024",
+            chart: {
+              type: "bar",
+              series: [
+                {
+                  name: "A",
+                  data: [
+                    { label: "Mon", value: 1.5 },
+                    { label: "Tue", value: -2 },
+                  ],
+                },
+              ],
+              axis_config: { categories: ["Mon", "Tue"] },
+            },
+          },
+        ],
+      });
+      await openMenu(page, CHART_TRIGGER);
+      const [download] = await Promise.all([
+        page.waitForEvent("download"),
+        choose(page, "Download chart data"),
+      ]);
+      expect({
+        name: download.suggestedFilename(),
+        tsv: await Bun.file(await download.path()).text(),
+      }).toEqual({
+        name: "q3-revenue-usd-more-unicode_x-2024.tsv",
+        tsv: "Series\tMon\tTue\nA\t1.5\t-2",
+      });
+    });
+
+    it("lists Slack's image actions, without icons", async () => {
+      const page = await harness.open(image, { viewport: WIDE });
+      await openMenu(page, IMAGE_TRIGGER);
+      expect(
+        await page.$$eval(`${MENU} [role="menuitem"]`, (els) =>
+          els.map((el) => `${el.textContent}${el.querySelector("svg") ? " (icon)" : ""}`),
+        ),
+      ).toEqual(["Copy link", "Hide image"]);
+    });
+
+    it("copies the image's link and returns focus to the button", async () => {
+      const page = await harness.open(image, { viewport: WIDE });
+      await recordClipboard(page);
+      await openMenu(page, IMAGE_TRIGGER);
+      await choose(page, "Copy link");
+      await page.waitForFunction(
+        () => (window as unknown as { copied: unknown[] }).copied.length > 0,
+      );
+      expect({ copied: await copied(page), focus: await focusedLabel(page) }).toEqual({
+        copied: [PHOTO],
+        focus: "More actions",
+      });
+    });
+
+    it("hides the image as its caret does, leaving focus on the caret", async () => {
+      const page = await harness.open(image, { viewport: WIDE });
+      await openMenu(page, IMAGE_TRIGGER);
+      await choose(page, "Hide image");
+      expect({
+        frame: await page.locator(".sbk-image__frame").count(),
+        expanded: await page.locator(".sbk-image__toggle").getAttribute("aria-expanded"),
+        focus: await page.evaluate(() => document.activeElement?.className),
+      }).toEqual({ frame: 0, expanded: "false", focus: "sbk-image__toggle" });
+    });
+  });
+
+  // Measured in Block Kit Builder (Desktop, both themes), whose charts are ECharts. Over a bar,
+  // line or area plot the pointer picks a category (the bar's band, or the nearest point): a
+  // dashed #b7b9be line marks it and a tooltip lists every series' value there. A pie shows the
+  // slice under the pointer. Hovered marks lift to floor(channel x 1.1) of their colour: a bar
+  // chart's bars in that category, every line of a line chart, the pie's slice (which also grows
+  // 5px); an area chart's lines and fills don't change. The tooltip sits 20px right of and below
+  // the pointer, on the other side where it would leave the chart's 406 x 360 box.
+  describe("chart hover", () => {
+    const PALETTE = {
+      light: {
+        base: ["rgb(233, 104, 37)", "rgb(32, 162, 113)", "rgb(196, 116, 211)", "rgb(14, 157, 211)"],
+        lift: ["rgb(255, 114, 40)", "rgb(35, 178, 124)", "rgb(215, 127, 232)", "rgb(15, 172, 232)"],
+        tooltip: { background: "rgb(255, 255, 255)", color: "rgb(29, 28, 29)" },
+      },
+      dark: {
+        base: ["rgb(213, 106, 55)", "rgb(37, 155, 105)", "rgb(178, 110, 195)", "rgb(22, 153, 202)"],
+        lift: ["rgb(234, 116, 60)", "rgb(40, 170, 115)", "rgb(195, 121, 214)", "rgb(24, 168, 222)"],
+        tooltip: { background: "rgb(26, 29, 33)", color: "rgb(248, 248, 248)" },
+      },
+    } as const;
+    const chart = async (name: string, theme: "light" | "dark"): Promise<Mount> => ({
+      ...(await fixture(`catalog/data-visualization/${name}`)),
+      theme,
+    });
+    const paint = (page: Page, selector: string, property: "fill" | "stroke") =>
+      page.$$eval(
+        selector,
+        (els, p) => els.map((el) => getComputedStyle(el).getPropertyValue(p)),
+        property,
+      );
+    /** The tooltip's text, row by row: its title, then each series' name and value. */
+    const tooltip = (page: Page) =>
+      page.$$eval(".sbk-chart-tooltip", (tips) =>
+        tips.map((tip) => ({
+          title: tip.querySelector(".sbk-chart-tooltip__title")?.textContent ?? null,
+          rows: [...tip.querySelectorAll(".sbk-chart-tooltip__row")].map((row) =>
+            [...row.children].map((c) => c.textContent).filter(Boolean),
+          ),
+        })),
+      );
+    const center = async (page: Page, selector: string, nth = 0) => {
+      const box = (await page.locator(selector).nth(nth).boundingBox())!;
+      // Whole pixels: Firefox and WebKit round the pointer's position.
+      return { x: Math.round(box.x + box.width / 2), y: Math.round(box.y + box.height / 2) };
+    };
+
+    for (const theme of ["light", "dark"] as const) {
+      const { base, lift } = PALETTE[theme];
+      describe(theme, () => {
+        it("draws the series in Slack's colours at rest", async () => {
+          const page = await harness.open(await chart("pie-multi-segment", theme));
+          expect({
+            slices: await paint(page, ".sbk-chart__slice", "fill"),
+            legend: await page.$$eval(".sbk-dataviz__legend-dot", (dots) =>
+              dots.map((d) => getComputedStyle(d).backgroundColor),
+            ),
+          }).toEqual({ slices: [...base], legend: [...base] });
+        });
+
+        it("lifts a bar chart's hovered category and lists its values", async () => {
+          const page = await harness.open(await chart("bar-multi-series", theme));
+          // Bars are in series order, then category order: Wednesday's first bar is the third.
+          const at = await center(page, ".sbk-chart__bar", 2);
+          await page.mouse.move(at.x, at.y);
+          const bars = await paint(page, ".sbk-chart__bar", "fill");
+          const pointer = await page.locator(".sbk-chart__pointer").evaluate((el) => ({
+            stroke: getComputedStyle(el).stroke,
+            dash: el.getAttribute("stroke-dasharray"),
+            vertical: el.getAttribute("x1") === el.getAttribute("x2"),
+          }));
+          expect({ bars, pointer, tooltip: await tooltip(page) }).toEqual({
+            bars: [
+              ...[0, 1, 2, 3, 4].map((i) => (i === 2 ? lift[0] : base[0])),
+              ...[0, 1, 2, 3, 4].map((i) => (i === 2 ? lift[1] : base[1])),
+            ],
+            pointer: { stroke: "rgb(183, 185, 190)", dash: "4 2", vertical: true },
+            tooltip: [
+              {
+                title: "Wed",
+                rows: [
+                  ["Desktop", "1,700"],
+                  ["Mobile", "920"],
+                ],
+              },
+            ],
+          });
+        });
+
+        it("lifts every line of a line chart and picks the nearest category", async () => {
+          const page = await harness.open(await chart("line-multi-series", theme));
+          const box = (await page.locator(".sbk-chart__svg").boundingBox())!;
+          // Just right of the middle of the plot: Wednesday is the nearest of five categories.
+          await page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.9);
+          expect({
+            lines: await paint(page, ".sbk-chart__line", "stroke"),
+            pointer: await page.locator(".sbk-chart__pointer").count(),
+            title: (await tooltip(page))[0]?.title,
+          }).toEqual({ lines: [lift[0], lift[1]], pointer: 1, title: "Wed" });
+        });
+
+        it("keeps an area chart's colours while it shows the pointer and tooltip", async () => {
+          const page = await harness.open(await chart("area-multi-series", theme));
+          const box = (await page.locator(".sbk-chart__svg").boundingBox())!;
+          await page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.9);
+          expect({
+            lines: await paint(page, ".sbk-chart__line", "stroke"),
+            pointer: await page.locator(".sbk-chart__pointer").count(),
+            tooltip: await tooltip(page),
+          }).toEqual({
+            lines: [base[0], base[1]],
+            pointer: 1,
+            tooltip: [
+              {
+                title: "Wed",
+                rows: [
+                  ["Desktop", "3,400"],
+                  ["Mobile", "1,700"],
+                ],
+              },
+            ],
+          });
+        });
+
+        it("lifts and grows the hovered pie slice and names it", async () => {
+          const page = await harness.open(await chart("pie-multi-segment", theme));
+          const before = (await page.locator(".sbk-chart__slice").first().boundingBox())!;
+          const at = await center(page, ".sbk-chart__slice");
+          await page.mouse.move(at.x, at.y);
+          const after = (await page.locator(".sbk-chart__slice[data-hovered]").boundingBox())!;
+          // The pie is drawn in a 406px-wide box, scaled to the card.
+          const scale = (await page.locator(".sbk-chart__svg").boundingBox())!.width / 406;
+          expect({
+            fills: await paint(page, ".sbk-chart__slice:not([data-hovered])", "fill"),
+            hovered: await paint(page, ".sbk-chart__slice[data-hovered]", "fill"),
+            grows: Math.round((after.height - before.height) / scale),
+            tooltip: await tooltip(page),
+          }).toEqual({
+            fills: [base[1], base[2], base[3]],
+            hovered: [lift[0]],
+            grows: 10,
+            tooltip: [{ title: null, rows: [["Free", "4,200"]] }],
+          });
+        });
+
+        it("draws the tooltip on Slack's surface, 20px right of and below the pointer", async () => {
+          const page = await harness.open(await chart("bar-multi-series", theme));
+          const at = await center(page, ".sbk-chart__bar", 0);
+          await page.mouse.move(at.x, at.y);
+          const tip = page.locator(".sbk-chart-tooltip");
+          const box = (await tip.boundingBox())!;
+          const surface = await tip.evaluate((el) => {
+            const s = getComputedStyle(el);
+            return {
+              background: s.backgroundColor,
+              color: s.color,
+              shadow: s.boxShadow,
+              radius: s.borderTopLeftRadius,
+              padding: s.paddingTop,
+              font: s.fontSize,
+            };
+          });
+          expect({
+            surface,
+            left: Math.round(box.x - at.x),
+            top: Math.round(box.y - at.y),
+          }).toEqual({
+            surface: {
+              ...PALETTE[theme].tooltip,
+              shadow: "rgba(0, 0, 0, 0.2) 1px 2px 10px 0px",
+              radius: "4px",
+              padding: "10px",
+              font: "13px",
+            },
+            left: 20,
+            top: 20,
+          });
+        });
+
+        it("opens the tooltip left of the pointer near the chart's right edge", async () => {
+          const page = await harness.open(await chart("bar-multi-series", theme));
+          // Friday's second bar, at the plot's right edge.
+          const at = await center(page, ".sbk-chart__bar", 9);
+          await page.mouse.move(at.x, at.y);
+          const box = (await page.locator(".sbk-chart-tooltip").boundingBox())!;
+          expect(Math.round(at.x - (box.x + box.width))).toBe(20);
+        });
+
+        it("clears the hover when the pointer leaves the chart", async () => {
+          const page = await harness.open(await chart("bar-multi-series", theme));
+          const at = await center(page, ".sbk-chart__bar", 2);
+          await page.mouse.move(at.x, at.y);
+          await page.mouse.move(5, 5);
+          expect({
+            bars: await paint(page, ".sbk-chart__bar", "fill"),
+            pointer: await page.locator(".sbk-chart__pointer").count(),
+            tooltip: await page.locator(".sbk-chart-tooltip").count(),
+          }).toEqual({
+            bars: [...Array(5).fill(base[0]), ...Array(5).fill(base[1])],
+            pointer: 0,
+            tooltip: 0,
+          });
+        });
+      });
+    }
+  });
+
   // Measured in Block Kit Builder: a datetimepicker is a date field and a time field, each with its
   // own popover.
   describe("datetime picker", () => {
@@ -2624,6 +3309,19 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           ).toEqual(want.menu);
         });
 
+        it("opens a chart's actions menu on the same surface", async () => {
+          const page = await harness.open({
+            ...(await fixture("catalog/data-visualization/bar-single-series")),
+            theme,
+          });
+          await page.hover(".sbk-dataviz");
+          await page.click(".sbk-hover-actions--chart .sbk-hover-actions__button");
+          await settle(page);
+          expect(
+            await props(page, ".sbk-hover-actions__menu", ["background-color", "box-shadow"]),
+          ).toEqual(want.menu);
+        });
+
         it("fills the selected day Slack's blue and keeps its grid line", async () => {
           const page = await harness.open(page_(theme));
           await page.click(".sbk-datepicker__input");
@@ -2902,6 +3600,100 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
       expect(gap).toBe(0);
     });
+  });
+
+  // Measured in Block Kit Builder's references (catalog/input/datepicker@open+dark,
+  // catalog/section/multi-static-select@dialog+dark, message/mrkdwn@dark,
+  // extra/modal/form@open+dark): dark-mode text the earlier passes left on the wrong token.
+  describe("leftover text colours in both themes", () => {
+    const WANT = {
+      light: { clear: TEXT, title: TEXT, here: TEXT, selected: "rgb(18, 100, 163)" },
+      dark: {
+        clear: "rgb(209, 210, 211)",
+        title: "rgb(209, 210, 211)",
+        here: "rgb(222, 167, 0)",
+        selected: "rgb(29, 155, 209)",
+      },
+    } as const;
+    const colour = (page: Page, selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => getComputedStyle(el).color);
+
+    for (const theme of ["light", "dark"] as const) {
+      const want = WANT[theme];
+      describe(theme, () => {
+        it("writes the calendar's Clear selection in Slack's body text colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [
+              {
+                type: "input",
+                label: plain("Due"),
+                element: { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+              },
+            ],
+          });
+          await page.click(".sbk-datepicker__input");
+          await settle(page);
+          expect(await colour(page, ".sbk-calendar__clear")).toBe(want.clear);
+        });
+
+        it("titles the selection dialog in Slack's body text colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [
+              {
+                type: "section",
+                text: plain("Pick"),
+                accessory: {
+                  type: "multi_static_select",
+                  action_id: "m",
+                  placeholder: plain("Select options"),
+                  options: [option("Alpha"), option("Bravo")],
+                },
+              },
+            ],
+          });
+          await page.click(".sbk-section__accessory .sbk-select__control");
+          await settle(page);
+          expect(await colour(page, ".sbk-select-dialog__title")).toBe(want.title);
+        });
+
+        it("writes @here in Slack's broadcast colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [{ type: "section", text: { type: "mrkdwn", text: "Hi <!here>" } }],
+          });
+          expect(await colour(page, ".sbk-mention--broadcast")).toBe(want.here);
+        });
+
+        it("marks the chosen option of an open list in Slack's selected colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [
+              {
+                type: "actions",
+                elements: [
+                  {
+                    type: "static_select",
+                    action_id: "s",
+                    options: [option("High"), option("Medium"), option("Low")],
+                    initial_option: option("Medium"),
+                  },
+                ],
+              },
+            ],
+          });
+          await page.click(".sbk-select__control");
+          await settle(page);
+          expect(await colour(page, '.sbk-select__option[aria-selected="true"]')).toBe(
+            want.selected,
+          );
+        });
+      });
+    }
   });
 
   // Measured in Block Kit Builder (contexts/{datepicker,timepicker}/{actions,home,modal-input}):
@@ -3312,6 +4104,53 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           Math.round(width * 10) / 10,
           Math.round(((width * 283) / 360) * 10) / 10,
         ]);
+      });
+    }
+  });
+
+  // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
+  // one (512px; blocks 432px).
+  describe("narrow datetime picker", () => {
+    const DESKTOP = { width: 800, height: 900 };
+    const PHONE = { width: 390, height: 844 };
+
+    // Slack's c-date_time_picker wraps: each field is 208px at most two to a row, 8px apart, and
+    // grows to fill a row on its own when two don't fit (312px each in a phone's 320px block).
+    for (const [label, viewport, stacked] of [
+      ["side by side on desktop", DESKTOP, false],
+      ["stacked on a phone", PHONE, true],
+    ] as const) {
+      it(`lays out a datetime picker's fields ${label}`, async () => {
+        const page = await harness.open(await fixture("contexts/datetimepicker/actions"), {
+          viewport,
+        });
+        const [picker, date, time] = await Promise.all(
+          [
+            ".sbk-datetimepicker",
+            ".sbk-datetimepicker__control",
+            ".sbk-datetimepicker__column + .sbk-datetimepicker__column .sbk-datetimepicker__control",
+          ].map((s) => page.locator(s).first().boundingBox()),
+        );
+        const round = (n: number) => Math.round(n);
+        expect(
+          stacked
+            ? [
+                round(time!.x - date!.x),
+                round(time!.y - (date!.y + date!.height)),
+                round(date!.width),
+                round(time!.width),
+              ]
+            : [
+                round(time!.x - (date!.x + date!.width)),
+                round(time!.y - date!.y),
+                round(date!.width),
+                round(time!.width),
+              ],
+        ).toEqual(
+          stacked
+            ? [0, 8, round(picker!.width), round(picker!.width)]
+            : [8, 0, round((picker!.width - 8) / 2), round((picker!.width - 8) / 2)],
+        );
       });
     }
   });

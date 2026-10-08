@@ -150,6 +150,12 @@ to the preview):
    datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
    refuses to snapshot once a later sheet repeats one of their rules: reload the Builder, paste the
    scripts again and resume from the item it names.
+   A fixture that needs a real workspace file (`slack_file`) carries the placeholder file URL
+   (`https://files.slack.com/files-pri/T0000001-F0000001/file`). Map it to the file's link in
+   `tools/visual/capture.local.json` (`{ "<placeholder>": "<link>" }`, ignored by git) and pass
+   that object as `substitute`: only the Builder sees the link, and `import.ts` redacts it again.
+   The comparison serves `fixtures/assets/slack-file.png`, a copy of that file, for the placeholder
+   to both sides.
 
 3. Copy the resulting `refs` JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.

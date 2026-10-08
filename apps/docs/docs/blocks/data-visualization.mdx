@@ -91,11 +91,34 @@ It isn't part of the public `@slack/types` package, so treat this page's field l
 labels; when omitted they're taken from the first series' `data[].label`.
 
 :::note
-Colors come from a fixed 4-color palette and are assigned by series (or segment) index. There's no
-field to set a series' color. A 5th series or segment reuses the first color. Bar, line, and area
+Colors come from a fixed 4-color palette, a deeper one in dark mode as in Slack, and are assigned by
+series (or segment) index. There's no field to set a series' color, but the palette is themable
+(`--sbk-chart-1` to `-4`, see [Theming](/guides/theming)). A 5th series or segment reuses the first
+color. Bar, line, and area
 charts always include zero in the y-axis range, so negative values extend below the zero line;
 pie charts clamp negative values to 0.
 :::
+
+## Hover and actions
+
+As in Slack, pointing at a chart shows its values. Over a bar, line or area chart, a dashed line
+marks the category under the pointer (the bar's band, or the nearest point) and a tooltip lists each
+series' value there; a bar chart lifts that category's bars and a line chart lifts its lines. Over a
+pie, the slice under the pointer lifts, grows slightly and shows its label and value. Touch screens
+don't hover, so they don't show the tooltip.
+
+The **More actions** button in the chart's top-right corner opens Slack's menu:
+
+- **View as table** opens the chart's data in a modal titled with the chart's title, as a table:
+  one row per series under **Series** and the categories, or a pie's segments under **Label** and
+  **Value**. Escape, the close button or a click outside closes it.
+- **Download chart data** saves the same table as a tab-separated file named after the title
+  (`messages-sent-by-platform.tsv`).
+- **Copy as image** shows disabled, as it does in Block Kit Builder.
+
+The menu opens beside the button above the page, so the card never clips or scrolls it, and works
+from the keyboard: the arrow keys move through it, Enter chooses, and Escape closes it and returns
+focus to the button. As in Slack, these actions stay in the page: none of them calls `onAction`.
 
 ## Examples
 
