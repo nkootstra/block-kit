@@ -967,6 +967,22 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(await page.locator(".sbk-timepicker__content-text").textContent()).toBe("3:15 PM");
     });
 
+    // From catalog/actions/timepicker@open+dark: open, Slack types into a `c-input_text` whose 18px
+    // line sits 5px below the field's top, in the primary text colour (#f8f8f8 in the dark theme),
+    // not the #d1d2d3 the closed field draws its time in.
+    it("draws the open field's time on Slack's 18px line, in the primary text colour", async () => {
+      const page = await harness.open({ ...picker, theme: "dark" });
+      await page.click(".sbk-timepicker__control");
+      await settle(page);
+      const field = await page.evaluate(() => {
+        const control = document.querySelector(".sbk-timepicker__control")!.getBoundingClientRect();
+        const input = document.querySelector(".sbk-timepicker__input")!;
+        const box = input.getBoundingClientRect();
+        return { top: box.y - control.y, height: box.height, color: getComputedStyle(input).color };
+      });
+      expect(field).toEqual({ top: 5, height: 18, color: "rgb(248, 248, 248)" });
+    });
+
     it("names the time zone as Slack does", async () => {
       const page = await harness.open({
         blocks: [
