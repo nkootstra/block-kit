@@ -333,6 +333,178 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured in Block Kit Builder (redacted references in fixtures/contexts/*_select): Slack's
+  // `c-member` and `c-small_channel_entity` rows inside its 28px option rows.
+  describe("directory select rows", () => {
+    const DIRECTORY = [
+      { type: "user", id: "U01", name: "Ada", self: true, presence: "snoozed" },
+      { type: "user", id: "U02", name: "Helper", badge: "AGENT", presence: "active" },
+      { type: "user", id: "U03", name: "grace", realName: "Grace Hopper", presence: "active" },
+      { type: "channel", id: "C01", name: "design", private: true },
+      { type: "channel", id: "C02", name: "general" },
+    ] as const;
+    const mount = (theme: "light" | "dark"): Mount => ({
+      theme,
+      directory: [...DIRECTORY],
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type: "conversations_select", action_id: "c", placeholder: plain("Pick") }],
+        },
+      ],
+    });
+    /** Each part of a row, relative to the row: [x, y, width, height]. */
+    const parts = (page: Page, index: number) =>
+      page.evaluate((i) => {
+        const row = document.querySelectorAll(".sbk-select__option")[i]!;
+        const r = row.getBoundingClientRect();
+        const box = (sel: string) => {
+          const el = row.querySelector(sel);
+          if (!el) return null;
+          const b = el.getBoundingClientRect();
+          return [b.x - r.x, b.y - r.y, b.width, b.height].map((n) => Math.round(n * 10) / 10);
+        };
+        return {
+          row: [Math.round(r.width), Math.round(r.height)],
+          avatar: box(".sbk-select__avatar"),
+          channelIcon: box(".sbk-select__channel-icon"),
+          name: box(".sbk-select__member-name strong") ?? box(".sbk-select__member-name"),
+        };
+      }, index);
+    const style = (page: Page, sel: string, props: string[]) =>
+      page
+        .locator(sel)
+        .first()
+        .evaluate((el, ps) => {
+          const c = getComputedStyle(el);
+          return Object.fromEntries(ps.map((p) => [p, c.getPropertyValue(p)]));
+        }, props);
+
+    it("puts a 20px avatar 24px in and the bold name 8px after it", async () => {
+      const page = await harness.open(mount("light"));
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const p = await parts(page, 2);
+      expect([p.row, p.avatar, p.name?.[0]]).toEqual([[322, 28], [24, 4, 20, 20], 52]);
+    });
+
+    it("draws an unresolved channel 8px into the typed field, over a hidden placeholder", async () => {
+      const page = await harness.open({
+        ...mount("light"),
+        blocks: [
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "channels_select",
+                action_id: "c",
+                placeholder: plain("Pick"),
+                initial_channel: "C0123456789",
+              },
+            ],
+          },
+        ],
+      });
+      const got = await page.evaluate(() => {
+        const field = document.querySelector(".sbk-select__control")!.getBoundingClientRect();
+        const value = document.querySelector(".sbk-select__content .sbk-select__value")!;
+        const input = document.querySelector(".sbk-select__input")!;
+        return {
+          inset: value.getBoundingClientRect().x - field.x,
+          placeholder: getComputedStyle(input, "::placeholder").color,
+        };
+      });
+      expect(got).toEqual({ inset: 8, placeholder: "rgba(0, 0, 0, 0)" });
+    });
+
+    // contexts/conversations_select/*@open: four people and seven channels, eleven 28px rows, in a
+    // 264px list that scrolls from the ninth row on.
+    it("scrolls a long list inside Slack's 264px", async () => {
+      const page = await harness.open({
+        ...mount("light"),
+        directory: [
+          ...DIRECTORY,
+          ...["a", "b", "c", "d", "e", "f"].map((n) => ({
+            type: "channel" as const,
+            id: `C1${n}`,
+            name: n,
+          })),
+        ],
+      });
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const height = await page
+        .locator(".sbk-select__menu")
+        .evaluate((el) => el.getBoundingClientRect().height);
+      expect(height).toBe(264);
+    });
+
+    it("puts an 18px channel icon 24px in and the bold name 8px after it", async () => {
+      const page = await harness.open(mount("light"));
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const p = await parts(page, 3);
+      expect([p.channelIcon, p.name?.[0]]).toEqual([[24, 5, 18, 18], 50]);
+    });
+
+    for (const theme of ["light", "dark"] as const) {
+      const want =
+        theme === "light"
+          ? {
+              avatar: "rgb(234, 234, 234)",
+              badge: "rgb(69, 68, 71)",
+              badgeBg: "rgba(29, 28, 29, 0.06)",
+            }
+          : {
+              avatar: "rgb(33, 36, 40)",
+              badge: "rgb(185, 186, 189)",
+              badgeBg: "rgba(248, 248, 248, 0.06)",
+            };
+
+      it(`draws the avatar, badge, names and presence as Slack does (${theme})`, async () => {
+        const page = await harness.open(mount(theme));
+        await page.click(".sbk-select__control");
+        await settle(page);
+        expect({
+          avatar: await style(page, ".sbk-select__avatar", ["background-color", "border-radius"]),
+          badge: await style(page, ".sbk-select__member-badge", [
+            "color",
+            "background-color",
+            "font-size",
+            "font-weight",
+            "padding",
+            "border-radius",
+            "margin-left",
+          ]),
+          name: await style(page, ".sbk-select__member-name strong", ["font-size", "font-weight"]),
+          secondary: await style(page, ".sbk-select__member-secondary", [
+            "font-size",
+            "font-weight",
+            "margin-left",
+          ]),
+          presence: await style(page, ".sbk-select__presence", ["width", "height", "margin-left"]),
+        }).toEqual({
+          avatar: {
+            "background-color": want.avatar,
+            "border-radius": "clamp(4px, min(22.222%, 12px), 12px)",
+          },
+          badge: {
+            color: want.badge,
+            "background-color": want.badgeBg,
+            "font-size": "10px",
+            "font-weight": "700",
+            padding: "1px 3px",
+            "border-radius": "2px",
+            "margin-left": "4px",
+          },
+          name: { "font-size": "15px", "font-weight": "700" },
+          secondary: { "font-size": "15px", "font-weight": "400", "margin-left": "4px" },
+          presence: { width: "20px", height: "20px", "margin-left": "4px" },
+        });
+      });
+    }
+  });
+
   describe("links", () => {
     it("shows the shared focus ring and no underline for keyboard focus", async () => {
       const page = await harness.open({
@@ -965,6 +1137,22 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       await page.keyboard.press("Enter");
       await settle(page);
       expect(await page.locator(".sbk-timepicker__content-text").textContent()).toBe("3:15 PM");
+    });
+
+    // From catalog/actions/timepicker@open+dark: open, Slack types into a `c-input_text` whose 18px
+    // line sits 5px below the field's top, in the primary text colour (#f8f8f8 in the dark theme),
+    // not the #d1d2d3 the closed field draws its time in.
+    it("draws the open field's time on Slack's 18px line, in the primary text colour", async () => {
+      const page = await harness.open({ ...picker, theme: "dark" });
+      await page.click(".sbk-timepicker__control");
+      await settle(page);
+      const field = await page.evaluate(() => {
+        const control = document.querySelector(".sbk-timepicker__control")!.getBoundingClientRect();
+        const input = document.querySelector(".sbk-timepicker__input")!;
+        const box = input.getBoundingClientRect();
+        return { top: box.y - control.y, height: box.height, color: getComputedStyle(input).color };
+      });
+      expect(field).toEqual({ top: 5, height: 18, color: "rgb(248, 248, 248)" });
     });
 
     it("names the time zone as Slack does", async () => {
@@ -3571,6 +3759,53 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         await prop(page, ".sbk-mention--private"),
         await prop(page, ".sbk-mention--private", "background-color"),
       ]).toEqual(["rgba(232, 232, 232, 0.7)", "rgba(232, 232, 232, 0.13)"]);
+    });
+
+    // extra/input/more-selects@dark: a channel the app can't resolve becomes a "Private channel"
+    // pill, which Slack tints with the same light grey as the private channel mention.
+    it("draws a select's private channel pill on Slack's dark tint", async () => {
+      const page = await harness.open({
+        theme: "dark",
+        blocks: [
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "multi_channels_select",
+                action_id: "c",
+                initial_channels: ["C0PRIVATE"],
+              },
+            ],
+          },
+        ],
+      });
+      await settle(page);
+      expect([
+        await prop(page, ".sbk-select__missing-channel"),
+        await prop(page, ".sbk-select__missing-channel", "background-color"),
+      ]).toEqual(["rgba(232, 232, 232, 0.7)", "rgba(232, 232, 232, 0.13)"]);
+    });
+
+    // extra/input/more-selects@dark: Slack's p-block_kit_max_selected_items__info is the
+    // secondary text colour of the theme.
+    it("writes a multi-select's item limit hint in dark's secondary grey", async () => {
+      const page = await harness.open({
+        theme: "dark",
+        blocks: [
+          {
+            type: "input",
+            label: { type: "plain_text", text: "Pick" },
+            element: {
+              type: "multi_static_select",
+              action_id: "m",
+              max_selected_items: 3,
+              options: [{ text: { type: "plain_text", text: "One" }, value: "1" }],
+            },
+          },
+        ],
+      });
+      await settle(page);
+      expect(await prop(page, ".sbk-select__max-info")).toBe("rgb(171, 171, 173)");
     });
 
     // An input block's radio group ends with the last option's own 8px margin, as in Slack:
