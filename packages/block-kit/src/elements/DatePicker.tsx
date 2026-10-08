@@ -26,7 +26,9 @@ function formatDate(date: string, long: boolean): string {
 }
 
 export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
-  const { setValue, dispatch } = useBlockKit();
+  const { setValue, dispatch, surface } = useBlockKit();
+  // Slack draws the small field in messages and the medium one in modals and on App Home.
+  const medium = surface !== "message";
   const inInputBlock = useInInputBlock();
   const clearable = useInClearableInput();
   const { ask, dialog } = useConfirm(element.confirm);
@@ -111,7 +113,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   }
 
   return (
-    <div className="sbk-datepicker" ref={rootRef}>
+    <div className={`sbk-datepicker${medium ? " sbk-datepicker--medium" : ""}`} ref={rootRef}>
       <div className="sbk-datepicker__input_wrap">
         <CalendarIcon className="sbk-datepicker__icon" />
         <input

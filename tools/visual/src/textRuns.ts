@@ -227,7 +227,9 @@ function parseColor(css: string): [number, number, number, number] {
 
 /**
  * Pairs equal texts in order with a longest common subsequence, so a run only one side has
- * doesn't shift every later pairing.
+ * doesn't shift every later pairing; then pairs what's left with an equal text on the other side,
+ * in order, so a run the two sides hold elsewhere in the DOM (a picker's value in an <input>)
+ * compares by where it paints instead of counting as missing and extra.
  */
 function matchInOrder(a: string[], b: string[]): Array<[number, number]> {
   const lengths = Array.from({ length: a.length + 1 }, () =>
@@ -254,6 +256,16 @@ function matchInOrder(a: string[], b: string[]): Array<[number, number]> {
     } else if ((lengths[i + 1]?.[j] as number) >= (lengths[i]?.[j + 1] as number)) i++;
     else j++;
   }
+  const pairedA = new Set(pairs.map(([x]) => x));
+  const pairedB = new Set(pairs.map(([, y]) => y));
+  a.forEach((text, x) => {
+    if (pairedA.has(x)) return;
+    const y = b.findIndex((other, k) => other === text && !pairedB.has(k));
+    if (y === -1) return;
+    pairs.push([x, y]);
+    pairedA.add(x);
+    pairedB.add(y);
+  });
   return pairs;
 }
 
