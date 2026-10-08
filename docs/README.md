@@ -169,7 +169,9 @@ through a fixture. Emoji still show: the library draws them from a fixed set. [`
 ### One-time R2 setup
 
 1. Create the `block-kit-visual` R2 bucket, attach the custom domain `cdn.block-kit.dev` and add a
-   lifecycle rule that deletes objects after 30 days.
+   lifecycle rule that deletes objects under the `pr-` prefix after 30 days. The bucket also holds
+   the sample images under `samples/`, which fixtures and docs link to and which must stay
+   ([`fixtures/assets/samples`](../fixtures/assets/samples/CREDITS.md)).
 2. Create an API token with **Workers R2 Storage Bucket Item Write** and **Read**, limited to that
    bucket. R2's S3 API authenticates with it: the access key ID is the token's ID, the secret is the
    SHA-256 hash of its value.

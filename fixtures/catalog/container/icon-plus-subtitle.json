@@ -13,7 +13,7 @@
       },
       "icon": {
         "type": "image",
-        "image_url": "https://a.slack-edge.com/80588/img/plugins/app/service_36.png",
+        "image_url": "https://cdn.block-kit.dev/samples/app-icon.81155d10.png",
         "alt_text": "Project icon"
       },
       "child_blocks": [

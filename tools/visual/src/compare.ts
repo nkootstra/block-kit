@@ -49,6 +49,7 @@ import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
 import { pad, parseRgb } from "./pad";
 import { parseReferenceName } from "./names";
+import { type Image, loadImage, routeSamples } from "./samples";
 import { stateFor } from "./states";
 import {
   checkTextBaseline,
@@ -157,27 +158,23 @@ await context.route(/\.(woff2?|ttf|otf)(\?.*)?$/, async (route) => {
 
 // The reference loads remote images through Slack's slack-imgs.com proxy, which recompresses them,
 // and picsum.photos returns a different random image per request. Serve the original bytes of each
-// image, fetched once, to both sides so only rendering differences remain.
-const imageCache = new Map<string, Promise<{ body: Buffer; type: string }>>();
+// image, loaded once, to both sides so only rendering differences remain. Our samples
+// (cdn.block-kit.dev/samples/, which every fixture's images are) come from their committed copies
+// in fixtures/assets/samples/, also behind the proxy, so the comparison needs no network for them.
+const imageCache = new Map<string, Promise<Image | undefined>>();
 await context.route(/slack-imgs\.com|picsum\.photos/, async (route) => {
   const url = route.request().url();
   const proxied = new URL(url).hostname === "slack-imgs.com";
   const key = proxied ? (new URL(url).searchParams.get("url") ?? url) : url;
-  if (!imageCache.has(key)) {
-    imageCache.set(
-      key,
-      fetch(key).then(async (res) => ({
-        body: Buffer.from(await res.arrayBuffer()),
-        type: res.headers.get("content-type") ?? "image/jpeg",
-      })),
-    );
-  }
-  const { body, type } = await (imageCache.get(key) as Promise<{ body: Buffer; type: string }>);
+  if (!imageCache.has(key)) imageCache.set(key, loadImage(key));
+  const image = await imageCache.get(key);
+  if (!image) return route.fulfill({ status: 404, body: "" });
   await route.fulfill({
-    body,
-    headers: { "content-type": type, "access-control-allow-origin": "*" },
+    body: Buffer.from(image.body),
+    headers: { "content-type": image.type, "access-control-allow-origin": "*" },
   });
 });
+await routeSamples(context);
 
 // A Slack file in a reference is redacted to SLACK_FILE_PLACEHOLDER (redact.ts), whichever of the
 // file's URLs Slack used (the original or a thumbnail). Serve both sides the committed copy of the

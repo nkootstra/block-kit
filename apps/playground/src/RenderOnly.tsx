@@ -43,8 +43,9 @@ const BUILDER_SAMPLE_FILES: Resolvers = {
  */
 const GREY_AVATAR =
   "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
-const SLACKBOT_AVATAR =
-  "https://a.slack-edge.com/bv1-13-br/slackbot_notification_legacy-2118e8c.svg";
+// Slack's bot avatar is Slack's own artwork, so the render shows a drawn stand-in
+// (fixtures/assets/samples/CREDITS.md).
+const SLACKBOT_AVATAR = "https://cdn.block-kit.dev/samples/bot-avatar.3d9f1d46.png";
 const BUILDER_USERS: DirectoryEntry[] = [
   {
     type: "user",

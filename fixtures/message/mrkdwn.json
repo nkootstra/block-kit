@@ -21,7 +21,7 @@
       "elements": [
         {
           "type": "image",
-          "image_url": "https://api.slack.com/img/blocks/bkb_template_images/notificationsWarningIcon.png",
+          "image_url": "https://cdn.block-kit.dev/samples/warning-icon.491cc33b.png",
           "alt_text": "warning"
         },
         { "type": "mrkdwn", "text": "*Context* with an image and _mrkdwn_" }

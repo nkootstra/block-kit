@@ -4,7 +4,7 @@
       "type": "card",
       "hero_image": {
         "type": "image",
-        "image_url": "https://picsum.photos/400/300",
+        "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
         "alt_text": "Sample hero image"
       }
     }
