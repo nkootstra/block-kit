@@ -64,9 +64,10 @@ screenshot, photo, or diagram inline in a message, modal, or App Home surface.
 :::note
 Slack files aren't public, so a `slack_file` needs your app to resolve it, e.g. with an authenticated
 `files.info` call. Pass `resolvers.slackFile` to the provider: it returns a URL the browser can load
-and, optionally, the size in bytes, which shows as Slack's "(71 kB)" caption next to the caret. A
-file it can't resolve (or no resolver) renders Slack's documented fallback: a placeholder box with
-the `alt_text`. `image_url` renders normally.
+and, optionally, the size in bytes, which shows as Slack's "(400 kB)" caption next to the caret
+(decimal kilobytes, as Slack counts them). A resolved file shows at most 400 x 400, as Slack draws
+it from its 800px thumbnail; an `image_url` fills the message's width. A file it can't resolve (or
+no resolver) renders Slack's documented fallback: a placeholder box with the `alt_text`.
 :::
 
 ## Examples
@@ -128,7 +129,7 @@ the caret does). They stay in the page: none of them calls `onAction`.
 />
 
 This preview has no `resolvers.slackFile`, so it renders the alt-text fallback. With one, the file
-shows like an `image_url`:
+shows like an `image_url`, at most 400 x 400:
 
 ```tsx
 <BlockKitProvider

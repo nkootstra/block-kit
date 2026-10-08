@@ -43,6 +43,9 @@ function ExpandCaret({ expanded }: { expanded: boolean }) {
  * an `image_url` we can't know the size without a network round-trip, so the row keeps its
  * height and spacing without it.
  *
+ * Slack draws a workspace file from its 800px thumbnail at 2x, so a resolved `slack_file` shows at
+ * most 400 x 400; an `image_url` fills the message's width.
+ *
  * The caret is a toggle, as in Slack: pressing it hides the image (instantly, no animation) and
  * leaves only the title row, and pressing it again brings the image back.
  */
@@ -61,9 +64,10 @@ export function Image({ block }: BlockProps<ImageBlock>) {
     setExpanded(false);
     toggleRef.current?.focus();
   };
+  const isFile = directUrl === undefined && imageUrl !== undefined;
 
   return (
-    <figure className="sbk-image">
+    <figure className={isFile ? "sbk-image sbk-image--file" : "sbk-image"}>
       {imageUrl && (
         <div className="sbk-image__title">
           {block.title && (
@@ -109,10 +113,10 @@ export function Image({ block }: BlockProps<ImageBlock>) {
 }
 
 /**
- * Slack's file-size caption: whole kilobytes, as measured ("(71 kB)" for 72,704 bytes). Larger
- * files read in megabytes with one decimal; no Builder sample shows that case.
+ * Slack's file-size caption: whole decimal kilobytes, as measured ("(400 kB)" for 400,401 bytes).
+ * Larger files read in megabytes with one decimal; no Builder sample shows that case.
  */
 function formatFileSize(bytes: number): string {
-  const kb = bytes / 1024;
-  return kb < 1024 ? `${Math.round(kb)} kB` : `${(kb / 1024).toFixed(1)} MB`;
+  const kb = bytes / 1000;
+  return kb < 1000 ? `${Math.round(kb)} kB` : `${(kb / 1000).toFixed(1)} MB`;
 }

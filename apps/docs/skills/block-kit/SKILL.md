@@ -108,8 +108,9 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 ```
 
 `slackFile: (file) => ({ url, size })` resolves a `slack_file` image (image block or element) to a
-loadable URL and its size in bytes (shown as Slack's "(71 kB)"); without it an image block shows its
-alt-text placeholder.
+loadable URL and its size in bytes (shown as Slack's "(400 kB)", decimal kilobytes); an image block
+draws a resolved file at most 400 x 400, as Slack does, and without a resolver shows its alt-text
+placeholder.
 
 `@nkootstra/block-kit/web-api` builds resolvers from the Slack Web API (needs `@slack/web-api`).
 

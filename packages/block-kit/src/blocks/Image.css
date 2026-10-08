@@ -71,6 +71,12 @@
   height: auto;
 }
 
+/* A workspace file: Slack draws its 800px thumbnail at 2x, so it never exceeds 400 x 400. */
+.sbk-image--file .sbk-image__img {
+  max-width: min(100%, 400px);
+  max-height: 400px;
+}
+
 .sbk-image__fallback {
   display: flex;
   align-items: center;

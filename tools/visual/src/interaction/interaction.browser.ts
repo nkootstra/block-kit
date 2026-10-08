@@ -3935,6 +3935,43 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     }
   });
 
+  // Measured from Block Kit Builder's slack_file references: Slack draws a workspace file from its
+  // 800px thumbnail at 2x, so a 1254px square logo shows at 400 x 400 in a 432px-wide message and
+  // fills the width (320 x 320) on mobile, while an image_url of the same size fills the message.
+  describe("image block sizes", () => {
+    const FILE = "https://files.slack.com/files-pri/T0000001-F0000001/file";
+    const image = (source: object) => [{ type: "image", ...source, alt_text: "logo" }];
+    for (const theme of ["light", "dark"] as const) {
+      it(`${theme}: caps a resolved slack_file at 400 x 400`, async () => {
+        const page = await harness.open({
+          blocks: image({ slack_file: { url: FILE } }),
+          slackFiles: { [FILE]: { url: GREEN_SQUARE, size: 400_401 } },
+          theme,
+        });
+        expect(await greenExtent(page, ".sbk-image__frame")).toEqual({ width: 400, height: 400 });
+      });
+
+      it(`${theme}: keeps a slack_file square within a narrow message`, async () => {
+        const page = await harness.open(
+          {
+            blocks: image({ slack_file: { url: FILE } }),
+            slackFiles: { [FILE]: { url: GREEN_SQUARE } },
+            theme,
+          },
+          { viewport: { width: 300, height: 700 } },
+        );
+        const { width, height } = await greenExtent(page, ".sbk-image__frame");
+        expect(width).toBeLessThan(300);
+        expect(Math.abs(width - height)).toBeLessThanOrEqual(1);
+      });
+
+      it(`${theme}: lets an image_url fill the message`, async () => {
+        const page = await harness.open({ blocks: image({ image_url: GREEN_SQUARE }), theme });
+        expect((await greenExtent(page, ".sbk-image__frame")).width).toBeGreaterThan(400);
+      });
+    }
+  });
+
   // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
   // one (512px; blocks 432px): what changes when a message is narrow.
   describe("narrow messages", () => {
@@ -3960,11 +3997,63 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
     }
   });
+
+  // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
+  // one (512px; blocks 432px).
+  describe("narrow datetime picker", () => {
+    const DESKTOP = { width: 800, height: 900 };
+    const PHONE = { width: 390, height: 844 };
+
+    // Slack's c-date_time_picker wraps: each field is 208px at most two to a row, 8px apart, and
+    // grows to fill a row on its own when two don't fit (312px each in a phone's 320px block).
+    for (const [label, viewport, stacked] of [
+      ["side by side on desktop", DESKTOP, false],
+      ["stacked on a phone", PHONE, true],
+    ] as const) {
+      it(`lays out a datetime picker's fields ${label}`, async () => {
+        const page = await harness.open(await fixture("contexts/datetimepicker/actions"), {
+          viewport,
+        });
+        const [picker, date, time] = await Promise.all(
+          [
+            ".sbk-datetimepicker",
+            ".sbk-datetimepicker__control",
+            ".sbk-datetimepicker__column + .sbk-datetimepicker__column .sbk-datetimepicker__control",
+          ].map((s) => page.locator(s).first().boundingBox()),
+        );
+        const round = (n: number) => Math.round(n);
+        expect(
+          stacked
+            ? [
+                round(time!.x - date!.x),
+                round(time!.y - (date!.y + date!.height)),
+                round(date!.width),
+                round(time!.width),
+              ]
+            : [
+                round(time!.x - (date!.x + date!.width)),
+                round(time!.y - date!.y),
+                round(date!.width),
+                round(time!.width),
+              ],
+        ).toEqual(
+          stacked
+            ? [0, 8, round(picker!.width), round(picker!.width)]
+            : [8, 0, round((picker!.width - 8) / 2), round((picker!.width - 8) / 2)],
+        );
+      });
+    }
+  });
 });
 
 /** A solid green 72 x 36 image, served inline: the harness answers every network request 404. */
 const WIDE_GREEN_ICON = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="36"><rect width="72" height="36" fill="#00c800"/></svg>',
+)}`;
+
+/** A solid green 1254 x 1254 image, the size of the logo the slack_file references use. */
+const GREEN_SQUARE = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254"><rect width="1254" height="1254" fill="#00c800"/></svg>',
 )}`;
 
 /** How far the green image paints along the element's middle row and middle column, at 1x. */
