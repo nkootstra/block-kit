@@ -1,5 +1,6 @@
 import {
   BlockKitProvider,
+  type DirectoryEntry,
   type HomeTabView,
   Message,
   type ModalView,
@@ -34,6 +35,69 @@ const BUILDER_SAMPLE_FILES: Resolvers = {
       : undefined,
 };
 
+/**
+ * Block Kit Builder fills users, conversations and channels selects with the signed-in workspace's
+ * members and channels. The references are redacted to placeholders ("User One", "channel-one",
+ * grey avatars), so the render lists the same placeholders, in the same order, through
+ * `resolvers.directory`.
+ */
+const GREY_AVATAR =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+const SLACKBOT_AVATAR =
+  "https://a.slack-edge.com/bv1-13-br/slackbot_notification_legacy-2118e8c.svg";
+const BUILDER_USERS: DirectoryEntry[] = [
+  {
+    type: "user",
+    id: "USER_ONE",
+    name: "User One",
+    self: true,
+    presence: "snoozed",
+    avatarUrl: GREY_AVATAR,
+  },
+  {
+    type: "user",
+    id: "USER_TWO",
+    name: "User Two",
+    badge: "AGENT",
+    bot: true,
+    presence: "active",
+    avatarUrl: GREY_AVATAR,
+  },
+  {
+    type: "user",
+    id: "USER_THREE",
+    name: "User Three",
+    realName: "User Three",
+    presence: "active",
+    avatarUrl: GREY_AVATAR,
+  },
+  {
+    type: "user",
+    id: "USER_FOUR",
+    name: "User Four",
+    realName: "User Four",
+    presence: "slackbot",
+    avatarUrl: SLACKBOT_AVATAR,
+  },
+];
+const CHANNEL_NAMES = ["one", "two", "three", "four", "five", "six", "seven"];
+const channel = (n: number, isPrivate: boolean): DirectoryEntry => ({
+  type: "channel",
+  id: `CHANNEL_${CHANNEL_NAMES[n - 1]!.toUpperCase()}`,
+  name: `channel-${CHANNEL_NAMES[n - 1]}`,
+  private: isPrivate,
+});
+
+const BUILDER_RESOLVERS: Resolvers = {
+  ...BUILDER_SAMPLE_FILES,
+  directory: (source) =>
+    source === "users"
+      ? BUILDER_USERS
+      : source === "channels"
+        ? [1, 2, 3].map((n) => channel(n, false))
+        : [...BUILDER_USERS, ...[1, 2, 3, 4, 5, 6, 7].map((n) => channel(n, n <= 4))],
+};
+
 export function RenderOnly({ params }: { params: URLSearchParams }) {
   const name = params.get("render") ?? "";
   // Left unset for light, so the existing references render exactly as before.
@@ -58,7 +122,7 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
         timeZone="Europe/Amsterdam"
         surface={viewType}
         theme={theme}
-        resolvers={BUILDER_SAMPLE_FILES}
+        resolvers={BUILDER_RESOLVERS}
       >
         <div id="sbk-render" style={{ width }}>
           <View view={view} icon={params.get("icon") ?? undefined} />
@@ -73,7 +137,7 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
   const width = Number(params.get("width")) - 36 || undefined;
   return (
     // References were captured in Europe/Amsterdam; their message time was pinned to 12:00 PM.
-    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme} resolvers={BUILDER_SAMPLE_FILES}>
+    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme} resolvers={BUILDER_RESOLVERS}>
       <div id="sbk-render" style={{ width }}>
         <Message
           blocks={result.blocks}

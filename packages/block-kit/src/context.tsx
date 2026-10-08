@@ -83,6 +83,48 @@ export interface Resolvers {
    * `files.info`. Slack files aren't public, so without this an image block shows a placeholder.
    */
   slackFile?: (file: { id?: string; url?: string }) => ResolvedSlackFile | undefined;
+  /**
+   * The people and channels a users, conversations or channels select lists when it opens, the way
+   * Slack lists the workspace's members and channels, in the order to show them. The select filters
+   * them by what's typed. Without it the list stays empty, and typing an ID and pressing Enter picks
+   * it.
+   */
+  directory?: (source: "users" | "conversations" | "channels") => DirectoryEntry[] | undefined;
+}
+
+/** A row in a users, conversations or channels select: a person or a channel. */
+export type DirectoryEntry = DirectoryUser | DirectoryChannel;
+
+/** A person in a users or conversations select, laid out like Slack's member rows. */
+export interface DirectoryUser {
+  type: "user";
+  /** The user ID the select sends, e.g. `U0123456789`. */
+  id: string;
+  /** The display name, shown in bold. */
+  name: string;
+  /** The full name, shown after the presence icon when it's given. */
+  realName?: string;
+  /** A 20px avatar image. Without it the avatar is a grey square. */
+  avatarUrl?: string;
+  /** The signed-in user, marked "(you)". */
+  self?: boolean;
+  /** A small label after the name, e.g. `"APP"` or `"AGENT"` for an app's bot user. */
+  badge?: string;
+  /** A bot user, left out of a conversations select whose `filter` sets `exclude_bot_users`. */
+  bot?: boolean;
+  /** Slack's presence icon after the name. */
+  presence?: "active" | "snoozed" | "slackbot";
+}
+
+/** A channel in a channels or conversations select. */
+export interface DirectoryChannel {
+  type: "channel";
+  /** The channel ID the select sends, e.g. `C0123456789`. */
+  id: string;
+  /** The name, without `#`. */
+  name: string;
+  /** Shows the lock icon instead of `#`. */
+  private?: boolean;
 }
 
 /** What {@link Resolvers.slackFile} returns for a file it knows. */

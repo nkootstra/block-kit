@@ -30,6 +30,8 @@
   --sbk-video-separator: rgb(221, 221, 221);
   --sbk-badge-text: #454447;
   --sbk-badge-bg: rgba(29, 28, 29, 0.06);
+  /* The square behind a person's avatar in a select row, under the image or in its place. */
+  --sbk-select-avatar-bg: #eaeaea;
   --sbk-border: rgba(29, 28, 29, 0.13);
   --sbk-divider: rgba(94, 93, 96, 0.45);
   --sbk-button-border: rgba(94, 93, 96, 0.45);

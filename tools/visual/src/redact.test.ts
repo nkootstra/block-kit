@@ -182,4 +182,34 @@ describe("redact, on the widths frozen around a name", () => {
     expect(styleOf(once, 2)).toBe("overflow:hidden;text-overflow:ellipsis;color:red");
     expect(redact(once)).toBe(once);
   });
+
+  // A select's member row: the name's box also holds an AGENT badge, and a presence dot and the
+  // secondary name follow it inside the member's primary content, which the snapshot froze to fit
+  // the real name. Left frozen, the badge wraps out of view and the secondary name starts where the
+  // real name ended.
+  const member = (name: string) =>
+    `<div class="c-base_entity__text-contents" style="display:flex;width:246px;flex-basis:246px">` +
+    `<span class="c-member__primary_content" style="display:flex;width:117.7px;flex-basis:117.7px;max-width:100%;min-width:0px">` +
+    `<span class="c-member__member-name" style="display:block;width:89.7px;flex-basis:89.7px;min-width:0px">` +
+    `<span class="c-truncate" style="display:flow-root;width:89.7px;overflow-x:hidden">` +
+    `<strong data-qa="member_name" style="font-weight:700">${name}` +
+    `<span class="c-app_badge" style="display:inline-block;width:39.4px">AGENT</span></strong>` +
+    `</span></span>` +
+    `<span class="c-member__presence" style="display:block;width:20px;flex-basis:20px"></span>` +
+    `<span class="c-member__secondary-name" style="display:block"><span class="c-truncate" style="display:flow-root">${name}</span></span>` +
+    `</span></div>`;
+
+  it("releases the sizes a member's name set through its primary content, badge and secondary name included", () => {
+    const out = redact(meta(payload) + member("Real Name"));
+    expect(out).toContain(">User One<span");
+    expect([0, 1, 2, 3, 5, 6].map((n) => styleOf(out, n))).toEqual([
+      "display:flex;width:246px;flex-basis:246px",
+      "display:flex;max-width:100%;min-width:0px",
+      "display:block;min-width:0px",
+      "display:flow-root;overflow-x:hidden",
+      "display:inline-block;width:39.4px",
+      "display:block;width:20px;flex-basis:20px",
+    ]);
+    expect(redact(out)).toBe(out);
+  });
 });

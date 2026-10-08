@@ -8,6 +8,7 @@ import "./preview.css";
 import {
   type BlockAction,
   BlockKitProvider,
+  type DirectoryEntry,
   type HomeTabView,
   type LinkProps,
   Message,
@@ -123,11 +124,27 @@ const PROFILES: Record<string, UserProfile> = {
   },
 };
 
+/** What the users, conversations and channels selects list: the same people and channels. */
+const DIRECTORY: DirectoryEntry[] = [
+  { type: "user", id: "U0ADA", name: "Ada Lovelace", self: true, presence: "active" },
+  { type: "user", id: "U0GRACE", name: "Grace Hopper", presence: "active" },
+  { type: "user", id: "U0ALAN", name: "Alan Turing" },
+  { type: "channel", id: "C0GENERAL", name: "general" },
+  { type: "channel", id: "C0RELEASES", name: "releases" },
+  { type: "channel", id: "C0DESIGN", name: "design", private: true },
+].map((e) =>
+  e.type === "user" ? { ...e, avatarUrl: PROFILES[e.id]?.avatarUrl } : e,
+) as DirectoryEntry[];
+
 const resolvers: Resolvers = {
   user: (id) => USERS[id],
   userProfile: (id) => PROFILES[id],
   channel: (id) => CHANNELS[id],
   usergroup: (id) => USERGROUPS[id],
+  directory: (source) =>
+    DIRECTORY.filter((e) =>
+      source === "users" ? e.type === "user" : source === "channels" ? e.type === "channel" : true,
+    ),
 };
 
 /** Answers external selects from a fixed list of fruit, filtered by what's typed. */
