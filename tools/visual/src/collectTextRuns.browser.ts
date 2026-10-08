@@ -60,6 +60,15 @@ describe("collectTextRuns", () => {
     expect(await runs('<input value="" placeholder="Select a date">')).toEqual([]);
   });
 
+  it("reads nothing from a field whose value isn't a string", async () => {
+    await page.setContent(`<body><div id="root"><input id="field"><p>After</p></div></body>`);
+    await page.evaluate(() =>
+      Object.defineProperty(document.getElementById("field"), "value", { get: () => undefined }),
+    );
+    const found = await page.evaluate(collectTextRuns, "#root");
+    expect(found.map((r) => r.text)).toEqual(["After"]);
+  });
+
   // A typeable select keeps its value in the input but paints it in a layer over the field, with
   // the input's own text transparent (Slack's c-select_input__content, our *__content): only the
   // layer counts.
