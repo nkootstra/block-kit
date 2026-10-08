@@ -33,6 +33,40 @@ describe("collectTextRuns", () => {
     ]);
   });
 
+  // Slack shows some values in an <input> (the datetime picker's "January 1st, 2026") where we
+  // draw text, and the other way round; both read as the same run, where the text paints.
+  it("reads an input's value as a run, where the same text in the same box would sit", async () => {
+    const box =
+      "box-sizing:border-box;width:300px;height:36px;padding:0 8px;border:1px solid #888;font:15px sans-serif";
+    const [fromInput] = await runs(`<input value="January 1st, 2026" style="${box}">`);
+    const [fromText] = await runs(
+      `<div style="${box};display:flex;align-items:center">January 1st, 2026</div>`,
+    );
+    expect(fromInput?.text).toBe("January 1st, 2026");
+    const near = (a = 0, b = 0) => Math.abs(a - b) <= 0.5;
+    expect([
+      near(fromInput?.x, fromText?.x),
+      near(fromInput?.y, fromText?.y),
+      near(fromInput?.width, fromText?.width),
+    ]).toEqual([true, true, true]);
+  });
+
+  it("keeps a field's value in document order among the text runs", async () => {
+    const found = await runs('<p>Before</p><input value="Middle"><p>After</p>');
+    expect(found.map((r) => r.text)).toEqual(["Before", "Middle", "After"]);
+  });
+
+  it("reads nothing from an empty input or its placeholder", async () => {
+    expect(await runs('<input value="" placeholder="Select a date">')).toEqual([]);
+  });
+
+  // A typeable select keeps its value in the input but paints it in a layer over the field, with
+  // the input's own text transparent (Slack's c-select_input__content, our *__content): only the
+  // layer counts.
+  it("reads nothing from an input whose text is transparent", async () => {
+    expect(await runs('<input value="1:37 PM" style="color:rgba(29, 28, 29, 0)">')).toEqual([]);
+  });
+
   it("positions a run relative to the root and reads its font", async () => {
     const [run] = await runs(
       '<p style="margin:0;padding:8px 12px;font-size:13px;font-weight:700;font-style:italic">Hint</p>',
@@ -75,6 +109,46 @@ describe("collectTextRuns", () => {
   it("skips whitespace, hidden and collapsed text", async () => {
     const result = await runs(
       '<span> </span><span style="visibility:hidden">Hidden</span><span style="display:none">Gone</span><span>Shown</span>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown"]);
+  });
+
+  // A time list scrolls its options in a box with overflow: auto; the ones scrolled out of it
+  // aren't on screen, and where each side happens to scroll says nothing about how they render.
+  it("skips text an overflow ancestor scrolls out of view", async () => {
+    const options = Array.from(
+      { length: 10 },
+      (_, i) => `<div style="height:20px">Option ${i}</div>`,
+    );
+    await page.setContent(
+      `<body style="margin:0;font:15px sans-serif"><div id="root"><div id="list" style="height:50px;overflow:auto">${options.join("")}</div></div></body>`,
+    );
+    await page.evaluate(() => {
+      document.getElementById("list")!.scrollTop = 70;
+    });
+    const found = await page.evaluate(collectTextRuns, "#root");
+    // 70px down a 50px window: options 4 and 5 fit, 3 is cut by the top edge and still shows.
+    expect(found.map((r) => r.text)).toEqual(["Option 3", "Option 4", "Option 5"]);
+  });
+
+  it("skips text clipped by an overflow: hidden ancestor, in either direction", async () => {
+    const result = await runs(
+      '<div style="height:20px;overflow:hidden"><p style="margin:0">Shown</p><p style="margin:40px 0 0">Below</p></div>' +
+        '<div style="width:100px;overflow-x:hidden;white-space:nowrap"><span>Left</span><span style="margin-left:200px">Right</span></div>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown", "Left"]);
+  });
+
+  it("keeps text that overflows a box with overflow: visible", async () => {
+    const result = await runs(
+      '<div style="height:20px"><p style="margin:0">Shown</p><p style="margin:40px 0 0">Below</p></div>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown", "Below"]);
+  });
+
+  it("skips an input value its overflow ancestor clips", async () => {
+    const result = await runs(
+      '<div style="height:20px;overflow:hidden"><p style="margin:0">Shown</p><input value="Hidden value" style="margin-top:40px"></div>',
     );
     expect(result.map((r) => r.text)).toEqual(["Shown"]);
   });

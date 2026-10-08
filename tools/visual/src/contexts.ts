@@ -9,6 +9,7 @@
  * go follows Slack's Block Kit reference (the "compatible blocks" of each element).
  */
 import { mkdir, rm } from "node:fs/promises";
+import { Glob } from "bun";
 import { dirname, join } from "node:path";
 import { FIXTURES } from "./lock";
 
@@ -44,7 +45,9 @@ export const ELEMENTS: Record<string, { element: Record<string, unknown>; in: Co
       placeholder: text("Select items"),
       options,
     },
-    in: ["actions", "accessory", "modal-input", "home"],
+    // Block Kit Builder refuses a multi-select in an actions block, in a message and on App
+    // Home: it keeps showing the previous payload, so there's nothing of Slack's to compare.
+    in: ["accessory", "modal-input"],
   },
   users_select: {
     element: { type: "users_select", action_id: "users", placeholder: text("Select a user") },
@@ -56,7 +59,9 @@ export const ELEMENTS: Record<string, { element: Record<string, unknown>; in: Co
       action_id: "multi_users",
       placeholder: text("Select users"),
     },
-    in: ["actions", "accessory", "modal-input", "home"],
+    // Block Kit Builder refuses a multi-select in an actions block, in a message and on App
+    // Home: it keeps showing the previous payload, so there's nothing of Slack's to compare.
+    in: ["accessory", "modal-input"],
   },
   conversations_select: {
     element: {
@@ -102,7 +107,9 @@ export const ELEMENTS: Record<string, { element: Record<string, unknown>; in: Co
   },
   datetimepicker: {
     element: { type: "datetimepicker", action_id: "datetime", initial_date_time: 1767261600 },
-    in: ["actions", "accessory", "modal-input"],
+    // Block Kit Builder refuses it as a section accessory ("Invalid value: "datetimepicker""; an
+    // accessory takes a datepicker or timepicker, not both) and keeps showing the previous payload.
+    in: ["actions", "modal-input"],
   },
   checkboxes: {
     element: { type: "checkboxes", action_id: "checkboxes", options },
@@ -178,17 +185,31 @@ export function fixtureFor(element: string, context: Context): Record<string, un
   }
 }
 
-if (import.meta.main) {
-  const dir = join(FIXTURES, "contexts");
-  await rm(dir, { recursive: true, force: true });
-  let written = 0;
+/**
+ * Writes every allowed pairing's fixture into `dir` and deletes the fixtures of pairings no
+ * longer allowed. Only the fixture JSON is touched: the references and payload recordings captured
+ * next to it are maintainer-owned and stay, so dropping one goes through the lock (lock.ts).
+ */
+export async function writeContexts(dir: string): Promise<number> {
+  const keep = new Set<string>();
   for (const element of Object.keys(ELEMENTS))
-    for (const context of CONTEXTS) {
-      if (!allowed(element, context)) continue;
-      const file = join(dir, element, `${context}.json`);
-      await mkdir(dirname(file), { recursive: true });
-      await Bun.write(file, `${JSON.stringify(fixtureFor(element, context), null, 2)}\n`);
-      written++;
-    }
+    for (const context of CONTEXTS)
+      if (allowed(element, context)) keep.add(join(element, `${context}.json`));
+  for await (const path of new Glob("*/*.json").scan({ cwd: dir, onlyFiles: true }))
+    if (!keep.has(path) && !path.endsWith(".actions.json")) await rm(join(dir, path));
+  for (const path of keep) {
+    const [element = "", file = ""] = path.split("/");
+    const file_ = join(dir, path);
+    await mkdir(dirname(file_), { recursive: true });
+    await Bun.write(
+      file_,
+      `${JSON.stringify(fixtureFor(element, file.replace(/\.json$/, "") as Context), null, 2)}\n`,
+    );
+  }
+  return keep.size;
+}
+
+if (import.meta.main) {
+  const written = await writeContexts(join(FIXTURES, "contexts"));
   console.log(`wrote ${written} context fixtures to fixtures/contexts/`);
 }
