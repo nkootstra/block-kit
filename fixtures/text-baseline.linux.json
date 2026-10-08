@@ -26,10 +26,6 @@
     "missing|(you)|0",
     "missing|User Two|0",
     "missing|User Two|1",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|AGENT|0",
     "extra|Select a conversation|0",
     "extra|Select a channel|0",
     "extra|Select a user|0",
@@ -39,7 +35,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -49,8 +44,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|Select a channel|0",
     "extra|Select a user|0",
@@ -104,7 +97,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -113,17 +105,14 @@
     "missing|channel-two|0",
     "missing|channel-three|0",
     "missing|channel-four|0",
-    "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|😕 Nothing could be found.|0"
   ],
   "catalog/actions/selects-with-initial-options@open+dark": [
     "color|Private channel|0",
+    "missing|undefined|0",
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -132,27 +121,17 @@
     "missing|channel-two|0",
     "missing|channel-three|0",
     "missing|channel-four|0",
-    "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|😕 Nothing could be found.|0"
   ],
   "catalog/actions/timepicker": [],
   "catalog/actions/timepicker@dark": [],
   "catalog/actions/timepicker@mobile": [],
   "catalog/actions/timepicker@open": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0"
   ],
   "catalog/actions/timepicker@open+dark": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0",
+    "color|1:37 PM|0"
   ],
   "catalog/agents/message-feedback": [],
   "catalog/agents/message-feedback@dark": [],
@@ -283,31 +262,8 @@
   "catalog/card-and-carousel/carousel@scrolled": [],
   "catalog/condition/client-platforms": [],
   "catalog/condition/client-platforms@dark": [],
-  "catalog/condition/client-platforms@mobile": [
-    "missing|Sample Card Title|0",
-    "missing|This is a subtitle|0",
-    "missing|Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.|0",
-    "missing|Action Button|0",
-    "missing|Sample Card Title|1",
-    "missing|This is a subtitle|1",
-    "missing|Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.|1",
-    "missing|Action Button|1",
-    "missing|Sample Card Title|2",
-    "missing|This is a subtitle|2",
-    "missing|Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.|2",
-    "missing|Action Button|2",
-    "missing|Sample Card Title|3",
-    "missing|This is a subtitle|3",
-    "missing|Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.|3",
-    "missing|Action Button|3",
-    "extra|Desktop branch|0"
-  ],
   "catalog/container/collapsible": [],
-  "catalog/container/collapsible@collapsed": [
-    "missing|This is a simple rich text block inside a container.|0",
-    "missing|Section title|0",
-    "missing|This is a section block with markdown text inside the container.|0"
-  ],
+  "catalog/container/collapsible@collapsed": [],
   "catalog/container/collapsible@dark": [],
   "catalog/container/collapsible@mobile": [],
   "catalog/container/data-entry-form": [],
@@ -326,11 +282,7 @@
   "catalog/container/icon-plus-subtitle@mobile": [],
   "catalog/container/media-preview": [],
   "catalog/container/media-preview@dark": [],
-  "catalog/container/media-preview@mobile": [
-    "y|Video|0",
-    "y|Watch this short tutorial to learn the basics of Slack � channels, messages, and integrations.|0",
-    "y|Open in Browser|0"
-  ],
+  "catalog/container/media-preview@mobile": [],
   "catalog/container/standard-width": [],
   "catalog/container/standard-width@dark": [],
   "catalog/container/standard-width@mobile": [],
@@ -342,173 +294,101 @@
   "catalog/container/with-image": [],
   "catalog/container/with-image@dark": [],
   "catalog/container/with-image@mobile": [],
-  "catalog/data-visualization/area-multi-series": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
-  "catalog/data-visualization/area-multi-series@dark": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
+  "catalog/data-visualization/area-multi-series": [],
+  "catalog/data-visualization/area-multi-series@dark": [],
   "catalog/data-visualization/area-multi-series@mobile": [
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Desktop|0",
     "x|Mobile|0",
-    "missing|Users|0",
-    "extra|Users|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/area-negative-values": [
-    "missing|Delta ($)|0",
-    "extra|Delta ($)|0"
-  ],
-  "catalog/data-visualization/area-negative-values@dark": [
-    "missing|Delta ($)|0",
-    "extra|Delta ($)|0"
-  ],
+  "catalog/data-visualization/area-negative-values": [],
+  "catalog/data-visualization/area-negative-values@dark": [],
   "catalog/data-visualization/area-negative-values@mobile": [
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Delta|0",
-    "missing|Delta ($)|0",
-    "extra|Delta ($)|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/area-single-series": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
-  "catalog/data-visualization/area-single-series@dark": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
+  "catalog/data-visualization/area-single-series": [],
+  "catalog/data-visualization/area-single-series@dark": [],
   "catalog/data-visualization/area-single-series@mobile": [
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Concurrent users|0",
-    "missing|Users|0",
-    "extra|Users|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/bar-multi-series": [
-    "missing|Messages|0",
-    "extra|Messages|0"
-  ],
-  "catalog/data-visualization/bar-multi-series@dark": [
-    "missing|Messages|0",
-    "extra|Messages|0"
-  ],
+  "catalog/data-visualization/bar-multi-series": [],
+  "catalog/data-visualization/bar-multi-series@dark": [],
   "catalog/data-visualization/bar-multi-series@mobile": [
     "x|Mon|0",
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Desktop|0",
     "x|Mobile|0",
-    "missing|Messages|0",
-    "extra|Messages|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/bar-negative-values": [
-    "missing|People (delta)|0",
-    "extra|People (delta)|0"
-  ],
-  "catalog/data-visualization/bar-negative-values@dark": [
-    "missing|People (delta)|0",
-    "extra|People (delta)|0"
-  ],
+  "catalog/data-visualization/bar-negative-values": [],
+  "catalog/data-visualization/bar-negative-values@dark": [],
   "catalog/data-visualization/bar-negative-values@mobile": [
     "x|Mon|0",
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Delta|0",
-    "missing|People (delta)|0",
-    "extra|People (delta)|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/bar-single-series": [
-    "missing|Messages|0",
-    "extra|Messages|0"
-  ],
-  "catalog/data-visualization/bar-single-series@dark": [
-    "missing|Messages|0",
-    "extra|Messages|0"
-  ],
+  "catalog/data-visualization/bar-single-series": [],
+  "catalog/data-visualization/bar-single-series@dark": [],
   "catalog/data-visualization/bar-single-series@mobile": [
     "x|Mon|0",
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Messages|1",
-    "missing|Messages|0",
-    "extra|Messages|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/line-multi-series": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
-  "catalog/data-visualization/line-multi-series@dark": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
+  "catalog/data-visualization/line-multi-series": [],
+  "catalog/data-visualization/line-multi-series@dark": [],
   "catalog/data-visualization/line-multi-series@mobile": [
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Desktop|0",
     "x|Mobile|0",
-    "missing|Users|0",
-    "extra|Users|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/line-negative-values": [
-    "missing|Delta ($)|0",
-    "extra|Delta ($)|0"
-  ],
-  "catalog/data-visualization/line-negative-values@dark": [
-    "missing|Delta ($)|0",
-    "extra|Delta ($)|0"
-  ],
+  "catalog/data-visualization/line-negative-values": [],
+  "catalog/data-visualization/line-negative-values@dark": [],
   "catalog/data-visualization/line-negative-values@mobile": [
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Delta|0",
-    "missing|Delta ($)|0",
-    "extra|Delta ($)|0"
+    "extra|Fri|0"
   ],
-  "catalog/data-visualization/line-single-series": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
-  "catalog/data-visualization/line-single-series@dark": [
-    "missing|Users|0",
-    "extra|Users|0"
-  ],
+  "catalog/data-visualization/line-single-series": [],
+  "catalog/data-visualization/line-single-series@dark": [],
   "catalog/data-visualization/line-single-series@mobile": [
     "x|Tue|0",
     "x|Wed|0",
     "x|Thu|0",
-    "x|Fri|0",
     "x|Day|0",
     "x|Active users|0",
-    "missing|Users|0",
-    "extra|Users|0"
+    "extra|Fri|0"
   ],
   "catalog/data-visualization/pie-dominant-segment": [],
   "catalog/data-visualization/pie-dominant-segment@dark": [],
@@ -594,7 +474,6 @@
     "missing|(you)|0",
     "missing|Enter|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -606,7 +485,6 @@
     "missing|(you)|0",
     "missing|Enter|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -631,20 +509,11 @@
   "catalog/input/timepicker@dark": [],
   "catalog/input/timepicker@mobile": [],
   "catalog/input/timepicker@open": [
-    "extra|6:00 PM|0",
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0"
   ],
   "catalog/input/timepicker@open+dark": [
-    "extra|6:00 PM|0",
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0",
+    "color|1:37 PM|0"
   ],
   "catalog/markdown/code": [
     "missing|Markdown|0"
@@ -710,30 +579,12 @@
   "catalog/rich-text/strikethrough": [],
   "catalog/rich-text/strikethrough@dark": [],
   "catalog/rich-text/strikethrough@mobile": [],
-  "catalog/section/button": [
-    "missing|Click Me|0",
-    "extra|Click Me|0"
-  ],
-  "catalog/section/button@dark": [
-    "missing|Click Me|0",
-    "extra|Click Me|0"
-  ],
-  "catalog/section/button@mobile": [
-    "missing|Click Me|0",
-    "extra|Click Me|0"
-  ],
-  "catalog/section/checkboxes": [
-    "missing|This is a section block with checkboxes.|0",
-    "extra|This is a section block with checkboxes.|0"
-  ],
-  "catalog/section/checkboxes@dark": [
-    "missing|This is a section block with checkboxes.|0",
-    "extra|This is a section block with checkboxes.|0"
-  ],
-  "catalog/section/checkboxes@mobile": [
-    "missing|This is a section block with checkboxes.|0",
-    "extra|This is a section block with checkboxes.|0"
-  ],
+  "catalog/section/button": [],
+  "catalog/section/button@dark": [],
+  "catalog/section/button@mobile": [],
+  "catalog/section/checkboxes": [],
+  "catalog/section/checkboxes@dark": [],
+  "catalog/section/checkboxes@mobile": [],
   "catalog/section/datepicker": [],
   "catalog/section/datepicker@dark": [],
   "catalog/section/datepicker@mobile": [],
@@ -742,29 +593,14 @@
   "catalog/section/image": [],
   "catalog/section/image@dark": [],
   "catalog/section/image@mobile": [],
-  "catalog/section/link-button": [
-    "missing|Click Me|0",
-    "extra|Click Me|0"
-  ],
-  "catalog/section/link-button@dark": [
-    "missing|Click Me|0",
-    "extra|Click Me|0"
-  ],
-  "catalog/section/link-button@mobile": [
-    "missing|Click Me|0",
-    "extra|Click Me|0"
-  ],
+  "catalog/section/link-button": [],
+  "catalog/section/link-button@dark": [],
+  "catalog/section/link-button@mobile": [],
   "catalog/section/markdown": [],
   "catalog/section/markdown@dark": [],
   "catalog/section/markdown@mobile": [],
-  "catalog/section/multi-conversations-select": [
-    "missing|Select conversations|0",
-    "extra|Select conversations|0"
-  ],
-  "catalog/section/multi-conversations-select@dark": [
-    "missing|Select conversations|0",
-    "extra|Select conversations|0"
-  ],
+  "catalog/section/multi-conversations-select": [],
+  "catalog/section/multi-conversations-select@dark": [],
   "catalog/section/multi-conversations-select@dialog": [
     "missing|Select conversations|1"
   ],
@@ -772,18 +608,9 @@
     "color|Select conversations|0",
     "missing|Select conversations|1"
   ],
-  "catalog/section/multi-conversations-select@mobile": [
-    "missing|Select conversations|0",
-    "extra|Select conversations|0"
-  ],
-  "catalog/section/multi-static-select": [
-    "missing|Select options|0",
-    "extra|Select options|0"
-  ],
-  "catalog/section/multi-static-select@dark": [
-    "missing|Select options|0",
-    "extra|Select options|0"
-  ],
+  "catalog/section/multi-conversations-select@mobile": [],
+  "catalog/section/multi-static-select": [],
+  "catalog/section/multi-static-select@dark": [],
   "catalog/section/multi-static-select@dialog": [
     "missing|Select options|1"
   ],
@@ -791,10 +618,7 @@
     "color|Select options|0",
     "missing|Select options|1"
   ],
-  "catalog/section/multi-static-select@mobile": [
-    "missing|Select options|0",
-    "extra|Select options|0"
-  ],
+  "catalog/section/multi-static-select@mobile": [],
   "catalog/section/overflow": [],
   "catalog/section/overflow@dark": [],
   "catalog/section/overflow@mobile": [],
@@ -803,18 +627,9 @@
   "catalog/section/plain-text": [],
   "catalog/section/plain-text@dark": [],
   "catalog/section/plain-text@mobile": [],
-  "catalog/section/radio-buttons": [
-    "missing|Section block with radio buttons|0",
-    "extra|Section block with radio buttons|0"
-  ],
-  "catalog/section/radio-buttons@dark": [
-    "missing|Section block with radio buttons|0",
-    "extra|Section block with radio buttons|0"
-  ],
-  "catalog/section/radio-buttons@mobile": [
-    "missing|Section block with radio buttons|0",
-    "extra|Section block with radio buttons|0"
-  ],
+  "catalog/section/radio-buttons": [],
+  "catalog/section/radio-buttons@dark": [],
+  "catalog/section/radio-buttons@mobile": [],
   "catalog/section/static-select": [],
   "catalog/section/static-select@dark": [],
   "catalog/section/static-select@mobile": [],
@@ -823,31 +638,15 @@
   "catalog/section/text-fields": [],
   "catalog/section/text-fields@dark": [],
   "catalog/section/text-fields@mobile": [],
-  "catalog/section/timepicker": [
-    "missing|1:37 PM|0",
-    "extra|1:37 PM|0"
-  ],
-  "catalog/section/timepicker@dark": [
-    "missing|1:37 PM|0",
-    "extra|1:37 PM|0"
-  ],
-  "catalog/section/timepicker@mobile": [
-    "missing|1:37 PM|0",
-    "extra|1:37 PM|0"
-  ],
+  "catalog/section/timepicker": [],
+  "catalog/section/timepicker@dark": [],
+  "catalog/section/timepicker@mobile": [],
   "catalog/section/timepicker@open": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0"
   ],
   "catalog/section/timepicker@open+dark": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0",
+    "color|1:37 PM|0"
   ],
   "catalog/section/users-select": [
     "extra|Select a user|0"
@@ -862,7 +661,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -874,7 +672,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -932,13 +729,12 @@
   "catalog/table/basic-data-table@mobile": [
     "width|Acme Expansion Deal|0",
     "width|Weather Forecast Integration|0",
-    "x|review|0",
-    "width|review|0",
     "width|Retail Partner Portal|0",
     "width|Sustainable Materials Sourcing|0",
     "width|Global Distribution Network|0",
     "x|proposal sent|0",
-    "width|proposal sent|0"
+    "width|proposal sent|0",
+    "missing|review|0"
   ],
   "catalog/table/numeric-sort-data-table": [],
   "catalog/table/numeric-sort-data-table@dark": [],
@@ -972,18 +768,9 @@
   "catalog/table/simple-table": [],
   "catalog/table/simple-table@dark": [],
   "catalog/table/simple-table@mobile": [],
-  "contexts/button/accessory": [
-    "missing|Click me|0",
-    "extra|Click me|0"
-  ],
-  "contexts/button/accessory@dark": [
-    "missing|Click me|0",
-    "extra|Click me|0"
-  ],
-  "contexts/button/accessory@mobile": [
-    "missing|Click me|0",
-    "extra|Click me|0"
-  ],
+  "contexts/button/accessory": [],
+  "contexts/button/accessory@dark": [],
+  "contexts/button/accessory@mobile": [],
   "contexts/button/actions": [],
   "contexts/button/actions@dark": [],
   "contexts/button/actions@mobile": [],
@@ -1079,18 +866,9 @@
     "extra|Select a channel|0",
     "extra|😕 Nothing could be found.|0"
   ],
-  "contexts/checkboxes/accessory": [
-    "missing|A section with an accessory|0",
-    "extra|A section with an accessory|0"
-  ],
-  "contexts/checkboxes/accessory@dark": [
-    "missing|A section with an accessory|0",
-    "extra|A section with an accessory|0"
-  ],
-  "contexts/checkboxes/accessory@mobile": [
-    "missing|A section with an accessory|0",
-    "extra|A section with an accessory|0"
-  ],
+  "contexts/checkboxes/accessory": [],
+  "contexts/checkboxes/accessory@dark": [],
+  "contexts/checkboxes/accessory@mobile": [],
   "contexts/checkboxes/actions": [],
   "contexts/checkboxes/actions@dark": [],
   "contexts/checkboxes/actions@mobile": [],
@@ -1111,7 +889,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1121,8 +898,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1130,7 +905,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1140,8 +914,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1158,7 +930,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1168,8 +939,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1177,7 +946,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1187,8 +955,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1202,7 +968,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1212,8 +977,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1221,7 +984,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1231,8 +993,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1246,7 +1006,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1256,8 +1015,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1265,7 +1022,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -1275,8 +1031,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|😕 Nothing could be found.|0"
   ],
@@ -1294,558 +1048,185 @@
   "contexts/datepicker/home@dark": [],
   "contexts/datepicker/home@open": [
     "x|April 1990|0",
-    "y|April 1990|0",
     "x|Su|0",
-    "y|Su|0",
     "x|Mo|0",
-    "y|Mo|0",
     "x|Tu|0",
-    "y|Tu|0",
     "x|We|0",
-    "y|We|0",
     "x|Th|0",
-    "y|Th|0",
     "x|Fr|0",
-    "y|Fr|0",
     "x|Sa|0",
-    "y|Sa|0",
     "x|1|0",
-    "y|1|0",
     "x|2|0",
-    "y|2|0",
     "x|3|0",
-    "y|3|0",
     "x|4|0",
-    "y|4|0",
     "x|5|0",
-    "y|5|0",
     "x|6|0",
-    "y|6|0",
     "x|7|0",
-    "y|7|0",
     "x|8|0",
-    "y|8|0",
     "x|9|0",
-    "y|9|0",
     "x|10|0",
-    "y|10|0",
     "x|11|0",
-    "y|11|0",
     "x|12|0",
-    "y|12|0",
     "x|13|0",
-    "y|13|0",
     "x|14|0",
-    "y|14|0",
     "x|15|0",
-    "y|15|0",
     "x|16|0",
-    "y|16|0",
     "x|17|0",
-    "y|17|0",
     "x|18|0",
-    "y|18|0",
     "x|19|0",
-    "y|19|0",
     "x|20|0",
-    "y|20|0",
     "x|21|0",
-    "y|21|0",
     "x|22|0",
-    "y|22|0",
     "x|23|0",
-    "y|23|0",
     "x|24|0",
-    "y|24|0",
     "x|25|0",
-    "y|25|0",
     "x|26|0",
-    "y|26|0",
     "x|27|0",
-    "y|27|0",
     "x|28|0",
-    "y|28|0",
     "x|29|0",
-    "y|29|0",
-    "x|30|0",
-    "y|30|0"
+    "x|30|0"
   ],
   "contexts/datepicker/home@open+dark": [
     "x|April 1990|0",
-    "y|April 1990|0",
     "x|Su|0",
-    "y|Su|0",
     "x|Mo|0",
-    "y|Mo|0",
     "x|Tu|0",
-    "y|Tu|0",
     "x|We|0",
-    "y|We|0",
     "x|Th|0",
-    "y|Th|0",
     "x|Fr|0",
-    "y|Fr|0",
     "x|Sa|0",
-    "y|Sa|0",
     "x|1|0",
-    "y|1|0",
     "x|2|0",
-    "y|2|0",
     "x|3|0",
-    "y|3|0",
     "x|4|0",
-    "y|4|0",
     "x|5|0",
-    "y|5|0",
     "x|6|0",
-    "y|6|0",
     "x|7|0",
-    "y|7|0",
     "x|8|0",
-    "y|8|0",
     "x|9|0",
-    "y|9|0",
     "x|10|0",
-    "y|10|0",
     "x|11|0",
-    "y|11|0",
     "x|12|0",
-    "y|12|0",
     "x|13|0",
-    "y|13|0",
     "x|14|0",
-    "y|14|0",
     "x|15|0",
-    "y|15|0",
     "x|16|0",
-    "y|16|0",
     "x|17|0",
-    "y|17|0",
     "x|18|0",
-    "y|18|0",
     "x|19|0",
-    "y|19|0",
     "x|20|0",
-    "y|20|0",
     "x|21|0",
-    "y|21|0",
     "x|22|0",
-    "y|22|0",
     "x|23|0",
-    "y|23|0",
     "x|24|0",
-    "y|24|0",
     "x|25|0",
-    "y|25|0",
     "x|26|0",
-    "y|26|0",
     "x|27|0",
-    "y|27|0",
     "x|28|0",
-    "y|28|0",
     "x|29|0",
-    "y|29|0",
-    "x|30|0",
-    "y|30|0"
+    "x|30|0"
   ],
-  "contexts/datepicker/modal-input": [
-    "y|Cancel|0",
-    "y|Submit|0"
-  ],
-  "contexts/datepicker/modal-input@dark": [
-    "y|Cancel|0",
-    "y|Submit|0"
-  ],
+  "contexts/datepicker/modal-input": [],
+  "contexts/datepicker/modal-input@dark": [],
   "contexts/datepicker/modal-input@open": [
-    "y|Cancel|0",
-    "y|Submit|0",
     "x|April 1990|0",
-    "y|April 1990|0",
     "x|Su|0",
-    "y|Su|0",
     "x|Mo|0",
-    "y|Mo|0",
     "x|Tu|0",
-    "y|Tu|0",
     "x|We|0",
-    "y|We|0",
     "x|Th|0",
-    "y|Th|0",
     "x|Fr|0",
-    "y|Fr|0",
     "x|Sa|0",
-    "y|Sa|0",
     "x|1|0",
-    "y|1|0",
     "x|2|0",
-    "y|2|0",
     "x|3|0",
-    "y|3|0",
     "x|4|0",
-    "y|4|0",
     "x|5|0",
-    "y|5|0",
     "x|6|0",
-    "y|6|0",
     "x|7|0",
-    "y|7|0",
     "x|8|0",
-    "y|8|0",
     "x|9|0",
-    "y|9|0",
     "x|10|0",
-    "y|10|0",
     "x|11|0",
-    "y|11|0",
     "x|12|0",
-    "y|12|0",
     "x|13|0",
-    "y|13|0",
     "x|14|0",
-    "y|14|0",
     "x|15|0",
-    "y|15|0",
     "x|16|0",
-    "y|16|0",
     "x|17|0",
-    "y|17|0",
     "x|18|0",
-    "y|18|0",
     "x|19|0",
-    "y|19|0",
     "x|20|0",
-    "y|20|0",
     "x|21|0",
-    "y|21|0",
     "x|22|0",
-    "y|22|0",
     "x|23|0",
-    "y|23|0",
     "x|24|0",
-    "y|24|0",
     "x|25|0",
-    "y|25|0",
     "x|26|0",
-    "y|26|0",
     "x|27|0",
-    "y|27|0",
     "x|28|0",
-    "y|28|0",
     "x|29|0",
-    "y|29|0",
-    "x|30|0",
-    "y|30|0"
+    "x|30|0"
   ],
   "contexts/datepicker/modal-input@open+dark": [
-    "y|Cancel|0",
-    "y|Submit|0",
     "x|April 1990|0",
-    "y|April 1990|0",
     "x|Su|0",
-    "y|Su|0",
     "x|Mo|0",
-    "y|Mo|0",
     "x|Tu|0",
-    "y|Tu|0",
     "x|We|0",
-    "y|We|0",
     "x|Th|0",
-    "y|Th|0",
     "x|Fr|0",
-    "y|Fr|0",
     "x|Sa|0",
-    "y|Sa|0",
     "x|1|0",
-    "y|1|0",
     "x|2|0",
-    "y|2|0",
     "x|3|0",
-    "y|3|0",
     "x|4|0",
-    "y|4|0",
     "x|5|0",
-    "y|5|0",
     "x|6|0",
-    "y|6|0",
     "x|7|0",
-    "y|7|0",
     "x|8|0",
-    "y|8|0",
     "x|9|0",
-    "y|9|0",
     "x|10|0",
-    "y|10|0",
     "x|11|0",
-    "y|11|0",
     "x|12|0",
-    "y|12|0",
     "x|13|0",
-    "y|13|0",
     "x|14|0",
-    "y|14|0",
     "x|15|0",
-    "y|15|0",
     "x|16|0",
-    "y|16|0",
     "x|17|0",
-    "y|17|0",
     "x|18|0",
-    "y|18|0",
     "x|19|0",
-    "y|19|0",
     "x|20|0",
-    "y|20|0",
     "x|21|0",
-    "y|21|0",
     "x|22|0",
-    "y|22|0",
     "x|23|0",
-    "y|23|0",
     "x|24|0",
-    "y|24|0",
     "x|25|0",
-    "y|25|0",
     "x|26|0",
-    "y|26|0",
     "x|27|0",
-    "y|27|0",
     "x|28|0",
-    "y|28|0",
     "x|29|0",
-    "y|29|0",
-    "x|30|0",
-    "y|30|0"
+    "x|30|0"
   ],
-  "contexts/datetimepicker/accessory": [
-    "missing|Label|0",
-    "extra|A section with an accessory|0",
-    "extra|January 1st, 2026|0",
-    "extra|11:00 AM|0",
-    "extra|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
-  "contexts/datetimepicker/accessory@dark": [
-    "missing|Label|0",
-    "extra|A section with an accessory|0",
-    "extra|January 1st, 2026|0",
-    "extra|11:00 AM|0",
-    "extra|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
-  "contexts/datetimepicker/accessory@mobile": [
-    "extra|A section with an accessory|0",
-    "extra|January 1st, 2026|0",
-    "extra|11:00 AM|0",
-    "extra|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
-  "contexts/datetimepicker/accessory@open": [
-    "x|Su|0",
-    "y|Su|0",
-    "x|Mo|0",
-    "y|Mo|0",
-    "x|Tu|0",
-    "y|Tu|0",
-    "x|We|0",
-    "y|We|0",
-    "x|Th|0",
-    "y|Th|0",
-    "x|Fr|0",
-    "y|Fr|0",
-    "x|Sa|0",
-    "y|Sa|0",
-    "x|1|0",
-    "y|1|0",
-    "color|1|0",
-    "x|2|0",
-    "y|2|0",
-    "x|3|0",
-    "y|3|0",
-    "x|4|0",
-    "y|4|0",
-    "x|5|0",
-    "y|5|0",
-    "x|6|0",
-    "y|6|0",
-    "x|7|0",
-    "y|7|0",
-    "x|8|0",
-    "y|8|0",
-    "x|9|0",
-    "y|9|0",
-    "x|10|0",
-    "y|10|0",
-    "x|11|0",
-    "y|11|0",
-    "x|12|0",
-    "y|12|0",
-    "x|13|0",
-    "y|13|0",
-    "x|14|0",
-    "y|14|0",
-    "x|15|0",
-    "y|15|0",
-    "x|16|0",
-    "y|16|0",
-    "x|17|0",
-    "y|17|0",
-    "x|18|0",
-    "y|18|0",
-    "x|19|0",
-    "y|19|0",
-    "x|20|0",
-    "y|20|0",
-    "x|21|0",
-    "y|21|0",
-    "x|22|0",
-    "y|22|0",
-    "x|23|0",
-    "y|23|0",
-    "x|24|0",
-    "y|24|0",
-    "x|25|0",
-    "y|25|0",
-    "x|26|0",
-    "y|26|0",
-    "x|27|0",
-    "y|27|0",
-    "x|28|0",
-    "y|28|0",
-    "color|28|0",
-    "x|29|0",
-    "y|29|0",
-    "x|30|0",
-    "y|30|0",
-    "x|Clear selection|0",
-    "y|Clear selection|0",
-    "missing|Label|0",
-    "missing|April 1990|0",
-    "extra|A section with an accessory|0",
-    "extra|January 1st, 2026|0",
-    "extra|11:00 AM|0",
-    "extra|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|January 2026|0",
-    "extra|31|0"
-  ],
-  "contexts/datetimepicker/accessory@open+dark": [
-    "x|Su|0",
-    "y|Su|0",
-    "x|Mo|0",
-    "y|Mo|0",
-    "x|Tu|0",
-    "y|Tu|0",
-    "x|We|0",
-    "y|We|0",
-    "x|Th|0",
-    "y|Th|0",
-    "x|Fr|0",
-    "y|Fr|0",
-    "x|Sa|0",
-    "y|Sa|0",
-    "x|1|0",
-    "y|1|0",
-    "color|1|0",
-    "x|2|0",
-    "y|2|0",
-    "x|3|0",
-    "y|3|0",
-    "x|4|0",
-    "y|4|0",
-    "x|5|0",
-    "y|5|0",
-    "x|6|0",
-    "y|6|0",
-    "x|7|0",
-    "y|7|0",
-    "x|8|0",
-    "y|8|0",
-    "x|9|0",
-    "y|9|0",
-    "x|10|0",
-    "y|10|0",
-    "x|11|0",
-    "y|11|0",
-    "x|12|0",
-    "y|12|0",
-    "x|13|0",
-    "y|13|0",
-    "x|14|0",
-    "y|14|0",
-    "x|15|0",
-    "y|15|0",
-    "x|16|0",
-    "y|16|0",
-    "x|17|0",
-    "y|17|0",
-    "x|18|0",
-    "y|18|0",
-    "x|19|0",
-    "y|19|0",
-    "x|20|0",
-    "y|20|0",
-    "x|21|0",
-    "y|21|0",
-    "x|22|0",
-    "y|22|0",
-    "x|23|0",
-    "y|23|0",
-    "x|24|0",
-    "y|24|0",
-    "x|25|0",
-    "y|25|0",
-    "x|26|0",
-    "y|26|0",
-    "x|27|0",
-    "y|27|0",
-    "x|28|0",
-    "y|28|0",
-    "color|28|0",
-    "x|29|0",
-    "y|29|0",
-    "x|30|0",
-    "y|30|0",
-    "x|Clear selection|0",
-    "y|Clear selection|0",
-    "color|Clear selection|0",
-    "missing|Label|0",
-    "missing|April 1990|0",
-    "extra|A section with an accessory|0",
-    "extra|January 1st, 2026|0",
-    "extra|11:00 AM|0",
-    "extra|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|January 2026|0",
-    "extra|31|0"
-  ],
-  "contexts/datetimepicker/actions": [
-    "extra|January 1st, 2026|0"
-  ],
-  "contexts/datetimepicker/actions@dark": [
-    "extra|January 1st, 2026|0"
-  ],
+  "contexts/datetimepicker/actions": [],
+  "contexts/datetimepicker/actions@dark": [],
   "contexts/datetimepicker/actions@mobile": [
     "x|11:00 AM|0",
     "y|11:00 AM|0",
     "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|January 1st, 2026|0"
+    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
   ],
-  "contexts/datetimepicker/actions@open": [
-    "extra|January 1st, 2026|0"
-  ],
+  "contexts/datetimepicker/actions@open": [],
   "contexts/datetimepicker/actions@open+dark": [
-    "color|Clear selection|0",
-    "extra|January 1st, 2026|0"
+    "color|Clear selection|0"
   ],
-  "contexts/datetimepicker/modal-input": [
-    "extra|January 1st, 2026|0"
-  ],
-  "contexts/datetimepicker/modal-input@dark": [
-    "extra|January 1st, 2026|0"
-  ],
+  "contexts/datetimepicker/modal-input": [],
+  "contexts/datetimepicker/modal-input@dark": [],
   "contexts/datetimepicker/modal-input@open": [
-    "extra|January 1st, 2026|0",
     "extra|Clear selection|0"
   ],
   "contexts/datetimepicker/modal-input@open+dark": [
-    "extra|January 1st, 2026|0",
     "extra|Clear selection|0"
   ],
   "contexts/email_text_input/modal-input": [],
@@ -1870,14 +1251,8 @@
   "contexts/external_select/modal-input@open+dark": [],
   "contexts/file_input/modal-input": [],
   "contexts/file_input/modal-input@dark": [],
-  "contexts/multi_static_select/accessory": [
-    "missing|Select items|0",
-    "extra|Select items|0"
-  ],
-  "contexts/multi_static_select/accessory@dark": [
-    "missing|Select items|0",
-    "extra|Select items|0"
-  ],
+  "contexts/multi_static_select/accessory": [],
+  "contexts/multi_static_select/accessory@dark": [],
   "contexts/multi_static_select/accessory@dialog": [
     "missing|Select items|1"
   ],
@@ -1885,93 +1260,13 @@
     "color|Select items|0",
     "missing|Select items|1"
   ],
-  "contexts/multi_static_select/accessory@mobile": [
-    "missing|Select items|0",
-    "extra|Select items|0"
-  ],
-  "contexts/multi_static_select/actions": [
-    "x|Select items|0",
-    "width|Select items|0",
-    "font-weight|Select items|0",
-    "color|Select items|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_static_select/actions@dark": [
-    "x|Select items|0",
-    "width|Select items|0",
-    "font-weight|Select items|0",
-    "color|Select items|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_static_select/actions@mobile": [
-    "x|Select items|0",
-    "width|Select items|0",
-    "font-weight|Select items|0",
-    "color|Select items|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_static_select/actions@open": [
-    "missing|Label|0",
-    "missing|Type a minimum of 3 characters to see options.|0",
-    "extra|Select items|0",
-    "extra|Option 1|0",
-    "extra|Enter|0",
-    "extra|Option 2|0",
-    "extra|Option 3|0"
-  ],
-  "contexts/multi_static_select/actions@open+dark": [
-    "missing|Label|0",
-    "missing|Type a minimum of 3 characters to see options.|0",
-    "extra|Select items|0",
-    "extra|Option 1|0",
-    "extra|Enter|0",
-    "extra|Option 2|0",
-    "extra|Option 3|0"
-  ],
-  "contexts/multi_static_select/home": [
-    "x|Select items|0",
-    "width|Select items|0",
-    "font-weight|Select items|0",
-    "color|Select items|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_static_select/home@dark": [
-    "x|Select items|0",
-    "width|Select items|0",
-    "font-weight|Select items|0",
-    "color|Select items|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_static_select/home@open": [
-    "missing|Label|0",
-    "missing|Type a minimum of 3 characters to see options.|0",
-    "extra|Select items|0",
-    "extra|Option 1|0",
-    "extra|Enter|0",
-    "extra|Option 2|0",
-    "extra|Option 3|0"
-  ],
-  "contexts/multi_static_select/home@open+dark": [
-    "missing|Label|0",
-    "missing|Type a minimum of 3 characters to see options.|0",
-    "extra|Select items|0",
-    "extra|Option 1|0",
-    "extra|Enter|0",
-    "extra|Option 2|0",
-    "extra|Option 3|0"
-  ],
+  "contexts/multi_static_select/accessory@mobile": [],
   "contexts/multi_static_select/modal-input": [],
   "contexts/multi_static_select/modal-input@dark": [],
   "contexts/multi_static_select/modal-input@open": [],
   "contexts/multi_static_select/modal-input@open+dark": [],
-  "contexts/multi_users_select/accessory": [
-    "missing|Select users|0",
-    "extra|Select users|0"
-  ],
-  "contexts/multi_users_select/accessory@dark": [
-    "missing|Select users|0",
-    "extra|Select users|0"
-  ],
+  "contexts/multi_users_select/accessory": [],
+  "contexts/multi_users_select/accessory@dark": [],
   "contexts/multi_users_select/accessory@dialog": [
     "missing|Select users|1"
   ],
@@ -1979,85 +1274,7 @@
     "color|Select users|0",
     "missing|Select users|1"
   ],
-  "contexts/multi_users_select/accessory@mobile": [
-    "missing|Select users|0",
-    "extra|Select users|0"
-  ],
-  "contexts/multi_users_select/actions": [
-    "x|Select users|0",
-    "width|Select users|0",
-    "font-weight|Select users|0",
-    "color|Select users|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_users_select/actions@dark": [
-    "x|Select users|0",
-    "width|Select users|0",
-    "font-weight|Select users|0",
-    "color|Select users|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_users_select/actions@mobile": [
-    "x|Select users|0",
-    "width|Select users|0",
-    "font-weight|Select users|0",
-    "color|Select users|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_users_select/actions@open": [
-    "missing|Label|0",
-    "missing|Select items|0",
-    "missing|Option 1|0",
-    "missing|Enter|0",
-    "missing|Option 2|0",
-    "missing|Option 3|0",
-    "extra|Select users|0",
-    "extra|😕 Nothing could be found.|0"
-  ],
-  "contexts/multi_users_select/actions@open+dark": [
-    "missing|Label|0",
-    "missing|Select items|0",
-    "missing|Option 1|0",
-    "missing|Enter|0",
-    "missing|Option 2|0",
-    "missing|Option 3|0",
-    "extra|Select users|0",
-    "extra|😕 Nothing could be found.|0"
-  ],
-  "contexts/multi_users_select/home": [
-    "x|Select users|0",
-    "width|Select users|0",
-    "font-weight|Select users|0",
-    "color|Select users|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_users_select/home@dark": [
-    "x|Select users|0",
-    "width|Select users|0",
-    "font-weight|Select users|0",
-    "color|Select users|0",
-    "missing|A section with an accessory|0"
-  ],
-  "contexts/multi_users_select/home@open": [
-    "missing|Label|0",
-    "missing|Select items|0",
-    "missing|Option 1|0",
-    "missing|Enter|0",
-    "missing|Option 2|0",
-    "missing|Option 3|0",
-    "extra|Select users|0",
-    "extra|😕 Nothing could be found.|0"
-  ],
-  "contexts/multi_users_select/home@open+dark": [
-    "missing|Label|0",
-    "missing|Select items|0",
-    "missing|Option 1|0",
-    "missing|Enter|0",
-    "missing|Option 2|0",
-    "missing|Option 3|0",
-    "extra|Select users|0",
-    "extra|😕 Nothing could be found.|0"
-  ],
+  "contexts/multi_users_select/accessory@mobile": [],
   "contexts/multi_users_select/modal-input": [],
   "contexts/multi_users_select/modal-input@dark": [],
   "contexts/multi_users_select/modal-input@open": [
@@ -2065,7 +1282,6 @@
     "missing|(you)|0",
     "missing|Enter|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2076,7 +1292,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2103,18 +1318,9 @@
   "contexts/overflow/home@open+dark": [],
   "contexts/plain_text_input/modal-input": [],
   "contexts/plain_text_input/modal-input@dark": [],
-  "contexts/radio_buttons/accessory": [
-    "missing|A section with an accessory|0",
-    "extra|A section with an accessory|0"
-  ],
-  "contexts/radio_buttons/accessory@dark": [
-    "missing|A section with an accessory|0",
-    "extra|A section with an accessory|0"
-  ],
-  "contexts/radio_buttons/accessory@mobile": [
-    "missing|A section with an accessory|0",
-    "extra|A section with an accessory|0"
-  ],
+  "contexts/radio_buttons/accessory": [],
+  "contexts/radio_buttons/accessory@dark": [],
+  "contexts/radio_buttons/accessory@mobile": [],
   "contexts/radio_buttons/actions": [],
   "contexts/radio_buttons/actions@dark": [],
   "contexts/radio_buttons/actions@mobile": [],
@@ -2146,184 +1352,37 @@
   "contexts/static_select/modal-input@dark": [],
   "contexts/static_select/modal-input@open": [],
   "contexts/static_select/modal-input@open+dark": [],
-  "contexts/timepicker/accessory": [
-    "missing|1:37 PM|0",
-    "extra|1:37 PM|0"
-  ],
-  "contexts/timepicker/accessory@dark": [
-    "missing|1:37 PM|0",
-    "extra|1:37 PM|0"
-  ],
-  "contexts/timepicker/accessory@mobile": [
-    "missing|1:37 PM|0",
-    "extra|1:37 PM|0"
-  ],
+  "contexts/timepicker/accessory": [],
+  "contexts/timepicker/accessory@dark": [],
+  "contexts/timepicker/accessory@mobile": [],
   "contexts/timepicker/accessory@open": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0"
   ],
   "contexts/timepicker/accessory@open+dark": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0",
+    "color|1:37 PM|0"
   ],
   "contexts/timepicker/actions": [],
   "contexts/timepicker/actions@dark": [],
   "contexts/timepicker/actions@mobile": [],
   "contexts/timepicker/actions@open": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "y|1:37 PM|0"
   ],
   "contexts/timepicker/actions@open+dark": [
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
-  ],
-  "contexts/timepicker/home": [
-    "x|1:37 PM|0",
     "y|1:37 PM|0",
-    "width|1:37 PM|0",
-    "font-size|1:37 PM|0"
+    "color|1:37 PM|0"
   ],
-  "contexts/timepicker/home@dark": [
-    "x|1:37 PM|0",
-    "y|1:37 PM|0",
-    "width|1:37 PM|0",
-    "font-size|1:37 PM|0"
-  ],
-  "contexts/timepicker/home@open": [
-    "y|12:00 AM|0",
-    "y|1:00 AM|0",
-    "y|2:00 AM|0",
-    "y|3:00 AM|0",
-    "y|4:00 AM|0",
-    "y|5:00 AM|0",
-    "y|6:00 AM|0",
-    "y|7:00 AM|0",
-    "y|8:00 AM|0",
-    "y|9:00 AM|0",
-    "y|10:00 AM|0",
-    "y|11:00 AM|0",
-    "y|12:00 PM|0",
-    "y|1:00 PM|0",
-    "y|2:00 PM|0",
-    "y|3:00 PM|0",
-    "y|4:00 PM|0",
-    "y|5:00 PM|0",
-    "y|6:00 PM|0",
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
-  ],
+  "contexts/timepicker/home": [],
+  "contexts/timepicker/home@dark": [],
+  "contexts/timepicker/home@open": [],
   "contexts/timepicker/home@open+dark": [
-    "y|12:00 AM|0",
-    "y|1:00 AM|0",
-    "y|2:00 AM|0",
-    "y|3:00 AM|0",
-    "y|4:00 AM|0",
-    "y|5:00 AM|0",
-    "y|6:00 AM|0",
-    "y|7:00 AM|0",
-    "y|8:00 AM|0",
-    "y|9:00 AM|0",
-    "y|10:00 AM|0",
-    "y|11:00 AM|0",
-    "y|12:00 PM|0",
-    "y|1:00 PM|0",
-    "y|2:00 PM|0",
-    "y|3:00 PM|0",
-    "y|4:00 PM|0",
-    "y|5:00 PM|0",
-    "y|6:00 PM|0",
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "color|1:37 PM|0"
   ],
-  "contexts/timepicker/modal-input": [
-    "x|1:37 PM|0",
-    "y|1:37 PM|0",
-    "width|1:37 PM|0",
-    "font-size|1:37 PM|0",
-    "y|Cancel|0",
-    "y|Submit|0"
-  ],
-  "contexts/timepicker/modal-input@dark": [
-    "x|1:37 PM|0",
-    "y|1:37 PM|0",
-    "width|1:37 PM|0",
-    "font-size|1:37 PM|0",
-    "y|Cancel|0",
-    "y|Submit|0"
-  ],
-  "contexts/timepicker/modal-input@open": [
-    "y|Cancel|0",
-    "y|Submit|0",
-    "y|12:00 AM|0",
-    "y|1:00 AM|0",
-    "y|2:00 AM|0",
-    "y|3:00 AM|0",
-    "y|4:00 AM|0",
-    "y|5:00 AM|0",
-    "y|6:00 AM|0",
-    "y|7:00 AM|0",
-    "y|8:00 AM|0",
-    "y|9:00 AM|0",
-    "y|10:00 AM|0",
-    "y|11:00 AM|0",
-    "y|12:00 PM|0",
-    "y|1:00 PM|0",
-    "y|2:00 PM|0",
-    "y|3:00 PM|0",
-    "y|4:00 PM|0",
-    "y|5:00 PM|0",
-    "y|6:00 PM|0",
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
-  ],
+  "contexts/timepicker/modal-input": [],
+  "contexts/timepicker/modal-input@dark": [],
+  "contexts/timepicker/modal-input@open": [],
   "contexts/timepicker/modal-input@open+dark": [
-    "y|Cancel|0",
-    "y|Submit|0",
-    "y|12:00 AM|0",
-    "y|1:00 AM|0",
-    "y|2:00 AM|0",
-    "y|3:00 AM|0",
-    "y|4:00 AM|0",
-    "y|5:00 AM|0",
-    "y|6:00 AM|0",
-    "y|7:00 AM|0",
-    "y|8:00 AM|0",
-    "y|9:00 AM|0",
-    "y|10:00 AM|0",
-    "y|11:00 AM|0",
-    "y|12:00 PM|0",
-    "y|1:00 PM|0",
-    "y|2:00 PM|0",
-    "y|3:00 PM|0",
-    "y|4:00 PM|0",
-    "y|5:00 PM|0",
-    "y|6:00 PM|0",
-    "extra|7:00 PM|0",
-    "extra|8:00 PM|0",
-    "extra|9:00 PM|0",
-    "extra|10:00 PM|0",
-    "extra|11:00 PM|0"
+    "color|1:37 PM|0"
   ],
   "contexts/url_text_input/modal-input": [],
   "contexts/url_text_input/modal-input@dark": [],
@@ -2340,7 +1399,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2352,7 +1410,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2373,7 +1430,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2385,7 +1441,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2403,7 +1458,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2415,7 +1469,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2433,7 +1486,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2445,7 +1497,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2454,16 +1505,14 @@
     "extra|😕 Nothing could be found.|0"
   ],
   "extra/actions/more-elements": [
-    "extra|Pick a channel|0",
-    "extra|January 1st, 2026|0"
+    "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@confirm": [],
   "extra/actions/more-elements@confirm+dark": [
     "color|Are you sure?|0"
   ],
   "extra/actions/more-elements@dark": [
-    "extra|Pick a channel|0",
-    "extra|January 1st, 2026|0"
+    "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@mobile": [
     "x|11:00 AM|0",
@@ -2471,18 +1520,15 @@
     "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|Pick a channel|0",
-    "extra|January 1st, 2026|0"
+    "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@open": [
     "color|Type a minimum of 2 characters to see options.|0",
-    "extra|Pick a channel|0",
-    "extra|January 1st, 2026|0"
+    "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@open+dark": [
     "color|Type a minimum of 2 characters to see options.|0",
-    "extra|Pick a channel|0",
-    "extra|January 1st, 2026|0"
+    "extra|Pick a channel|0"
   ],
   "extra/context-actions/feedback-row": [],
   "extra/context-actions/feedback-row@dark": [],
@@ -2493,42 +1539,22 @@
     "y|Last updated 5 min ago|0",
     "y|Header with emoji|0"
   ],
-  "extra/home/dashboard": [
-    "missing|New ticket|0",
-    "extra|New ticket|0"
-  ],
-  "extra/home/dashboard@dark": [
-    "missing|New ticket|0",
-    "extra|New ticket|0"
-  ],
-  "extra/home/dashboard@open": [
-    "missing|New ticket|0",
-    "extra|New ticket|0"
-  ],
-  "extra/home/dashboard@open+dark": [
-    "missing|New ticket|0",
-    "extra|New ticket|0"
-  ],
-  "extra/input/datetimepicker": [
-    "extra|January 1st, 2026|0"
-  ],
-  "extra/input/datetimepicker@dark": [
-    "extra|January 1st, 2026|0"
-  ],
+  "extra/home/dashboard": [],
+  "extra/home/dashboard@dark": [],
+  "extra/home/dashboard@open": [],
+  "extra/home/dashboard@open+dark": [],
+  "extra/input/datetimepicker": [],
+  "extra/input/datetimepicker@dark": [],
   "extra/input/datetimepicker@mobile": [
     "x|11:00 AM|0",
     "y|11:00 AM|0",
     "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|January 1st, 2026|0"
+    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
   ],
-  "extra/input/datetimepicker@open": [
-    "extra|January 1st, 2026|0"
-  ],
+  "extra/input/datetimepicker@open": [],
   "extra/input/datetimepicker@open+dark": [
-    "color|Clear selection|0",
-    "extra|January 1st, 2026|0"
+    "color|Clear selection|0"
   ],
   "extra/input/more-selects": [
     "missing|You can select up to 3 items.|0",
@@ -2560,7 +1586,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2570,8 +1595,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|You can select up to|0",
     "extra|3|0",
@@ -2585,7 +1608,6 @@
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
-    "missing|AGENT|0",
     "missing|User Three|0",
     "missing|User Three|1",
     "missing|User Four|0",
@@ -2595,8 +1617,6 @@
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
-    "missing|channel-six|0",
-    "missing|channel-seven|0",
     "extra|Select a conversation|0",
     "extra|You can select up to|0",
     "extra|3|0",
@@ -2609,9 +1629,7 @@
   "extra/input/text-inputs@mobile": [],
   "extra/media/video": [],
   "extra/media/video@dark": [],
-  "extra/media/video@mobile": [
-    "y|Video|0"
-  ],
+  "extra/media/video@mobile": [],
   "extra/modal/alert": [],
   "extra/modal/alert@dark": [],
   "extra/modal/form": [],
@@ -2625,18 +1643,9 @@
   "extra/payloads/buttons": [],
   "extra/payloads/buttons@dark": [],
   "extra/payloads/buttons@mobile": [],
-  "extra/payloads/choices": [
-    "missing|Checkboxes as an accessory|0",
-    "extra|Checkboxes as an accessory|0"
-  ],
-  "extra/payloads/choices@dark": [
-    "missing|Checkboxes as an accessory|0",
-    "extra|Checkboxes as an accessory|0"
-  ],
-  "extra/payloads/choices@mobile": [
-    "missing|Checkboxes as an accessory|0",
-    "extra|Checkboxes as an accessory|0"
-  ],
+  "extra/payloads/choices": [],
+  "extra/payloads/choices@dark": [],
+  "extra/payloads/choices@mobile": [],
   "extra/payloads/dispatch-inputs": [
     "y|Site|0",
     "y|Live|0",
@@ -2660,26 +1669,17 @@
   "extra/payloads/overflow-url@mobile": [],
   "extra/payloads/overflow-url@open": [],
   "extra/payloads/overflow-url@open+dark": [],
-  "extra/payloads/pickers": [
-    "extra|January 1st, 2026|0"
-  ],
-  "extra/payloads/pickers@dark": [
-    "extra|January 1st, 2026|0"
-  ],
+  "extra/payloads/pickers": [],
+  "extra/payloads/pickers@dark": [],
   "extra/payloads/pickers@mobile": [
     "x|11:00 AM|0",
     "y|11:00 AM|0",
     "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "extra|January 1st, 2026|0"
+    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
   ],
-  "extra/payloads/pickers@open": [
-    "extra|January 1st, 2026|0"
-  ],
-  "extra/payloads/pickers@open+dark": [
-    "extra|January 1st, 2026|0"
-  ],
+  "extra/payloads/pickers@open": [],
+  "extra/payloads/pickers@open+dark": [],
   "extra/payloads/selects": [
     "y|Alpha|0"
   ],
@@ -2708,38 +1708,14 @@
     "extra|· colour|0",
     "extra|#1264A3|0"
   ],
-  "extra/section/text-and-fields": [
-    "missing|View|0",
-    "extra|View|0"
-  ],
-  "extra/section/text-and-fields@dark": [
-    "missing|View|0",
-    "extra|View|0"
-  ],
-  "extra/section/text-and-fields@mobile": [
-    "missing|View|0",
-    "extra|View|0"
-  ],
-  "interactive/open-modal": [
-    "missing|New request|0",
-    "extra|New request|0"
-  ],
-  "interactive/open-modal@dark": [
-    "missing|New request|0",
-    "extra|New request|0"
-  ],
-  "interactive/open-modal@mobile": [
-    "missing|New request|0",
-    "extra|New request|0"
-  ],
-  "interactive/open-modal@open": [
-    "missing|New request|0",
-    "extra|New request|0"
-  ],
-  "interactive/open-modal@open+dark": [
-    "missing|New request|0",
-    "extra|New request|0"
-  ],
+  "extra/section/text-and-fields": [],
+  "extra/section/text-and-fields@dark": [],
+  "extra/section/text-and-fields@mobile": [],
+  "interactive/open-modal": [],
+  "interactive/open-modal@dark": [],
+  "interactive/open-modal@mobile": [],
+  "interactive/open-modal@open": [],
+  "interactive/open-modal@open+dark": [],
   "interactive/update-message": [],
   "interactive/update-message@dark": [],
   "interactive/update-message@mobile": [],
@@ -2763,18 +1739,12 @@
     "extra|const answer = 42; console.log(answer < 100);|0"
   ],
   "message/section-accessory": [
-    "missing|Learn more|0",
-    "missing|(14 kB)|0",
-    "extra|Learn more|0"
+    "missing|(14 kB)|0"
   ],
   "message/section-accessory@dark": [
-    "missing|Learn more|0",
-    "missing|(14 kB)|0",
-    "extra|Learn more|0"
+    "missing|(14 kB)|0"
   ],
   "message/section-accessory@mobile": [
-    "missing|Learn more|0",
-    "missing|(14 kB)|0",
-    "extra|Learn more|0"
+    "missing|(14 kB)|0"
   ]
 }

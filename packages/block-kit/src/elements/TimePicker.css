@@ -174,3 +174,26 @@
   font-size: 12px;
   color: var(--sbk-muted);
 }
+
+/* Slack's c-select_input--medium, used in modals and on App Home (messages keep the small field
+   above): 36px tall with 12px side padding, the clock 12px in, and 15px text on a 22.5px line 33px
+   in. Our border is inside the box, so each inset is 1px less. */
+.sbk-timepicker--medium .sbk-timepicker__control {
+  height: 36px;
+  gap: 6px;
+  padding: 0 11px;
+  font: 15px / 22.5px var(--sbk-font);
+}
+
+.sbk-timepicker--medium .sbk-timepicker__icon {
+  width: 15px;
+  height: 15px;
+}
+
+.sbk-timepicker--medium .sbk-timepicker__content {
+  padding: 0 32px;
+}
+
+.sbk-timepicker--medium .sbk-timepicker__content-text {
+  line-height: 22.5px;
+}
