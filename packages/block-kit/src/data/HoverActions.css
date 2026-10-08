@@ -81,6 +81,46 @@ a.sbk-hover-actions__button {
   box-shadow: var(--sbk-focus-shadow);
 }
 
-.sbk-hover-actions__menu-root {
+/* Slack's "More actions" `c-menu` is 300px wide; the overflow menu's is 250px. */
+.sbk-overflow__menu.sbk-hover-actions__menu {
+  width: 300px;
+}
+
+/* Slack's `c-menu_separator`: 17px tall, a 1px line with 8px above and below. */
+.sbk-hover-actions__separator {
+  height: 0;
+  margin: 8px 0;
+  border: 0;
+  border-top: 1px solid var(--sbk-hover-actions-separator);
+}
+
+/* Slack's `c-menu_item__button`: the 15px glyph in a 20px box 8px before the label, centred in the
+   28px row; the label raised 1px, as in the overflow menu. */
+.sbk-hover-actions__item {
+  display: flex;
+  align-items: center;
+}
+
+.sbk-hover-actions__icon {
+  display: flex;
+  flex: 0 0 20px;
+  height: 15px;
+  margin-right: 8px;
+}
+
+.sbk-hover-actions__label {
   position: relative;
+  top: -1px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Greyed out and never highlighted, even while the arrow keys rest on it. */
+.sbk-overflow__option.sbk-hover-actions__item--disabled,
+.sbk-overflow__option.sbk-hover-actions__item--disabled[data-active] {
+  color: var(--sbk-menu-disabled);
+  background: none;
+  cursor: default;
 }
