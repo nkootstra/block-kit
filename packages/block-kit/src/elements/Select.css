@@ -61,7 +61,7 @@
   margin: -8px 0 8px;
   font-size: 15px;
   line-height: 22px;
-  color: rgb(97, 96, 97);
+  color: var(--sbk-text-sec);
 }
 
 /* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
@@ -230,7 +230,7 @@
 .sbk-select__missing-channel {
   padding: 0 2px 1px 0;
   color: var(--sbk-mention-private-text);
-  background: rgba(29, 28, 29, 0.13);
+  background: var(--sbk-mention-private-bg);
   border-radius: 3px;
 }
 

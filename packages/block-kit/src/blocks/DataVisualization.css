@@ -1,5 +1,20 @@
 :root,
 [data-theme="light"] {
+  /* Series colours, measured in Block Kit Builder, and the colour each lifts to under the pointer
+     (each channel x 1.1, rounded down). Dark values are in Message.css. */
+  --sbk-chart-1: rgb(233, 104, 37);
+  --sbk-chart-2: rgb(32, 162, 113);
+  --sbk-chart-3: rgb(196, 116, 211);
+  --sbk-chart-4: rgb(14, 157, 211);
+  --sbk-chart-1-lift: rgb(255, 114, 40);
+  --sbk-chart-2-lift: rgb(35, 178, 124);
+  --sbk-chart-3-lift: rgb(215, 127, 232);
+  --sbk-chart-4-lift: rgb(15, 172, 232);
+  /* The hover tooltip's surface (ECharts' tooltip as Slack themes it). */
+  --sbk-chart-tooltip-bg: #fff;
+  --sbk-chart-tooltip-text: #1d1c1d;
+  /* The "View as table" modal's hairline ring (`c-sk-modal`). */
+  --sbk-chart-table-ring: rgba(29, 28, 29, 0.13);
   /* Area fills: measured for the first two series colours, tinted 88% toward white for the
      others. Dark values (Message.css) aren't measured: the series colour at 30% over the dark
      background. */
@@ -119,4 +134,151 @@
   border-radius: 9999px;
   display: inline-block;
   flex-shrink: 0;
+}
+
+.sbk-chart__bar,
+.sbk-chart__slice {
+  cursor: pointer;
+}
+
+/* ECharts' tooltip as Slack themes it: 13px text on the chart's surface, the category over one row
+   per series (dot, name, and the value in black weight), each 13px tall and 10px apart. */
+.sbk-chart-tooltip {
+  position: fixed;
+  z-index: 1000;
+  padding: 10px;
+  border: 1px solid var(--sbk-chart-tooltip-bg);
+  border-radius: 4px;
+  background: var(--sbk-chart-tooltip-bg);
+  box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.2);
+  color: var(--sbk-chart-tooltip-text);
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.sbk-chart-tooltip__title {
+  margin-bottom: 10px;
+}
+
+.sbk-chart-tooltip__row {
+  display: flex;
+  align-items: center;
+  height: 13px;
+}
+
+.sbk-chart-tooltip__row + .sbk-chart-tooltip__row {
+  margin-top: 10px;
+}
+
+.sbk-chart-tooltip__dot {
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 10px;
+}
+
+.sbk-chart-tooltip__name {
+  margin-left: 2px;
+}
+
+.sbk-chart-tooltip__value {
+  margin-left: auto;
+  padding-left: 20px;
+  font-weight: 900;
+}
+
+/* "View as table": Slack's `c-sk-modal` filling the window but for 28px on each side, on its dimmed
+   overlay (`c-sk-overlay::before`). */
+.sbk-chart-table-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+}
+
+.sbk-chart-table-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.sbk-chart-table {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1280px;
+  height: 100%;
+  background: var(--sbk-bg);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px var(--sbk-chart-table-ring),
+    0 18px 48px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.sbk-chart-table:focus {
+  outline: none;
+}
+
+.sbk-chart-table__header {
+  position: relative;
+  flex: 0 0 70px;
+  padding: 20px 76px 20px 28px;
+}
+
+.sbk-chart-table__title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--sbk-text-body);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 30px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sbk-chart-table__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--sbk-content-sec);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .sbk-chart-table__close:hover {
+    background: var(--sbk-icon-button-hover-bg);
+  }
+}
+
+.sbk-chart-table__close:focus-visible {
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+.sbk-chart-table__content {
+  flex: 1 1 auto;
+  padding: 0 28px;
+  overflow: auto;
+}
+
+/* The `table` block's grid, stretched to the modal's width, 4px from the header as in Slack. */
+.sbk-chart-table__table {
+  width: 100%;
+  padding: 4px 0;
+  color: var(--sbk-text-body);
 }

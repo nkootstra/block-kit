@@ -40,7 +40,7 @@ describe("<DataVisualization>", () => {
       <DataVisualization block={asDataVizBlock(block)} blockId="b1" index={0} />,
     );
     expect(screen.getByText("Messages sent")).toBeTruthy();
-    expect(container.querySelectorAll(".sbk-dataviz__body svg path[stroke]").length).toBe(2);
+    expect(container.querySelectorAll(".sbk-dataviz__body .sbk-chart__line").length).toBe(2);
     expect(screen.getByText("Desktop")).toBeTruthy();
     expect(screen.getByText("Mobile")).toBeTruthy();
     expect(screen.getByText("Day")).toBeTruthy();
