@@ -21,13 +21,14 @@ import { parsePayload } from "./payload";
 /**
  * Block Kit Builder has no workspace files, so it shows its sample photo for the placeholder
  * `slack_file` URL in its catalog (the same image as its `image_url` samples, 72,704 bytes). The
- * render mirrors that, as an app would resolve a real file through `resolvers.slackFile`.
+ * render mirrors that with our stand-in for that photo and the size Slack shows, as an app would
+ * resolve a real file through `resolvers.slackFile`.
  */
 const BUILDER_SAMPLE_FILES: Resolvers = {
   slackFile: (file) =>
     file.url === "<insert slack file url here>"
       ? {
-          url: "https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg",
+          url: "https://cdn.block-kit.dev/samples/tacos.271c2dbf.jpg",
           size: 72_704,
         }
       : undefined,

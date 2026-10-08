@@ -4,7 +4,7 @@
       "type": "card",
       "icon": {
         "type": "image",
-        "image_url": "https://picsum.photos/36/36",
+        "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
         "alt_text": "Icon"
       },
       "title": {
