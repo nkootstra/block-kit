@@ -4,16 +4,18 @@
   width: 100%;
 }
 
-/* Slack's Builder renders a datetimepicker as two side-by-side boxes (date, then time) rather
-   than a single combined control. */
+/* Slack's c-date_time_picker: two boxes (date, then time) in a wrapping row, 8px apart. Each is
+   208px at most two to a row; when two don't fit (a phone's 320px block) each takes a row of its
+   own at the full width. */
 .sbk-datetimepicker__row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 /* The time zone caption sits under the time box only, so each box gets its own column. */
 .sbk-datetimepicker__column {
-  flex: 1 1 0;
+  flex: 1 1 208px;
   min-width: 0;
 }
 
