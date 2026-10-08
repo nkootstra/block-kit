@@ -557,8 +557,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     >
       {multi && element.max_selected_items && (
         <p className="sbk-select__max-info">
-          You can select up to {element.max_selected_items}{" "}
-          {element.max_selected_items === 1 ? "item" : "items"}.
+          {`You can select up to ${element.max_selected_items} ${element.max_selected_items === 1 ? "item" : "items"}.`}
         </p>
       )}
       <button

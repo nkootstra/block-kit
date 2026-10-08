@@ -2875,6 +2875,31 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ]).toEqual(["rgba(232, 232, 232, 0.7)", "rgba(232, 232, 232, 0.13)"]);
     });
 
+    // extra/input/more-selects@dark: a channel the app can't resolve becomes a "Private channel"
+    // pill, which Slack tints with the same light grey as the private channel mention.
+    it("draws a select's private channel pill on Slack's dark tint", async () => {
+      const page = await harness.open({
+        theme: "dark",
+        blocks: [
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "multi_channels_select",
+                action_id: "c",
+                initial_channels: ["C0PRIVATE"],
+              },
+            ],
+          },
+        ],
+      });
+      await settle(page);
+      expect([
+        await prop(page, ".sbk-select__missing-channel"),
+        await prop(page, ".sbk-select__missing-channel", "background-color"),
+      ]).toEqual(["rgba(232, 232, 232, 0.7)", "rgba(232, 232, 232, 0.13)"]);
+    });
+
     // An input block's radio group ends with the last option's own 8px margin, as in Slack:
     // catalog/input/radio-buttons is 158px tall in both themes, like the checkboxes beside it.
     it("adds no extra space below a radio group in an input block", async () => {

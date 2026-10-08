@@ -790,6 +790,25 @@ describe("<Select> multi-select chips", () => {
     expect(screen.getByText("You can select up to 3 items.")).toBeTruthy();
   });
 
+  it("writes the max_selected_items hint as one run of text, as Slack does", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "multi_external_select",
+              action_id: "a1",
+              max_selected_items: 1,
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const hint = screen.getByText("You can select up to 1 item.");
+    expect([...hint.childNodes].map((n) => n.textContent)).toEqual(["You can select up to 1 item."]);
+  });
+
   function renderChips(onAction = vi.fn()) {
     render(
       <BlockKitProvider onAction={onAction}>
