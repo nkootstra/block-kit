@@ -3614,6 +3614,28 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       ]).toEqual(["rgba(232, 232, 232, 0.7)", "rgba(232, 232, 232, 0.13)"]);
     });
 
+    // extra/input/more-selects@dark: Slack's p-block_kit_max_selected_items__info is the
+    // secondary text colour of the theme.
+    it("writes a multi-select's item limit hint in dark's secondary grey", async () => {
+      const page = await harness.open({
+        theme: "dark",
+        blocks: [
+          {
+            type: "input",
+            label: { type: "plain_text", text: "Pick" },
+            element: {
+              type: "multi_static_select",
+              action_id: "m",
+              max_selected_items: 3,
+              options: [{ text: { type: "plain_text", text: "One" }, value: "1" }],
+            },
+          },
+        ],
+      });
+      await settle(page);
+      expect(await prop(page, ".sbk-select__max-info")).toBe("rgb(171, 171, 173)");
+    });
+
     // An input block's radio group ends with the last option's own 8px margin, as in Slack:
     // catalog/input/radio-buttons is 158px tall in both themes, like the checkboxes beside it.
     it("adds no extra space below a radio group in an input block", async () => {

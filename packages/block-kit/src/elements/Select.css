@@ -61,7 +61,7 @@
   margin: -8px 0 8px;
   font-size: 15px;
   line-height: 22px;
-  color: rgb(97, 96, 97);
+  color: var(--sbk-text-sec);
 }
 
 /* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
