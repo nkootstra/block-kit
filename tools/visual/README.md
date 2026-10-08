@@ -35,7 +35,9 @@ steps off, a 0.5px border or a run that moved by a pixel or two. Every fixture t
 text-run check (`src/textRuns.ts`):
 
 1. Every visible text node on both sides becomes a run, positioned relative to the rendered root
-   (`src/collectTextRuns.ts`).
+   (`src/collectTextRuns.ts`). Text an ancestor with `overflow: hidden`, `auto` or `scroll` cuts
+   off entirely (a time list's options scrolled out of its box) isn't on screen and isn't read;
+   text an edge only cuts through still is.
 2. Runs are matched in order by their text, with a longest common subsequence, so a run only one
    side has doesn't shift the rest.
 3. Each pair is compared by position and width (±0.5px), font size, weight and style, and colour as
@@ -148,6 +150,12 @@ to the preview):
    datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
    refuses to snapshot once a later sheet repeats one of their rules: reload the Builder, paste the
    scripts again and resume from the item it names.
+   A fixture that needs a real workspace file (`slack_file`) carries the placeholder file URL
+   (`https://files.slack.com/files-pri/T0000001-F0000001/file`). Map it to the file's link in
+   `tools/visual/capture.local.json` (`{ "<placeholder>": "<link>" }`, ignored by git) and pass
+   that object as `substitute`: only the Builder sees the link, and `import.ts` redacts it again.
+   The comparison serves `fixtures/assets/slack-file.png`, a copy of that file, for the placeholder
+   to both sides.
 
 3. Copy the resulting `refs` JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`.
@@ -165,7 +173,10 @@ files (`files.slack.com`, `slack-files.com` and permalink URLs, also URL-encoded
 `U0000001`. IDs the fixture's own payload uses
 (`U0123456789`) are kept. Slack marks all of these up, so no list of real names is needed; a name
 that only appears as plain text goes in `tools/visual/redact.local.json`
-(`{ "Real name": "Placeholder" }`), which is ignored by git.
+(`{ "Real name": "Placeholder" }`), which is ignored by git. The snapshot froze each name's
+element at the real name's width, so redaction also releases the width, `flex-basis`, `max-width`
+and `min-width` on a placeholder's own element and on a wrapper holding only it; the placeholder
+lays out at its own width, and whatever follows it (a presence dot) moves with it.
 
 `references:check` fails on a reference that still contains a member, channel or workspace name,
 an avatar URL, a profile link, a file URL, the workspace's subdomain, or a Slack ID its fixture
@@ -178,7 +189,11 @@ allows it: `actions` (an actions block in a message), `accessory` (a section's a
 `modal-input` (an input block in a modal) and `home` (an actions block on App Home). They're
 generated from `contexts.ts`, which lists the elements and where Slack allows each, from Slack's
 Block Kit reference; `bun tools/visual/src/contexts.ts` rewrites them, and `contexts.test.ts` fails
-when they drift. They're captured and compared like any other fixture.
+when they drift. They're captured and compared like any other fixture. The generator only writes
+and deletes the fixture JSON; a reference left without a fixture is dropped through the lock.
+Block Kit Builder refuses a multi-select in an `actions` block (in a message and on App Home) and a
+datetime picker as a section accessory, and keeps showing the previous payload, so those pairings
+are left out.
 
 ## Coverage
 
@@ -231,7 +246,11 @@ it up to date, and `bun run references:check` (part of CI) fails when:
 
 - a fixture's payload changed since its reference was captured: recapture it;
 - a reference's HTML was edited by hand: express the change as a normalize rule instead;
-- a reference isn't in the lock file, or the lock file lists one that no longer exists.
+- a reference isn't in the lock file, or the lock file lists one that no longer exists;
+- a reference shows text another fixture's payload writes and its own doesn't (`stale.ts`): Block
+  Kit Builder refused the payload and kept showing the previous one, while the snapshot still
+  recorded the refused payload from the URL. The same goes for a reference that shows not one word
+  of its own payload's sentences (a confirm dialog's text aside, which waits for a click).
 
 A fixture without a reference is listed but doesn't fail; it just isn't compared yet.
 

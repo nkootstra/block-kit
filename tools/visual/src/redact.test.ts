@@ -153,3 +153,33 @@ describe("redact, on Slack files", () => {
     expect(redact(out)).toBe(out);
   });
 });
+
+// The snapshot freezes each element's width, measured on the real name. A placeholder of another
+// length then gets cut off ("User Fo") or leaves a gap, and the presence dot after it sits where
+// the real name ended. The name's own element (and a wrapper around only it) lays out again.
+describe("redact, on the widths frozen around a name", () => {
+  const row = (name: string) =>
+    `<div style="display:flex;width:300px;flex-basis:300px">` +
+    `<span style="display:flex;width:96.5px;flex-basis:96.5px;flex-shrink:0">` +
+    `<span data-qa="member_name" style="width:96.5px;max-width:96.5px;min-width:96.5px;flex-basis:96.5px;overflow:hidden;text-overflow:ellipsis;color:red">${name}</span>` +
+    `</span><span style="width:12px">●</span></div>`;
+  const styleOf = (html: string, n: number) =>
+    [...html.matchAll(/style="([^"]*)"/g)].map((m) => m[1])[n] ?? "";
+
+  it("releases the name's own width, and its wrapper's, but keeps the row's", () => {
+    const out = redact(meta(payload) + row("A Much Longer Real Name"));
+    expect(out).toContain(">User One<");
+    expect([styleOf(out, 0), styleOf(out, 1), styleOf(out, 2), styleOf(out, 3)]).toEqual([
+      "display:flex;width:300px;flex-basis:300px",
+      "display:flex;flex-shrink:0",
+      "overflow:hidden;text-overflow:ellipsis;color:red",
+      "width:12px",
+    ]);
+  });
+
+  it("releases them on a reference redacted before, and stays idempotent", () => {
+    const once = redact(meta(payload) + row("User One"));
+    expect(styleOf(once, 2)).toBe("overflow:hidden;text-overflow:ellipsis;color:red");
+    expect(redact(once)).toBe(once);
+  });
+});
