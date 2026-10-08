@@ -16,12 +16,12 @@
   },
   "catalog/actions/all-selects@open": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "ea35125aaa66b8e0a74b89366f12685d6646bd696fd98d994a380fb7af4b7dd0",
+    "reference": "f210a35a6042ef934ae9f63b7dff1f881b4050aeab77ace16e5d130a4f42b86a",
     "captured": "2026-10-07"
   },
   "catalog/actions/all-selects@open+dark": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "43fc7ca42b5859beb0309cdd9a4fb1ec40d1e9ae64335a80b861fbe54c4a51c6",
+    "reference": "66b9b4a5cd50209629a19a1ea11bdf0c560515192b049221f9dc6c3e6579b639",
     "captured": "2026-10-07"
   },
   "catalog/actions/button": {
@@ -517,6 +517,11 @@
   "catalog/condition/client-platforms@dark": {
     "payload": "2fe5a802fa7dacd362a3e204557237f3375a423542d37b779aad59f45be930c4",
     "reference": "8bd31edd3332948d7bffcde380aa4ba8aa5846dd7c742a2dc8b95b57f63e91a7",
+    "captured": "2026-10-07"
+  },
+  "catalog/condition/client-platforms@mobile": {
+    "payload": "2fe5a802fa7dacd362a3e204557237f3375a423542d37b779aad59f45be930c4",
+    "reference": "7c9894ff08e4a910f481dfeb3738db972bf6bbe44449e8872c8284b5290ba722",
     "captured": "2026-10-07"
   },
   "catalog/container/collapsible": {
@@ -2157,31 +2162,6 @@
   "contexts/datepicker/modal-input@open+dark": {
     "payload": "11fbad19fbfeef7ff7387c8b2f3247a3a82ac83bec129d42ab45bf5a4b71b7e9",
     "reference": "1d1415cfdecb9c5e137a02cd6bd24deb48f127042d7279155ea82ad78d33abb2",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "f05a307fdb96bb833316f035ecb1e2ac41eadf653f87b63adec8016a044861b0",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@dark": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "ad9d9a67188ff0a2d0bdd0b120295d9b26b64a731883675f06d5910a93d06ea8",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@mobile": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "0476481247d478e1fac550bd90a4763e79a7a026d1ed54131a4a06dca45b88b8",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@open": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "0eeeafb6ee238d09a8648206eb62108ccc762ee67c6076232cd2026910d20ad2",
-    "captured": "2026-10-07"
-  },
-  "contexts/datetimepicker/accessory@open+dark": {
-    "payload": "02a722d0bc942bdf318f1b0cab3d9630e296d56442a112e921a54cc6b546767b",
-    "reference": "162867ed633a2c5b1d3f78d165cc9d4481a95fc94ea418f920cfdf1b0d77951e",
     "captured": "2026-10-07"
   },
   "contexts/datetimepicker/actions": {

@@ -76,6 +76,25 @@ export function collectTextRuns(selector: string): TextRun[] {
     return "";
   };
 
+  // Text an ancestor with overflow other than `visible` cuts off entirely (a time list's options
+  // scrolled out of its box) isn't on screen. Where each side happens to scroll says nothing about
+  // how it renders, so such runs aren't read; one an edge only cuts through still is.
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
+  const clipped = (el: Element, rect: DOMRect): boolean => {
+    for (let e = el.parentElement; e; e = e.parentElement) {
+      const s = getComputedStyle(e);
+      const clipsX = s.overflowX !== "visible";
+      const clipsY = s.overflowY !== "visible";
+      if (!clipsX && !clipsY) continue;
+      const box = e.getBoundingClientRect();
+      const left = box.left + e.clientLeft;
+      const top = box.top + e.clientTop;
+      if (clipsX && (rect.right <= left || rect.left >= left + e.clientWidth)) return true;
+      if (clipsY && (rect.bottom <= top || rect.top >= top + e.clientHeight)) return true;
+    }
+    return false;
+  };
+
   const runs: TextRun[] = [];
   const range = document.createRange();
 
@@ -158,7 +177,7 @@ export function collectTextRuns(selector: string): TextRun[] {
     if (!fill || (fill[3] ?? 1) === 0 || Number(style.opacity) === 0) return;
     const text = field.value.replace(/\s+/g, " ").trim();
     const rect = fieldValueRect(field, text);
-    if (rect.width === 0 || rect.height === 0) return;
+    if (rect.width === 0 || rect.height === 0 || clipped(field, rect)) return;
     runs.push({
       text,
       x: rect.x - origin.x,
@@ -195,7 +214,7 @@ export function collectTextRuns(selector: string): TextRun[] {
       range.setStart(node, raw.search(/\S/));
       range.setEnd(node, raw.trimEnd().length);
       const rect = range.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) continue;
+      if (rect.width === 0 || rect.height === 0 || clipped(el, rect)) continue;
 
       // Multiply the opacities up the tree and stack the background colours, outermost first, on
       // the white page.

@@ -122,6 +122,46 @@ describe("collectTextRuns", () => {
     expect(result.map((r) => r.text)).toEqual(["Shown"]);
   });
 
+  // A time list scrolls its options in a box with overflow: auto; the ones scrolled out of it
+  // aren't on screen, and where each side happens to scroll says nothing about how they render.
+  it("skips text an overflow ancestor scrolls out of view", async () => {
+    const options = Array.from(
+      { length: 10 },
+      (_, i) => `<div style="height:20px">Option ${i}</div>`,
+    );
+    await page.setContent(
+      `<body style="margin:0;font:15px sans-serif"><div id="root"><div id="list" style="height:50px;overflow:auto">${options.join("")}</div></div></body>`,
+    );
+    await page.evaluate(() => {
+      document.getElementById("list")!.scrollTop = 70;
+    });
+    const found = await page.evaluate(collectTextRuns, "#root");
+    // 70px down a 50px window: options 4 and 5 fit, 3 is cut by the top edge and still shows.
+    expect(found.map((r) => r.text)).toEqual(["Option 3", "Option 4", "Option 5"]);
+  });
+
+  it("skips text clipped by an overflow: hidden ancestor, in either direction", async () => {
+    const result = await runs(
+      '<div style="height:20px;overflow:hidden"><p style="margin:0">Shown</p><p style="margin:40px 0 0">Below</p></div>' +
+        '<div style="width:100px;overflow-x:hidden;white-space:nowrap"><span>Left</span><span style="margin-left:200px">Right</span></div>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown", "Left"]);
+  });
+
+  it("keeps text that overflows a box with overflow: visible", async () => {
+    const result = await runs(
+      '<div style="height:20px"><p style="margin:0">Shown</p><p style="margin:40px 0 0">Below</p></div>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown", "Below"]);
+  });
+
+  it("skips an input value its overflow ancestor clips", async () => {
+    const result = await runs(
+      '<div style="height:20px;overflow:hidden"><p style="margin:0">Shown</p><input value="Hidden value" style="margin-top:40px"></div>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown"]);
+  });
+
   it("reads the motion of the nearest element that transitions or animates", async () => {
     const [inButton, outside] = await runs(
       '<button style="transition:opacity 150ms ease-out 20ms"><span>Go</span></button><p>Still</p>',

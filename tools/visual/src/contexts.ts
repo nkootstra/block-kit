@@ -107,7 +107,9 @@ export const ELEMENTS: Record<string, { element: Record<string, unknown>; in: Co
   },
   datetimepicker: {
     element: { type: "datetimepicker", action_id: "datetime", initial_date_time: 1767261600 },
-    in: ["actions", "accessory", "modal-input"],
+    // Block Kit Builder refuses it as a section accessory ("Invalid value: "datetimepicker""; an
+    // accessory takes a datepicker or timepicker, not both) and keeps showing the previous payload.
+    in: ["actions", "modal-input"],
   },
   checkboxes: {
     element: { type: "checkboxes", action_id: "checkboxes", options },

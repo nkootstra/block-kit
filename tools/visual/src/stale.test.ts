@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { foreignText } from "./stale";
+import { foreignText, missingText } from "./stale";
 
 const reference = (payload: unknown, body: string) =>
   `<script type="application/json" id="sbk-reference-meta">${JSON.stringify({ payload })}</script>` +
@@ -55,5 +55,55 @@ describe("foreignText", () => {
   it("still finds foreign text after a script block", () => {
     const html = reference({ blocks: [] }, "<SCRIPT>x</SCRIPT><p>A section with an accessory</p>");
     expect(foreignText(html, known)).toEqual(["A section with an accessory"]);
+  });
+});
+
+describe("missingText", () => {
+  const accessory = {
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "A section with an accessory" },
+        accessory: { type: "datetimepicker", action_id: "datetime" },
+      },
+    ],
+  };
+
+  // contexts/datetimepicker/accessory: the Builder refused the payload and kept showing a modal
+  // input's datetime picker, which no other fixture's sentence gives away.
+  it("finds a reference that shows none of its payload's sentences", () => {
+    const html = reference(
+      accessory,
+      "<p>Your App</p><p>APP</p><p>12:00 PM</p><label>Label</label>",
+    );
+    expect(missingText(html)).toEqual(["A section with an accessory"]);
+  });
+
+  it("accepts a reference that shows its sentence, however mrkdwn splits it", () => {
+    const html = reference(accessory, "<p>A <b>section</b> with an <i>accessory</i></p>");
+    expect(missingText(html)).toEqual([]);
+  });
+
+  it("ignores a payload without a sentence to look for", () => {
+    const html = reference({ blocks: [{ type: "divider" }] }, "<hr>");
+    expect(missingText(html)).toEqual([]);
+  });
+
+  it("ignores a confirm dialog's text, which shows only once the dialog opens", () => {
+    const payload = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+              text: { type: "plain_text", text: "Go" },
+              confirm: { text: { type: "plain_text", text: "This can't be undone." } },
+            },
+          ],
+        },
+      ],
+    };
+    expect(missingText(reference(payload, "<button>Go</button>"))).toEqual([]);
   });
 });
