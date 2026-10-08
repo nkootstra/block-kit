@@ -90,3 +90,26 @@ export function foreignText(html: string, sentences: Set<string>): string[] {
   }
   return [...found];
 }
+
+/** The strings a payload shows before anything is clicked: a confirm dialog's text waits for one. */
+function shownStrings(value: unknown, out: string[] = []): string[] {
+  if (typeof value === "string") out.push(value);
+  else if (value && typeof value === "object")
+    for (const [key, item] of Object.entries(value)) if (key !== "confirm") shownStrings(item, out);
+  return out;
+}
+
+const words = (text: string) => text.toLowerCase().match(/[a-z]{4,}/g) ?? [];
+
+/**
+ * The payload's sentences, when the reference shows not one of their words. A refused payload can
+ * leave a render that no other fixture's sentence gives away (a modal's datetime picker in place
+ * of a section with one), but it still lacks every word its own payload writes. Words rather than
+ * whole sentences, since mrkdwn, links and emoji change how a sentence reads on screen.
+ */
+export function missingText(html: string): string[] {
+  const payload = JSON.parse(html.match(META)?.[1] ?? "{}").payload ?? null;
+  const sentences = [...fixtureSentences([shownStrings(payload)])];
+  const shown = new Set(words(textNodes(html).map(unescapeHtml).join(" ")));
+  return sentences.some((s) => words(s).some((w) => shown.has(w))) ? [] : sentences;
+}

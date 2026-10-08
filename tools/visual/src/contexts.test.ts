@@ -11,7 +11,6 @@ describe("context fixtures", () => {
     expect(allowed("plain_text_input", "actions")).toBe(false);
     expect(allowed("plain_text_input", "modal-input")).toBe(true);
     expect(allowed("datetimepicker", "home")).toBe(false);
-    expect(allowed("datetimepicker", "accessory")).toBe(true);
     expect(allowed("overflow", "modal-input")).toBe(false);
     expect(allowed("static_select", "home")).toBe(true);
   });
@@ -25,6 +24,35 @@ describe("context fixtures", () => {
       expect(allowed(element, "accessory")).toBe(true);
       expect(allowed(element, "modal-input")).toBe(true);
     }
+  });
+
+  it("only puts an element in an accessory where Block Kit Builder takes one", () => {
+    // The Builder's error for a datetime picker accessory lists what a section accessory may be.
+    const BUILDER_ACCESSORIES = new Set([
+      "button",
+      "workflow_button",
+      "overflow",
+      "static_select",
+      "users_select",
+      "conversations_select",
+      "channels_select",
+      "external_select",
+      "multi_static_select",
+      "multi_users_select",
+      "multi_conversations_select",
+      "multi_channels_select",
+      "multi_external_select",
+      "image",
+      "radio_buttons",
+      "checkboxes",
+      "datepicker",
+      "timepicker",
+    ]);
+    for (const [name, { element }] of Object.entries(ELEMENTS))
+      expect([name, allowed(name, "accessory")]).toEqual([
+        name,
+        BUILDER_ACCESSORIES.has(element.type as string),
+      ]);
   });
 
   it("puts an element in the block its context names", () => {
