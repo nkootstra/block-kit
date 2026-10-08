@@ -427,6 +427,9 @@
   "catalog/image/no-title@mobile": [
     "missing|(71 kB)|0"
   ],
+  "catalog/image/slack-image": [],
+  "catalog/image/slack-image@dark": [],
+  "catalog/image/slack-image@mobile": [],
   "catalog/image/title": [
     "missing|(71 kB)|0"
   ],
@@ -619,6 +622,9 @@
   "catalog/section/radio-buttons": [],
   "catalog/section/radio-buttons@dark": [],
   "catalog/section/radio-buttons@mobile": [],
+  "catalog/section/slack-image": [],
+  "catalog/section/slack-image@dark": [],
+  "catalog/section/slack-image@mobile": [],
   "catalog/section/static-select": [],
   "catalog/section/static-select@dark": [],
   "catalog/section/static-select@mobile": [],
