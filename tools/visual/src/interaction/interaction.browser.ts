@@ -417,6 +417,28 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       expect(got).toEqual({ inset: 8, placeholder: "rgba(0, 0, 0, 0)" });
     });
 
+    // contexts/conversations_select/*@open: four people and seven channels, eleven 28px rows, in a
+    // 264px list that scrolls from the ninth row on.
+    it("scrolls a long list inside Slack's 264px", async () => {
+      const page = await harness.open({
+        ...mount("light"),
+        directory: [
+          ...DIRECTORY,
+          ...["a", "b", "c", "d", "e", "f"].map((n) => ({
+            type: "channel" as const,
+            id: `C1${n}`,
+            name: n,
+          })),
+        ],
+      });
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const height = await page
+        .locator(".sbk-select__menu")
+        .evaluate((el) => el.getBoundingClientRect().height);
+      expect(height).toBe(264);
+    });
+
     it("puts an 18px channel icon 24px in and the bold name 8px after it", async () => {
       const page = await harness.open(mount("light"));
       await page.click(".sbk-select__control");
