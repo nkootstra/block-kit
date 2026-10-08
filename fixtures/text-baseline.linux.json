@@ -108,7 +108,6 @@
   ],
   "catalog/actions/selects-with-initial-options@open+dark": [
     "color|Private channel|0",
-    "missing|undefined|0",
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
@@ -125,13 +124,8 @@
   "catalog/actions/timepicker": [],
   "catalog/actions/timepicker@dark": [],
   "catalog/actions/timepicker@mobile": [],
-  "catalog/actions/timepicker@open": [
-    "y|1:37 PM|0"
-  ],
-  "catalog/actions/timepicker@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "catalog/actions/timepicker@open": [],
+  "catalog/actions/timepicker@open+dark": [],
   "catalog/agents/message-feedback": [],
   "catalog/agents/message-feedback@dark": [],
   "catalog/agents/message-feedback@mobile": [],
@@ -508,13 +502,8 @@
   "catalog/input/timepicker": [],
   "catalog/input/timepicker@dark": [],
   "catalog/input/timepicker@mobile": [],
-  "catalog/input/timepicker@open": [
-    "y|1:37 PM|0"
-  ],
-  "catalog/input/timepicker@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "catalog/input/timepicker@open": [],
+  "catalog/input/timepicker@open+dark": [],
   "catalog/markdown/code": [
     "missing|Markdown|0"
   ],
@@ -641,13 +630,8 @@
   "catalog/section/timepicker": [],
   "catalog/section/timepicker@dark": [],
   "catalog/section/timepicker@mobile": [],
-  "catalog/section/timepicker@open": [
-    "y|1:37 PM|0"
-  ],
-  "catalog/section/timepicker@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "catalog/section/timepicker@open": [],
+  "catalog/section/timepicker@open+dark": [],
   "catalog/section/users-select": [
     "extra|Select a user|0"
   ],
@@ -1355,35 +1339,21 @@
   "contexts/timepicker/accessory": [],
   "contexts/timepicker/accessory@dark": [],
   "contexts/timepicker/accessory@mobile": [],
-  "contexts/timepicker/accessory@open": [
-    "y|1:37 PM|0"
-  ],
-  "contexts/timepicker/accessory@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/accessory@open": [],
+  "contexts/timepicker/accessory@open+dark": [],
   "contexts/timepicker/actions": [],
   "contexts/timepicker/actions@dark": [],
   "contexts/timepicker/actions@mobile": [],
-  "contexts/timepicker/actions@open": [
-    "y|1:37 PM|0"
-  ],
-  "contexts/timepicker/actions@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/actions@open": [],
+  "contexts/timepicker/actions@open+dark": [],
   "contexts/timepicker/home": [],
   "contexts/timepicker/home@dark": [],
   "contexts/timepicker/home@open": [],
-  "contexts/timepicker/home@open+dark": [
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/home@open+dark": [],
   "contexts/timepicker/modal-input": [],
   "contexts/timepicker/modal-input@dark": [],
   "contexts/timepicker/modal-input@open": [],
-  "contexts/timepicker/modal-input@open+dark": [
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/modal-input@open+dark": [],
   "contexts/url_text_input/modal-input": [],
   "contexts/url_text_input/modal-input@dark": [],
   "contexts/users_select/accessory": [
