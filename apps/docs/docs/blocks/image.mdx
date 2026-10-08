@@ -88,6 +88,10 @@ the `alt_text`. `image_url` renders normally.
 With no `title`, Slack still reserves the title row's height for the expand caret, so the image sits
 at the same vertical offset either way.
 
+Hovering the image shows Slack's actions in its top-right corner: **Open in new window**, and a
+**More actions** menu with **Copy link** (copies the image URL) and **Hide image** (collapses it as
+the caret does). They stay in the page: none of them calls `onAction`.
+
 ### With a title
 
 <Preview

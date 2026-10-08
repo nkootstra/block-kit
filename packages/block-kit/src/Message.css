@@ -270,6 +270,8 @@
     --sbk-menu-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
     --sbk-menu-selected-text: #2ba5ce;
     --sbk-menu-separator: #797c814d;
+    --sbk-menu-disabled: #9a9b9e;
+    --sbk-hover-actions-separator: rgba(232, 232, 232, 0.13);
     --sbk-menu-secondary-text: #b9babd;
     --sbk-popover-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
     --sbk-select-list-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 5px 10px rgba(0, 0, 0, 0.12);
@@ -307,6 +309,18 @@
     --sbk-table-border: #797c814d;
     --sbk-dataviz-border: #797c814d;
     --sbk-dataviz-tick: #9a9b9e;
+    /* Slack's dark chart colours, measured in Block Kit Builder, and their lifted hover colours. */
+    --sbk-chart-1: rgb(213, 106, 55);
+    --sbk-chart-2: rgb(37, 155, 105);
+    --sbk-chart-3: rgb(178, 110, 195);
+    --sbk-chart-4: rgb(22, 153, 202);
+    --sbk-chart-1-lift: rgb(234, 116, 60);
+    --sbk-chart-2-lift: rgb(40, 170, 115);
+    --sbk-chart-3-lift: rgb(195, 121, 214);
+    --sbk-chart-4-lift: rgb(24, 168, 222);
+    --sbk-chart-tooltip-bg: #1a1d21;
+    --sbk-chart-tooltip-text: #f8f8f8;
+    --sbk-chart-table-ring: rgba(232, 232, 232, 0.13);
     --sbk-data-table-bg: #f8f8f80f;
     --sbk-data-table-sep: #797c814d;
     --sbk-data-table-active: #177e56;
@@ -386,6 +400,8 @@
   --sbk-menu-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
   --sbk-menu-selected-text: #2ba5ce;
   --sbk-menu-separator: #797c814d;
+  --sbk-menu-disabled: #9a9b9e;
+  --sbk-hover-actions-separator: rgba(232, 232, 232, 0.13);
   --sbk-menu-secondary-text: #b9babd;
   --sbk-popover-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
   --sbk-select-list-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 5px 10px rgba(0, 0, 0, 0.12);
@@ -423,6 +439,18 @@
   --sbk-table-border: #797c814d;
   --sbk-dataviz-border: #797c814d;
   --sbk-dataviz-tick: #9a9b9e;
+  /* Slack's dark chart colours, measured in Block Kit Builder, and their lifted hover colours. */
+  --sbk-chart-1: rgb(213, 106, 55);
+  --sbk-chart-2: rgb(37, 155, 105);
+  --sbk-chart-3: rgb(178, 110, 195);
+  --sbk-chart-4: rgb(22, 153, 202);
+  --sbk-chart-1-lift: rgb(234, 116, 60);
+  --sbk-chart-2-lift: rgb(40, 170, 115);
+  --sbk-chart-3-lift: rgb(195, 121, 214);
+  --sbk-chart-4-lift: rgb(24, 168, 222);
+  --sbk-chart-tooltip-bg: #1a1d21;
+  --sbk-chart-tooltip-text: #f8f8f8;
+  --sbk-chart-table-ring: rgba(232, 232, 232, 0.13);
   --sbk-data-table-bg: #f8f8f80f;
   --sbk-data-table-sep: #797c814d;
   --sbk-data-table-active: #177e56;

@@ -1,5 +1,5 @@
 import type { ImageBlock } from "@slack/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import { ImageActions } from "../data/HoverActions";
 import { Text } from "../Text";
@@ -54,6 +54,13 @@ export function Image({ block }: BlockProps<ImageBlock>) {
   const resolved = slackFile ? resolvers.slackFile?.(slackFile) : undefined;
   const imageUrl = directUrl ?? resolved?.url;
   const [expanded, setExpanded] = useState(true);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  // "Hide image" in the hover menu does what the caret does; the menu goes with the image, so focus
+  // moves to the caret that brings it back.
+  const hide = () => {
+    setExpanded(false);
+    toggleRef.current?.focus();
+  };
 
   return (
     <figure className="sbk-image">
@@ -67,6 +74,7 @@ export function Image({ block }: BlockProps<ImageBlock>) {
           <span className="sbk-image__trigger">
             {resolved?.size !== undefined && `(${formatFileSize(resolved.size)})`}{" "}
             <button
+              ref={toggleRef}
               type="button"
               className="sbk-image__toggle"
               aria-label="image"
@@ -93,7 +101,7 @@ export function Image({ block }: BlockProps<ImageBlock>) {
               </span>
             </div>
           )}
-          {imageUrl && <ImageActions url={imageUrl} />}
+          {imageUrl && <ImageActions url={imageUrl} onHide={hide} />}
         </div>
       )}
     </figure>
