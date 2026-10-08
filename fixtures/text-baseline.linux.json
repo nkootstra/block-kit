@@ -449,9 +449,7 @@
   "catalog/input/datepicker@dark": [],
   "catalog/input/datepicker@mobile": [],
   "catalog/input/datepicker@open": [],
-  "catalog/input/datepicker@open+dark": [
-    "color|Clear selection|0"
-  ],
+  "catalog/input/datepicker@open+dark": [],
   "catalog/input/dispatches-actions": [],
   "catalog/input/dispatches-actions@dark": [],
   "catalog/input/dispatches-actions@mobile": [],
@@ -597,7 +595,6 @@
     "missing|Select conversations|1"
   ],
   "catalog/section/multi-conversations-select@dialog+dark": [
-    "color|Select conversations|0",
     "missing|Select conversations|1"
   ],
   "catalog/section/multi-conversations-select@mobile": [],
@@ -607,7 +604,6 @@
     "missing|Select options|1"
   ],
   "catalog/section/multi-static-select@dialog+dark": [
-    "color|Select options|0",
     "missing|Select options|1"
   ],
   "catalog/section/multi-static-select@mobile": [],
@@ -1202,9 +1198,7 @@
   "contexts/datetimepicker/actions@dark": [],
   "contexts/datetimepicker/actions@mobile": [],
   "contexts/datetimepicker/actions@open": [],
-  "contexts/datetimepicker/actions@open+dark": [
-    "color|Clear selection|0"
-  ],
+  "contexts/datetimepicker/actions@open+dark": [],
   "contexts/datetimepicker/modal-input": [],
   "contexts/datetimepicker/modal-input@dark": [],
   "contexts/datetimepicker/modal-input@open": [
@@ -1241,7 +1235,6 @@
     "missing|Select items|1"
   ],
   "contexts/multi_static_select/accessory@dialog+dark": [
-    "color|Select items|0",
     "missing|Select items|1"
   ],
   "contexts/multi_static_select/accessory@mobile": [],
@@ -1255,7 +1248,6 @@
     "missing|Select users|1"
   ],
   "contexts/multi_users_select/accessory@dialog+dark": [
-    "color|Select users|0",
     "missing|Select users|1"
   ],
   "contexts/multi_users_select/accessory@mobile": [],
@@ -1512,9 +1504,7 @@
   "extra/input/datetimepicker@dark": [],
   "extra/input/datetimepicker@mobile": [],
   "extra/input/datetimepicker@open": [],
-  "extra/input/datetimepicker@open+dark": [
-    "color|Clear selection|0"
-  ],
+  "extra/input/datetimepicker@open+dark": [],
   "extra/input/more-selects": [
     "missing|You can select up to 3 items.|0",
     "extra|Select a conversation|0",
@@ -1594,9 +1584,7 @@
   "extra/modal/form": [],
   "extra/modal/form@dark": [],
   "extra/modal/form@open": [],
-  "extra/modal/form@open+dark": [
-    "color|Medium|0"
-  ],
+  "extra/modal/form@open+dark": [],
   "extra/modal/rich-and-file": [],
   "extra/modal/rich-and-file@dark": [],
   "extra/payloads/buttons": [],
@@ -1651,7 +1639,6 @@
     "extra|#1264A3|0"
   ],
   "extra/rich-text/mentions-and-styles@dark": [
-    "color|@here|0",
     "missing|· colour #1264A3|0",
     "extra|· colour|0",
     "extra|#1264A3|0"
@@ -1681,7 +1668,6 @@
     "extra|const answer = 42; console.log(answer < 100);|0"
   ],
   "message/mrkdwn@dark": [
-    "color|@here|0",
     "missing|const answer = 42;|0",
     "missing|console.log(answer < 100);|0",
     "extra|const answer = 42; console.log(answer < 100);|0"
