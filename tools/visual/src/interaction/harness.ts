@@ -12,6 +12,11 @@ export interface Mount {
   errors?: Record<string, string>;
   /** A modal any action opens through `views.open`, as an app answering the interaction would. */
   opens?: { type: "modal"; [key: string]: unknown };
+  /**
+   * People and channels for `resolvers.directory`: users selects list the people, channels selects
+   * the channels, and conversations selects both.
+   */
+  directory?: { type: "user" | "channel"; [key: string]: unknown }[];
   /** What `resolvers.slackFile` answers for a `slack_file`, by its `url` or `id`. */
   slackFiles?: Record<string, { url: string; size?: number }>;
 }

@@ -126,8 +126,8 @@ type, starts on a grey row with an **Enter** key on it, and Enter picks it. The 
 turns that row into the blue keyboard highlight, and later presses move it. Option groups get a 28px heading each, with
 their options indented under it and a rule between groups.
 
-The multi-selects and the users, conversations and channels selects open from a button, with a
-search box where there's something to search. A multi-select ticks the options it already has; in
+The single users, conversations and channels selects are typed into the same way. The
+multi-selects open from a button, with a search box where there's something to search. A multi-select ticks the options it already has; in
 an `input` block its list is 22px wider than the field and starts 12px to its left. An
 `external_select` asks for "Type a minimum of N characters to see options." until the query reaches
 its `min_query_length`.
@@ -372,7 +372,26 @@ options already picked via `initial_options`:
 ### Users select
 
 Populated from Slack's own user directory: there's nothing to pass for the option list itself,
-only which user (if any) starts selected.
+only which user (if any) starts selected. Outside Slack, the list comes from the provider's
+`resolvers.directory`, which returns the people and channels to offer for `"users"`,
+`"conversations"` or `"channels"`. Each row is drawn as Slack's: a 20px avatar, the bold name,
+"(you)" for the signed-in user, a badge such as `AGENT`, the presence icon and the full name.
+Channels show a `#` or a lock. Without a directory the list says "😕 Nothing could be found."
+
+```tsx
+<BlockKitProvider
+  resolvers={{
+    directory: (source) =>
+      source === "channels"
+        ? [{ type: "channel", id: "C0123456789", name: "general" }]
+        : [{ type: "user", id: "U0123456789", name: "Ada Lovelace", self: true, presence: "active" }],
+  }}
+>
+```
+
+A conversations select applies its `filter` to the directory: `include` keeps people (`im`),
+`private` or `public` channels, and `exclude_bot_users` drops entries marked `bot`. A chosen ID the
+directory doesn't list comes first in the list, drawn as the field draws it.
 
 <Preview
   payload={{

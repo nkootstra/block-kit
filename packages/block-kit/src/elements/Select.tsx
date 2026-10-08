@@ -1,7 +1,7 @@
 import type { OptionGroup, PlainTextOption } from "@slack/types";
-import { useContext, useEffect, useRef, useState } from "react";
+import { type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { type DirectoryEntry, useBlockKit } from "../context";
 import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
 import { Text } from "../Text";
@@ -120,6 +120,23 @@ function responseGroups(response: OptionsResponse | undefined): OptionGroupView[
 }
 
 /**
+ * Whether a conversations select's `filter` lets an entry through, as Slack applies it: `include`
+ * names the kinds listed (`im` for people, `private` and `public` for channels; group DMs aren't in
+ * the directory), and `exclude_bot_users` leaves out bots.
+ */
+function matchesConversationFilter(
+  entry: DirectoryEntry,
+  filter: SelectElement["filter"],
+): boolean {
+  if (!filter) return true;
+  if (entry.type === "user" && entry.bot && filter.exclude_bot_users) return false;
+  const include = filter.include;
+  if (!include || include.length === 0) return true;
+  const kind = entry.type === "user" ? "im" : entry.private ? "private" : "public";
+  return include.includes(kind);
+}
+
+/**
  * Whether `text` matches what's typed, as Slack's lists filter: case-insensitively, at the start of
  * the text or of any word in it (after a space, hyphen, bracket or other punctuation), never in the
  * middle of a word.
@@ -191,7 +208,19 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     };
   }, [open, remote, loadOptions, query, minQueryLength, actionId, blockId]);
 
+  // The app's directory for a users/conversations/channels select (`resolvers.directory`), the rows
+  // Slack lists from the workspace.
+  const entries: DirectoryEntry[] =
+    source === "users" || source === "conversations" || source === "channels"
+      ? (resolvers.directory?.(source) ?? []).filter(
+          (e) => source !== "conversations" || matchesConversationFilter(e, element.filter),
+        )
+      : [];
+  const entryById = new Map(entries.map((e) => [e.id, e]));
+
   const resolveLabel = (id: string): string => {
+    const known = entryById.get(id);
+    if (known) return known.name;
     const resolver =
       source === "users"
         ? resolvers.user
@@ -300,10 +329,29 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const filteredOptions = source === "static" ? allOptions(element).filter(matches) : [];
 
   // Visible static options, grouped as rendered, plus a flat list for keyboard navigation.
+  const directoryOptions: PlainTextOption[] = entries
+    .filter(
+      (e) =>
+        matchesQuery(e.name, query) ||
+        (e.type === "user" && e.realName !== undefined && matchesQuery(e.realName, query)),
+    )
+    .map((e) => ({ text: { type: "plain_text", text: e.name }, value: e.id }));
+  // A chosen conversation, channel or person the directory doesn't list: Slack fetches it and lists
+  // it first, selected, drawn as the field draws it (blank, a "Private channel" pill, a skeleton).
+  const chosen = !multi && entries.length > 0 && !query ? items[0] : undefined;
+  const pinned = chosen && !entryById.has(chosen.id) ? chosen : undefined;
+  if (pinned) {
+    directoryOptions.unshift({
+      text: { type: "plain_text", text: pinned.label || resolveLabel(pinned.id) },
+      value: pinned.id,
+    });
+  }
   const visibleGroups: OptionGroupView[] = remote
     ? (remoteGroups ?? [])
     : source !== "static"
-      ? []
+      ? directoryOptions.length > 0 || entries.length > 0
+        ? [{ options: directoryOptions }]
+        : []
       : element.option_groups
         ? element.option_groups
             .map((group) => ({
@@ -321,7 +369,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   // Slack's single static and external selects are typed into (`c-select_input`): the field filters
   // the options or searches the app, so there's no search box in the menu. The others open from a
   // button.
-  const typeable = (source === "static" || source === "external") && !multi;
+  // Slack's single users, conversations and channels selects are typed into the same way.
+  const typeable = !multi;
   // As a section accessory, Slack's multi-selects are a small button (the placeholder, then
   // "N selected") that opens a selection dialog and sends once, on Confirm. Measured for static,
   // users and conversations selects; channels follow conversations, and the external one keeps its
@@ -402,20 +451,24 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         id={combo.listId}
         ref={listRef}
       >
-        {!typeable && (showSearchOnly || allOptions(element).length > 8) && (
-          <div className="sbk-select__search">
-            <SearchIcon />
-            <input
-              autoFocus
-              className="sbk-select__search-input"
-              placeholder={
-                source === "static" || source === "external" ? "Search options" : `Search ${source}`
-              }
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
-        )}
+        {!typeable &&
+          ((showSearchOnly && entries.length === 0) ||
+            (entries.length > 0 ? entries.length : allOptions(element).length) > 8) && (
+            <div className="sbk-select__search">
+              <SearchIcon />
+              <input
+                autoFocus
+                className="sbk-select__search-input"
+                placeholder={
+                  source === "static" || source === "external"
+                    ? "Search options"
+                    : `Search ${source}`
+                }
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+          )}
         {!belowMinimum &&
           (() => {
             let index = 0;
@@ -426,6 +479,12 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                   <SelectOption
                     key={option.value ?? i}
                     option={option}
+                    entry={option.value !== undefined ? entryById.get(option.value) : undefined}
+                    content={
+                      pinned && option.value === pinned.id && isUnresolved(pinned)
+                        ? unresolvedValue(pinned.id)
+                        : undefined
+                    }
                     selected={isSelected(option)}
                     check={(multi || typeable) && isSelected(option)}
                     typed={combo.typed && combo.active === i}
@@ -526,7 +585,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     const display = unresolved ? undefined : closedLabel;
     // Slack keeps the chosen option in the input but draws it in a layer over the field
     // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
-    const overlay = display !== undefined && !open && !query;
+    // An ID it can't resolve shows its "Private channel" pill or loading skeleton there instead.
+    const overlay = (display !== undefined || unresolved) && !open && !query;
     return (
       <div className={`sbk-select sbk-select--typeable${sizeClass}`} ref={rootRef}>
         {/* A label, so a press on the chevron or padding lands in the input as on Slack's field. */}
@@ -539,7 +599,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
           <ChevronDownIcon className="sbk-select__chevron" />
           {overlay && (
             <span className="sbk-select__content" aria-hidden="true">
-              <span className="sbk-select__content-text">{display}</span>
+              {unresolved && items[0] ? (
+                unresolvedValue(items[0].id)
+              ) : (
+                <span className="sbk-select__content-text">{display}</span>
+              )}
             </span>
           )}
         </label>
@@ -626,8 +690,95 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   );
 }
 
+/** Slack's presence and channel icons, 20×20 paths copied from Block Kit Builder. */
+const PRESENCE: Record<
+  NonNullable<Extract<DirectoryEntry, { type: "user" }>["presence"]>,
+  { label: string; d: string; evenOdd?: boolean }
+> = {
+  active: { label: "Active", d: "M14.5 10a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0" },
+  snoozed: {
+    label: "Active, notifications snoozed",
+    evenOdd: true,
+    d: "M11.25 3.5a.75.75 0 0 0 0 1.5h1.847l-2.411 2.756A.75.75 0 0 0 11.25 9h3.5a.75.75 0 0 0 0-1.5h-1.847l2.411-2.756A.75.75 0 0 0 14.75 3.5zM9.557 6.768C10.18 6.055 10 5.5 9.406 5.54a4.5 4.5 0 1 0 5.067 4.96H11.25a2.25 2.25 0 0 1-1.693-3.73",
+  },
+  slackbot: {
+    label: "Active",
+    evenOdd: true,
+    d: "M9.73 6.173q.15.203.27.422.12-.218.27-.422C10.72 5.557 11.425 5 12.352 5c1.045 0 1.73.492 2.136 1.122.389.605.511 1.32.511 1.82 0 .486-.044 1.377-.681 2.513-.633 1.127-1.833 2.463-4.083 3.888a.44.44 0 0 1-.472 0c-2.25-1.425-3.45-2.76-4.083-3.888C5.044 9.319 5 8.428 5 7.94c0-.499.122-1.214.511-1.82C5.916 5.492 6.601 5 7.647 5c.927 0 1.632.557 2.084 1.173",
+  },
+};
+const CHANNEL_HASH =
+  "M9.74 2.878a.75.75 0 1 0-1.48-.255L7.68 6H3.75a.75.75 0 0 0 0 1.5h3.67L6.472 13H2.75a.75.75 0 0 0 0 1.5h3.463l-.452 2.623a.75.75 0 0 0 1.478.255l.496-2.878h3.228l-.452 2.623a.75.75 0 0 0 1.478.255l.496-2.878h3.765a.75.75 0 0 0 0-1.5h-3.506l.948-5.5h3.558a.75.75 0 0 0 0-1.5h-3.3l.54-3.122a.75.75 0 0 0-1.48-.255L12.43 6H9.2zM11.221 13l.948-5.5H8.942L7.994 13z";
+const CHANNEL_LOCK =
+  "M10 1.5A4.5 4.5 0 0 0 5.5 6v1.5h-.25A2.25 2.25 0 0 0 3 9.75v6.5c0 .966.784 1.75 1.75 1.75h10.5A1.75 1.75 0 0 0 17 16.25v-6.5a2.25 2.25 0 0 0-2.25-2.25h-.25V6A4.5 4.5 0 0 0 10 1.5m3 6V6a3 3 0 1 0-6 0v1.5zM4.5 9.75A.75.75 0 0 1 5.25 9h9.5a.75.75 0 0 1 .75.75v6.5a.25.25 0 0 1-.25.25H4.75a.25.25 0 0 1-.25-.25z";
+
+/**
+ * A person or channel in a directory-backed list, laid out as Slack's `c-member` and
+ * `c-small_channel_entity` rows: a 20px avatar or 18px channel icon, 8px apart from the bold name,
+ * then the person's "(you)" or badge, presence icon and full name.
+ */
+function DirectoryRow({ entry }: { entry: DirectoryEntry }) {
+  if (entry.type === "channel") {
+    return (
+      <span className="sbk-select__member sbk-select__member--channel">
+        <svg
+          className="sbk-select__channel-icon"
+          data-icon={entry.private ? "lock" : "hash"}
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          <path
+            fill="currentColor"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d={entry.private ? CHANNEL_LOCK : CHANNEL_HASH}
+          />
+        </svg>
+        <span className="sbk-select__member-text">
+          <span className="sbk-select__member-name">{entry.name}</span>
+        </span>
+      </span>
+    );
+  }
+  const presence = entry.presence ? PRESENCE[entry.presence] : undefined;
+  return (
+    <span className="sbk-select__member">
+      <span className="sbk-select__avatar">
+        {entry.avatarUrl && <img src={entry.avatarUrl} alt="" />}
+      </span>
+      <span className="sbk-select__member-text">
+        <span className="sbk-select__member-name">
+          <strong>
+            {entry.name}
+            {entry.self && <span className="sbk-select__member-you">(you)</span>}
+            {entry.badge && <span className="sbk-select__member-badge">{entry.badge}</span>}
+          </strong>
+        </span>
+        {presence && (
+          <svg
+            className="sbk-select__presence"
+            viewBox="0 0 20 20"
+            role="img"
+            aria-label={presence.label}
+          >
+            <path
+              fill="currentColor"
+              fillRule={presence.evenOdd ? "evenodd" : undefined}
+              clipRule={presence.evenOdd ? "evenodd" : undefined}
+              d={presence.d}
+            />
+          </svg>
+        )}
+        {entry.realName && <span className="sbk-select__member-secondary">{entry.realName}</span>}
+      </span>
+    </span>
+  );
+}
+
 function SelectOption({
   option,
+  entry,
+  content,
   selected,
   check,
   typed,
@@ -635,6 +786,10 @@ function SelectOption({
   navProps,
 }: {
   option: PlainTextOption;
+  /** A person or channel from `resolvers.directory`, shown as Slack's member or channel row. */
+  entry?: DirectoryEntry;
+  /** What to draw in place of the option's text, e.g. an unresolved ID's pill. */
+  content?: ReactNode;
   selected: boolean;
   /** A multi-select's chosen option, which Slack ticks. */
   check?: boolean;
@@ -671,9 +826,15 @@ function SelectOption({
         </svg>
       )}
       <span className="sbk-select__option-label">
-        <span className="sbk-select__option-text">
-          <Text text={option.text} />
-        </span>
+        {content !== undefined ? (
+          content
+        ) : entry ? (
+          <DirectoryRow entry={entry} />
+        ) : (
+          <span className="sbk-select__option-text">
+            <Text text={option.text} />
+          </span>
+        )}
         {option.description && (
           <span className="sbk-select__option-description">
             <Text text={option.description} />
