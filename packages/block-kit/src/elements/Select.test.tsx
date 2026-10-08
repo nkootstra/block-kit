@@ -806,7 +806,9 @@ describe("<Select> multi-select chips", () => {
       </BlockKitProvider>,
     );
     const hint = screen.getByText("You can select up to 1 item.");
-    expect([...hint.childNodes].map((n) => n.textContent)).toEqual(["You can select up to 1 item."]);
+    expect([...hint.childNodes].map((n) => n.textContent)).toEqual([
+      "You can select up to 1 item.",
+    ]);
   });
 
   function renderChips(onAction = vi.fn()) {
