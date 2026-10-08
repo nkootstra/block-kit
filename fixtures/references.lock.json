@@ -141,7 +141,7 @@
   },
   "catalog/actions/selects-with-initial-options@open+dark": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "dfd4f6dd82cdab6509fef8cd3716c3e6a0e02a63c160e1c44fad4ec150bcd620",
+    "reference": "5cb5b36cd19773906d68ecdd8dcda94d6863b41e512c026dd166601166183350",
     "captured": "2026-10-07"
   },
   "catalog/actions/timepicker": {
