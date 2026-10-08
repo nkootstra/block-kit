@@ -235,6 +235,7 @@
     --sbk-mention-private-bg: rgba(232, 232, 232, 0.13);
     --sbk-mention-private-text: rgba(232, 232, 232, 0.7);
     --sbk-broadcast-bg: #a073002e;
+    --sbk-broadcast-text: #dea700;
     --sbk-bg: #1a1d21;
     --sbk-muted: #9a9b9e;
     --sbk-text-sec: #ababad;
@@ -268,7 +269,7 @@
     --sbk-pre-text: #d1d2d3;
     --sbk-code-block-border: rgba(248, 248, 248, 0.06);
     --sbk-menu-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
-    --sbk-menu-selected-text: #2ba5ce;
+    --sbk-menu-selected-text: #1d9bd1;
     --sbk-menu-separator: #797c814d;
     --sbk-menu-secondary-text: #b9babd;
     --sbk-popover-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
@@ -351,6 +352,7 @@
   --sbk-mention-private-bg: rgba(232, 232, 232, 0.13);
   --sbk-mention-private-text: rgba(232, 232, 232, 0.7);
   --sbk-broadcast-bg: #a073002e;
+  --sbk-broadcast-text: #dea700;
   --sbk-bg: #1a1d21;
   --sbk-muted: #9a9b9e;
   --sbk-text-sec: #ababad;
@@ -384,7 +386,7 @@
   --sbk-pre-text: #d1d2d3;
   --sbk-code-block-border: rgba(248, 248, 248, 0.06);
   --sbk-menu-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
-  --sbk-menu-selected-text: #2ba5ce;
+  --sbk-menu-selected-text: #1d9bd1;
   --sbk-menu-separator: #797c814d;
   --sbk-menu-secondary-text: #b9babd;
   --sbk-popover-shadow: 0 0 0 1px rgba(232, 232, 232, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);

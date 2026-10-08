@@ -193,7 +193,7 @@
   height: 44px;
   padding: 0;
   font: 700 15px var(--sbk-font);
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
   background: none;
   border: none;
   border-radius: 0 0 6px 6px;

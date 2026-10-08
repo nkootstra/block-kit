@@ -2888,6 +2888,100 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  // Measured in Block Kit Builder's references (catalog/input/datepicker@open+dark,
+  // catalog/section/multi-static-select@dialog+dark, message/mrkdwn@dark,
+  // extra/modal/form@open+dark): dark-mode text the earlier passes left on the wrong token.
+  describe("leftover text colours in both themes", () => {
+    const WANT = {
+      light: { clear: TEXT, title: TEXT, here: TEXT, selected: "rgb(18, 100, 163)" },
+      dark: {
+        clear: "rgb(209, 210, 211)",
+        title: "rgb(209, 210, 211)",
+        here: "rgb(222, 167, 0)",
+        selected: "rgb(29, 155, 209)",
+      },
+    } as const;
+    const colour = (page: Page, selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => getComputedStyle(el).color);
+
+    for (const theme of ["light", "dark"] as const) {
+      const want = WANT[theme];
+      describe(theme, () => {
+        it("writes the calendar's Clear selection in Slack's body text colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [
+              {
+                type: "input",
+                label: plain("Due"),
+                element: { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+              },
+            ],
+          });
+          await page.click(".sbk-datepicker__input");
+          await settle(page);
+          expect(await colour(page, ".sbk-calendar__clear")).toBe(want.clear);
+        });
+
+        it("titles the selection dialog in Slack's body text colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [
+              {
+                type: "section",
+                text: plain("Pick"),
+                accessory: {
+                  type: "multi_static_select",
+                  action_id: "m",
+                  placeholder: plain("Select options"),
+                  options: [option("Alpha"), option("Bravo")],
+                },
+              },
+            ],
+          });
+          await page.click(".sbk-section__accessory .sbk-select__control");
+          await settle(page);
+          expect(await colour(page, ".sbk-select-dialog__title")).toBe(want.title);
+        });
+
+        it("writes @here in Slack's broadcast colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [{ type: "section", text: { type: "mrkdwn", text: "Hi <!here>" } }],
+          });
+          expect(await colour(page, ".sbk-mention--broadcast")).toBe(want.here);
+        });
+
+        it("marks the chosen option of an open list in Slack's selected colour", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [
+              {
+                type: "actions",
+                elements: [
+                  {
+                    type: "static_select",
+                    action_id: "s",
+                    options: [option("High"), option("Medium"), option("Low")],
+                    initial_option: option("Medium"),
+                  },
+                ],
+              },
+            ],
+          });
+          await page.click(".sbk-select__control");
+          await settle(page);
+          expect(await colour(page, '.sbk-select__option[aria-selected="true"]')).toBe(
+            want.selected,
+          );
+        });
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (contexts/{datepicker,timepicker}/{actions,home,modal-input}):
   // Slack draws date and time fields in its small size (28px, 13px text) in messages, and in its
   // medium size (36px, 15px text) in modals and on App Home.
