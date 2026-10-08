@@ -150,8 +150,12 @@ These props, and `resolvers`, are functions:
   `<Message>`; without it the component stamps the current time and hydration mismatches.
 - **Theme:** `theme="light" | "dark"` on the provider forces a colour scheme; otherwise the page's
   `data-theme` or the system preference applies. Colours are `--sbk-*` CSS custom properties,
-  including callout backgrounds (`--sbk-callout-<color>-bg`) and area chart fills
-  (`--sbk-chart-area-1` to `-4`).
+  including callout backgrounds (`--sbk-callout-<color>-bg`), chart series colours
+  (`--sbk-chart-1` to `-4`, and `-lift` for hover) and area chart fills (`--sbk-chart-area-1` to
+  `-4`).
+- **Hover menus on charts, images and tables** act in the page only, as in Slack, and never call
+  `onAction`: a chart's View as table (a modal) and Download chart data (a `.tsv`), with Copy as
+  image disabled; an image's Copy link and Hide image; a table's Copy table and Download table.
 - **Unknown block types** render the block's `fallback` array in their place when it has one.
 
 ## Entry points
