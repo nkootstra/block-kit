@@ -46,20 +46,32 @@ const BUILDER = `<!doctype html><html class="sk-client-theme--light"><body>
   </script>
 </body></html>`;
 
-async function run(items: { name: string; payload: unknown }[]) {
+async function run(
+  items: { name: string; payload: unknown }[],
+  substitute?: Record<string, string>,
+) {
   page = await browser.newPage();
   await page.setContent(BUILDER);
   await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
-  return page.evaluate(async (list) => {
-    const w = window as unknown as {
-      capture: (o: unknown) => Promise<Record<string, string>>;
-      adapter: unknown;
-      snap: unknown;
-      log: string[];
-    };
-    const results = await w.capture({ items: list, snap: w.snap, adapter: w.adapter, settle: 0 });
-    return { results, log: w.log };
-  }, items);
+  return page.evaluate(
+    async ([list, map]) => {
+      const w = window as unknown as {
+        capture: (o: unknown) => Promise<Record<string, string>>;
+        adapter: unknown;
+        snap: unknown;
+        log: string[];
+      };
+      const results = await w.capture({
+        items: list,
+        snap: w.snap,
+        adapter: w.adapter,
+        settle: 0,
+        substitute: map,
+      });
+      return { results, log: w.log };
+    },
+    [items, substitute] as const,
+  );
 }
 
 /**
@@ -318,10 +330,24 @@ describe("capture.js", () => {
     ]);
   });
 
-  it("refuses a name it can't reproduce instead of capturing the wrong state", async () => {
-    await expect(run([{ name: "catalog/actions/button@dark+open", payload: {} }])).rejects.toThrow(
-      /not a canonical reference name/,
+  // A fixture names a Slack file by a placeholder URL; the capture swaps in the real file's link,
+  // kept in a git-ignored local file, so only the Builder ever sees it.
+  it("loads a payload with the placeholders swapped for the given values", async () => {
+    const { log } = await run(
+      [{ name: "catalog/image/slack-image", payload: { blocks: [{ url: "PLACEHOLDER" }] } }],
+      { PLACEHOLDER: "https://example.test/real.png" },
     );
+    expect(log[0]).toBe('load {"blocks":[{"url":"https://example.test/real.png"}]}');
+  });
+
+  it("refuses a name it can't reproduce instead of capturing the wrong state", async () => {
+    // Not `expect(...).rejects`: on a Playwright error Bun's matcher spins the CPU, for seconds
+    // on Linux and sometimes for good, which held CI's render job until its time limit.
+    const error = await run([{ name: "catalog/actions/button@dark+open", payload: {} }]).then(
+      () => undefined,
+      (e: Error) => e.message,
+    );
+    expect(error).toMatch(/not a canonical reference name/);
   });
 });
 

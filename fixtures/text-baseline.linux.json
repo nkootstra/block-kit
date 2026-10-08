@@ -32,18 +32,17 @@
     "extra|😕 Nothing could be found.|0"
   ],
   "catalog/actions/all-selects@open+dark": [
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1",
     "missing|channel-one|0",
     "missing|channel-two|0",
     "missing|channel-three|0",
     "missing|channel-four|0",
     "missing|channel-five|0",
+    "missing|channel-six|0",
+    "missing|channel-seven|0",
+    "missing|User One|0",
+    "missing|(you)|0",
+    "missing|User Two|0",
+    "missing|User Two|1",
     "extra|Select a conversation|0",
     "extra|Select a channel|0",
     "extra|Select a user|0",
@@ -109,7 +108,6 @@
   ],
   "catalog/actions/selects-with-initial-options@open+dark": [
     "color|Private channel|0",
-    "missing|undefined|0",
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
@@ -126,13 +124,8 @@
   "catalog/actions/timepicker": [],
   "catalog/actions/timepicker@dark": [],
   "catalog/actions/timepicker@mobile": [],
-  "catalog/actions/timepicker@open": [
-    "y|1:37 PM|0"
-  ],
-  "catalog/actions/timepicker@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "catalog/actions/timepicker@open": [],
+  "catalog/actions/timepicker@open+dark": [],
   "catalog/agents/message-feedback": [],
   "catalog/agents/message-feedback@dark": [],
   "catalog/agents/message-feedback@mobile": [],
@@ -262,6 +255,7 @@
   "catalog/card-and-carousel/carousel@scrolled": [],
   "catalog/condition/client-platforms": [],
   "catalog/condition/client-platforms@dark": [],
+  "catalog/condition/client-platforms@mobile": [],
   "catalog/container/collapsible": [],
   "catalog/container/collapsible@collapsed": [],
   "catalog/container/collapsible@dark": [],
@@ -433,6 +427,9 @@
   "catalog/image/no-title@mobile": [
     "missing|(71 kB)|0"
   ],
+  "catalog/image/slack-image": [],
+  "catalog/image/slack-image@dark": [],
+  "catalog/image/slack-image@mobile": [],
   "catalog/image/title": [
     "missing|(71 kB)|0"
   ],
@@ -508,13 +505,8 @@
   "catalog/input/timepicker": [],
   "catalog/input/timepicker@dark": [],
   "catalog/input/timepicker@mobile": [],
-  "catalog/input/timepicker@open": [
-    "y|1:37 PM|0"
-  ],
-  "catalog/input/timepicker@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "catalog/input/timepicker@open": [],
+  "catalog/input/timepicker@open+dark": [],
   "catalog/markdown/code": [
     "missing|Markdown|0"
   ],
@@ -630,6 +622,9 @@
   "catalog/section/radio-buttons": [],
   "catalog/section/radio-buttons@dark": [],
   "catalog/section/radio-buttons@mobile": [],
+  "catalog/section/slack-image": [],
+  "catalog/section/slack-image@dark": [],
+  "catalog/section/slack-image@mobile": [],
   "catalog/section/static-select": [],
   "catalog/section/static-select@dark": [],
   "catalog/section/static-select@mobile": [],
@@ -641,13 +636,8 @@
   "catalog/section/timepicker": [],
   "catalog/section/timepicker@dark": [],
   "catalog/section/timepicker@mobile": [],
-  "catalog/section/timepicker@open": [
-    "y|1:37 PM|0"
-  ],
-  "catalog/section/timepicker@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "catalog/section/timepicker@open": [],
+  "catalog/section/timepicker@open+dark": [],
   "catalog/section/users-select": [
     "extra|Select a user|0"
   ],
@@ -1210,13 +1200,7 @@
   ],
   "contexts/datetimepicker/actions": [],
   "contexts/datetimepicker/actions@dark": [],
-  "contexts/datetimepicker/actions@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
+  "contexts/datetimepicker/actions@mobile": [],
   "contexts/datetimepicker/actions@open": [],
   "contexts/datetimepicker/actions@open+dark": [
     "color|Clear selection|0"
@@ -1355,35 +1339,21 @@
   "contexts/timepicker/accessory": [],
   "contexts/timepicker/accessory@dark": [],
   "contexts/timepicker/accessory@mobile": [],
-  "contexts/timepicker/accessory@open": [
-    "y|1:37 PM|0"
-  ],
-  "contexts/timepicker/accessory@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/accessory@open": [],
+  "contexts/timepicker/accessory@open+dark": [],
   "contexts/timepicker/actions": [],
   "contexts/timepicker/actions@dark": [],
   "contexts/timepicker/actions@mobile": [],
-  "contexts/timepicker/actions@open": [
-    "y|1:37 PM|0"
-  ],
-  "contexts/timepicker/actions@open+dark": [
-    "y|1:37 PM|0",
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/actions@open": [],
+  "contexts/timepicker/actions@open+dark": [],
   "contexts/timepicker/home": [],
   "contexts/timepicker/home@dark": [],
   "contexts/timepicker/home@open": [],
-  "contexts/timepicker/home@open+dark": [
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/home@open+dark": [],
   "contexts/timepicker/modal-input": [],
   "contexts/timepicker/modal-input@dark": [],
   "contexts/timepicker/modal-input@open": [],
-  "contexts/timepicker/modal-input@open+dark": [
-    "color|1:37 PM|0"
-  ],
+  "contexts/timepicker/modal-input@open+dark": [],
   "contexts/url_text_input/modal-input": [],
   "contexts/url_text_input/modal-input@dark": [],
   "contexts/users_select/accessory": [
@@ -1515,11 +1485,6 @@
     "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@open": [
@@ -1545,13 +1510,7 @@
   "extra/home/dashboard@open+dark": [],
   "extra/input/datetimepicker": [],
   "extra/input/datetimepicker@dark": [],
-  "extra/input/datetimepicker@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
+  "extra/input/datetimepicker@mobile": [],
   "extra/input/datetimepicker@open": [],
   "extra/input/datetimepicker@open+dark": [
     "color|Clear selection|0"
@@ -1671,13 +1630,7 @@
   "extra/payloads/overflow-url@open+dark": [],
   "extra/payloads/pickers": [],
   "extra/payloads/pickers@dark": [],
-  "extra/payloads/pickers@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
+  "extra/payloads/pickers@mobile": [],
   "extra/payloads/pickers@open": [],
   "extra/payloads/pickers@open+dark": [],
   "extra/payloads/selects": [

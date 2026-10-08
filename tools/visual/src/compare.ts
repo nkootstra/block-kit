@@ -45,6 +45,7 @@ import pixelmatch from "pixelmatch";
 import { chromium, type Page } from "playwright";
 import { PNG } from "pngjs";
 import { collectTextRuns } from "./collectTextRuns";
+import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
 import { pad, parseRgb } from "./pad";
 import { parseReferenceName } from "./names";
@@ -174,6 +175,18 @@ await context.route(/slack-imgs\.com|picsum\.photos/, async (route) => {
   });
 });
 await routeSamples(context);
+
+// A Slack file in a reference is redacted to SLACK_FILE_PLACEHOLDER (redact.ts), whichever of the
+// file's URLs Slack used (the original or a thumbnail). Serve both sides the committed copy of the
+// file the Builder showed, so they draw the same pixels; the playground's `slackFile` resolver
+// returns the same placeholder URL.
+const slackFile = await Bun.file(join(FIXTURES, "assets/slack-file.png")).arrayBuffer();
+await context.route(SLACK_FILE_PLACEHOLDER, (route) =>
+  route.fulfill({
+    body: Buffer.from(slackFile),
+    headers: { "content-type": "image/png", "access-control-allow-origin": "*" },
+  }),
+);
 
 /** Lets transitions and smooth scrolling started by a state's clicks finish before the screenshot. */
 async function afterInteraction(page: Page) {

@@ -19,18 +19,18 @@ import { parsePayload } from "./payload";
  * captured with the Builder in dark mode (`<fixture>@dark`).
  */
 /**
- * Block Kit Builder has no workspace files, so it shows its sample photo for the placeholder
- * `slack_file` URL in its catalog (the same image as its `image_url` samples, 72,704 bytes). The
- * render mirrors that with our stand-in for that photo and the size Slack shows, as an app would
- * resolve a real file through `resolvers.slackFile`.
+ * The `slack_file` references show a file uploaded to the Builder's workspace (the block-kit logo,
+ * 400,401 bytes). A reference's file URLs are redacted to this placeholder on import
+ * (tools/visual/src/redact.ts, SLACK_FILE_PLACEHOLDER), the fixtures name it, and the comparison
+ * serves fixtures/assets/slack-file.png for it to both sides, so they draw the same pixels. The
+ * render resolves it as an app would resolve a real file through `resolvers.slackFile`.
  */
+const SLACK_FILE_PLACEHOLDER = "https://files.slack.com/files-pri/T0000001-F0000001/file";
+const SLACK_FILE_SIZE = 400_401;
 const BUILDER_SAMPLE_FILES: Resolvers = {
   slackFile: (file) =>
-    file.url === "<insert slack file url here>"
-      ? {
-          url: "https://cdn.block-kit.dev/samples/tacos.271c2dbf.jpg",
-          size: 72_704,
-        }
+    file.url === SLACK_FILE_PLACEHOLDER
+      ? { url: SLACK_FILE_PLACEHOLDER, size: SLACK_FILE_SIZE }
       : undefined,
 };
 

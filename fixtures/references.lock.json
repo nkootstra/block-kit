@@ -141,7 +141,7 @@
   },
   "catalog/actions/selects-with-initial-options@open+dark": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "8d724268e5a49bda9332adf081ccf7972928ff9f48e134b6ca67e7325f308da7",
+    "reference": "41844847a5915ce5d70651d22be69de4581d8b10d162efe28bb5501c1a5f3964",
     "captured": "2026-10-07"
   },
   "catalog/actions/timepicker": {
@@ -874,6 +874,21 @@
     "reference": "23279ebd1799a7403db281b7e864761df3a0dba7e21f6798d6cb72767a2618e9",
     "captured": "2026-10-07"
   },
+  "catalog/image/slack-image": {
+    "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
+    "reference": "1b55e194a1a00494c279aeb6efd8c6c844cfc218a58cd83e38fe172edf0957af",
+    "captured": "2026-10-07"
+  },
+  "catalog/image/slack-image@dark": {
+    "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
+    "reference": "5dca7a4ccd8e390ecf7f6c0b42825837c6098c62206268bdd230da22538b92c7",
+    "captured": "2026-10-07"
+  },
+  "catalog/image/slack-image@mobile": {
+    "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
+    "reference": "7d8d4eab52fb2c43e3c8d3a64289d6e61f4cd228dadec32b1644e72ee32f9d52",
+    "captured": "2026-10-07"
+  },
   "catalog/image/title": {
     "payload": "4fcd8b354d2cc4b8ccbbd8a1053722549923320f786e99cc05db3ae34135f16f",
     "reference": "88dee7789daeff5725bb92ea33bad9c185fe5632fbce51dc9f3158e3f05990c7",
@@ -1507,6 +1522,21 @@
   "catalog/section/radio-buttons@mobile": {
     "payload": "71603d252812165950048fce57b06f15e58b7f19640fb47091ea25da96dc0cfc",
     "reference": "61aa2637d12564d94fc1daf60b06dfd6a4ae11615a8a59d1ee2b3be799d67ff8",
+    "captured": "2026-10-07"
+  },
+  "catalog/section/slack-image": {
+    "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
+    "reference": "6732ad9c9b99498bf458aab8bdc68774f4fbf2e0a53c3fcf1a8e5328056ff033",
+    "captured": "2026-10-07"
+  },
+  "catalog/section/slack-image@dark": {
+    "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
+    "reference": "e36ede3ba183431e8b0146ffe02acfa14c15f3f00aba8d44d9e857d58c3bf278",
+    "captured": "2026-10-07"
+  },
+  "catalog/section/slack-image@mobile": {
+    "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
+    "reference": "94b8914b8b328ecaa2dc8133c5145d7c51bc935186edf1c7e1e613fb8db28b85",
     "captured": "2026-10-07"
   },
   "catalog/section/static-select": {

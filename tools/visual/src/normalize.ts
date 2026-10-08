@@ -24,6 +24,8 @@ import { redact } from "./redact";
  *   so each capture laid the rest of the line out differently. It's always 120px here.
  * - Links were diffed against an <a> without an href, which isn't underlined, so a link Slack
  *   leaves plain never got `text-decoration:none` and picks up the browser's underline here.
+ * - Older snapshots froze a field without a string value as `value="undefined"`, which the
+ *   reference then draws as text.
  * - The Builder workspace's members, channels, name and IDs are swapped for placeholders
  *   (redact.ts); `mapping` adds the maintainer's local redact.local.json.
  */
@@ -55,7 +57,10 @@ export function normalize(html: string, mapping: Record<string, string> = {}): s
         tag.replace(/box-shadow:[^;"]*;?/, ""),
       )
       .replace(/<(input|textarea)\b[^>]*>/g, (tag) =>
-        /box-sizing:/.test(tag) ? tag : tag.replace(/style="/, 'style="box-sizing:border-box;'),
+        (/box-sizing:/.test(tag)
+          ? tag
+          : tag.replace(/style="/, 'style="box-sizing:border-box;')
+        ).replace(/\svalue="undefined"/, ' value=""'),
       ),
     mapping,
   );

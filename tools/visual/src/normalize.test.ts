@@ -8,6 +8,16 @@ describe("normalize", () => {
     ).toBe('<strong data-qa="member_name">User One</strong><span>T0000001</span>');
   });
 
+  it('empties a field whose frozen value is the string "undefined"', () => {
+    // catalog/actions/selects-with-initial-options@open+dark: an older snapshot froze an input
+    // with no value as value="undefined", which then renders as text in the reference.
+    expect(
+      normalize(
+        '<input type="text" value="undefined" style="box-sizing:border-box"><p>undefined</p>',
+      ),
+    ).toBe('<input type="text" value="" style="box-sizing:border-box"><p>undefined</p>');
+  });
+
   it("applies a maintainer's local mapping for names Slack doesn't mark up", () => {
     expect(normalize("<p>Acme</p>", { Acme: "Example" })).toBe("<p>Example</p>");
   });

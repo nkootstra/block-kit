@@ -13,6 +13,8 @@ export interface Mount {
   errors?: Record<string, string>;
   /** A modal any action opens through `views.open`, as an app answering the interaction would. */
   opens?: { type: "modal"; [key: string]: unknown };
+  /** What `resolvers.slackFile` answers for a `slack_file`, by its `url` or `id`. */
+  slackFiles?: Record<string, { url: string; size?: number }>;
 }
 
 export const ENGINES = { chromium, firefox, webkit } satisfies Record<string, BrowserType>;
