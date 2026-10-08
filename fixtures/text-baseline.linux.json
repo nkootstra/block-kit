@@ -1200,13 +1200,7 @@
   ],
   "contexts/datetimepicker/actions": [],
   "contexts/datetimepicker/actions@dark": [],
-  "contexts/datetimepicker/actions@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
+  "contexts/datetimepicker/actions@mobile": [],
   "contexts/datetimepicker/actions@open": [],
   "contexts/datetimepicker/actions@open+dark": [
     "color|Clear selection|0"
@@ -1491,11 +1485,6 @@
     "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
     "extra|Pick a channel|0"
   ],
   "extra/actions/more-elements@open": [
@@ -1521,13 +1510,7 @@
   "extra/home/dashboard@open+dark": [],
   "extra/input/datetimepicker": [],
   "extra/input/datetimepicker@dark": [],
-  "extra/input/datetimepicker@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
+  "extra/input/datetimepicker@mobile": [],
   "extra/input/datetimepicker@open": [],
   "extra/input/datetimepicker@open+dark": [
     "color|Clear selection|0"
@@ -1647,13 +1630,7 @@
   "extra/payloads/overflow-url@open+dark": [],
   "extra/payloads/pickers": [],
   "extra/payloads/pickers@dark": [],
-  "extra/payloads/pickers@mobile": [
-    "x|11:00 AM|0",
-    "y|11:00 AM|0",
-    "x|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "y|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0",
-    "width|Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna|0"
-  ],
+  "extra/payloads/pickers@mobile": [],
   "extra/payloads/pickers@open": [],
   "extra/payloads/pickers@open+dark": [],
   "extra/payloads/selects": [
