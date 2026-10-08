@@ -16,12 +16,12 @@
   },
   "catalog/actions/all-selects@open": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "ea35125aaa66b8e0a74b89366f12685d6646bd696fd98d994a380fb7af4b7dd0",
+    "reference": "f210a35a6042ef934ae9f63b7dff1f881b4050aeab77ace16e5d130a4f42b86a",
     "captured": "2026-10-07"
   },
   "catalog/actions/all-selects@open+dark": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "43fc7ca42b5859beb0309cdd9a4fb1ec40d1e9ae64335a80b861fbe54c4a51c6",
+    "reference": "66b9b4a5cd50209629a19a1ea11bdf0c560515192b049221f9dc6c3e6579b639",
     "captured": "2026-10-07"
   },
   "catalog/actions/button": {
@@ -517,6 +517,11 @@
   "catalog/condition/client-platforms@dark": {
     "payload": "2fe5a802fa7dacd362a3e204557237f3375a423542d37b779aad59f45be930c4",
     "reference": "8bd31edd3332948d7bffcde380aa4ba8aa5846dd7c742a2dc8b95b57f63e91a7",
+    "captured": "2026-10-07"
+  },
+  "catalog/condition/client-platforms@mobile": {
+    "payload": "2fe5a802fa7dacd362a3e204557237f3375a423542d37b779aad59f45be930c4",
+    "reference": "7c9894ff08e4a910f481dfeb3738db972bf6bbe44449e8872c8284b5290ba722",
     "captured": "2026-10-07"
   },
   "catalog/container/collapsible": {
