@@ -29,6 +29,7 @@ the images Block Kit Builder's templates and Slack's docs use, which we can't re
 | `warning-icon.491cc33b.png`    | 40 × 40     | Drawn for this project                                                                                                          | block-kit contributors                                                    | Block Kit Builder's `notificationsWarningIcon.png`              |
 | `play-icon.24cf386c.png`       | 48 × 48     | Drawn for this project: a neutral video provider icon                                                                           | block-kit contributors                                                    | Slack's YouTube unfurl icon on `a.slack-edge.com`               |
 | `app-icon.81155d10.png`        | 36 × 36     | Drawn for this project                                                                                                          | block-kit contributors                                                    | Slack's default app icon on `a.slack-edge.com`                  |
+| `bot-avatar.3d9f1d46.png`      | 40 × 40     | Drawn for this project: a neutral bot                                                                                           | block-kit contributors                                                    | Slack's bot avatar on `a.slack-edge.com`, in the people selects |
 
 ## Adding or replacing an image
 
