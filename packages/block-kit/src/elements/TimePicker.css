@@ -39,13 +39,16 @@
   color: var(--sbk-badge-text);
 }
 
-/* Slack's c-select_input: the time is typed into a text input that fills the box between the icons. */
+/* Slack's c-select_input: the time is typed into a text input that fills the box between the icons.
+   Its text is the primary colour on an 18px line (22.5px in the medium field below), where the
+   overlay that shows the closed field's value is the body colour on the control's line. */
 .sbk-timepicker__input {
   flex: 1;
   min-width: 0;
   padding: 0;
   font: inherit;
-  color: var(--sbk-text-body);
+  line-height: 18px;
+  color: var(--sbk-text);
   text-overflow: ellipsis;
   background: transparent;
   border: 0;
@@ -194,6 +197,7 @@
   padding: 0 32px;
 }
 
+.sbk-timepicker--medium .sbk-timepicker__input,
 .sbk-timepicker--medium .sbk-timepicker__content-text {
   line-height: 22.5px;
 }
