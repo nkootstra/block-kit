@@ -282,8 +282,9 @@ async (win = window) => {
       el.removeAttribute("loading");
     }
     if (el.localName === "a") el.setAttribute("href", abs(src.getAttribute("href") || "#"));
+    // setAttribute would write a missing value as the text "undefined", which then paints.
     if (el.localName === "input" || el.localName === "textarea")
-      el.setAttribute("value", src.value);
+      el.setAttribute("value", typeof src.value === "string" ? src.value : "");
     const base = defaultsFor(src, cs.fontSize, parent?.fontSize);
     el.setAttribute("style", diff(cs, base, parent, true, sizeOverrides(src, cs, parent)));
     // The Builder's draggable block wrapper transitions its selection highlight; that's the
