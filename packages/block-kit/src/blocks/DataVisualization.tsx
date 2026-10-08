@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { CartesianChart, type ChartSeries } from "../charts/CartesianChart";
+import { ChartTableModal } from "../charts/ChartTableModal";
 import { PieChart } from "../charts/PieChart";
 import { colorForIndex } from "../charts/palette";
 import { ChartActions } from "../data/HoverActions";
@@ -23,17 +25,20 @@ interface DataVisualizationBlock extends Json {
   chart: Chart;
 }
 
-/** The chart's data as a table: a label column plus one column per series (or a value column). */
-function chartRows(chart: Chart, categories: string[]): string[][] {
+/**
+ * The chart's data as Slack tabulates it for "View as table" and "Download chart data": a pie's
+ * segments under "Label" and "Value", otherwise one row per series under "Series" and the
+ * categories. Values are written as given ("1500", not "1,500").
+ */
+function chartTable(chart: Chart, categories: string[]): string[][] {
   if (chart.type === "pie") {
     return [["Label", "Value"], ...(chart.segments ?? []).map((s) => [s.label, String(s.value)])];
   }
-  const series = chart.series ?? [];
   return [
-    [chart.axis_config?.x_label ?? "", ...series.map((s) => s.name)],
-    ...categories.map((label, i) => [
-      label,
-      ...series.map((s) =>
+    ["Series", ...categories],
+    ...(chart.series ?? []).map((s) => [
+      s.name,
+      ...categories.map((label, i) =>
         String(s.data.find((d) => d.label === label)?.value ?? s.data[i]?.value ?? ""),
       ),
     ]),
@@ -48,12 +53,14 @@ function legendEntries(chart: Chart): { name: string; color: string }[] {
 }
 
 export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>) {
+  const [tableOpen, setTableOpen] = useState(false);
   const chart = block.chart;
   if (!chart) return null;
   const isPie = chart.type === "pie";
   const categories =
     chart.axis_config?.categories ?? chart.series?.[0]?.data.map((d) => d.label) ?? [];
   const legend = legendEntries(chart);
+  const rows = chartTable(chart, categories);
 
   return (
     <div className="sbk-dataviz sbk-hover-actions-host">
@@ -83,7 +90,10 @@ export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>)
           ))}
         </div>
       ) : null}
-      <ChartActions rows={chartRows(chart, categories)} title={block.title} />
+      <ChartActions rows={rows} title={block.title} onViewTable={() => setTableOpen(true)} />
+      {tableOpen ? (
+        <ChartTableModal title={block.title} rows={rows} onClose={() => setTableOpen(false)} />
+      ) : null}
     </div>
   );
 }

@@ -170,9 +170,23 @@ stylesheet to restyle without touching the components. The main tokens:
       description:
         "Callout background, one per `background_color`: green, blue, red, yellow, purple, gray.",
     },
+    "--sbk-chart-1": {
+      type: "color",
+      description:
+        "Chart series and segment color, `--sbk-chart-1` to `-4`; Slack's dark charts use a deeper set.",
+    },
+    "--sbk-chart-1-lift": {
+      type: "color",
+      description:
+        "The color a chart mark lifts to under the pointer, one per series color: `--sbk-chart-1-lift` to `-4-lift`.",
+    },
     "--sbk-chart-area-1": {
       type: "color",
       description: "Area chart fill, one per series color: `--sbk-chart-area-1` to `-4`.",
+    },
+    "--sbk-chart-tooltip-bg": {
+      type: "color",
+      description: "Chart hover tooltip background; `--sbk-chart-tooltip-text` is its text.",
     },
   }}
 />

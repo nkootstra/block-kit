@@ -65,6 +65,9 @@
   --sbk-menu-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.12);
   --sbk-menu-selected-text: #1264a3;
   --sbk-menu-separator: rgba(29, 28, 29, 0.13);
+  /* A disabled `c-menu` item ("Copy as image"), and the hover actions menu's `c-menu_separator`. */
+  --sbk-menu-disabled: #5e5d60;
+  --sbk-hover-actions-separator: rgba(29, 28, 29, 0.13);
   --sbk-menu-secondary-text: #454447;
   --sbk-popover-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
   /* The select and time lists' `c-select_options_list__wrapper` ring and shadow. */
