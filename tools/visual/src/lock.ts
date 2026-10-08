@@ -8,6 +8,7 @@ import { join, resolve } from "node:path";
 import { Glob } from "bun";
 import { isReferenceName } from "./names";
 import { leaks } from "./redact";
+import { fixtureSentences, foreignText, missingText } from "./stale";
 
 export const FIXTURES = resolve(import.meta.dir, "../../../fixtures");
 export const LOCK = join(FIXTURES, "references.lock.json");
@@ -103,6 +104,7 @@ export function verify(
   payloads: Map<string, unknown>,
 ): Verification {
   const problems: Problem[] = [];
+  const sentences = fixtureSentences(payloads.values());
   for (const [name, html] of references) {
     if (!isReferenceName(name)) {
       problems.push({
@@ -127,6 +129,16 @@ export function verify(
       problems.push({
         name,
         message: `shows the Builder workspace: ${leaks(html).join(", ")}; re-import it so redact.ts replaces them`,
+      });
+    } else if (foreignText(html, sentences).length > 0) {
+      problems.push({
+        name,
+        message: `shows another fixture ("${foreignText(html, sentences)[0]}"): the Builder refused this payload and kept the previous one; recapture it or leave the fixture out`,
+      });
+    } else if (missingText(html).length > 0) {
+      problems.push({
+        name,
+        message: `shows none of its own text ("${missingText(html)[0]}"): the Builder refused this payload and kept the previous one; recapture it or leave the fixture out`,
       });
     } else if (entry.payload !== hashPayload(payload)) {
       problems.push({

@@ -23,3 +23,6 @@ tools/visual/.auth/
 .blume-verify/
 # Real names to redact from references (redact.ts); never commit
 tools/visual/redact.local.json
+
+# Real values the capture runner substitutes for fixture placeholders (capture.js); never commit
+tools/visual/capture.local.json

@@ -19,27 +19,34 @@ declare global {
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-window.mountBlockKit = ({ blocks, view, theme = "light", errors, opens, directory }) => {
+window.mountBlockKit = ({
+  blocks,
+  view,
+  theme = "light",
+  errors,
+  opens,
+  directory,
+  slackFiles,
+}) => {
   const entries = (directory ?? []) as unknown as DirectoryEntry[];
   root.render(
     <BlockKitProvider
       timeZone="UTC"
       theme={theme}
       errors={errors}
-      resolvers={
-        directory
-          ? {
-              directory: (source) =>
-                entries.filter((e) =>
-                  source === "users"
-                    ? e.type === "user"
-                    : source === "channels"
-                      ? e.type === "channel"
-                      : true,
-                ),
-            }
-          : undefined
-      }
+      resolvers={{
+        slackFile: (file) => slackFiles?.[file.url ?? file.id ?? ""],
+        ...(directory && {
+          directory: (source) =>
+            entries.filter((e) =>
+              source === "users"
+                ? e.type === "user"
+                : source === "channels"
+                  ? e.type === "channel"
+                  : true,
+            ),
+        }),
+      }}
       onAction={(_action, { views }) => {
         if (opens) views.open(opens as unknown as Parameters<typeof views.open>[0]);
       }}

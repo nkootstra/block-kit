@@ -17,6 +17,8 @@ export interface Mount {
    * the channels, and conversations selects both.
    */
   directory?: { type: "user" | "channel"; [key: string]: unknown }[];
+  /** What `resolvers.slackFile` answers for a `slack_file`, by its `url` or `id`. */
+  slackFiles?: Record<string, { url: string; size?: number }>;
 }
 
 export const ENGINES = { chromium, firefox, webkit } satisfies Record<string, BrowserType>;

@@ -85,3 +85,34 @@
   border-radius: 6px;
   box-shadow: var(--sbk-popover-shadow);
 }
+
+/* Slack's c-date_picker_input--medium, used in modals and on App Home (messages keep the small
+   field above): a 227.5px, 36px-tall field with 15px text 32px in, the calendar glyph 12px in, and
+   the chevron centred in a 36px button. */
+.sbk-datepicker--medium {
+  width: 227.5px;
+}
+
+.sbk-datepicker--medium .sbk-datepicker__icon {
+  left: 12px;
+  top: 10.5px;
+  transform: none;
+  width: 15px;
+  height: 15px;
+}
+
+.sbk-datepicker--medium .sbk-datepicker__input {
+  height: 36px;
+  padding: 4px 36px 4px 32px;
+  font: 15px / normal var(--sbk-font);
+}
+
+.sbk-datepicker--medium .sbk-datepicker__toggle {
+  width: 36px;
+  height: 36px;
+}
+
+.sbk-datepicker--medium .sbk-datepicker__chevron {
+  right: 8px;
+  top: 8px;
+}

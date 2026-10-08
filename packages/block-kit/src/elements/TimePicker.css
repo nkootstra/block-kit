@@ -39,13 +39,16 @@
   color: var(--sbk-badge-text);
 }
 
-/* Slack's c-select_input: the time is typed into a text input that fills the box between the icons. */
+/* Slack's c-select_input: the time is typed into a text input that fills the box between the icons.
+   Its text is the primary colour on an 18px line (22.5px in the medium field below), where the
+   overlay that shows the closed field's value is the body colour on the control's line. */
 .sbk-timepicker__input {
   flex: 1;
   min-width: 0;
   padding: 0;
   font: inherit;
-  color: var(--sbk-text-body);
+  line-height: 18px;
+  color: var(--sbk-text);
   text-overflow: ellipsis;
   background: transparent;
   border: 0;
@@ -173,4 +176,28 @@
   margin-top: 4px;
   font-size: 12px;
   color: var(--sbk-muted);
+}
+
+/* Slack's c-select_input--medium, used in modals and on App Home (messages keep the small field
+   above): 36px tall with 12px side padding, the clock 12px in, and 15px text on a 22.5px line 33px
+   in. Our border is inside the box, so each inset is 1px less. */
+.sbk-timepicker--medium .sbk-timepicker__control {
+  height: 36px;
+  gap: 6px;
+  padding: 0 11px;
+  font: 15px / 22.5px var(--sbk-font);
+}
+
+.sbk-timepicker--medium .sbk-timepicker__icon {
+  width: 15px;
+  height: 15px;
+}
+
+.sbk-timepicker--medium .sbk-timepicker__content {
+  padding: 0 32px;
+}
+
+.sbk-timepicker--medium .sbk-timepicker__input,
+.sbk-timepicker--medium .sbk-timepicker__content-text {
+  line-height: 22.5px;
 }

@@ -11,9 +11,48 @@ describe("context fixtures", () => {
     expect(allowed("plain_text_input", "actions")).toBe(false);
     expect(allowed("plain_text_input", "modal-input")).toBe(true);
     expect(allowed("datetimepicker", "home")).toBe(false);
-    expect(allowed("datetimepicker", "accessory")).toBe(true);
     expect(allowed("overflow", "modal-input")).toBe(false);
     expect(allowed("static_select", "home")).toBe(true);
+  });
+
+  it("leaves out the multi-selects Block Kit Builder refuses in an actions block", () => {
+    // The Builder drops a multi-select in a message's or App Home's actions block and keeps
+    // showing the previous payload, so a capture there records some other fixture.
+    for (const element of ["multi_static_select", "multi_users_select"]) {
+      expect(allowed(element, "actions")).toBe(false);
+      expect(allowed(element, "home")).toBe(false);
+      expect(allowed(element, "accessory")).toBe(true);
+      expect(allowed(element, "modal-input")).toBe(true);
+    }
+  });
+
+  it("only puts an element in an accessory where Block Kit Builder takes one", () => {
+    // The Builder's error for a datetime picker accessory lists what a section accessory may be.
+    const BUILDER_ACCESSORIES = new Set([
+      "button",
+      "workflow_button",
+      "overflow",
+      "static_select",
+      "users_select",
+      "conversations_select",
+      "channels_select",
+      "external_select",
+      "multi_static_select",
+      "multi_users_select",
+      "multi_conversations_select",
+      "multi_channels_select",
+      "multi_external_select",
+      "image",
+      "radio_buttons",
+      "checkboxes",
+      "datepicker",
+      "timepicker",
+    ]);
+    for (const [name, { element }] of Object.entries(ELEMENTS))
+      expect([name, allowed(name, "accessory")]).toEqual([
+        name,
+        BUILDER_ACCESSORIES.has(element.type as string),
+      ]);
   });
 
   it("puts an element in the block its context names", () => {
@@ -42,5 +81,24 @@ describe("context fixtures", () => {
     expect([...onDisk.keys()].sort()).toEqual([...expected.keys()].sort());
     for (const [name, payload] of expected)
       expect({ name, payload: onDisk.get(name) }).toEqual({ name, payload });
+  });
+});
+
+describe("writeContexts", () => {
+  it("rewrites the fixtures but leaves the captured references next to them alone", async () => {
+    const { mkdtemp, mkdir, writeFile, exists } = await import("node:fs/promises").then(
+      async (fs) => ({ ...fs, exists: (p: string) => Bun.file(p).exists() }),
+    );
+    const { tmpdir } = await import("node:os");
+    const { writeContexts } = await import("./contexts");
+    const dir = await mkdtemp(join(tmpdir(), "contexts-"));
+    await mkdir(join(dir, "button"), { recursive: true });
+    await writeFile(join(dir, "button", "actions.reference.html"), "<p>captured</p>");
+    await mkdir(join(dir, "gone"), { recursive: true });
+    await writeFile(join(dir, "gone", "actions.json"), "{}");
+    await writeContexts(dir);
+    expect(await exists(join(dir, "button", "actions.reference.html"))).toBe(true);
+    expect(await exists(join(dir, "button", "actions.json"))).toBe(true);
+    expect(await exists(join(dir, "gone", "actions.json"))).toBe(false);
   });
 });
