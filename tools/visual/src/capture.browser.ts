@@ -319,9 +319,13 @@ describe("capture.js", () => {
   });
 
   it("refuses a name it can't reproduce instead of capturing the wrong state", async () => {
-    await expect(run([{ name: "catalog/actions/button@dark+open", payload: {} }])).rejects.toThrow(
-      /not a canonical reference name/,
+    // Not `expect(...).rejects`: on a Playwright error Bun's matcher spins the CPU, for seconds
+    // on Linux and sometimes for good, which held CI's render job until its time limit.
+    const error = await run([{ name: "catalog/actions/button@dark+open", payload: {} }]).then(
+      () => undefined,
+      (e: Error) => e.message,
     );
+    expect(error).toMatch(/not a canonical reference name/);
   });
 });
 
