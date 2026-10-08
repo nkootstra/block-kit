@@ -145,6 +145,17 @@ describe("compareTextRuns", () => {
     expect(report.extra.map((r) => r.text)).toEqual(["Press 'enter' to submit"]);
   });
 
+  // Slack keeps a picker's value in an <input> placed after the field's other text, we draw it
+  // before; the same text, painted in the same place, is one run that sits elsewhere in the DOM.
+  it("pairs a text the two sides hold in a different document order", () => {
+    const report = compareTextRuns(
+      [run("Pick a date"), run("04/28/1990", { x: 300 })],
+      [run("04/28/1990", { x: 300 }), run("Pick a date")],
+    );
+    expect(report.matched).toBe(2);
+    expect([report.missing, report.extra, report.differences]).toEqual([[], [], []]);
+  });
+
   it("pairs repeated texts in order rather than all with the first", () => {
     const report = compareTextRuns(
       [run("Option", { y: 0 }), run("Option", { y: 30 })],
