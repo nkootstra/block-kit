@@ -88,9 +88,7 @@
   "catalog/actions/radio-buttons@dark": [],
   "catalog/actions/radio-buttons@mobile": [],
   "catalog/actions/selects-with-initial-options": [],
-  "catalog/actions/selects-with-initial-options@dark": [
-    "color|Private channel|0"
-  ],
+  "catalog/actions/selects-with-initial-options@dark": [],
   "catalog/actions/selects-with-initial-options@mobile": [],
   "catalog/actions/selects-with-initial-options@open": [
     "missing|User One|0",
@@ -108,7 +106,6 @@
     "extra|😕 Nothing could be found.|0"
   ],
   "catalog/actions/selects-with-initial-options@open+dark": [
-    "color|Private channel|0",
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
@@ -1530,32 +1527,16 @@
   "extra/input/datetimepicker@open": [],
   "extra/input/datetimepicker@open+dark": [],
   "extra/input/more-selects": [
-    "missing|You can select up to 3 items.|0",
-    "extra|Select a conversation|0",
-    "extra|You can select up to|0",
-    "extra|3|0",
-    "extra|items|0",
-    "extra|.|0"
+    "extra|Select a conversation|0"
   ],
   "extra/input/more-selects@dark": [
     "color|Private channel|0",
-    "missing|You can select up to 3 items.|0",
-    "extra|Select a conversation|0",
-    "extra|You can select up to|0",
-    "extra|3|0",
-    "extra|items|0",
-    "extra|.|0"
+    "extra|Select a conversation|0"
   ],
   "extra/input/more-selects@mobile": [
-    "missing|You can select up to 3 items.|0",
-    "extra|Select a conversation|0",
-    "extra|You can select up to|0",
-    "extra|3|0",
-    "extra|items|0",
-    "extra|.|0"
+    "extra|Select a conversation|0"
   ],
   "extra/input/more-selects@open": [
-    "missing|You can select up to 3 items.|0",
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
@@ -1570,15 +1551,10 @@
     "missing|channel-four|0",
     "missing|channel-five|0",
     "extra|Select a conversation|0",
-    "extra|You can select up to|0",
-    "extra|3|0",
-    "extra|items|0",
-    "extra|.|0",
     "extra|😕 Nothing could be found.|0"
   ],
   "extra/input/more-selects@open+dark": [
     "color|Private channel|0",
-    "missing|You can select up to 3 items.|0",
     "missing|User One|0",
     "missing|(you)|0",
     "missing|User Two|0",
@@ -1593,10 +1569,6 @@
     "missing|channel-four|0",
     "missing|channel-five|0",
     "extra|Select a conversation|0",
-    "extra|You can select up to|0",
-    "extra|3|0",
-    "extra|items|0",
-    "extra|.|0",
     "extra|😕 Nothing could be found.|0"
   ],
   "extra/input/text-inputs": [],
