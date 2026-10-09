@@ -517,9 +517,65 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
       await tabTo(page, ".sbk-link");
       const s = await style(page, ".sbk-link");
-      expect(s.outlineStyle).toBe("none");
       expect(s.boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`)).toBe(true);
       expect(s.textDecorationLine).toBe("none");
+    });
+  });
+
+  // Rings drawn with box-shadow vanish in forced-colours mode (Windows High Contrast), which drops
+  // shadows. A transparent outline paints nothing otherwise, and forced-colours mode paints it in
+  // the system colour, so keyboard focus stays visible there.
+  describe("focus in forced-colours mode", () => {
+    for (const [what, selector, mount] of [
+      [
+        "a link",
+        ".sbk-link",
+        {
+          blocks: [
+            {
+              type: "section",
+              text: { type: "mrkdwn", text: "Read <https://example.com|the docs>" },
+            },
+          ],
+        },
+      ],
+      [
+        "a select",
+        ".sbk-select__control",
+        {
+          blocks: [
+            {
+              type: "actions",
+              elements: [{ type: "static_select", action_id: "s", options: [option("Alpha")] }],
+            },
+          ],
+        },
+      ],
+    ] satisfies [string, string, Mount][]) {
+      it(`keeps a transparent outline on ${what} with keyboard focus`, async () => {
+        const page = await harness.open(mount);
+        // A select's control or the field inside it takes focus; the control draws the ring.
+        await tabTo(page, `${selector}, ${selector} *`);
+        const s = await style(page, selector);
+        expect([s.outlineStyle, s.outlineWidth, s.outlineColor]).toEqual([
+          "solid",
+          "2px",
+          "rgba(0, 0, 0, 0)",
+        ]);
+      });
+    }
+  });
+
+  // A tap leaves :hover stuck on a touch screen, so hover styles apply only where the pointer can
+  // hover.
+  describe("hover on touch screens", () => {
+    it("keeps a data table's sort caret hidden under a touch pointer", async () => {
+      const page = await harness.open(await fixture("catalog/table/numeric-sort-data-table"), {
+        touch: true,
+      });
+      await page.hover(".sbk-data-table__col-header button");
+      await settle(page);
+      expect((await style(page, ".sbk-data-table__sort-caret")).opacity).toBe("0");
     });
   });
 
@@ -1228,22 +1284,24 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       await expectSlackButtonTransition(page, ".sbk-modal__button");
     });
 
-    it("moves the carousel arrows over 80ms, easing out", async () => {
+    // Slack's `p-gallery_scroller__arrow` transitions every property; the arrow only ever changes
+    // its transform and opacity, so those are the ones named.
+    it("moves and fades the carousel arrows over 80ms, easing out", async () => {
       const page = await harness.open(await fixture("catalog/card-and-carousel/carousel"));
       const s = await style(page, ".sbk-carousel__arrow");
       expect([s.transitionProperty, s.transitionDuration, s.transitionTimingFunction]).toEqual([
-        "all",
-        "0.08s",
-        "ease-out",
+        "transform, opacity",
+        "0.08s, 0.08s",
+        "ease-out, ease-out",
       ]);
     });
 
-    it("switches the carousel arrows without motion when motion is reduced", async () => {
+    it("only fades the carousel arrows when motion is reduced", async () => {
       const page = await harness.open(await fixture("catalog/card-and-carousel/carousel"), {
         reducedMotion: true,
       });
       const s = await style(page, ".sbk-carousel__arrow");
-      expect(list(s.transitionDuration).every((d) => d === "0s")).toBe(true);
+      expect([s.transitionProperty, s.transitionDuration]).toEqual(["opacity", "0.08s"]);
     });
 
     describe("code block copy control", () => {

@@ -24,7 +24,7 @@
 /* Slack's `c-button` hover model: outline buttons swap to a light gray fill, filled buttons
    darken through a `multiply` gradient overlay. Both raise a two-layer shadow on hover and drop
    it while pressed. Values read from the Block Kit Builder's live stylesheet. */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-button:hover {
     background-color: var(--sbk-button-hover-bg);
     box-shadow: var(--sbk-button-hover-shadow);
@@ -52,7 +52,7 @@
   background-blend-mode: multiply;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-button--primary:hover,
   .sbk-button--danger:hover {
     background-image: linear-gradient(var(--sbk-button-overlay), var(--sbk-button-overlay));
@@ -60,7 +60,7 @@
   }
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-button--primary:hover {
     --sbk-button-overlay: #0a403221;
     background-color: var(--sbk-primary);
@@ -76,7 +76,7 @@
   background: var(--sbk-danger);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-button--danger:hover {
     --sbk-button-overlay: #59000f17;
     background-color: var(--sbk-danger);

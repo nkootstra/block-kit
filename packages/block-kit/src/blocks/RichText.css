@@ -70,6 +70,7 @@
   transition: opacity 80ms ease-in-out;
 }
 
+/* Not scoped to hovering pointers: on a touch screen a tap is the only way to reveal the control. */
 .sbk-rich-text__pre:hover .sbk-rich-text__pre-copy,
 .sbk-rich-text__pre:focus-within .sbk-rich-text__pre-copy {
   opacity: 1;

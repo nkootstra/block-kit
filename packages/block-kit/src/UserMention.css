@@ -5,7 +5,7 @@
 }
 
 .sbk-mention--user:focus-visible {
-  outline: none;
+  outline: 2px solid transparent;
   box-shadow: var(--sbk-focus-shadow);
 }
 
@@ -88,7 +88,7 @@
   text-decoration: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-profile-card__name-link:hover {
     text-decoration: underline;
   }

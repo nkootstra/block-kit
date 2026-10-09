@@ -57,7 +57,7 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-select-dialog__close:hover {
     color: var(--sbk-text);
     background: var(--sbk-hover-overlay);
@@ -100,7 +100,7 @@
   color: var(--sbk-text);
   background: transparent;
   border: 0;
-  outline: none;
+  outline: none; /* the field around it draws the focus ring */
 }
 
 .sbk-select-dialog__input::placeholder {

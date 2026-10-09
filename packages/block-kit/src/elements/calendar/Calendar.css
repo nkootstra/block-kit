@@ -46,7 +46,7 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-calendar__nav:hover {
     background: rgba(29, 155, 209, 0.1);
   }
@@ -112,11 +112,11 @@
 /* Measured in Block Kit Builder: the keyboard-focused day also carries Slack's focus ring. */
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
-  outline: none;
+  outline: 2px solid transparent;
   box-shadow: var(--sbk-focus-shadow);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-calendar__cell:not(.sbk-calendar__cell--empty):hover {
     z-index: 1;
     border-color: rgba(29, 155, 209, 0.3);
@@ -128,7 +128,7 @@
   background: rgba(29, 155, 209, 0.2);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-calendar__cell:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--selected):hover {
     background: rgba(29, 155, 209, 0.2);
   }
@@ -204,7 +204,7 @@
   color: var(--sbk-link);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-calendar__clear:hover {
     color: var(--sbk-link);
   }

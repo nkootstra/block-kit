@@ -27,7 +27,7 @@
   background-color: var(--sbk-surface-sec);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-select__control:hover .sbk-select__chevron {
     color: var(--sbk-text);
   }
@@ -150,7 +150,7 @@
   text-overflow: ellipsis;
   background: transparent;
   border: 0;
-  outline: none;
+  outline: none; /* the field around it draws the focus ring */
   cursor: inherit;
 }
 
@@ -341,7 +341,7 @@
 }
 
 /* Slack's `removeToken:hover`: the "x" darkens on a faint tint. */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-select__chip-remove:hover {
     color: var(--sbk-text);
     background-color: var(--sbk-hover-overlay);
@@ -384,7 +384,7 @@
 .sbk-select__search-input {
   flex: 1;
   border: none;
-  outline: none;
+  outline: none; /* the caret shows focus in the open menu */
   font: 13px var(--sbk-font);
   color: var(--sbk-text);
   /* Show the menu's surface; an input's default fill is white in either theme. */

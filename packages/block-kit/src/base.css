@@ -279,7 +279,7 @@
   padding: 0 2px 1px;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-mention:hover {
     color: var(--sbk-mention-hover-text);
     background: var(--sbk-mention-hover-bg);
@@ -352,7 +352,12 @@ a.sbk-mention {
 .sbk-collapse {
   display: flow-root;
   overflow: clip;
-  transition: height 0.25s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sbk-collapse {
+    transition: height 0.25s;
+  }
 }
 
 /* Slack's c-infinite_spinner. */
@@ -436,7 +441,7 @@ a.sbk-mention {
 .sbk-timepicker__control:focus-within,
 .sbk-datetimepicker__control:focus-visible,
 .sbk-datetimepicker__control[aria-expanded="true"] {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: transparent;
   box-shadow: var(--sbk-focus-shadow);
 }
@@ -470,7 +475,7 @@ a.sbk-mention {
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__clear:focus-visible,
 .sbk-link:focus-visible {
-  outline: none;
+  outline: 2px solid transparent;
   box-shadow: var(--sbk-focus-shadow);
 }
 
@@ -480,7 +485,7 @@ a.sbk-mention {
 }
 
 /* Keyboard focus shouldn't also paint the pointer's hover shadow on outline buttons. */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-button:focus-visible:hover,
   .sbk-overflow__button:focus-visible:hover {
     box-shadow: var(--sbk-focus-shadow);
@@ -488,14 +493,11 @@ a.sbk-mention {
 }
 
 /* Slack's menus and popovers open and close instantly (no transition on `c-menu` /
-   `c-popover`), so the motion to tone down is the spinner and the plan/task_card slide. */
+   `c-popover`). Slides run only when motion isn't reduced (.sbk-collapse above); the spinner keeps
+   turning, since it shows that something is loading, but more slowly. */
 @media (prefers-reduced-motion: reduce) {
   .sbk-spinner__arc {
     animation-duration: 2.4s;
-  }
-
-  .sbk-collapse {
-    transition: none;
   }
 }
 

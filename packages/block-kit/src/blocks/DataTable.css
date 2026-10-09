@@ -75,7 +75,7 @@
   border-radius: 4px;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-data-table__frame:hover::-webkit-scrollbar-thumb {
     background: color-mix(in srgb, var(--sbk-text) 52%, transparent);
   }
@@ -129,7 +129,7 @@
   background-color: var(--sbk-hover-overlay);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-data-table__col-header button:hover {
     background-color: var(--sbk-hover-overlay);
   }
@@ -142,9 +142,14 @@
   opacity: 0;
 }
 
-.sbk-data-table__col-header button:hover .sbk-data-table__sort-caret,
 .sbk-data-table__col-header button:focus-visible .sbk-data-table__sort-caret {
   opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sbk-data-table__col-header button:hover .sbk-data-table__sort-caret {
+    opacity: 1;
+  }
 }
 
 /* Slack's sort menu: a 200px `c-menu` flush below the header, a small "Sort" heading, then
@@ -248,7 +253,7 @@
   border-right: 1px solid var(--sbk-button-border);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-data-table__row:hover .sbk-data-table__cell {
     background-color: var(--sbk-row-hover-bg);
   }
@@ -346,7 +351,7 @@
   background-color: var(--sbk-button-hover-bg);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-data-table__page-btn:not(.sbk-data-table__page-btn--active):hover {
     color: var(--sbk-text);
     background-color: var(--sbk-button-hover-bg);
@@ -354,7 +359,7 @@
 }
 
 /* Same multiply darkening as a primary button: hover ≈ rgb(20,133,103), pressed ≈ rgb(0,110,81). */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-data-table__page-btn--active:hover {
     background-color: rgb(20, 133, 103);
   }
@@ -369,7 +374,7 @@
   text-decoration: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-rtmini__link:hover {
     text-decoration: underline;
   }

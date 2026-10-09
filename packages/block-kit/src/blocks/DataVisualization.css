@@ -222,6 +222,7 @@
   overflow: hidden;
 }
 
+/* Focus rests on the dialog itself only so its keys work; the close button shows keyboard focus. */
 .sbk-chart-table:focus {
   outline: none;
 }
@@ -259,14 +260,14 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-chart-table__close:hover {
     background: var(--sbk-icon-button-hover-bg);
   }
 }
 
 .sbk-chart-table__close:focus-visible {
-  outline: none;
+  outline: 2px solid transparent;
   box-shadow: var(--sbk-focus-shadow);
 }
 

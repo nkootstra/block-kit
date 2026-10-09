@@ -23,7 +23,9 @@
   background: var(--sbk-bg);
   cursor: pointer;
   position: relative;
-  transition: 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
+  transition-property: border-color, background-color, outline-color;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
 /* Slack's `.p-checkboxes_element .c-input_checkbox`: a faint overlay while the box is hovered or
@@ -34,13 +36,13 @@
   background-image: linear-gradient(var(--sbk-interaction-hover), var(--sbk-interaction-hover));
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-checkboxes__input:not(:checked):hover {
     background-image: linear-gradient(var(--sbk-interaction-hover), var(--sbk-interaction-hover));
   }
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-checkboxes__input:not(:checked):hover {
     border-color: var(--sbk-outline-pry);
   }
@@ -70,7 +72,7 @@
   background-blend-mode: var(--sbk-blend-interaction);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-checkboxes__input:checked:hover {
     background-image: linear-gradient(
       var(--sbk-checkbox-checked-hover),

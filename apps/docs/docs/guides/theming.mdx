@@ -243,6 +243,21 @@ This means global resets in your app (Tailwind's preflight, a docs theme's headi
 into your app either, since everything is scoped under `.sbk-root`. You don't need to configure
 anything for this; it's automatic once you import `@nkootstra/block-kit/styles.css`.
 
+## Touch screens, reduced motion and high contrast
+
+The styles adapt to the device and the user's settings, without changing how a message looks on a
+desktop:
+
+- **Hover** styles apply only where the pointer can hover precisely (a mouse or trackpad), so a tap
+  on a touch screen doesn't leave a control looking hovered. Code blocks' copy button and the hover
+  actions on images and charts still appear on a tap, since that's the only way to reach them there.
+- **Reduced motion**: with the system setting on, nothing slides or scales. The collapsible blocks
+  and containers open at once, dialogs and modals appear without their entrance, and the carousel's
+  arrows only fade. The loading spinner keeps turning, more slowly.
+- **High contrast** (forced colours, such as Windows' contrast themes): focus rings drawn with a
+  shadow disappear there, so focused links, mentions, fields and buttons also carry a transparent
+  outline, which the system paints in its own colour.
+
 ## Related
 
 <CardGroup cols={2}>
