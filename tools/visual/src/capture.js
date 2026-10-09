@@ -58,9 +58,16 @@ async ({
   };
 
   // A scripted press; React's menus listen for mousedown as well as click.
+  // A real click also focuses what it lands on when mousedown isn't cancelled; a dispatched one
+  // doesn't, and an open select then lacks the focus ring Slack draws around it.
+  const FOCUSABLE =
+    'input, textarea, select, button, a[href], [tabindex], [contenteditable="true"]';
   const press = (el) => {
-    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click"])
-      el.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: win }));
+    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click"]) {
+      const event = new MouseEvent(type, { bubbles: true, cancelable: true, view: win });
+      if (!el.dispatchEvent(event) || type !== "mousedown") continue;
+      el.closest?.(FOCUSABLE)?.focus({ preventScroll: true });
+    }
   };
 
   const PREVIEWS = ".p-bkb_preview__message, .p-bkb_preview_modal, .p-bkb_app_home";
