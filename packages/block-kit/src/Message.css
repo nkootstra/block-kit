@@ -6,12 +6,6 @@
   background: var(--sbk-bg);
 }
 
-/* A chart card stays at least 400px wide (DataVisualization.css) and runs past a narrow message;
-   the message cuts it off at its edge, as Slack's does, instead of widening the page. */
-.sbk-message:has(.sbk-dataviz) {
-  overflow-x: clip;
-}
-
 .sbk-message__avatar {
   display: block;
   flex: 0 0 36px;

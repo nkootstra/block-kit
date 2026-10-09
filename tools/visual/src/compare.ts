@@ -135,9 +135,16 @@ const context = await browser.newContext({
 // macOS may overlay them. Give both sides the same fixed-size, fully styled scrollbar after every
 // load: an init script doesn't reach the document setContent() reuses, and a styled track without
 // a thumb rule paints nothing, so either way one side would draw a native thumb and the other not.
+//
+// A chart's scroller is the exception: Slack leaves it the platform's scrollbar, which the
+// references' macOS captures overlaid, taking no space, so the snapshot froze the scroller at its
+// card's height. Under a 15px track that froze height overflows and draws a second scrollbar. Both
+// sides' chart scrollers (Slack's scrollContainer, our .sbk-dataviz-scroll) get the overlay's
+// footprint instead: none.
 const SCROLLBAR_CSS = `
 ::-webkit-scrollbar { width: 15px; height: 15px; background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(29, 28, 29, 0.35); border: 4px solid transparent; border-radius: 8px; background-clip: padding-box; }
+[class*="scrollContainer__"]::-webkit-scrollbar, .sbk-dataviz-scroll::-webkit-scrollbar { width: 0; height: 0; }
 `;
 
 // Slack's font CDN doesn't send CORS headers for a null origin; serve fonts through the harness.

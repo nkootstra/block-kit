@@ -26,20 +26,26 @@
   --sbk-dataviz-tick: #5e5d60;
 }
 
+/* Slack's chart scrollContainer: as wide as the block, inset 8px above and below, scrolling the
+   card sideways when the block is narrower than the card. */
+.sbk-dataviz-scroll {
+  max-width: 100%;
+  margin: 8px 0;
+  overflow: auto;
+}
+
 .sbk-dataviz {
   color: var(--sbk-text);
   display: flex;
   flex-direction: column;
-  /* Slack insets the chart card 8px from the block edges. */
-  margin: 8px 0;
   padding: 12px;
   background-color: var(--sbk-container-bg);
   border: 1px solid var(--sbk-dataviz-border);
   border-radius: 12px;
   overflow: hidden;
   /* Slack doesn't narrow a chart below 400px: in a narrower block (a 320px phone message) the card
-     runs past the message, which cuts it off, so the plot keeps its desktop-like spacing and the
-     last category falls out of view. */
+     keeps its desktop-like spacing and scrolls sideways, starting with the last category out of
+     view. */
   min-width: 400px;
 }
 
