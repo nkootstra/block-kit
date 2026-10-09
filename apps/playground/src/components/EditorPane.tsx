@@ -20,6 +20,9 @@ const styles = stylex.create({
   hidden: {
     display: { default: "flex", [PHONE]: "none" },
   },
+  picker: {
+    display: { default: "flex", [PHONE]: "none" },
+  },
   code: {
     flexGrow: 1,
     minHeight: 0,
@@ -76,7 +79,10 @@ export function EditorPane({
       {...stylex.props(styles.pane, hiddenOnPhone && styles.hidden)}
     >
       <div {...stylex.props(layout.toolbar)}>
-        <ExamplePicker groups={groups} value={example} onChange={onExampleChange} />
+        {/* On a phone the picker sits above the JSON / Preview switch instead (App.tsx). */}
+        <div {...stylex.props(styles.picker)}>
+          <ExamplePicker groups={groups} value={example} onChange={onExampleChange} />
+        </div>
         <div {...stylex.props(layout.actions)}>
           <Button onClick={format} disabled={error !== null}>
             Format
