@@ -70,6 +70,13 @@ it from its 800px thumbnail; an `image_url` fills the message's width. A file it
 no resolver) renders Slack's documented fallback: a placeholder box with the `alt_text`.
 :::
 
+:::note
+Slack also captions an `image_url` with its size, measured from the image it downloads (the
+payload's `image_bytes` doesn't change it). block-kit doesn't download images to measure them, so
+the caption shows only when you pass `resolvers.imageSize`, which returns the size in bytes for a
+URL (or `undefined` to leave the caption out).
+:::
+
 ## Examples
 
 ### Without a title

@@ -169,6 +169,25 @@ describe("checkSampleImages", () => {
 });
 
 describe("the repository", () => {
+  // Block Kit Builder captions an image block with the size of the image it downloaded, so the
+  // playground's render gives each sample's size (RenderOnly.tsx, SAMPLE_BYTES).
+  it("gives the playground the size of every committed sample", async () => {
+    const source = await Bun.file(
+      join(import.meta.dir, "../../../apps/playground/src/RenderOnly.tsx"),
+    ).text();
+    const listed = Object.fromEntries(
+      [...source.matchAll(/"([\w-]+\.[0-9a-f]{8}\.\w+)": ([\d_]+),/g)].map(([, name, bytes]) => [
+        name,
+        Number(bytes?.replaceAll("_", "")),
+      ]),
+    );
+    const committed: Record<string, number> = {};
+    for await (const name of new Bun.Glob("*.*.*").scan(SAMPLES)) {
+      committed[name] = Bun.file(join(SAMPLES, name)).size;
+    }
+    expect(listed).toEqual(committed);
+  });
+
   it("loads every sample image from cdn.block-kit.dev, with a committed copy of each", async () => {
     const sources = await readSampleSources();
     expect(sources.size).toBeGreaterThan(50);
