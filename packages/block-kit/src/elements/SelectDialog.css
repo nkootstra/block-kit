@@ -27,6 +27,12 @@
     0 18px 48px rgba(0, 0, 0, 0.35);
 }
 
+/* The dialog holds focus only so Escape and Tab work from the moment it opens; like Slack's, it draws
+   no ring of its own. */
+.sbk-select-dialog:focus {
+  outline: none;
+}
+
 .sbk-select-dialog__header {
   display: flex;
   align-items: center;
@@ -76,13 +82,14 @@
 /* The multi-select field: chips, then the input they're typed after. Slack's sits 14px from the
    header and the footer, 468px wide. */
 .sbk-select-dialog__field {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   min-height: 36px;
   margin: 14px 4px 14px 0;
   padding: 0 8px 4px 0;
-  border: 1px solid rgb(124, 122, 127);
+  border: 1px solid var(--sbk-select-border);
   border-radius: 8px;
 }
 
@@ -103,9 +110,14 @@
   outline: none; /* the field around it draws the focus ring */
 }
 
-.sbk-select-dialog__input::placeholder {
-  color: var(--sbk-muted);
-  opacity: 1;
+/* Slack's `placeholder__`: 6px below and 12px in from the border's inner edge. */
+.sbk-select-dialog__placeholder {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  line-height: 22px;
+  color: var(--sbk-content-ter);
+  pointer-events: none;
 }
 
 /* A chip's remove control is a real button here; drop the browser's button chrome. */

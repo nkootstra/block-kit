@@ -722,7 +722,50 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
     }
 
-    it("opens a 520px Select options dialog, focused, and shows the count after Confirm", async () => {
+    // catalog/section/multi-static-select@dialog(+dark): Slack's field is a `multiSelectInput` with
+    // the select border of the theme, and its placeholder is its own element 6px below and 12px
+    // in from the border's inner edge, in the tertiary text colour.
+    for (const [theme, border, color] of [
+      ["light", "rgb(124, 122, 127)", "rgb(94, 93, 96)"],
+      ["dark", "rgb(121, 124, 129)", "rgb(154, 155, 158)"],
+    ] as const) {
+      it(`draws the dialog field's border and placeholder as Slack does in ${theme}`, async () => {
+        const page = await harness.open({
+          theme,
+          blocks: [
+            {
+              type: "section",
+              text: { type: "mrkdwn", text: "Pick some" },
+              accessory: {
+                type: "multi_static_select",
+                action_id: "m",
+                placeholder: plain("Select options"),
+                options: [option("Alpha")],
+              },
+            },
+          ],
+        });
+        await page.click(".sbk-section__accessory .sbk-select__control");
+        await settle(page);
+        const measured = await page.evaluate(() => {
+          const field = document.querySelector(".sbk-select-dialog__field") as HTMLElement;
+          const label = document.querySelector(".sbk-select-dialog__placeholder") as HTMLElement;
+          if (!label) return null;
+          const f = field.getBoundingClientRect();
+          const l = label.getBoundingClientRect();
+          return {
+            border: getComputedStyle(field).borderTopColor,
+            text: label.textContent,
+            color: getComputedStyle(label).color,
+            x: Math.round(l.left - f.left),
+            y: Math.round(l.top - f.top),
+          };
+        });
+        expect(measured).toEqual({ border, text: "Select options", color, x: 13, y: 7 });
+      });
+    }
+
+    it("opens a 520px Select options dialog with its field at rest, and shows the count after Confirm", async () => {
       const page = await harness.open({
         blocks: [
           {
@@ -740,6 +783,23 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       await page.click(".sbk-section__accessory .sbk-select__control");
       await settle(page);
       expect((await page.locator(".sbk-select-dialog").boundingBox())?.width).toBe(520);
+      // Slack focuses the dialog, and its field opens at rest: grey border, no focus ring
+      // (catalog/section/multi-static-select@dialog). Tab reaches Close, then the field, in
+      // Slack's order.
+      expect(
+        await page.evaluate(() => document.activeElement?.classList.contains("sbk-select-dialog")),
+      ).toBe(true);
+      expect(
+        await page.locator(".sbk-select-dialog__field").evaluate((el) => {
+          const s = getComputedStyle(el);
+          return [s.borderTopColor, s.boxShadow];
+        }),
+      ).toEqual(["rgb(124, 122, 127)", "none"]);
+      await page.keyboard.press("Tab");
+      expect(await page.evaluate(() => document.activeElement?.getAttribute("aria-label"))).toBe(
+        "Close",
+      );
+      await page.keyboard.press("Tab");
       expect(
         await page.evaluate(() =>
           document.activeElement?.classList.contains("sbk-select-dialog__input"),
