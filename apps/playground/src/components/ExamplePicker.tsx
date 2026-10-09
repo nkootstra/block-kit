@@ -20,13 +20,55 @@ export function pickerGroups(examples: Example[], testFixtures: string[]): Picke
     if (!group) groups.push((group = { label: example.group, items: [] }));
     group.items.push({ value: example.name, label: example.label });
   }
-  if (testFixtures.length > 0) {
-    groups.push({
-      label: "Test fixtures",
-      items: testFixtures.map((name) => ({ value: name, label: name })),
-    });
+  for (const name of testFixtures) {
+    const label = `Test fixtures · ${fixtureGroup(name)}`;
+    let group = groups.find((g) => g.label === label);
+    if (!group) groups.push((group = { label, items: [] }));
+    group.items.push({ value: name, label: fixtureLabel(name) });
   }
   return groups;
+}
+
+/** "card-and-carousel" → "Card and carousel". */
+const humanize = (slug: string) => {
+  const words = slug.replaceAll(/[-_]+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+};
+
+/**
+ * A fixture's group, from its folders: `catalog/card-and-carousel/card` → "Card and carousel",
+ * `extra/modal/form` → "Modal (extra)", and every generated `contexts/` fixture under one group.
+ */
+function fixtureGroup(name: string): string {
+  const [root = "", folder] = name.split("/");
+  if (!folder || name.split("/").length < 3) return humanize(root);
+  if (root === "catalog") return humanize(folder);
+  if (root === "contexts") return "Elements in each place";
+  return `${humanize(folder)} (${root})`;
+}
+
+/**
+ * A fixture's name within its group: `card-header-only` → "Card header only",
+ * `contexts/button/accessory` → "Button as a section accessory", and a `.unverified` fixture is
+ * marked as not checked against Slack.
+ */
+/** Where a generated `contexts/` fixture puts its element. */
+const PLACES: Record<string, string> = {
+  accessory: "as a section accessory",
+  actions: "in an actions block",
+  home: "on a Home tab",
+  "modal-input": "in a modal input",
+};
+
+function fixtureLabel(name: string): string {
+  const [root, element, place] = name.split("/");
+  if (root === "contexts" && element && place) {
+    return `${humanize(element)} ${PLACES[place] ?? humanize(place).toLowerCase()}`;
+  }
+  const leaf = name.split("/").at(-1) ?? name;
+  const unverified = leaf.endsWith(".unverified");
+  const base = humanize(leaf.replace(/\.unverified$/, ""));
+  return unverified ? `${base} (not checked against Slack)` : base;
 }
 
 const PHONE = "@media (max-width: 800px)";
