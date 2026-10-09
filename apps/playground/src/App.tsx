@@ -3,7 +3,7 @@ import { httpTransport } from "@nkootstra/block-kit/transport";
 import * as stylex from "@stylexjs/stylex";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { EditorPane } from "./components/EditorPane";
-import { CUSTOM, pickerGroups } from "./components/ExamplePicker";
+import { CUSTOM, ExamplePicker, pickerGroups } from "./components/ExamplePicker";
 import { Header } from "./components/Header";
 import { type AppReply, PayloadLog } from "./components/PayloadLog";
 import { type Delivery, PreviewPane } from "./components/PreviewPane";
@@ -77,9 +77,12 @@ const styles = stylex.create({
     minWidth: 0,
     minHeight: 0,
   },
-  // The JSON / Preview switch is for phones only.
-  panes: {
+  // Phones only: the example picker, which the editor's toolbar holds on wider screens, and the
+  // JSON / Preview switch, so an example can be picked from either pane.
+  phoneBar: {
     display: { default: "none", [PHONE]: "flex" },
+    flexDirection: "column",
+    gap: 8,
     marginTop: 10,
     marginInline: 16,
   },
@@ -190,21 +193,28 @@ export function App() {
     setAppReply(null);
   };
 
+  const pickExample = (name: string) => {
+    const picked = all.find((f) => f.name === name);
+    if (picked) load(picked.json);
+  };
+
   return (
     <div {...stylex.props(styles.app)}>
       <Header theme={choice} onThemeChange={setChoice} />
 
-      <SegmentedControl
-        label="View"
-        value={pane}
-        onChange={setPane}
-        options={[
-          { value: "editor", label: "JSON" },
-          { value: "preview", label: "Preview" },
-        ]}
-        stretch
-        style={styles.panes}
-      />
+      <div {...stylex.props(styles.phoneBar)}>
+        <ExamplePicker groups={groups} value={example} onChange={pickExample} />
+        <SegmentedControl
+          label="View"
+          value={pane}
+          onChange={setPane}
+          options={[
+            { value: "editor", label: "JSON" },
+            { value: "preview", label: "Preview" },
+          ]}
+          stretch
+        />
+      </div>
 
       <main {...stylex.props(styles.main)}>
         <EditorPane
@@ -213,10 +223,7 @@ export function App() {
           error={result.ok ? null : result.error}
           groups={groups}
           example={example}
-          onExampleChange={(name) => {
-            const picked = all.find((f) => f.name === name);
-            if (picked) load(picked.json);
-          }}
+          onExampleChange={pickExample}
           theme={resolved}
           hiddenOnPhone={pane !== "editor"}
         />
