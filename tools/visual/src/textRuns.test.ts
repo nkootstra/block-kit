@@ -165,6 +165,27 @@ describe("compareTextRuns", () => {
     expect(report.differences).toEqual([]);
   });
 
+  // A select's field and its open menu's first row both read "--Select an item--"; Slack's snapshot
+  // lists the menu row first and ours the field, so pairing them in order swapped the two.
+  it("pairs repeated texts by where they paint when the two sides list them in another order", () => {
+    const field = { x: 12, y: 40, width: 110, fontSize: 13 };
+    const row = { x: 30, y: 82, width: 104, fontSize: 15, color: "rgb(255, 255, 255)" };
+    const report = compareTextRuns(
+      [run("--Select an item--", row), run("--Select an item--", field)],
+      [run("--Select an item--", field), run("--Select an item--", row)],
+    );
+    expect(report.matched).toBe(2);
+    expect(report.findings).toEqual([]);
+  });
+
+  it("still flags a repeated run that sits somewhere else, against its nearest counterpart", () => {
+    const report = compareTextRuns(
+      [run("Option", { y: 0 }), run("Option", { y: 30 })],
+      [run("Option", { y: 0 }), run("Option", { y: 34 })],
+    );
+    expect(report.findings).toEqual(["y|Option|1"]);
+  });
+
   it("matches texts that differ only in whitespace", () => {
     const report = compareTextRuns(
       [run("Press  'enter'\nto submit")],

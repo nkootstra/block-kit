@@ -67,7 +67,12 @@ export function compareTextRuns(reference: TextRun[], ours: TextRun[]): TextRunR
   const ourTexts = ours.map((r) => normalizeText(r.text));
   const referenceOccurrences = occurrences(referenceTexts);
   const ourOccurrences = occurrences(ourTexts);
-  const pairs = matchInOrder(referenceTexts, ourTexts);
+  const pairs = pairByPosition(
+    matchInOrder(referenceTexts, ourTexts),
+    referenceTexts,
+    reference,
+    ours,
+  );
 
   const differences: TextRunDifference[] = [];
   const findings: string[] = [];
@@ -267,6 +272,56 @@ function matchInOrder(a: string[], b: string[]): Array<[number, number]> {
     pairedB.add(y);
   });
   return pairs;
+}
+
+/** Repeated texts beyond this many are left in document order; trying every pairing grows fast. */
+const MAX_REPEATS = 7;
+
+/**
+ * Among runs with the same text, pairs each reference run with the one of ours that paints
+ * nearest to it, not the one in the same document order: a select's field and its open menu's
+ * first row read the same, and the two snapshots can list them the other way round. Only which of
+ * ours goes with which reference run changes; the runs paired and left over stay the same.
+ */
+function pairByPosition(
+  pairs: Array<[number, number]>,
+  referenceTexts: string[],
+  reference: TextRun[],
+  ours: TextRun[],
+): Array<[number, number]> {
+  const groups = new Map<string, Array<[number, number]>>();
+  for (const pair of pairs) {
+    const text = referenceTexts[pair[0]] as string;
+    groups.set(text, [...(groups.get(text) ?? []), pair]);
+  }
+  const distance = (i: number, j: number) => {
+    const a = reference[i] as TextRun;
+    const b = ours[j] as TextRun;
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+  };
+  const ourFor = new Map<number, number>();
+  for (const group of groups.values()) {
+    const referenceRuns = group.map(([i]) => i);
+    let best = group.map(([, j]) => j);
+    if (group.length > 1 && group.length <= MAX_REPEATS) {
+      const cost = (order: number[]) =>
+        order.reduce((sum, j, k) => sum + distance(referenceRuns[k] as number, j), 0);
+      let bestCost = cost(best);
+      for (const order of permutations(best)) {
+        const c = cost(order);
+        if (c < bestCost) [best, bestCost] = [order, c];
+      }
+    }
+    referenceRuns.forEach((i, k) => ourFor.set(i, best[k] as number));
+  }
+  return pairs.map(([i]) => [i, ourFor.get(i) as number]);
+}
+
+function permutations(items: number[]): number[][] {
+  if (items.length <= 1) return [items];
+  return items.flatMap((item, k) =>
+    permutations([...items.slice(0, k), ...items.slice(k + 1)]).map((rest) => [item, ...rest]),
+  );
 }
 
 function normalizeText(text: string): string {
