@@ -112,10 +112,10 @@ Don't write a version number anywhere: every `package.json` stays at `0.0.0`, an
 `latest`. A maintainer cuts releases from the Release workflow, which takes the version from the
 git tag and publishes to npm.
 
-The docs and the landing page deploy with each release, not on every merge, so they always match
-the published package. A maintainer can deploy a docs-only fix by running CI on `main` with
-`deploy` checked, which is refused while the package has unreleased changes. To preview a pull
-request's docs, a maintainer comments `/preview` on it.
+The docs, the landing page and the playground deploy with each release, not on every merge, so
+they always match the published package. A maintainer can deploy a docs-only fix by running CI on
+`main` with `deploy` checked, which is refused while the package has unreleased changes. To
+preview a pull request's docs, a maintainer comments `/preview` on it.
 
 ## License
 

@@ -55,7 +55,7 @@ This is a Bun workspace run with Turborepo.
 | `packages/block-kit` | The published package                                                         |
 | `apps/docs`          | The documentation site, built with [Blume](https://blume.dev)                 |
 | `apps/site`          | The landing page for `block-kit.dev`, built with [Astro](https://astro.build) |
-| `apps/playground`    | A Block Kit playground for trying payloads against the renderer               |
+| `apps/playground`    | The playground at `play.block-kit.dev`, and the visual harness's render page  |
 | `fixtures`           | Block Kit Builder payloads with Slack's reference renders                     |
 | `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference     |
 | `tools/react-18`     | Runs the package's tests and type-check against React 18                      |
@@ -115,6 +115,10 @@ For a docs-only fix between releases, run Actions → CI → Run workflow on `ma
 ### Landing page deployment
 
 `block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). A small Worker, [`apps/site/worker/index.ts`](../apps/site/worker/index.ts), runs first on page routes for agents, as the docs' does: `Accept: text/markdown` on the home page gets `/index.md`, and a missing page answers 404 with `/404.md` to Markdown requests and an RFC 9457 problem document (`/404.json`) to JSON ones. All three are built from `src/lib/markdown.ts`. Browsers get the HTML, and every page response varies on `Accept`. Its live demos render with the package, so it deploys with releases too, by the same `deploy` CI run and the same guard, in the `deploy-site` job. It uses the same Cloudflare secrets as the docs.
+
+### Playground deployment
+
+`play.block-kit.dev` is the static `vite build` of `apps/playground` on Workers Static Assets ([`apps/playground/wrangler.jsonc`](../apps/playground/wrangler.jsonc)), with no Worker script. It renders with the package, so it deploys with releases too, by the same `deploy` CI run and the same guard, in the `deploy-playground` job, with the same Cloudflare secrets. The build ships only the curated examples in [`src/examples.ts`](../apps/playground/src/examples.ts) and offers no "Deliver to your app": the interaction relay that signs and forwards interactions exists only in the dev server.
 
 ### Pull request previews
 

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      // The curated examples (src/examples.ts) are fixtures, outside this workspace.
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/fixtures/**/*.json"]
+    }
+  }
+}

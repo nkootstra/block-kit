@@ -7,11 +7,33 @@ import "@nkootstra/block-kit/styles.css";
 import "./app.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
-import { RenderOnly } from "./RenderOnly";
 
 const params = new URLSearchParams(window.location.search);
+const root = createRoot(document.getElementById("root") as HTMLElement);
 
-createRoot(document.getElementById("root") as HTMLElement).render(
-  <StrictMode>{params.has("render") ? <RenderOnly params={params} /> : <App />}</StrictMode>,
-);
+// The visual harness's render page (?render) and the playground load separately, so neither
+// pulls in the other: the render page needs every fixture, the playground only the examples.
+if (params.has("render")) {
+  void import("./RenderOnly").then(({ RenderOnly }) => {
+    root.render(
+      <StrictMode>
+        <RenderOnly params={params} />
+      </StrictMode>,
+    );
+  });
+} else {
+  void Promise.all([
+    import("./App"),
+    import("@base-ui/react/tooltip"),
+    import("@fontsource-variable/geist"),
+    import("@fontsource-variable/geist-mono"),
+  ]).then(([{ App }, { Tooltip }]) => {
+    root.render(
+      <StrictMode>
+        <Tooltip.Provider>
+          <App />
+        </Tooltip.Provider>
+      </StrictMode>,
+    );
+  });
+}

@@ -3,7 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Block Kit Playground</title>
+    <title>Block Kit Playground: preview Slack Block Kit JSON, no sign-in</title>
+    <meta
+      name="description"
+      content="Paste Slack Block Kit JSON and see the message, modal or Home tab the way Slack renders it, with working buttons and menus and the payloads they send. No Slack sign-in."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="canonical" href="https://play.block-kit.dev/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="block-kit" />
+    <meta property="og:url" content="https://play.block-kit.dev/" />
+    <meta
+      property="og:title"
+      content="Block Kit Playground: preview Slack Block Kit JSON, no sign-in"
+    />
+    <meta
+      property="og:description"
+      content="Paste Slack Block Kit JSON and see the message, modal or Home tab the way Slack renders it, with working buttons and menus and the payloads they send."
+    />
+    <meta property="og:image" content="https://block-kit.dev/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <!--
+      Applies the theme before the first paint, with block-kit.dev's stored choice. The visual
+      harness's render page (?render) stays light: its references set their own theme.
+    -->
+    <script>
+      (() => {
+        if (new URLSearchParams(location.search).has("render")) return;
+        const root = document.documentElement;
+        let theme = "system";
+        try {
+          theme = localStorage.getItem("theme") || theme;
+        } catch {}
+        const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+        root.dataset.themeChoice = theme;
+        root.dataset.theme = theme === "system" ? (dark ? "dark" : "light") : theme;
+        root.style.backgroundColor = root.dataset.theme === "dark" ? "#0a0a0a" : "#fff";
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", root.dataset.theme === "dark" ? "#0a0a0a" : "#ffffff");
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

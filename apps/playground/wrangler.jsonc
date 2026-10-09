@@ -1,0 +1,14 @@
+// Serves the static `vite build` output for play.block-kit.dev from Workers Static Assets. The
+// playground is one page with no server: no Worker script runs, unknown paths get a 404, and
+// `_headers` (from `public/`) sets the cache headers. The interaction relay is a dev-server
+// feature only (vite.config.ts), so the deployed playground delivers to its demo handlers.
+{
+  "name": "block-kit-playground",
+  "compatibility_date": "2026-09-28",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "none",
+  },
+  "routes": [{ "pattern": "play.block-kit.dev", "custom_domain": true }],
+}
