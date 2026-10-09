@@ -1,4 +1,4 @@
-import { Select } from "@base-ui/react/select";
+import { Combobox } from "@base-ui/react/combobox";
 import * as stylex from "@stylexjs/stylex";
 import type { Example } from "../examples";
 import { color } from "../theme/tokens.stylex";
@@ -7,9 +7,14 @@ import { focusRing } from "./ui";
 /** Where the picker's value is when the editor holds something that isn't an example. */
 export const CUSTOM = "";
 
+export interface PickerItem {
+  value: string;
+  label: string;
+}
+
 export interface PickerGroup {
   label: string;
-  items: { value: string; label: string }[];
+  items: PickerItem[];
 }
 
 /** The curated examples by group, plus (in dev) every other fixture under "Test fixtures". */
@@ -131,6 +136,36 @@ const styles = stylex.create({
     opacity: 0,
     scale: 0.98,
   },
+  search: {
+    display: "block",
+    boxSizing: "border-box",
+    width: "calc(100% - 8px)",
+    height: 32,
+    marginInline: 4,
+    marginBottom: 4,
+    paddingInline: 8,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: color.line,
+    borderRadius: 6,
+    backgroundColor: color.well,
+    color: color.ink,
+    fontFamily: "inherit",
+    fontSize: 13,
+    outline: "none",
+    "::placeholder": { color: color.muted },
+  },
+  // The empty state stays in the DOM (it announces "No example matches" when it has text), so only
+  // its text takes room.
+  empty: {
+    color: color.muted,
+    fontSize: 13,
+  },
+  emptyText: {
+    display: "block",
+    paddingBlock: 8,
+    paddingInline: 12,
+  },
   group: {
     paddingBlock: 2,
   },
@@ -170,6 +205,11 @@ const styles = stylex.create({
   },
 });
 
+const matches = (item: PickerItem, query: string) => {
+  const q = query.trim().toLowerCase();
+  return !q || item.label.toLowerCase().includes(q) || item.value.toLowerCase().includes(q);
+};
+
 export function ExamplePicker({
   groups,
   value,
@@ -180,22 +220,25 @@ export function ExamplePicker({
   onChange: (name: string) => void;
 }) {
   const items = groups.flatMap((g) => g.items);
+  const selected = items.find((item) => item.value === value) ?? null;
+  // Base UI's grouped items: each group carries its own `items`; the label rides along as `value`.
+  const grouped = groups.map((g) => ({ value: g.label, items: g.items }));
   return (
-    <Select.Root
-      items={items}
-      value={value === CUSTOM ? null : value}
+    <Combobox.Root
+      items={grouped}
+      value={selected}
       onValueChange={(next) => {
-        if (typeof next === "string") onChange(next);
+        if (next) onChange(next.value);
       }}
+      itemToStringLabel={(item) => item.label}
+      isItemEqualToValue={(a, b) => a.value === b.value}
+      filter={matches}
     >
-      <Select.Trigger aria-label="Example" {...stylex.props(styles.trigger, focusRing.ring)}>
-        <Select.Value
-          placeholder="Your payload"
-          className={(state) =>
-            stylex.props(styles.value, state.placeholder && styles.placeholder).className ?? ""
-          }
-        />
-        <Select.Icon {...stylex.props(styles.icon)}>
+      <Combobox.Trigger aria-label="Example" {...stylex.props(styles.trigger, focusRing.ring)}>
+        <span {...stylex.props(styles.value, !selected && styles.placeholder)}>
+          {selected?.label ?? "Your payload"}
+        </span>
+        <span {...stylex.props(styles.icon)}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="m7 15 5 5 5-5M7 9l5-5 5 5"
@@ -205,15 +248,11 @@ export function ExamplePicker({
               strokeLinejoin="round"
             />
           </svg>
-        </Select.Icon>
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Positioner
-          sideOffset={6}
-          alignItemWithTrigger={false}
-          {...stylex.props(styles.positioner)}
-        >
-          <Select.Popup
+        </span>
+      </Combobox.Trigger>
+      <Combobox.Portal>
+        <Combobox.Positioner sideOffset={6} align="start" {...stylex.props(styles.positioner)}>
+          <Combobox.Popup
             className={(state) =>
               stylex.props(
                 styles.popup,
@@ -222,47 +261,61 @@ export function ExamplePicker({
               ).className ?? ""
             }
           >
-            {groups.map((group) => (
-              <Select.Group key={group.label} {...stylex.props(styles.group)}>
-                <Select.GroupLabel {...stylex.props(styles.groupLabel)}>
-                  {group.label}
-                </Select.GroupLabel>
-                {group.items.map((item) => (
-                  <Select.Item
-                    key={item.value}
-                    value={item.value}
-                    className={(state) =>
-                      stylex.props(styles.item, state.highlighted && styles.itemHighlighted)
-                        .className ?? ""
-                    }
-                  >
-                    <Select.ItemIndicator {...stylex.props(styles.check)}>
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden="true"
+            <Combobox.Input
+              placeholder="Search examples"
+              aria-label="Search examples"
+              {...stylex.props(styles.search)}
+            />
+            <Combobox.Empty {...stylex.props(styles.empty)}>
+              <span {...stylex.props(styles.emptyText)}>No example matches.</span>
+            </Combobox.Empty>
+            <Combobox.List>
+              {(group: { value: string; items: PickerItem[] }) => (
+                <Combobox.Group
+                  key={group.value}
+                  items={group.items}
+                  {...stylex.props(styles.group)}
+                >
+                  <Combobox.GroupLabel {...stylex.props(styles.groupLabel)}>
+                    {group.value}
+                  </Combobox.GroupLabel>
+                  <Combobox.Collection>
+                    {(item: PickerItem) => (
+                      <Combobox.Item
+                        key={item.value}
+                        value={item}
+                        className={(state) =>
+                          stylex.props(styles.item, state.highlighted && styles.itemHighlighted)
+                            .className ?? ""
+                        }
                       >
-                        <path
-                          d="M20 6 9 17l-5-5"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </Select.ItemIndicator>
-                    <Select.ItemText {...stylex.props(styles.itemText)}>
-                      {item.label}
-                    </Select.ItemText>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            ))}
-          </Select.Popup>
-        </Select.Positioner>
-      </Select.Portal>
-    </Select.Root>
+                        <Combobox.ItemIndicator {...stylex.props(styles.check)}>
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M20 6 9 17l-5-5"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Combobox.ItemIndicator>
+                        <span {...stylex.props(styles.itemText)}>{item.label}</span>
+                      </Combobox.Item>
+                    )}
+                  </Combobox.Collection>
+                </Combobox.Group>
+              )}
+            </Combobox.List>
+          </Combobox.Popup>
+        </Combobox.Positioner>
+      </Combobox.Portal>
+    </Combobox.Root>
   );
 }

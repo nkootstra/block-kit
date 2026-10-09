@@ -35,13 +35,16 @@ type Fixture = { name: string; json: string };
  * Every fixture, for the dev server's "Test fixtures" group. A production build ships only the
  * curated examples, so this never loads there.
  */
+/** Every fixture the picker already offers by name, left out of the dev-only list. */
+const OFFERED = new Set(examples.map((e) => e.name));
+
 function useTestFixtures(): Fixture[] {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     let live = true;
     void import("./fixtures").then((mod) => {
-      if (live) setFixtures(mod.fixtures.filter((f) => !examples.some((e) => e.name === f.name)));
+      if (live) setFixtures(mod.fixtures.filter((f) => !OFFERED.has(f.name)));
     });
     return () => {
       live = false;
