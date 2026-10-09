@@ -37,6 +37,10 @@
   border: 1px solid var(--sbk-dataviz-border);
   border-radius: 12px;
   overflow: hidden;
+  /* Slack doesn't narrow a chart below 400px: in a narrower block (a 320px phone message) the card
+     runs past the message, which cuts it off, so the plot keeps its desktop-like spacing and the
+     last category falls out of view. */
+  min-width: 400px;
 }
 
 .sbk-dataviz__title {
