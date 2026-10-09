@@ -12,21 +12,15 @@ import { ReturnIcon } from "../icons";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
 
-const TEXT_INPUT_TYPES = new Set([
-  "plain_text_input",
-  "email_text_input",
-  "url_text_input",
-  "number_input",
-]);
-
-/** Slack's Builder preview adds a "Press 'enter' to submit" hint below a single-line text input
- * whose owning `input` block dispatches on the (default) `on_enter_pressed` trigger; with the
- * block's own `hint`, both share one line. Nothing is added for `on_character_entered`-only
- * dispatch, or for multiline inputs (Enter inserts a newline there). */
+/** Slack's Builder preview adds a "Press 'enter' to submit" hint below a single-line plain text
+ * input whose owning `input` block dispatches on the (default) `on_enter_pressed` trigger; with
+ * the block's own `hint`, both share one line. Nothing is added for `on_character_entered`-only
+ * dispatch, for multiline inputs (Enter inserts a newline there), or for number, URL and email
+ * inputs, which dispatch on Enter without it (extra/payloads/dispatch-inputs). */
 function dispatchHint(block: InputBlock): boolean {
   if (block.dispatch_action !== true) return false;
   const element = block.element as Json;
-  if (typeof element.type !== "string" || !TEXT_INPUT_TYPES.has(element.type)) return false;
+  if (element.type !== "plain_text_input") return false;
   if (element.multiline === true) return false;
   const config = element.dispatch_action_config as { trigger_actions_on?: string[] } | undefined;
   const triggers = config?.trigger_actions_on ?? ["on_enter_pressed"];

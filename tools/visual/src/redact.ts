@@ -169,8 +169,11 @@ function declarations(style: string): string[] {
 
 /** A frozen size measured in pixels, as opposed to Slack's own `max-width:100%` or `min-width:0`. */
 const MEASURED = /^\s*(?!0(?:px)?\s*$)[\d.]+px\s*$/;
-/** The box in a member's row that fits its name, badge, presence and secondary name. */
-const MEMBER_CONTENT = /\bclass="[^"]*\bc-member__primary_content\b/;
+/**
+ * The box in a select's row that was sized to the real name: a member's primary content (name,
+ * badge, presence and secondary name) or a channel entity's text (name and its truncating boxes).
+ */
+const MEMBER_CONTENT = /\bclass="[^"]*\b(?:c-member__primary_content|c-base_entity__text)(?![\w-])/;
 
 /**
  * The snapshot froze each element's width around the real name. A placeholder of another length
@@ -181,7 +184,8 @@ const MEMBER_CONTENT = /\bclass="[^"]*\bc-member__primary_content\b/;
  * A member's row in a select nests the name deeper: its box also holds a badge (AGENT, "(you)"),
  * and a presence dot and the secondary name follow it, all inside the member's primary content,
  * which was sized to fit them. There the measured sizes of every box around the name, up to and
- * including that primary content, are released too; the badge's and the dot's own sizes stay.
+ * including that primary content, are released too; the badge's and the dot's own sizes stay. A
+ * channel's row does the same up to the entity's text, which wraps the name in a truncating box.
  */
 function releaseNameWidths(html: string): string {
   interface Open {

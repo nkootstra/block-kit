@@ -203,8 +203,9 @@ chosen. Clicking it opens a dialog titled with the placeholder, with the field a
 users, conversations or channels select, you type an id and press Enter to add it. In a static one,
 the option list stays open while you pick,
 and nothing is sent until **Confirm**, which fires one action with every `selected_options` (and the
-`placeholder`). **Cancel**, the close button and Escape discard the picks. Focus moves into the
-dialog's field and back to the button when it closes.
+`placeholder`). **Cancel**, the close button and Escape discard the picks. As in Slack, focus moves
+to the dialog itself, so its field opens without a focus ring; Tab reaches the close button and then
+the field. Focus returns to the button when the dialog closes.
 
 <Preview
   actions

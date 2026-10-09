@@ -103,11 +103,13 @@ describe("a multi_static_select section accessory", () => {
     expect(trigger("1 selected")).toBeTruthy();
   });
 
-  it("moves focus into the dialog and back to the button when it closes", async () => {
+  // Slack focuses the dialog, not its field: the field opens without its focus ring
+  // (`catalog/section/multi-static-select@dialog`), and Tab moves into it.
+  it("moves focus to the dialog and back to the button when it closes", async () => {
     renderAccessory();
     const button = trigger();
     await act(async () => fireEvent.click(button));
-    expect(within(dialog()).getByRole("combobox")).toBe(document.activeElement);
+    expect(dialog()).toBe(document.activeElement);
     await clickAsync(within(dialog()).getByRole("button", { name: "Cancel" }));
     expect(document.activeElement).toBe(button);
   });
