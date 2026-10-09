@@ -482,9 +482,7 @@
   "catalog/structure/plain-text@mobile": [],
   "catalog/structure/text-and-images": [],
   "catalog/structure/text-and-images@dark": [],
-  "catalog/structure/text-and-images@mobile": [
-    "y|Author: K A Applegate|0"
-  ],
+  "catalog/structure/text-and-images@mobile": [],
   "catalog/table/basic-data-table": [
     "width|Acme Expansion Deal|0",
     "width|Weather Forecast Integration|0",
@@ -952,10 +950,7 @@
   "extra/context-actions/feedback-row@mobile": [],
   "extra/context/mixed": [],
   "extra/context/mixed@dark": [],
-  "extra/context/mixed@mobile": [
-    "y|Last updated 5 min ago|0",
-    "y|Header with emoji|0"
-  ],
+  "extra/context/mixed@mobile": [],
   "extra/home/dashboard": [],
   "extra/home/dashboard@dark": [],
   "extra/home/dashboard@open": [],
