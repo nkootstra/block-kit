@@ -2601,13 +2601,13 @@
   },
   "contexts/static_select/accessory": {
     "payload": "b45048b916216e49d3ae5ec73b74561962029c0c8f0fa5d830595b869cb24d60",
-    "reference": "bccafd8ea1bf126256001ad7e735a73d6f4e6f2cce6513abc83f99ed2f742cde",
-    "captured": "2026-10-09"
+    "reference": "19b5c5266363790a72a0d17f683630a827752127f305d0e1d54ff70c2120b997",
+    "captured": "2026-10-07"
   },
   "contexts/static_select/accessory@dark": {
     "payload": "b45048b916216e49d3ae5ec73b74561962029c0c8f0fa5d830595b869cb24d60",
-    "reference": "e4c314c8eb9dccf015239d94898001accd3b381b863d3d9ad5d04786ae9cc456",
-    "captured": "2026-10-09"
+    "reference": "08a9d7f050279e1b125e9d73dec30e4470b69e3cf5ee54165643802f44cb94ee",
+    "captured": "2026-10-07"
   },
   "contexts/static_select/accessory@mobile": {
     "payload": "b45048b916216e49d3ae5ec73b74561962029c0c8f0fa5d830595b869cb24d60",
@@ -3182,7 +3182,7 @@
   "extra/payloads/selects": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
     "reference": "e188d7df1a2d27bd5483bfe7884fd2e69e257bad0a8d2dc7cb8fc745cd7d16fd",
-    "captured": "2026-10-09"
+    "captured": "2026-10-07"
   },
   "extra/payloads/selects@dark": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",

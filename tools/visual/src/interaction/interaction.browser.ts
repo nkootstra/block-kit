@@ -819,6 +819,119 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
   });
 
+  // Measured in Block Kit Builder on 9 October 2026 (`catalog/input/static-select`,
+  // `contexts/static_select/*`): Slack draws a static select as `c-select_button`, a 28px button in a
+  // message (36px in a modal or on App Home) showing the placeholder between dashes, with a filled
+  // caret 8px (12px) after the text.
+  describe("static select as Slack's button select", () => {
+    const inMessage = (theme: "light" | "dark" = "light"): Mount => ({
+      theme,
+      blocks: [
+        {
+          type: "input",
+          label: plain("Label"),
+          element: {
+            type: "static_select",
+            action_id: "s",
+            placeholder: plain("Select an item"),
+            options: [option("Alpha"), option("Bravo"), option("Charlie")],
+          },
+        },
+      ],
+    });
+    const fieldStyle = (page: Page) =>
+      page.locator(".sbk-select__control").evaluate((el) => {
+        const s = getComputedStyle(el);
+        const text = el.querySelector(".sbk-select__value")!;
+        const caret = el.querySelector(".sbk-select__chevron")!;
+        const f = el.getBoundingClientRect();
+        const t = text.getBoundingClientRect();
+        const c = caret.getBoundingClientRect();
+        return {
+          height: f.height,
+          border: s.borderTopColor,
+          text: text.textContent,
+          textColor: getComputedStyle(text).color,
+          textX: Math.round(t.x - f.x),
+          caret: [c.width, c.height, Math.round(f.right - c.right)],
+          caretColor: getComputedStyle(caret).color,
+        };
+      });
+
+    it("draws a 28px button with the placeholder between dashes and a 13px caret", async () => {
+      const page = await harness.open(inMessage());
+      expect(await fieldStyle(page)).toEqual({
+        height: 28,
+        border: "rgb(124, 122, 127)",
+        text: "--Select an item--",
+        textColor: "rgb(29, 28, 29)",
+        textX: 9,
+        caret: [13, 13, 9],
+        caretColor: "rgb(29, 28, 29)",
+      });
+    });
+
+    it("draws its text and caret in Slack's dark colours", async () => {
+      const page = await harness.open(inMessage("dark"));
+      const s = await fieldStyle(page);
+      expect([s.border, s.textColor, s.caretColor]).toEqual([
+        "rgb(121, 124, 129)",
+        "rgb(209, 210, 211)",
+        "rgb(248, 248, 248)",
+      ]);
+    });
+
+    it("draws a 36px button with a 20px caret in a modal", async () => {
+      const page = await harness.open({
+        view: { type: "modal", title: plain("Context"), blocks: inMessage().blocks },
+      } as Mount);
+      const s = await fieldStyle(page);
+      expect([s.height, s.textX, s.caret]).toEqual([36, 13, [20, 20, 13]]);
+    });
+
+    it("opens focused, on its placeholder row in blue, in a list 22px wider than the field", async () => {
+      const page = await harness.open(inMessage());
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const [field, menu] = await Promise.all(
+        [".sbk-select__control", ".sbk-select__menu"].map((sel) => page.locator(sel).boundingBox()),
+      );
+      const first = await page
+        .locator(".sbk-select__option")
+        .first()
+        .evaluate((el) => ({
+          text: el.textContent,
+          bg: getComputedStyle(el).backgroundColor,
+          color: getComputedStyle(el).color,
+          check: el.querySelector(".sbk-select__check")
+            ? getComputedStyle(el.querySelector(".sbk-select__check")!).color
+            : null,
+        }));
+      const ring = await page
+        .locator(".sbk-select__control")
+        .evaluate((el) => getComputedStyle(el).boxShadow);
+      expect({
+        first,
+        width: Math.round((menu?.width ?? 0) - (field?.width ?? 0)),
+        x: Math.round((menu?.x ?? 0) - (field?.x ?? 0)),
+        height: menu?.height,
+        ring: ring.startsWith("rgb(18, 100, 163) 0px 0px 0px 1px"),
+      }).toEqual({
+        first: {
+          text: "--Select an item--",
+          bg: "rgb(18, 100, 163)",
+          color: "rgb(255, 255, 255)",
+          // Slack's check (`c-select_options_list__selected`) is white on the blue row.
+          check: "rgb(255, 255, 255)",
+        },
+        width: 22,
+        x: -12,
+        height: 136,
+        ring: true,
+      });
+    });
+  });
+
   describe("static select list", () => {
     const select: Mount = {
       blocks: [
@@ -857,36 +970,21 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       );
       expect(Math.round((menu?.y ?? 0) - ((field?.y ?? 0) + (field?.height ?? 0)))).toBe(-4);
     });
-
-    it("highlights the first option on open and narrows the list to what's typed", async () => {
-      const page = await harness.open(select);
-      await page.click(".sbk-select__control");
-      await settle(page);
-      const active = () =>
-        page.locator(".sbk-select__option[data-active] .sbk-select__option-text").allTextContents();
-      expect(await active()).toEqual(["Alpha"]);
-      // Slack matches the start of a word: "ch" finds Charlie, "ar" would find nothing.
-      await page.keyboard.type("ch");
-      await settle(page);
-      expect(await page.locator(".sbk-select__option-text").allTextContents()).toEqual(["Charlie"]);
-      expect(await active()).toEqual(["Charlie"]);
-    });
   });
 
   // Measured in Block Kit Builder (light theme): the states Slack's option lists show as you type.
   describe("select list states", () => {
+    // Slack's typed-into select (`c-select_input`): a users select listing three people.
     const select: Mount = {
+      directory: [
+        { type: "user", id: "U1", name: "Alpha" },
+        { type: "user", id: "U2", name: "Bravo" },
+        { type: "user", id: "U3", name: "Charlie" },
+      ],
       blocks: [
         {
           type: "actions",
-          elements: [
-            {
-              type: "static_select",
-              action_id: "s",
-              placeholder: plain("Pick one"),
-              options: [option("Alpha"), option("Bravo"), option("Charlie")],
-            },
-          ],
+          elements: [{ type: "users_select", action_id: "s", placeholder: plain("Pick one") }],
         },
       ],
     };
@@ -899,6 +997,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
               type: "static_select",
               action_id: "g",
               placeholder: plain("Grouped"),
+              initial_option: option("Alpha"),
               option_groups: [
                 { label: plain("Group one"), options: [option("Alpha"), option("Bravo")] },
                 { label: plain("Group two"), options: [option("Charlie")] },
@@ -1467,7 +1566,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     // time picker's field is an input inside its box, so the box draws the ring.
     for (const [name, focused, ringed] of [
       ["text input", ".sbk-text-input", ".sbk-text-input"],
-      ["select", ".sbk-select__input", ".sbk-select__control"],
+      ["select", ".sbk-select__control", ".sbk-select__control"],
       ["date picker", ".sbk-datepicker__input", ".sbk-datepicker__input"],
       ["time picker", ".sbk-timepicker__input", ".sbk-timepicker__control"],
     ] as const) {
@@ -3444,7 +3543,8 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     it("keeps Slack's 13px field text, and 15px for multiline and rich text, on a desktop", async () => {
       const desktop = await measure(await harness.open(fields));
       expect(new Set(desktop.map((f) => f.size))).toEqual(new Set(["13px", "15px"]));
-      expect(desktop.length).toBeGreaterThanOrEqual(11);
+      // A static select is a button, not a text field (Block Kit Builder since 9 October 2026).
+      expect(desktop.length).toBeGreaterThanOrEqual(10);
     });
 
     it("gives a field in an open popover 16px text too", async () => {
@@ -3498,6 +3598,21 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         },
       ],
     };
+    // Typing needs Slack's typed-into select: a users select listing three people.
+    const people: Mount = {
+      theme: "dark",
+      directory: [
+        { type: "user", id: "U1", name: "Alpha" },
+        { type: "user", id: "U2", name: "Bravo" },
+        { type: "user", id: "U3", name: "Charlie" },
+      ],
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type: "users_select", action_id: "u", placeholder: plain("People") }],
+        },
+      ],
+    };
     const colours = (page: Page, selector: string, props: string[]) =>
       page
         .locator(selector)
@@ -3508,7 +3623,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         }, props);
 
     it("draws the Enter key on Slack's dark keycap", async () => {
-      const page = await harness.open(groups);
+      const page = await harness.open(people);
       await page.click(".sbk-select__control");
       await page.keyboard.type("a");
       await settle(page);
@@ -3533,7 +3648,7 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
     });
 
     it("writes Nothing could be found in Slack's dark faint text", async () => {
-      const page = await harness.open(groups);
+      const page = await harness.open(people);
       await page.click(".sbk-select__control");
       await page.keyboard.type("zzz");
       await settle(page);
@@ -4139,6 +4254,8 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
             ],
           });
           await page.click(".sbk-select__control");
+          // Slack's button select opens on the chosen row; move the highlight off it.
+          await page.keyboard.press("ArrowDown");
           await settle(page);
           expect(await colour(page, '.sbk-select__option[aria-selected="true"]')).toBe(
             want.selected,

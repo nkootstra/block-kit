@@ -5,6 +5,20 @@
  */
 import type { SVGProps } from "react";
 
+/** Slack's `caret-down`, the filled 20×20 chevron of its button select (Block Kit Builder). */
+export function CaretDownIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        d="M5.72 7.47a.75.75 0 0 1 1.06 0L10 10.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0L5.72 8.53a.75.75 0 0 1 0-1.06"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
 export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true" {...props}>

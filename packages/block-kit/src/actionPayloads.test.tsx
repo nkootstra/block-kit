@@ -49,7 +49,8 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     );
   },
   "catalog/actions/all-selects@pick-static": async () => {
-    fireEvent.click(screen.getByPlaceholderText("Select an item"));
+    // Slack's static select is a button showing its placeholder between dashes.
+    fireEvent.click(screen.getByText("--Select an item--"));
     await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   "catalog/actions/radio-buttons@pick": () => clickAsync(screen.getAllByRole("radio")[1]!),

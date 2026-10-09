@@ -112,21 +112,22 @@ Options come from a fixed list you provide: `options`, or `option_groups` to lab
 them. Slack caps `options` and `option_groups` at 100 entries each, and a select can carry one or
 the other, never both.
 
-Like Slack's, a single `static_select` or `external_select` is typed into: its field is a text
-input (`role="combobox"`) that shows the chosen option. Clicking it opens a 322px list, starting 12px
-left of the field and over its bottom 4px, with the first option highlighted in blue. A chosen
-option is marked with a check, and the field shows the placeholder while the list is open. In an
-`input` block the list is 22px wider than the field instead. Typing narrows the list to the
-options with a word that starts with what you typed ("york" finds "New York", "ork" finds
-nothing), so there's no separate search box. When nothing matches, the list says "😕 Nothing could
-be found." Escape and Tab close the list and keep what you typed, for the next time it opens.
+A single `static_select` is a button, as Slack draws it: it shows the chosen option, or the
+placeholder between dashes ("--Select an item--") while nothing is chosen. Clicking it focuses it
+and opens a 322px list, starting 12px left of the field and over its bottom 4px; in an `input`
+block the list is 22px wider than the field instead. The list opens on the chosen option, in blue
+with a check, or, while nothing is chosen, on a "--Select an item--" row first. Picking that row
+closes the list without sending anything. The arrow keys move the highlight, Enter picks it, and
+Escape closes the list and gives focus back to the button. Option groups get a 28px heading each,
+with their options indented under it and a rule between groups.
 
-The highlight works as in Slack: a list opened with the keyboard, and the first match while you
-type, starts on a grey row with an **Enter** key on it, and Enter picks it. The first arrow key
-turns that row into the blue keyboard highlight, and later presses move it. Option groups get a 28px heading each, with
-their options indented under it and a rule between groups.
+A single `external_select` is typed into instead: its field is a text input (`role="combobox"`)
+that shows the chosen option, and typing searches the app. A list opened with the keyboard, and the
+first match while you type, starts on a grey row with an **Enter** key on it, and Enter picks it.
+The first arrow key turns that row into the blue keyboard highlight, and later presses move it.
+When nothing matches, the list says "😕 Nothing could be found."
 
-The single users, conversations and channels selects are typed into the same way. The
+The single users, conversations and channels selects are typed into the same way, narrowing the list to the names with a word that starts with what you typed. The
 multi-selects open from a button, with a search box where there's something to search. A multi-select ticks the options it already has; in
 an `input` block its list is 22px wider than the field and starts 12px to its left. An
 `external_select` asks for "Type a minimum of N characters to see options." until the query reaches
