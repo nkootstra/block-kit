@@ -253,6 +253,9 @@ export function ExamplePicker({
       <Combobox.Portal>
         <Combobox.Positioner sideOffset={6} align="start" {...stylex.props(styles.positioner)}>
           <Combobox.Popup
+            // Opened by a tap, the list shows without focusing the search field, so a phone's
+            // keyboard doesn't cover it; tapping the field brings the keyboard up to search.
+            initialFocus={(openType) => openType !== "touch"}
             className={(state) =>
               stylex.props(
                 styles.popup,
