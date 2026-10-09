@@ -1,5 +1,7 @@
 ---
-title: Table
+title: Table block
+sidebar:
+  label: Table
 description: A plain grid of rich text cells, for small datasets with no sorting or paging.
 seo:
   description: "Render Slack's table block in React: a plain grid of rich text cells with column alignment and wrapping, for small datasets that need no sorting or paging."
@@ -130,7 +132,8 @@ Each cell is one of three shapes, picked by `type`:
 
 :::note
 Slack also caps the total character count across every cell in a table at 10,000. Split a
-larger dataset across multiple messages instead of one big table.
+larger dataset across multiple messages instead of one big table. [Limits](/reference/limits)
+lists every limit on tables and the other blocks.
 :::
 
 ## Examples

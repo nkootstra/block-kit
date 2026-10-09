@@ -16,6 +16,9 @@ element inside the block needs a stable id to key off in `onAction` handlers, or
 updating a specific block later with `chat.update`. `block_id` must be unique within a `blocks`
 array.
 
+A message holds up to 50 blocks, and a modal or Home tab up to 100. [Limits](/reference/limits)
+lists these and every per-block limit, with the Slack page each comes from.
+
 <Preview
   payload={{
     blocks: [

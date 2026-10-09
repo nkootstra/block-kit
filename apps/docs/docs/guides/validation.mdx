@@ -53,6 +53,10 @@ only ever sees a submission that would have passed Slack's client too.
 Try submitting the modal above without an email: the error appears under the field, exactly like
 Slack's own client, and `onSubmit` never fires.
 
+These checks cover what a user types. The limits Slack's API puts on the payload itself, such as
+50 blocks per message or 75 characters on a button label, are listed in
+[Limits](/reference/limits); the renderer doesn't reject a payload that breaks them.
+
 ## What gets checked
 
 <TypeTable
@@ -164,5 +168,8 @@ shows. Both clear with the error.
   </Card>
   <Card title="Blocks: Input" href="/blocks/input" icon="text-cursor-input">
     The input block's fields, including optional, that these rules read.
+  </Card>
+  <Card title="Limits" href="/reference/limits" icon="ruler">
+    Every block, element and text limit Slack's API enforces on a payload.
   </Card>
 </CardGroup>

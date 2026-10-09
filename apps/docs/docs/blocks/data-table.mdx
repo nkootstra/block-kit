@@ -1,5 +1,7 @@
 ---
-title: Data table
+title: Data table block
+sidebar:
+  label: Data table
 description: A sortable, paginated grid of rows and columns, for datasets larger than the plain table block handles.
 seo:
   description: "Render Slack's data_table block in React: a sortable, paginated grid of rows and columns for datasets larger than the plain table block handles."
@@ -119,9 +121,11 @@ Each cell is one of four shapes, picked by `type`:
 />
 
 :::note
-Sorting and pagination aren't configured through the payload. Clicking a header cycles that column
-through ascending, descending, and back to the original order; pagination controls appear
-automatically once a table has more than 5 data rows, five rows to a page.
+Sorting isn't configured through the payload. Clicking a header cycles that column through
+ascending, descending, and back to the original order. Pagination controls appear automatically
+once a table has more than 5 data rows, five rows to a page. Slack's `page_size` field (1 to 100,
+default 5) isn't read, so a table always pages by 5. See [Limits](/reference/limits) for the
+row, column and character limits.
 :::
 
 ## Examples

@@ -1,5 +1,7 @@
 ---
-title: Select menus
+title: Select menu elements
+sidebar:
+  label: Select menus
 description: Dropdowns for a fixed list, an external data source, or Slack's own directory of users, conversations, and channels.
 seo:
   title: "Slack select menus"
@@ -109,8 +111,8 @@ Each data source adds its own fields, covered in its section below.
 ### Static select
 
 Options come from a fixed list you provide: `options`, or `option_groups` to label clusters of
-them. Slack caps `options` and `option_groups` at 100 entries each, and a select can carry one or
-the other, never both.
+them. Slack caps `options` and `option_groups` at 100 entries each (see [Limits](/reference/limits)),
+and a select can carry one or the other, never both.
 
 A single `static_select` is a button, as Slack draws it: it shows the chosen option, or the
 placeholder between dashes ("--Select an item--") while nothing is chosen. Clicking it focuses it

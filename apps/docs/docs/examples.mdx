@@ -1,0 +1,684 @@
+---
+title: Block Kit examples
+description: Ready-to-copy Block Kit messages, modals and Home tabs for common jobs, from approval requests and deploy notifications to forms and dashboards.
+sidebar:
+  label: Examples
+  order: 3.5
+seo:
+  title: "Slack Block Kit examples and templates"
+  description: "Copyable Slack Block Kit JSON templates with live previews: approval request, deploy notification, incident alert, poll, report with chart and table, form modal and Home tab."
+search:
+  keywords: [templates, samples, block kit builder, block kit json]
+---
+
+Each example below is a complete Block Kit payload for a common job, rendered live. Open the
+**JSON** tab to copy the payload, or edit it there and watch the preview change. Every block in
+them is one this package compares against Slack's own rendering, and the names and ids are
+placeholders.
+
+Paste a message payload into `chat.postMessage` as `blocks`, a modal into `views.open` as `view`,
+and a Home tab into `views.publish` as `view`. To render the same JSON in your own React app, pass
+it to `<Message>` or `<View>` (see [Surfaces](/surfaces)).
+
+## Messages
+
+### Approval request
+
+Ask someone to approve or deny a request, with the details they need to decide on the spot. Click a
+button to see the `block_actions` payload your app receives.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "<@U0ADA> requested a new device:\n*<https://example.com/requests/1042|Laptop replacement>*",
+        },
+      },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: "*Type:*\nComputer (laptop)" },
+          { type: "mrkdwn", text: "*Submitted:*\nOct 1" },
+          { type: "mrkdwn", text: "*Current device:*\nIssued Mar 2022" },
+          { type: "mrkdwn", text: "*Reason:*\nThe keyboard stopped working." },
+        ],
+      },
+      {
+        type: "actions",
+        block_id: "decision",
+        elements: [
+          {
+            type: "button",
+            action_id: "approve",
+            style: "primary",
+            text: { type: "plain_text", text: "Approve" },
+            value: "request_1042",
+          },
+          {
+            type: "button",
+            action_id: "deny",
+            style: "danger",
+            text: { type: "plain_text", text: "Deny" },
+            value: "request_1042",
+            confirm: {
+              title: { type: "plain_text", text: "Deny this request?" },
+              text: { type: "plain_text", text: "Ada gets a notification with your decision." },
+              confirm: { type: "plain_text", text: "Deny" },
+              deny: { type: "plain_text", text: "Cancel" },
+              style: "danger",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+The [Quickstart](/quickstart) builds this flow end to end, replacing the buttons with the outcome
+once someone answers.
+
+### Deploy notification
+
+Report a finished deploy to a channel, with a link out to the logs and a way to roll back.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "header",
+        text: { type: "plain_text", text: ":rocket: Deployed api@4.2.0 to production" },
+      },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: "*Service:*\napi" },
+          { type: "mrkdwn", text: "*Environment:*\nProduction" },
+          { type: "mrkdwn", text: "*Deployed by:*\n<@U0GRACE>" },
+          { type: "mrkdwn", text: "*Duration:*\n4m 12s" },
+        ],
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*Changes*\n• Retry failed webhooks with backoff\n• Cache the billing plan lookup\n• Upgrade the database driver",
+        },
+      },
+      {
+        type: "actions",
+        block_id: "deploy",
+        elements: [
+          {
+            type: "button",
+            action_id: "view_logs",
+            text: { type: "plain_text", text: "View logs" },
+            url: "https://example.com/deploys/4.2.0",
+          },
+          {
+            type: "button",
+            action_id: "rollback",
+            style: "danger",
+            text: { type: "plain_text", text: "Roll back" },
+            value: "api@4.2.0",
+          },
+        ],
+      },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "Posted to <#C0RELEASES> by the deploy pipeline" }],
+      },
+    ],
+  }}
+/>
+
+### Incident alert
+
+Page a channel about an incident, show its severity and owner, and let people acknowledge it or
+pick a follow-up from an overflow menu.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "header",
+        text: { type: "plain_text", text: ":rotating_light: SEV-2: Checkout error rate above 5%" },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Errors on `POST /checkout` rose to *7.4%* over the last 10 minutes. The on-call engineer has been paged.",
+        },
+        accessory: {
+          type: "overflow",
+          action_id: "incident_menu",
+          options: [
+            { text: { type: "plain_text", text: "Escalate to SEV-1" }, value: "escalate" },
+            { text: { type: "plain_text", text: "Reassign" }, value: "reassign" },
+            {
+              text: { type: "plain_text", text: "Open runbook" },
+              value: "runbook",
+              url: "https://example.com/runbooks/checkout",
+            },
+          ],
+        },
+      },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: "*Severity:*\nSEV-2" },
+          { type: "mrkdwn", text: "*Status:*\nInvestigating" },
+          { type: "mrkdwn", text: "*Owner:*\n<@U0ALAN>" },
+          { type: "mrkdwn", text: "*Started:*\n<!date^1790856000^{time}|12:00 PM>" },
+        ],
+      },
+      {
+        type: "actions",
+        block_id: "incident",
+        elements: [
+          {
+            type: "button",
+            action_id: "acknowledge",
+            style: "primary",
+            text: { type: "plain_text", text: "Acknowledge" },
+            value: "INC-311",
+          },
+          {
+            type: "button",
+            action_id: "join_call",
+            text: { type: "plain_text", text: "Join the call" },
+            url: "https://example.com/incidents/311/call",
+          },
+        ],
+      },
+      { type: "divider" },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "INC-311 · Updates every 15 minutes in this thread" }],
+      },
+    ],
+  }}
+/>
+
+### Poll
+
+Let a channel vote. Each option is a section with a button, and a context row under it shows who
+voted.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*Where should we hold the team offsite?* Poll by <@U0GRACE>",
+        },
+      },
+      { type: "divider" },
+      {
+        type: "section",
+        block_id: "option_lisbon",
+        text: { type: "mrkdwn", text: ":sunny: *Lisbon*\nWarm, walkable, good food." },
+        accessory: {
+          type: "button",
+          action_id: "vote",
+          text: { type: "plain_text", text: "Vote" },
+          value: "lisbon",
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "image",
+            image_url: "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+            alt_text: "Grace Hopper",
+          },
+          {
+            type: "image",
+            image_url: "https://cdn.block-kit.dev/samples/portrait-2.bbcd2277.jpg",
+            alt_text: "Alan Turing",
+          },
+          { type: "plain_text", text: "2 votes", emoji: true },
+        ],
+      },
+      {
+        type: "section",
+        block_id: "option_oslo",
+        text: {
+          type: "mrkdwn",
+          text: ":snow_capped_mountain: *Oslo*\nFjords, saunas, a short flight.",
+        },
+        accessory: {
+          type: "button",
+          action_id: "vote",
+          text: { type: "plain_text", text: "Vote" },
+          value: "oslo",
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "image",
+            image_url: "https://cdn.block-kit.dev/samples/beagle.e3711bc4.jpg",
+            alt_text: "Ada Lovelace",
+          },
+          { type: "plain_text", text: "1 vote", emoji: true },
+        ],
+      },
+      {
+        type: "section",
+        block_id: "option_remote",
+        text: {
+          type: "mrkdwn",
+          text: ":house_with_garden: *Stay remote*\nA day of talks over video.",
+        },
+        accessory: {
+          type: "button",
+          action_id: "vote",
+          text: { type: "plain_text", text: "Vote" },
+          value: "remote",
+        },
+      },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "No votes" }],
+      },
+      { type: "divider" },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "add_option",
+            text: { type: "plain_text", text: "Add an option" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+Every **Vote** button shares the `action_id` `vote`; the `block_id` and `value` tell your app which
+option was picked. Update the message with the new counts when a vote comes in.
+
+### Weekly report with a chart and a table
+
+Post numbers to a channel as a chart and a small table instead of a wall of text. Slack allows two
+`data_visualization` blocks per message; see [Limits](/reference/limits).
+
+<Preview
+  payload={{
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "Support report: week 40" } },
+      {
+        type: "data_visualization",
+        title: "Tickets closed per day",
+        chart: {
+          type: "bar",
+          series: [
+            {
+              name: "Closed",
+              data: [
+                { label: "Mon", value: 42 },
+                { label: "Tue", value: 38 },
+                { label: "Wed", value: 51 },
+                { label: "Thu", value: 47 },
+                { label: "Fri", value: 33 },
+              ],
+            },
+          ],
+          axis_config: {
+            categories: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            x_label: "Day",
+            y_label: "Tickets",
+          },
+        },
+      },
+      {
+        type: "table",
+        column_settings: [{ align: "left" }, { align: "right" }, { align: "right" }],
+        rows: [
+          [
+            { type: "raw_text", text: "Queue" },
+            { type: "raw_text", text: "Open" },
+            { type: "raw_text", text: "Median reply" },
+          ],
+          [
+            { type: "raw_text", text: "Billing" },
+            { type: "raw_number", value: 12, text: "12" },
+            { type: "raw_text", text: "38 min" },
+          ],
+          [
+            { type: "raw_text", text: "Accounts" },
+            { type: "raw_number", value: 7, text: "7" },
+            { type: "raw_text", text: "1 h 5 min" },
+          ],
+          [
+            { type: "raw_text", text: "Integrations" },
+            { type: "raw_number", value: 3, text: "3" },
+            { type: "raw_text", text: "2 h 20 min" },
+          ],
+        ],
+      },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "Generated every Friday at 5 PM" }],
+      },
+    ],
+  }}
+/>
+
+For larger datasets that need sorting and paging, use a [data table](/blocks/data-table). The
+[table](/blocks/table) and [data visualization](/blocks/data-visualization) pages list every field.
+
+### AI answer with feedback buttons
+
+Show an assistant's answer with thumbs up and down under it, so you can collect feedback on each
+response.
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "You can rotate an API key from *Settings → API keys*. The old key keeps working for 24 hours, so you can deploy the new one before it stops.",
+        },
+      },
+      {
+        type: "context_actions",
+        elements: [
+          {
+            type: "feedback_buttons",
+            action_id: "feedback",
+            positive_button: {
+              text: { type: "plain_text", text: "Good response" },
+              value: "positive",
+            },
+            negative_button: {
+              text: { type: "plain_text", text: "Bad response" },
+              value: "negative",
+            },
+          },
+          {
+            type: "icon_button",
+            action_id: "open_source",
+            icon: "external-link",
+            text: { type: "plain_text", text: "Open the source" },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Modals
+
+### Request form
+
+Collect a structured request: a required title, a priority, optional details and notification
+choices. Press **Create** with the title empty to see Slack's client-side validation.
+
+<Preview
+  payload={{
+    type: "modal",
+    callback_id: "new_ticket",
+    title: { type: "plain_text", text: "New ticket" },
+    submit: { type: "plain_text", text: "Create" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Tell us what went wrong. *All fields* are shared with the on-call team.",
+        },
+      },
+      {
+        type: "input",
+        block_id: "title",
+        label: { type: "plain_text", text: "Title" },
+        element: {
+          type: "plain_text_input",
+          action_id: "title_input",
+          max_length: 150,
+          placeholder: { type: "plain_text", text: "Short summary" },
+        },
+      },
+      {
+        type: "input",
+        block_id: "priority",
+        label: { type: "plain_text", text: "Priority" },
+        element: {
+          type: "static_select",
+          action_id: "priority_select",
+          initial_option: { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+          options: [
+            { text: { type: "plain_text", text: "High" }, value: "high" },
+            { text: { type: "plain_text", text: "Medium" }, value: "medium" },
+            { text: { type: "plain_text", text: "Low" }, value: "low" },
+          ],
+        },
+      },
+      {
+        type: "input",
+        block_id: "details",
+        optional: true,
+        label: { type: "plain_text", text: "Details" },
+        hint: { type: "plain_text", text: "Steps to reproduce help a lot." },
+        element: { type: "plain_text_input", action_id: "details_input", multiline: true },
+      },
+      {
+        type: "input",
+        block_id: "notify",
+        optional: true,
+        label: { type: "plain_text", text: "Notify" },
+        element: {
+          type: "checkboxes",
+          action_id: "notify_checks",
+          options: [
+            { text: { type: "plain_text", text: "Email me updates" }, value: "email" },
+            { text: { type: "plain_text", text: "Post in #incidents" }, value: "channel" },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+The [Modals](/guides/modals) guide shows how to open this from a button and answer the
+`view_submission` with errors; [Validation](/guides/validation) lists the checks that run first.
+
+### Confirm a destructive change
+
+Warn before something that can't be undone, with an [alert](/blocks/alert) (a block Slack accepts
+only in modals) and a short summary of what changes.
+
+<Preview
+  payload={{
+    type: "modal",
+    callback_id: "delete_project",
+    title: { type: "plain_text", text: "Delete project" },
+    submit: { type: "plain_text", text: "Delete" },
+    close: { type: "plain_text", text: "Cancel" },
+    blocks: [
+      {
+        type: "alert",
+        level: "warning",
+        text: { type: "mrkdwn", text: "*Heads up:* this can't be undone." },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Deleting *Website redesign* removes its 24 tasks and 3 linked channels for everyone.",
+        },
+      },
+      {
+        type: "input",
+        block_id: "confirm_name",
+        label: { type: "plain_text", text: "Type the project name to confirm" },
+        element: {
+          type: "plain_text_input",
+          action_id: "value",
+          placeholder: { type: "plain_text", text: "Website redesign" },
+        },
+      },
+    ],
+  }}
+/>
+
+## Home tab
+
+### Onboarding Home tab
+
+Greet new users in your app's Home tab with the first steps to take, and a place to come back to.
+
+<Preview
+  actions
+  payload={{
+    type: "home",
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "Welcome to Tickets :wave:" } },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Tickets turns requests in Slack into tracked work. Three steps get your team started:",
+        },
+      },
+      { type: "divider" },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*1. Connect a channel*\nRequests posted in it become tickets automatically.",
+        },
+        accessory: {
+          type: "button",
+          action_id: "connect_channel",
+          style: "primary",
+          text: { type: "plain_text", text: "Connect" },
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*2. Invite your team*\nEveryone you add can pick up and close tickets.",
+        },
+        accessory: {
+          type: "button",
+          action_id: "invite",
+          text: { type: "plain_text", text: "Invite" },
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*3. Create your first ticket*\nOr use the `/ticket` command from any channel.",
+        },
+        accessory: {
+          type: "button",
+          action_id: "new_ticket",
+          text: { type: "plain_text", text: "New ticket" },
+        },
+      },
+      { type: "divider" },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: ":bulb: Questions? Ask in <#C0GENERAL> or read the <https://example.com/docs|docs>.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Dashboard Home tab
+
+Show each user their own open work, with a menu of actions per item.
+
+<Preview
+  actions
+  payload={{
+    type: "home",
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "Your tickets" } },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*3 open* · 1 waiting on you" },
+        accessory: {
+          type: "button",
+          action_id: "new_ticket",
+          text: { type: "plain_text", text: "New ticket" },
+          style: "primary",
+        },
+      },
+      { type: "divider" },
+      {
+        type: "section",
+        block_id: "ticket_118",
+        text: { type: "mrkdwn", text: "*Login page times out*\nOpened 2 days ago · High" },
+        accessory: {
+          type: "overflow",
+          action_id: "ticket_menu",
+          options: [
+            { text: { type: "plain_text", text: "Close" }, value: "close" },
+            { text: { type: "plain_text", text: "Reassign" }, value: "reassign" },
+          ],
+        },
+      },
+      {
+        type: "section",
+        block_id: "ticket_121",
+        text: { type: "mrkdwn", text: "*Export to CSV drops the last row*\nOpened today · Medium" },
+        accessory: {
+          type: "overflow",
+          action_id: "ticket_menu",
+          options: [
+            { text: { type: "plain_text", text: "Close" }, value: "close" },
+            { text: { type: "plain_text", text: "Reassign" }, value: "reassign" },
+          ],
+        },
+      },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "Last updated today" }],
+      },
+    ],
+  }}
+/>
+
+## Build your own
+
+<CardGroup cols={2}>
+  <Card title="Blocks" href="/blocks" icon="blocks">
+    Every block type, with its fields and live examples.
+  </Card>
+  <Card title="Elements" href="/elements" icon="mouse-pointer-click">
+    Buttons, selects, pickers and inputs, and where each one fits.
+  </Card>
+  <Card title="Block Kit editor in React" href="/guides/block-kit-editor" icon="square-pen">
+    Let your users edit a payload and see the preview update as they type.
+  </Card>
+  <Card title="Limits" href="/reference/limits" icon="ruler">
+    How many blocks, options and characters Slack accepts in each field.
+  </Card>
+</CardGroup>

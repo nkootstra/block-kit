@@ -1,7 +1,8 @@
 ---
-title: Introduction
+title: Block Kit for React
 description: Render Slack Block Kit JSON in React, pixel-for-pixel the way Slack does.
 sidebar:
+  label: Introduction
   order: 0
 seo:
   description: "Render Slack Block Kit JSON in React, pixel-for-pixel the way Slack does: messages, modals and Home tabs, with interactive elements and real action payloads."
@@ -57,7 +58,7 @@ Click a button: the log under the preview shows the action your `onAction` handl
 
 ## Why this exists
 
-Slack's [Block Kit Builder](https://app.slack.com/block-kit-builder) only runs inside Slack. When you want to show a message outside of it, such as in a preview in your admin panel, a gallery of templates, an approval queue in your own product, or a test harness for your bot, you'd otherwise have to rebuild Slack's layout rules by hand.
+Slack's [Block Kit Builder](https://app.slack.com/block-kit-builder) only runs inside Slack. When you want to show a message outside of it, such as in a preview in your admin panel, a gallery of templates, an approval queue in your own product, a [message editor for your users](/guides/block-kit-editor), or a test harness for your bot, you'd otherwise have to rebuild Slack's layout rules by hand.
 
 This package does that work for you:
 
@@ -75,6 +76,9 @@ This package does that work for you:
   <Card title="Quickstart" href="/quickstart" icon="rocket">
     Render your first message and handle a button click.
   </Card>
+  <Card title="Examples" href="/examples" icon="layout-template">
+    Approval requests, alerts, polls, forms and Home tabs, ready to copy.
+  </Card>
   <Card title="Blocks" href="/blocks" icon="blocks">
     Every block, with live examples you can copy.
   </Card>
@@ -86,6 +90,9 @@ This package does that work for you:
   </Card>
   <Card title="Reference" href="/reference" icon="library">
     The full API: provider props, components, hooks and payloads.
+  </Card>
+  <Card title="Block Kit editor" href="/guides/block-kit-editor" icon="square-pen">
+    Let your users edit Block Kit JSON and see the Slack preview as they type.
   </Card>
 </CardGroup>
 
