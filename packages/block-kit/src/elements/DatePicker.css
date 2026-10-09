@@ -54,8 +54,15 @@
 }
 
 .sbk-datepicker__toggle:focus-visible {
-  outline: 2px solid transparent;
+  outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-datepicker__toggle:focus-visible {
+    outline: 2px solid;
+  }
 }
 
 .sbk-datepicker__chevron {

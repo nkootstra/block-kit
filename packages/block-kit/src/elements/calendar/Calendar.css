@@ -112,8 +112,16 @@
 /* Measured in Block Kit Builder: the keyboard-focused day also carries Slack's focus ring. */
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
-  outline: 2px solid transparent;
+  outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-calendar__cell:focus-visible,
+  .sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
+    outline: 2px solid;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {

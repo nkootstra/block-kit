@@ -441,9 +441,25 @@ a.sbk-mention {
 .sbk-timepicker__control:focus-within,
 .sbk-datetimepicker__control:focus-visible,
 .sbk-datetimepicker__control[aria-expanded="true"] {
-  outline: 2px solid transparent;
+  outline: none;
   border-color: transparent;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-text-input:focus,
+  .sbk-rich-text-input:focus-within,
+  .sbk-datepicker__input:focus,
+  .sbk-datetimepicker__time-input:focus,
+  .sbk-select__control:focus-visible,
+  .sbk-select__control[aria-expanded="true"],
+  .sbk-select--typeable .sbk-select__control:focus-within,
+  .sbk-timepicker__control:focus-within,
+  .sbk-datetimepicker__control:focus-visible,
+  .sbk-datetimepicker__control[aria-expanded="true"] {
+    outline: 2px solid;
+  }
 }
 
 /* Slack's `p-block_kit_input_block--invalid`: an input block with an error turns its element's
@@ -475,8 +491,25 @@ a.sbk-mention {
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__clear:focus-visible,
 .sbk-link:focus-visible {
-  outline: 2px solid transparent;
+  outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-button:focus-visible,
+  .sbk-modal__button:focus-visible,
+  .sbk-overflow__button:focus-visible,
+  .sbk-file-input__button:focus-visible,
+  .sbk-icon-button:focus-visible,
+  .sbk-code-block__copy:focus-visible,
+  .sbk-carousel__arrow:focus-visible,
+  .sbk-calendar__nav:focus-visible,
+  .sbk-calendar__cell:focus-visible,
+  .sbk-calendar__clear:focus-visible,
+  .sbk-link:focus-visible {
+    outline: 2px solid;
+  }
 }
 
 /* Slack's `c-link--focus-visible:focus` drops the underline while the ring is up. */

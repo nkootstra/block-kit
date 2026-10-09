@@ -117,6 +117,13 @@
 }
 
 .sbk-rich-text-input__action:focus-visible {
-  outline: 2px solid transparent;
+  outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-rich-text-input__action:focus-visible {
+    outline: 2px solid;
+  }
 }

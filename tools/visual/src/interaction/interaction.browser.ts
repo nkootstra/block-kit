@@ -517,14 +517,15 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
       await tabTo(page, ".sbk-link");
       const s = await style(page, ".sbk-link");
+      expect(s.outlineStyle).toBe("none");
       expect(s.boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`)).toBe(true);
       expect(s.textDecorationLine).toBe("none");
     });
   });
 
   // Rings drawn with box-shadow vanish in forced-colours mode (Windows High Contrast), which drops
-  // shadows. A transparent outline paints nothing otherwise, and forced-colours mode paints it in
-  // the system colour, so keyboard focus stays visible there.
+  // shadows, so there the focused control draws an outline in the system colour instead. Everywhere
+  // else it keeps Slack's `outline: none`.
   describe("focus in forced-colours mode", () => {
     for (const [what, selector, mount] of [
       [
@@ -552,16 +553,16 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         },
       ],
     ] satisfies [string, string, Mount][]) {
-      it(`keeps a transparent outline on ${what} with keyboard focus`, async () => {
+      it(`draws no outline on ${what} normally, as Slack, and a solid one in forced colours`, async () => {
         const page = await harness.open(mount);
         // A select's control or the field inside it takes focus; the control draws the ring.
         await tabTo(page, `${selector}, ${selector} *`);
+        expect((await style(page, selector)).outlineStyle).toBe("none");
+        await page.emulateMedia({ forcedColors: "active" });
+        // Not every engine can emulate forced colours; where it can't, the media query never applies.
+        if (!(await page.evaluate(() => matchMedia("(forced-colors: active)").matches))) return;
         const s = await style(page, selector);
-        expect([s.outlineStyle, s.outlineWidth, s.outlineColor]).toEqual([
-          "solid",
-          "2px",
-          "rgba(0, 0, 0, 0)",
-        ]);
+        expect([s.outlineStyle, s.outlineWidth]).toEqual(["solid", "2px"]);
       });
     }
   });
