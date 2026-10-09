@@ -4474,11 +4474,12 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
     }
 
-    // catalog/data-visualization/*@mobile: Slack keeps a chart card 400px wide in a 320px block.
-    // The card runs past the message, which cuts it off, so the last category ("Fri") is out of
-    // view; the plot inside is laid out as at 400px (bar-single-series@mobile: "Mon" centred
-    // 104px into the 374px plot, 117px from the card's edge).
-    it("keeps a chart card 400px wide in a narrow message, cut off by the message", async () => {
+    // catalog/data-visualization/*@mobile: Slack keeps a chart card 400px wide in a 320px block,
+    // inside a scroller as wide as the block (its scrollContainer: overflow auto, max-width 100%).
+    // The last category ("Fri") starts out of view and scrolls into it; the plot inside is laid
+    // out as at 400px (bar-single-series@mobile: "Mon" centred 104px into the 374px plot, 117px
+    // from the card's edge).
+    it("keeps a chart card 400px wide in a narrow message and scrolls it sideways", async () => {
       const page = await harness.open(
         await fixture("catalog/data-visualization/bar-single-series"),
         {
@@ -4505,6 +4506,24 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         };
       });
       expect(geometry).toEqual({ width: 400, mon: 117, friVisible: false, pageScrolls: false });
+      const scrolled = await page.evaluate(() => {
+        const block = document.querySelector(".sbk-block")!.getBoundingClientRect();
+        const scroller = document.querySelector<HTMLElement>(".sbk-dataviz-scroll")!;
+        scroller.scrollLeft = scroller.scrollWidth;
+        const fri = [...document.querySelectorAll(".sbk-chart__tick")]
+          .find((t) => t.textContent === "Fri")!
+          .getBoundingClientRect();
+        return {
+          scroller: [Math.round(scroller.clientWidth), scroller.scrollWidth],
+          blockWidth: Math.round(block.width),
+          friVisible: fri.x + fri.width / 2 < block.right,
+        };
+      });
+      expect(scrolled).toEqual({
+        scroller: [scrolled.blockWidth, 400],
+        blockWidth: scrolled.blockWidth,
+        friVisible: true,
+      });
     });
 
     // catalog/data-visualization/pie-*@mobile: the plot narrows to 374px but stays 360px tall,

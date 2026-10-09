@@ -63,41 +63,48 @@ export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>)
   const rows = chartTable(chart, categories);
 
   // The actions hang off a frame as wide as the block, not off the card: in a narrow message the
-  // card stays 400px and runs past the message edge, which would cut its menu button off.
+  // card stays 400px and scrolls inside a block-wide scroller, which would take its menu button
+  // along out of view.
   return (
     <div className="sbk-dataviz-frame sbk-hover-actions-host">
-      <div className="sbk-dataviz">
-        {block.title ? <h3 className="sbk-dataviz__title">{block.title}</h3> : null}
-        <div className={isPie ? "sbk-dataviz__body sbk-dataviz__body--pie" : "sbk-dataviz__body"}>
-          {!isPie && chart.axis_config?.y_label ? (
-            <div className="sbk-dataviz__y-label">{chart.axis_config.y_label}</div>
-          ) : null}
-          {chart.type === "pie" ? (
-            <PieChart segments={chart.segments ?? []} />
-          ) : (
-            <CartesianChart type={chart.type} series={chart.series ?? []} categories={categories} />
-          )}
-        </div>
-        {!isPie && chart.axis_config?.x_label ? (
-          <div className="sbk-dataviz__x-label">{chart.axis_config.x_label}</div>
-        ) : null}
-        {legend.length > 0 ? (
-          <div
-            className={
-              isPie ? "sbk-dataviz__legend sbk-dataviz__legend--pie" : "sbk-dataviz__legend"
-            }
-          >
-            {legend.map((entry) => (
-              <span key={entry.name} className="sbk-dataviz__legend-entry">
-                <span
-                  className="sbk-dataviz__legend-dot"
-                  style={{ backgroundColor: entry.color }}
-                />
-                {entry.name}
-              </span>
-            ))}
+      <div className="sbk-dataviz-scroll">
+        <div className="sbk-dataviz">
+          {block.title ? <h3 className="sbk-dataviz__title">{block.title}</h3> : null}
+          <div className={isPie ? "sbk-dataviz__body sbk-dataviz__body--pie" : "sbk-dataviz__body"}>
+            {!isPie && chart.axis_config?.y_label ? (
+              <div className="sbk-dataviz__y-label">{chart.axis_config.y_label}</div>
+            ) : null}
+            {chart.type === "pie" ? (
+              <PieChart segments={chart.segments ?? []} />
+            ) : (
+              <CartesianChart
+                type={chart.type}
+                series={chart.series ?? []}
+                categories={categories}
+              />
+            )}
           </div>
-        ) : null}
+          {!isPie && chart.axis_config?.x_label ? (
+            <div className="sbk-dataviz__x-label">{chart.axis_config.x_label}</div>
+          ) : null}
+          {legend.length > 0 ? (
+            <div
+              className={
+                isPie ? "sbk-dataviz__legend sbk-dataviz__legend--pie" : "sbk-dataviz__legend"
+              }
+            >
+              {legend.map((entry) => (
+                <span key={entry.name} className="sbk-dataviz__legend-entry">
+                  <span
+                    className="sbk-dataviz__legend-dot"
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  {entry.name}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
       <ChartActions rows={rows} title={block.title} onViewTable={() => setTableOpen(true)} />
       {tableOpen ? (
