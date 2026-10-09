@@ -4534,6 +4534,14 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       });
       expect(pie).toEqual({ size: [374, 360], viewBox: "0 0 374 360", centre: 187, top: 36 });
     });
+
+    // extra/context/mixed@mobile: a context block that wraps in a 320px block stacks its rows with
+    // no gap, a 25px row holding images on a 22px text row (Slack's p-context_block is 47px).
+    it("stacks a wrapped context block's rows without a gap on a phone", async () => {
+      const page = await harness.open(await fixture("extra/context/mixed"), { viewport: PHONE });
+      const context = await page.locator(".sbk-context").first().boundingBox();
+      expect(Math.round(context!.height)).toBe(47);
+    });
   });
 
   // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop

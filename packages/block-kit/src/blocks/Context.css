@@ -1,10 +1,9 @@
 /* Slack sets each element in a 15px/22px line box around 13px/18px text; an image sits on that
-   line's baseline, which stretches a row holding one to 25px. */
+   line's baseline, which stretches a row holding one to 25px. Wrapped rows stack with no gap. */
 .sbk-context {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  row-gap: 4px;
   margin: 4px 0;
   font-size: 15px;
   line-height: 22px;
