@@ -2,7 +2,7 @@
   "blocks": [
     {
       "type": "image",
-      "image_url": "https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg",
+      "image_url": "https://cdn.block-kit.dev/samples/tacos.271c2dbf.jpg",
       "alt_text": "delicious tacos"
     }
   ]

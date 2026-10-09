@@ -4,7 +4,8 @@
     "package.json",
     "bun.lock",
     "tsconfig.base.json",
-    "fixtures/**/*.actions.json"
+    "fixtures/**/*.actions.json",
+    "fixtures/assets/samples/**"
   ],
   "tasks": {
     "build": {

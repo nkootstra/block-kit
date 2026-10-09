@@ -47,8 +47,7 @@ describe("renderer", () => {
     }
   });
 
-  it("gives two renderers the same remote images, even from a host that randomizes them", async () => {
-    // picsum.photos answers every request with a different photo.
+  it("gives two renderers the same remote images", async () => {
     const card = await fixture("catalog/card-and-carousel/card");
     const other = await createRenderer(join(ROOT, "packages/block-kit"));
     try {

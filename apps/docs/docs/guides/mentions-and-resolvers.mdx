@@ -41,7 +41,7 @@ const resolvers: Resolvers = {
           name: "Ada Lovelace",
           title: "Staff Engineer",
           pronouns: "she/her",
-          avatarUrl: "https://api.slack.com/img/blocks/bkb_template_images/beagle.png",
+          avatarUrl: "https://cdn.block-kit.dev/samples/beagle.e3711bc4.jpg",
           status: { emoji: "palm_tree", text: "On vacation" },
           timeZone: "Europe/Amsterdam",
         }
@@ -76,6 +76,11 @@ const resolvers: Resolvers = {
       type: "(file: { id?: string; url?: string }) => { url: string; size?: number } | undefined",
       description:
         "A slack_file image's loadable URL and its size in bytes, e.g. from files.info. The image block and image element show it like an image_url, with Slack's \"(400 kB)\" caption (decimal kilobytes) when the size is known; an image block's file shows at most 400 x 400. Without it, an image block shows the alt-text placeholder.",
+    },
+    imageSize: {
+      type: "(url: string) => number | undefined",
+      description:
+        "An image_url image block's size in bytes, shown as Slack's \"(72 kB)\" caption beside the caret. Slack shows the size of the image it downloaded; block-kit doesn't download it, so without this the caption is left out.",
     },
     directory: {
       type: '(source: "users" | "conversations" | "channels") => DirectoryEntry[] | undefined',

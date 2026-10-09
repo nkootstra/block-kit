@@ -3,6 +3,7 @@ import type { BunPlugin } from "bun";
 import { type Browser, type BrowserContext, chromium } from "playwright";
 import { inlineFonts } from "./fonts";
 import { readPayload } from "./payload";
+import { loadImage } from "../samples";
 import { imageSize, placeholderSvg } from "./placeholder";
 
 export type Theme = "light" | "dark";
@@ -104,8 +105,9 @@ const EMOJI =
 
 /**
  * A render loads nothing from the network as is, emoji aside. An image is replaced by a placeholder
- * of the same size (placeholder.ts); the real image is only fetched to read that size. Every
- * response is fetched once per process, so every renderer gets the same answer. Anything else, and
+ * of the same size (placeholder.ts); the real image is only loaded to read that size, a sample's
+ * from its committed copy (samples.ts) and anything else from the network. Every response is
+ * loaded once per process, so every renderer gets the same answer. Anything else, and
  * an image whose size is unknown, is a 404.
  */
 const responses = new Map<string, Promise<Response>>();
@@ -115,10 +117,10 @@ const serveFromCache: Parameters<BrowserContext["route"]>[1] = async (route) => 
   const url = route.request().url();
   let response = responses.get(url);
   if (!response) {
-    response = fetch(url)
-      .then(async (res) => {
-        if (!res.ok) return NOT_FOUND;
-        const bytes = new Uint8Array(await res.arrayBuffer());
+    response = loadImage(url)
+      .then((image): Response => {
+        if (!image) return NOT_FOUND;
+        const bytes = image.body;
         if (EMOJI.test(url))
           return { status: 200, body: Buffer.from(bytes), contentType: "image/png" };
         const size = imageSize(bytes);

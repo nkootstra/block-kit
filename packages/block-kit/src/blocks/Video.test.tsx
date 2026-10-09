@@ -11,10 +11,10 @@ const block = {
   description: { type: "plain_text", text: "Slack is a new way to communicate." },
   video_url: "https://www.youtube.com/embed/RRxQQxiM7AA",
   alt_text: "How to use Slack?",
-  thumbnail_url: "https://i.ytimg.com/vi/RRxQQxiM7AA/hqdefault.jpg",
+  thumbnail_url: "https://cdn.block-kit.dev/samples/video-thumbnail.d894bef5.jpg",
   author_name: "Arcado Buendia",
   provider_name: "YouTube",
-  provider_icon_url: "https://a.slack-edge.com/img/unfurl_icons/youtube.png",
+  provider_icon_url: "https://cdn.block-kit.dev/samples/play-icon.24cf386c.png",
 };
 
 describe("<Video>", () => {

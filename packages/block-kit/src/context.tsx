@@ -84,6 +84,12 @@ export interface Resolvers {
    */
   slackFile?: (file: { id?: string; url?: string }) => ResolvedSlackFile | undefined;
   /**
+   * An `image_url` image block's size in bytes, for Slack's "(N kB)" caption. Slack shows the size
+   * of the image it downloaded (not the payload's `image_bytes`); the library doesn't download it,
+   * so without this the caption is left out.
+   */
+  imageSize?: (url: string) => number | undefined;
+  /**
    * The people and channels a users, conversations or channels select lists when it opens, the way
    * Slack lists the workspace's members and channels, in the order to show them. The select filters
    * them by what's typed. Without it the list stays empty, and typing an ID and pressing Enter picks

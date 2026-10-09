@@ -8,7 +8,7 @@
       },
       "accessory": {
         "type": "image",
-        "image_url": "https://s3-media3.fl.yelpcdn.com/bphoto/c7ed05m9lC2EmA3Aruue7A/o.jpg",
+        "image_url": "https://cdn.block-kit.dev/samples/dinner-table.b8f41094.jpg",
         "alt_text": "alt text for image"
       }
     },
@@ -26,7 +26,7 @@
     {
       "type": "image",
       "title": { "type": "plain_text", "text": "Please enjoy this photo of a kitten" },
-      "image_url": "https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg",
+      "image_url": "https://cdn.block-kit.dev/samples/cat.da842b96.jpg",
       "alt_text": "An incredibly cute kitten."
     }
   ]

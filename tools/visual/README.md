@@ -28,6 +28,12 @@ bun run compare
 
 Open `test-results/visual/index.html` for side-by-side reference / ours / diff images.
 
+Fixtures only show sample images from `cdn.block-kit.dev/samples/` (see
+[`fixtures/assets/samples/CREDITS.md`](../../fixtures/assets/samples/CREDITS.md)). The comparison,
+the renderer and the interaction tests serve them from `fixtures/assets/samples/`
+(`src/samples.ts`), also when a reference loads them through Slack's `slack-imgs.com` proxy, so
+they never download them.
+
 ## Text runs
 
 The pixel diff scores a whole fixture with a per-pixel threshold, so it can't see a colour a few RGB
@@ -251,6 +257,9 @@ it up to date, and `bun run references:check` (part of CI) fails when:
   Kit Builder refused the payload and kept showing the previous one, while the snapshot still
   recorded the refused payload from the URL. The same goes for a reference that shows not one word
   of its own payload's sentences (a confirm dialog's text aside, which waits for a click).
+
+It also fails when a fixture, a doc, the landing page, the playground or a package test shows an
+image that isn't a committed sample on `cdn.block-kit.dev` or on a placeholder host.
 
 A fixture without a reference is listed but doesn't fail; it just isn't compared yet.
 

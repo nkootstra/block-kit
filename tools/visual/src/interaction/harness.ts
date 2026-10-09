@@ -2,6 +2,7 @@ import { join, resolve } from "node:path";
 import { type Browser, type BrowserType, chromium, firefox, type Page, webkit } from "playwright";
 import { inlineFonts } from "../render/fonts";
 import { bundle } from "../render/renderer";
+import { routeSamples } from "../samples";
 
 /** What to draw: a message's blocks, or a modal or Home tab view. */
 export interface Mount {
@@ -54,7 +55,11 @@ export interface Harness {
   close(): Promise<void>;
 }
 
-/** Draws payloads with this checkout's library in one engine. Nothing is loaded from the network. */
+/**
+ * Draws payloads with this checkout's library in one engine. Nothing is loaded from the network: a
+ * sample image (cdn.block-kit.dev/samples/) is served from fixtures/assets/samples/, anything else
+ * is a 404.
+ */
 export async function createHarness(engine: Engine): Promise<Harness> {
   const [script, style] = await pageAssets();
   const browser: Browser = await ENGINES[engine].launch();
@@ -71,6 +76,8 @@ export async function createHarness(engine: Engine): Promise<Harness> {
       });
       pages.push(page);
       await page.route(/^https?:/, (route) => route.fulfill({ status: 404, body: "" }));
+      // Sample images come from their committed copies; registered last, so it's tried first.
+      await routeSamples(page);
       await page.setContent(`<!doctype html><style>${style}</style><div id="root"></div>`);
       await page.addScriptTag({ content: script });
       await page.evaluate((m) => window.mountBlockKit(m), mount);
