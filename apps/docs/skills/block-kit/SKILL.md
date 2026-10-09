@@ -112,6 +112,10 @@ loadable URL and its size in bytes (shown as Slack's "(400 kB)", decimal kilobyt
 draws a resolved file at most 400 x 400, as Slack does, and without a resolver shows its alt-text
 placeholder.
 
+`imageSize: (url) => bytes` gives an `image_url` image block's size for the same caption; Slack
+shows the size of the image it downloaded, and block-kit doesn't download it, so without this the
+caption is left out.
+
 `directory: (source) => entries` lists the people and channels a users, conversations or channels
 select offers (`source` is `"users"`, `"conversations"` or `"channels"`), drawn as Slack's rows:
 `{ type: "user", id, name, realName?, avatarUrl?, self?, badge?, bot?, presence? }` or

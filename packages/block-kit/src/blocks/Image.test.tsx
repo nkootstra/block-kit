@@ -96,6 +96,52 @@ describe("<Image>", () => {
     expect(container.querySelector(".sbk-image__title")).toBeNull();
   });
 
+  describe("an image_url's size, through resolvers.imageSize", () => {
+    // Block Kit Builder shows the size of the image it fetched: "(72 kB)" for a 71,861-byte
+    // photo (catalog/image/title), whatever the payload's image_bytes says.
+    it("shows Slack's (N kB) caption beside the caret", () => {
+      const resolvers: Resolvers = {
+        imageSize: (url) => (url === "https://example.com/tacos.jpg" ? 71_861 : undefined),
+      };
+      const block = { type: "image", image_url: "https://example.com/tacos.jpg", alt_text: "x" };
+      const { container } = render(
+        <BlockKitProvider resolvers={resolvers}>
+          <Image block={block as never} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("(72 kB)");
+    });
+
+    // Slack's caption reads " (72 kB)": the space separates it from a title and collapses at the
+    // start of the row when there's none (catalog/image/title and no-title).
+    it("separates the caption from the title with a space, as Slack does", () => {
+      const resolvers: Resolvers = { imageSize: () => 71_861 };
+      const block = {
+        type: "image",
+        title: { type: "plain_text", text: "I love tacos" },
+        image_url: "https://example.com/tacos.jpg",
+        alt_text: "x",
+      };
+      const { container } = render(
+        <BlockKitProvider resolvers={resolvers}>
+          <Image block={block as never} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      expect(container.querySelector(".sbk-image__trigger")?.textContent).toMatch(/^ \(72 kB\)/);
+    });
+
+    it("leaves the caption out for an image the resolver doesn't know", () => {
+      const resolvers: Resolvers = { imageSize: () => undefined };
+      const block = { type: "image", image_url: "https://example.com/other.jpg", alt_text: "x" };
+      const { container } = render(
+        <BlockKitProvider resolvers={resolvers}>
+          <Image block={block as never} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("");
+    });
+  });
+
   describe("slack_file, through resolvers.slackFile", () => {
     const resolvers: Resolvers = {
       slackFile: (file) =>

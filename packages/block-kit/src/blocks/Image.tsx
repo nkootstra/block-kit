@@ -39,9 +39,9 @@ function ExpandCaret({ expanded }: { expanded: boolean }) {
  * fallback shows instead (alt text in a placeholder box) rather than a broken `<img>`.
  *
  * Slack always shows a title row above the image with an expand caret and a "(N kB)" file-size
- * caption, the size coming from the file's bytes. We show it when the resolver gives a size; for
- * an `image_url` we can't know the size without a network round-trip, so the row keeps its
- * height and spacing without it.
+ * caption, the size coming from the file's bytes. We show it when a resolver gives the size
+ * (`slackFile` for a workspace file, `imageSize` for an `image_url`); we don't download the image
+ * to measure it, so without one the row keeps its height and spacing without the caption.
  *
  * Slack draws a workspace file from its 800px thumbnail at 2x, so a resolved `slack_file` shows at
  * most 400 x 400; an `image_url` fills the message's width.
@@ -65,6 +65,7 @@ export function Image({ block }: BlockProps<ImageBlock>) {
     toggleRef.current?.focus();
   };
   const isFile = directUrl === undefined && imageUrl !== undefined;
+  const size = directUrl !== undefined ? resolvers.imageSize?.(directUrl) : resolved?.size;
 
   return (
     <figure className={isFile ? "sbk-image sbk-image--file" : "sbk-image"}>
@@ -76,7 +77,7 @@ export function Image({ block }: BlockProps<ImageBlock>) {
             </span>
           )}
           <span className="sbk-image__trigger">
-            {resolved?.size !== undefined && `(${formatFileSize(resolved.size)})`}{" "}
+            {size !== undefined && ` (${formatFileSize(size)})`}{" "}
             <button
               ref={toggleRef}
               type="button"
