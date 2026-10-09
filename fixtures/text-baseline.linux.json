@@ -140,18 +140,18 @@
     "extra|, in progress|0"
   ],
   "catalog/callout/callout": [
-    "missing|(2 MB)|0",
+    "missing|(208 kB)|0",
     "missing|Workspace|0",
     "extra|Contact|0"
   ],
   "catalog/callout/callout@dark": [
-    "missing|(2 MB)|0",
+    "missing|(208 kB)|0",
     "missing|Workspace|0",
     "extra|Contact|0"
   ],
   "catalog/callout/callout@mobile": [
-    "missing|(2 MB)|0",
-    "missing|Workspace|0",
+    "missing|(208 kB)|0",
+    "missing|This content could not be displayed.|0",
     "extra|Contact|0"
   ],
   "catalog/card-and-carousel/card": [],
@@ -363,31 +363,31 @@
     "y|Free|0"
   ],
   "catalog/image/no-title": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/no-title@dark": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/no-title@hidden": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/no-title@mobile": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/slack-image": [],
   "catalog/image/slack-image@dark": [],
   "catalog/image/slack-image@mobile": [],
   "catalog/image/title": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/title@dark": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/title@hidden": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/image/title@mobile": [
-    "missing|(71 kB)|0"
+    "missing|(72 kB)|0"
   ],
   "catalog/input/checkboxes": [],
   "catalog/input/checkboxes@dark": [],
@@ -1189,12 +1189,12 @@
     "extra|const answer = 42; console.log(answer < 100);|0"
   ],
   "message/section-accessory": [
-    "missing|(14 kB)|0"
+    "missing|(41 kB)|0"
   ],
   "message/section-accessory@dark": [
-    "missing|(14 kB)|0"
+    "missing|(41 kB)|0"
   ],
   "message/section-accessory@mobile": [
-    "missing|(14 kB)|0"
+    "missing|(41 kB)|0"
   ]
 }
