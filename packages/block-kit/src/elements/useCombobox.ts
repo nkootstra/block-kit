@@ -194,6 +194,7 @@ export function useCombobox({
     setOpen,
     onKeyDown,
     listId,
+    optionId,
     inputRef,
     inputProps,
     optionProps,
