@@ -68,7 +68,7 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-modal__close:hover {
     background: var(--sbk-icon-button-hover-bg);
   }
@@ -100,7 +100,7 @@
   border-radius: 4px;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-modal__body:hover::-webkit-scrollbar-thumb {
     background-color: rgba(29, 28, 29, 0.52);
   }
@@ -150,7 +150,7 @@
 }
 
 /* Same `c-button` hover model as elements/Button.css. */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-modal__button:hover {
     box-shadow: var(--sbk-button-hover-shadow);
   }
@@ -171,14 +171,14 @@
   background-blend-mode: multiply;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-modal__button--primary:hover {
     background-image: linear-gradient(var(--sbk-button-overlay), var(--sbk-button-overlay));
     background-blend-mode: multiply;
   }
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-modal__button--primary:hover {
     --sbk-button-overlay: #0a403221;
   }
@@ -192,7 +192,7 @@
   background-color: var(--sbk-button-hover-bg);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-modal__button--secondary:hover {
     background-color: var(--sbk-button-hover-bg);
   }
@@ -260,7 +260,6 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  animation: sbk-overlay-fade-in 80ms linear;
 }
 
 @keyframes sbk-overlay-fade-in {
@@ -269,9 +268,9 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: no-preference) {
   .sbk-modal-layer::before {
-    animation: none;
+    animation: sbk-overlay-fade-in 80ms linear;
   }
 }
 

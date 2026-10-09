@@ -25,6 +25,7 @@
   pointer-events: none;
 }
 
+/* Not scoped to hovering pointers: on a touch screen a tap is the only way to reveal the actions. */
 .sbk-hover-actions-host:hover > .sbk-hover-actions,
 .sbk-hover-actions-host:focus-within > .sbk-hover-actions,
 .sbk-hover-actions:has([aria-expanded="true"]) {
@@ -69,7 +70,7 @@ a.sbk-hover-actions__button {
   color: var(--sbk-text);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-hover-actions__button:hover {
     background: var(--sbk-row-hover-bg);
     color: var(--sbk-text);
@@ -79,6 +80,13 @@ a.sbk-hover-actions__button {
 .sbk-hover-actions__button:focus-visible {
   outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-hover-actions__button:focus-visible {
+    outline: 2px solid;
+  }
 }
 
 /* Slack's "More actions" `c-menu` is 300px wide; the overflow menu's is 250px. */

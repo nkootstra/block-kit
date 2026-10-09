@@ -112,6 +112,13 @@
   box-shadow: var(--sbk-focus-shadow);
 }
 
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-plan__task:focus-visible {
+    outline: 2px solid;
+  }
+}
+
 .sbk-plan__step {
   display: flex;
   flex: 0 0 12px;
@@ -217,7 +224,7 @@ div.sbk-plan__task-header {
   text-decoration: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-plan__task-source-link:hover {
     text-decoration: underline;
   }

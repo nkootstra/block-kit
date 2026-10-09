@@ -258,6 +258,7 @@
   overflow: hidden;
 }
 
+/* Focus rests on the dialog itself only so its keys work; the close button shows keyboard focus. */
 .sbk-chart-table:focus {
   outline: none;
 }
@@ -295,7 +296,7 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-chart-table__close:hover {
     background: var(--sbk-icon-button-hover-bg);
   }
@@ -304,6 +305,13 @@
 .sbk-chart-table__close:focus-visible {
   outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-chart-table__close:focus-visible {
+    outline: 2px solid;
+  }
 }
 
 .sbk-chart-table__content {

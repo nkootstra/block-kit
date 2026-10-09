@@ -12,7 +12,7 @@
 }
 
 /* Slack's pillow file card: the border firms up and a soft shadow appears under the pointer. */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-file:hover {
     border-color: rgba(94, 93, 96, 0.45);
     box-shadow: rgba(0, 0, 0, 0.047) 0 1px 2px;

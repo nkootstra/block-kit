@@ -26,7 +26,7 @@
   background-color: var(--sbk-surface-sec);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-timepicker__control:hover .sbk-timepicker__chevron {
     color: var(--sbk-text);
   }
@@ -52,7 +52,7 @@
   text-overflow: ellipsis;
   background: transparent;
   border: 0;
-  outline: none;
+  outline: none; /* the field around it draws the focus ring */
   cursor: inherit;
 }
 

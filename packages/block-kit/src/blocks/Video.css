@@ -43,7 +43,7 @@
   text-decoration: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-video__title a:hover {
     text-decoration: underline;
   }
@@ -85,7 +85,7 @@
   opacity: 1;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-video__frame:hover::before {
     opacity: 1;
   }

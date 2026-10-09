@@ -89,7 +89,6 @@
   flex: 0 0 auto;
   align-items: center;
   margin-left: 8px;
-  transition: transform 0.16s cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
 .sbk-container__chevron--collapsed {
@@ -102,14 +101,13 @@
 
 /* Builder's `containerBlockContent` slides open and shut faster than plan and task_card, on the
    same curve as the chevron. */
-.sbk-collapse.sbk-container__collapse {
-  transition: height 0.16s cubic-bezier(0.36, 0.19, 0.29, 1);
-}
+@media (prefers-reduced-motion: no-preference) {
+  .sbk-container__chevron {
+    transition: transform 0.16s cubic-bezier(0.36, 0.19, 0.29, 1);
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  .sbk-container__chevron,
   .sbk-collapse.sbk-container__collapse {
-    transition: none;
+    transition: height 0.16s cubic-bezier(0.36, 0.19, 0.29, 1);
   }
 }
 

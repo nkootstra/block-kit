@@ -15,7 +15,6 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  animation: sbk-confirm-dim-in 80ms linear;
 }
 
 /* The box fades in while growing from 95%, on Slack's curve. */
@@ -30,7 +29,6 @@
     0 18px 48px rgba(0, 0, 0, 0.35);
   font-family: var(--sbk-font);
   color: var(--sbk-text);
-  animation: sbk-confirm-enter 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
 @keyframes sbk-confirm-dim-in {
@@ -46,10 +44,13 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .sbk-confirm__overlay::before,
+@media (prefers-reduced-motion: no-preference) {
+  .sbk-confirm__overlay::before {
+    animation: sbk-confirm-dim-in 80ms linear;
+  }
+
   .sbk-confirm {
-    animation: none;
+    animation: sbk-confirm-enter 80ms cubic-bezier(0.36, 0.19, 0.29, 1);
   }
 }
 
@@ -88,7 +89,7 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-confirm__close:hover {
     background: var(--sbk-icon-button-hover-bg);
   }
@@ -123,7 +124,7 @@
   transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-confirm__button--deny:hover {
     background-color: var(--sbk-button-hover-bg);
   }

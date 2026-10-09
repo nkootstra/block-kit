@@ -60,7 +60,7 @@
   font: 15px / 22px var(--sbk-font);
   color: var(--sbk-text);
   overflow-y: auto;
-  outline: none;
+  outline: none; /* the field around it draws the focus ring */
 }
 
 /* Slack's `ql-placeholder`: a line of text over the empty editor, cut off with an ellipsis. */
@@ -119,4 +119,11 @@
 .sbk-rich-text-input__action:focus-visible {
   outline: none;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-rich-text-input__action:focus-visible {
+    outline: 2px solid;
+  }
 }

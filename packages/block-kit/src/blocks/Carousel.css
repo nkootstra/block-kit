@@ -42,11 +42,20 @@
     rgba(0, 0, 0, 0.098) 0px 1px 3px 0px,
     rgba(0, 0, 0, 0.098) 0px 1px 2px -1px;
   cursor: pointer;
-  /* Slack's `p-gallery_scroller__arrow`: `transition: 80ms ease-out`, every property. */
-  transition: 80ms ease-out;
+  /* Slack's `p-gallery_scroller__arrow`: `transition: 80ms ease-out` on every property; the arrow
+     only changes its transform and opacity. The fade stays when motion is reduced. */
+  transition: opacity 80ms ease-out;
 }
 
-@media (hover: hover) {
+@media (prefers-reduced-motion: no-preference) {
+  .sbk-carousel__arrow {
+    transition:
+      transform 80ms ease-out,
+      opacity 80ms ease-out;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
   .sbk-carousel__arrow:hover {
     transform: translateY(-16px) scale(1.1);
   }
@@ -65,11 +74,4 @@
 
 .sbk-carousel__arrow--right {
   right: 12px;
-}
-
-/* The arrows scale up on hover and shrink away at either end; without motion they just switch. */
-@media (prefers-reduced-motion: reduce) {
-  .sbk-carousel__arrow {
-    transition: none;
-  }
 }

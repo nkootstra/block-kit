@@ -279,7 +279,7 @@
   padding: 0 2px 1px;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-mention:hover {
     color: var(--sbk-mention-hover-text);
     background: var(--sbk-mention-hover-bg);
@@ -352,7 +352,12 @@ a.sbk-mention {
 .sbk-collapse {
   display: flow-root;
   overflow: clip;
-  transition: height 0.25s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sbk-collapse {
+    transition: height 0.25s;
+  }
 }
 
 /* Slack's c-infinite_spinner. */
@@ -441,6 +446,22 @@ a.sbk-mention {
   box-shadow: var(--sbk-focus-shadow);
 }
 
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-text-input:focus,
+  .sbk-rich-text-input:focus-within,
+  .sbk-datepicker__input:focus,
+  .sbk-datetimepicker__time-input:focus,
+  .sbk-select__control:focus-visible,
+  .sbk-select__control[aria-expanded="true"],
+  .sbk-select--typeable .sbk-select__control:focus-within,
+  .sbk-timepicker__control:focus-within,
+  .sbk-datetimepicker__control:focus-visible,
+  .sbk-datetimepicker__control[aria-expanded="true"] {
+    outline: 2px solid;
+  }
+}
+
 /* Slack's `p-block_kit_input_block--invalid`: an input block with an error turns its element's
    focus ring red. `Input` marks the element's control `aria-invalid` while the error shows. */
 .sbk-text-input[aria-invalid="true"]:focus,
@@ -474,13 +495,30 @@ a.sbk-mention {
   box-shadow: var(--sbk-focus-shadow);
 }
 
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-button:focus-visible,
+  .sbk-modal__button:focus-visible,
+  .sbk-overflow__button:focus-visible,
+  .sbk-file-input__button:focus-visible,
+  .sbk-icon-button:focus-visible,
+  .sbk-code-block__copy:focus-visible,
+  .sbk-carousel__arrow:focus-visible,
+  .sbk-calendar__nav:focus-visible,
+  .sbk-calendar__cell:focus-visible,
+  .sbk-calendar__clear:focus-visible,
+  .sbk-link:focus-visible {
+    outline: 2px solid;
+  }
+}
+
 /* Slack's `c-link--focus-visible:focus` drops the underline while the ring is up. */
 .sbk-link:focus-visible {
   text-decoration: none;
 }
 
 /* Keyboard focus shouldn't also paint the pointer's hover shadow on outline buttons. */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-button:focus-visible:hover,
   .sbk-overflow__button:focus-visible:hover {
     box-shadow: var(--sbk-focus-shadow);
@@ -488,14 +526,11 @@ a.sbk-mention {
 }
 
 /* Slack's menus and popovers open and close instantly (no transition on `c-menu` /
-   `c-popover`), so the motion to tone down is the spinner and the plan/task_card slide. */
+   `c-popover`). Slides run only when motion isn't reduced (.sbk-collapse above); the spinner keeps
+   turning, since it shows that something is loading, but more slowly. */
 @media (prefers-reduced-motion: reduce) {
   .sbk-spinner__arc {
     animation-duration: 2.4s;
-  }
-
-  .sbk-collapse {
-    transition: none;
   }
 }
 

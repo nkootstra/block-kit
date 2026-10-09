@@ -22,7 +22,7 @@
   background-color: var(--sbk-icon-button-hover-bg);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .sbk-icon-button:hover {
     color: var(--sbk-text);
     background-color: var(--sbk-icon-button-hover-bg);
