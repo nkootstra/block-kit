@@ -166,6 +166,8 @@ These props, and `resolvers`, are functions:
 - **Hover menus on charts, images and tables** act in the page only, as in Slack, and never call
   `onAction`: a chart's View as table (a modal) and Download chart data (a `.tsv`), with Copy as
   image disabled; an image's Copy link and Hide image; a table's Copy table and Download table.
+- **Charts** are never narrower than 400px, as in Slack: in a narrower message the card runs
+  past the message, which cuts it off (the page doesn't scroll sideways).
 - **Unknown block types** render the block's `fallback` array in their place when it has one.
 
 ## Entry points
