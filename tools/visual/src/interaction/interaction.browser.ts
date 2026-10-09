@@ -2760,6 +2760,31 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
       }).toEqual({ right: 0, gap: -4 });
     });
 
+    // contexts/datepicker/{modal-input,home}@open: the medium field (modals, App Home) opens
+    // Slack's dropdown with its right edge 4px inside the field's, where the small one lines up.
+    it("opens 4px inside a medium field's right edge, in a modal", async () => {
+      const page = await harness.open({
+        view: {
+          type: "modal",
+          title: plain("Picker"),
+          blocks: [
+            {
+              type: "input",
+              label: plain("Label"),
+              element: { type: "datepicker", action_id: "d", initial_date: "1990-04-28" },
+            },
+          ],
+        },
+      });
+      await page.click(".sbk-datepicker__input");
+      const field = (await page.locator(".sbk-datepicker").boundingBox())!;
+      const popup = (await page.locator(POPUP).boundingBox())!;
+      expect({
+        right: Math.round(popup.x + popup.width - (field.x + field.width)),
+        gap: Math.round(popup.y - (field.y + field.height)),
+      }).toEqual({ right: -4, gap: -4 });
+    });
+
     // Slack's calendar keeps room for six weeks (`min-height: 340px`), so a five-week month like
     // April 1990 opens at the same 349 x 372 as any other.
     it("opens at Slack's 349 x 372, with room for six weeks", async () => {

@@ -184,6 +184,8 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
         <CalendarPopover
           anchorRef={rootRef}
           popupRef={popupRef}
+          // Slack's medium field opens its dropdown 4px inside its right edge; the small one lines up.
+          offsetX={medium ? -4 : undefined}
           value={date}
           onSelect={pick}
           // Slack offers "Clear selection" only where the date may be left empty.
