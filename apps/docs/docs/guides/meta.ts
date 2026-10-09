@@ -17,5 +17,6 @@ export default defineMeta({
     "mrkdwn",
     "validation",
     "server-rendering",
+    "block-kit-editor",
   ],
 });

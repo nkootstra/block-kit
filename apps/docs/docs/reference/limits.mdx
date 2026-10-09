@@ -1,0 +1,167 @@
+---
+title: Block Kit limits
+description: Every limit Slack puts on Block Kit payloads, from blocks per message to text lengths, options per select and table sizes, with the Slack page each comes from.
+sidebar:
+  label: Limits
+seo:
+  title: "Slack Block Kit limits and character limits"
+  description: "Every Slack Block Kit limit in one place: blocks per message, modal and Home tab, text and character limits per field, elements per actions block, options per select, table rows and columns."
+search:
+  keywords: [character limit, max length, maximum, block kit limits, too many blocks]
+---
+
+Slack's API rejects a payload that breaks one of these limits: `chat.postMessage` answers with an
+error such as `invalid_blocks` or `msg_blocks_too_long`, and `views.open` with
+`invalid_arguments`. Every number on this page comes from Slack's own
+reference at [docs.slack.dev](https://docs.slack.dev/reference/block-kit), linked next to it.
+Limits Slack doesn't document are left out.
+
+## What this package checks
+
+`@nkootstra/block-kit` is a renderer, not a validator: it draws whatever payload you give it, even
+one Slack would reject. A message with 60 blocks renders all 60. Check limits on your server before
+you send a payload to Slack, or as your users type in an
+[editor](/guides/block-kit-editor).
+
+A few limits do change how the preview behaves, the same way they do in Slack's client:
+
+| Limit                                       | What the renderer does                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 3 views in a modal stack                    | `views.push` past the third view does nothing and logs a console warning. See [Modals](/guides/modals#the-3-view-stack-limit). |
+| `min_length` / `max_length` on a text input | Shows the characters left while typing, and blocks Submit with Slack's message. See [Validation](/guides/validation).          |
+| `min_value` / `max_value` on a number input | Blocks Submit with Slack's message.                                                                                            |
+| `max_selected_items` on a multi-select      | Stops adding items at the limit and shows "You can select up to N items."                                                      |
+| `max_files` on a file input                 | Keeps the first `max_files` files picked (10 when unset).                                                                      |
+| `page_size` on a data table                 | Not read: the table always shows 5 rows per page, Slack's default.                                                             |
+
+## Surfaces
+
+| What                                     | Limit                                                       | Source                                                                                                              |
+| ---------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Blocks in a message                      | 50                                                          | [Block Kit](https://docs.slack.dev/block-kit)                                                                       |
+| Blocks in a modal                        | 100                                                         | [Modal views](https://docs.slack.dev/reference/views/modal-views)                                                   |
+| Blocks in a Home tab                     | 100                                                         | [Home tab views](https://docs.slack.dev/reference/views/home-tab-views)                                             |
+| Modal `title`, `submit` and `close` text | 24 characters each                                          | [Modal views](https://docs.slack.dev/reference/views/modal-views)                                                   |
+| `private_metadata` on a view             | 3,000 characters                                            | [Modal views](https://docs.slack.dev/reference/views/modal-views)                                                   |
+| `callback_id` on a view                  | 255 characters                                              | [Modal views](https://docs.slack.dev/reference/views/modal-views)                                                   |
+| `external_id` on a view                  | 255 characters, unique across the team                      | [views.open](https://docs.slack.dev/reference/methods/views.open)                                                   |
+| Views in a modal stack                   | 3 (the first, plus 2 pushed)                                | [Modals](https://docs.slack.dev/surfaces/modals), [views.push](https://docs.slack.dev/reference/methods/views.push) |
+| Message `text`                           | Truncated past 40,000 characters; Slack advises under 4,000 | [chat.postMessage](https://docs.slack.dev/reference/methods/chat.postMessage)                                       |
+| `markdown_text` on `chat.postMessage`    | 12,000 characters                                           | [chat.postMessage](https://docs.slack.dev/reference/methods/chat.postMessage)                                       |
+| Attachments in a message                 | 100                                                         | [chat.postMessage](https://docs.slack.dev/reference/methods/chat.postMessage)                                       |
+| Contact cards in a message               | 10                                                          | [chat.postMessage](https://docs.slack.dev/reference/methods/chat.postMessage)                                       |
+
+## Blocks
+
+Every block's `block_id` is limited to 255 characters, and should be unique for each message or
+view and each update of it ([section block](https://docs.slack.dev/reference/block-kit/blocks/section-block), and the
+same on each block's page).
+
+| Block                                              | What                                                              | Limit                              | Source                                                                                                 |
+| -------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [`actions`](/blocks/actions)                       | `elements`                                                        | 25                                 | [Actions block](https://docs.slack.dev/reference/block-kit/blocks/actions-block)                       |
+| [`alert`](/blocks/alert)                           | `text`                                                            | 200 characters                     | [Alert block](https://docs.slack.dev/reference/block-kit/blocks/alert-block)                           |
+| [`card`](/blocks/card)                             | `title`, `subtitle`                                               | 150 characters each                | [Card block](https://docs.slack.dev/reference/block-kit/blocks/card-block)                             |
+| [`card`](/blocks/card)                             | `body`, `subtext`                                                 | 200 characters each                | [Card block](https://docs.slack.dev/reference/block-kit/blocks/card-block)                             |
+| [`card`](/blocks/card)                             | Buttons in `actions`                                              | 3                                  | [Card block](https://docs.slack.dev/reference/block-kit/blocks/card-block)                             |
+| [`card`](/blocks/card)                             | `hero_image` and `icon` URL; their `alt_text`                     | 3,000 characters; 2,000 characters | [Card block](https://docs.slack.dev/reference/block-kit/blocks/card-block)                             |
+| [`carousel`](/blocks/carousel)                     | Cards                                                             | 1 to 10                            | [Carousel block](https://docs.slack.dev/reference/block-kit/blocks/carousel-block)                     |
+| [`container`](/blocks/container)                   | `title`, `subtitle`                                               | 150 characters each                | [Container block](https://docs.slack.dev/reference/block-kit/blocks/container-block)                   |
+| [`container`](/blocks/container)                   | `child_blocks`                                                    | 10                                 | [Container block](https://docs.slack.dev/reference/block-kit/blocks/container-block)                   |
+| [`container`](/blocks/container)                   | `icon` URL; its `alt_text`                                        | 3,000 characters; 2,000 characters | [Container block](https://docs.slack.dev/reference/block-kit/blocks/container-block)                   |
+| [`context`](/blocks/context)                       | `elements`                                                        | 10                                 | [Context block](https://docs.slack.dev/reference/block-kit/blocks/context-block)                       |
+| [`context_actions`](/blocks/context-actions)       | `elements`                                                        | 5                                  | [Context actions block](https://docs.slack.dev/reference/block-kit/blocks/context-actions-block)       |
+| [`data_table`](/blocks/data-table)                 | `rows`, header included                                           | 2 to 201                           | [Data table block](https://docs.slack.dev/reference/block-kit/blocks/data-table-block)                 |
+| [`data_table`](/blocks/data-table)                 | Columns                                                           | 1 to 20                            | [Data table block](https://docs.slack.dev/reference/block-kit/blocks/data-table-block)                 |
+| [`data_table`](/blocks/data-table)                 | Characters across all cells, per table and per message            | 20,000                             | [Data table block](https://docs.slack.dev/reference/block-kit/blocks/data-table-block)                 |
+| [`data_table`](/blocks/data-table)                 | `page_size`                                                       | 1 to 100, default 5                | [Data table block](https://docs.slack.dev/reference/block-kit/blocks/data-table-block)                 |
+| [`data_visualization`](/blocks/data-visualization) | Blocks in a message                                               | 2                                  | [Data visualization block](https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block) |
+| [`data_visualization`](/blocks/data-visualization) | `title`, `x_label`, `y_label`                                     | 50 characters each                 | [Data visualization block](https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block) |
+| [`data_visualization`](/blocks/data-visualization) | Series in a bar, line or area chart; segments in a pie            | 1 to 12                            | [Data visualization block](https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block) |
+| [`data_visualization`](/blocks/data-visualization) | Data points in a series                                           | 1 to 20                            | [Data visualization block](https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block) |
+| [`data_visualization`](/blocks/data-visualization) | Series `name`, segment `label`, data point `label`, each category | 20 characters each                 | [Data visualization block](https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block) |
+| [`header`](/blocks/header)                         | `text`                                                            | 150 characters                     | [Header block](https://docs.slack.dev/reference/block-kit/blocks/header-block)                         |
+| [`image`](/blocks/image)                           | `image_url`                                                       | 3,000 characters                   | [Image block](https://docs.slack.dev/reference/block-kit/blocks/image-block)                           |
+| [`image`](/blocks/image)                           | `alt_text`; `title` text                                          | 2,000 characters each              | [Image block](https://docs.slack.dev/reference/block-kit/blocks/image-block)                           |
+| [`image`](/blocks/image)                           | File types                                                        | `png`, `jpg`, `jpeg`, `gif`        | [Image block](https://docs.slack.dev/reference/block-kit/blocks/image-block)                           |
+| [`input`](/blocks/input)                           | `label`, `hint`                                                   | 2,000 characters each              | [Input block](https://docs.slack.dev/reference/block-kit/blocks/input-block)                           |
+| [`markdown`](/blocks/markdown)                     | `text`, across all `markdown` blocks in a payload                 | 12,000 characters                  | [Markdown block](https://docs.slack.dev/reference/block-kit/blocks/markdown-block)                     |
+| [`plan`](/blocks/plan)                             | Tasks                                                             | 50                                 | [Plan block](https://docs.slack.dev/reference/block-kit/blocks/plan-block)                             |
+| [`section`](/blocks/section)                       | `text`                                                            | 1 to 3,000 characters              | [Section block](https://docs.slack.dev/reference/block-kit/blocks/section-block)                       |
+| [`section`](/blocks/section)                       | `fields`; each field's text                                       | 10; 2,000 characters               | [Section block](https://docs.slack.dev/reference/block-kit/blocks/section-block)                       |
+| [`table`](/blocks/table)                           | `rows`                                                            | 100                                | [Table block](https://docs.slack.dev/reference/block-kit/blocks/table-block)                           |
+| [`table`](/blocks/table)                           | Cells in a row; `column_settings`                                 | 20 each                            | [Table block](https://docs.slack.dev/reference/block-kit/blocks/table-block)                           |
+| [`table`](/blocks/table)                           | Characters across all cells, per table and per message            | 10,000                             | [Table block](https://docs.slack.dev/reference/block-kit/blocks/table-block)                           |
+| [`video`](/blocks/video)                           | `title` and `description` text                                    | Under 200 characters each          | [Video block](https://docs.slack.dev/reference/block-kit/blocks/video-block)                           |
+| [`video`](/blocks/video)                           | `author_name`                                                     | Under 50 characters                | [Video block](https://docs.slack.dev/reference/block-kit/blocks/video-block)                           |
+
+Slack's image block page lists the supported file types but no maximum file size or pixel
+dimensions, so none are given here.
+
+## Elements
+
+Every interactive element's `action_id` is limited to 255 characters, and should be unique among
+the `action_id`s in its block ([button element](https://docs.slack.dev/reference/block-kit/block-elements/button-element),
+and the same on each element's page).
+
+| Element                                          | What                                        | Limit                                    | Source                                                                                                             |
+| ------------------------------------------------ | ------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [`button`](/elements/button)                     | `text`                                      | 75 characters; may truncate around 30    | [Button element](https://docs.slack.dev/reference/block-kit/block-elements/button-element)                         |
+| [`button`](/elements/button)                     | `value`                                     | 2,000 characters                         | [Button element](https://docs.slack.dev/reference/block-kit/block-elements/button-element)                         |
+| [`button`](/elements/button)                     | `url`                                       | 3,000 characters                         | [Button element](https://docs.slack.dev/reference/block-kit/block-elements/button-element)                         |
+| [`button`](/elements/button)                     | `accessibility_label`                       | 75 characters                            | [Button element](https://docs.slack.dev/reference/block-kit/block-elements/button-element)                         |
+| [`checkboxes`](/elements/checkboxes)             | `options`                                   | 10                                       | [Checkboxes element](https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element)                 |
+| [`radio_buttons`](/elements/radio-buttons)       | `options`                                   | 10                                       | [Radio button group element](https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element) |
+| [`overflow`](/elements/overflow)                 | `options`                                   | 5                                        | [Overflow menu element](https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element)           |
+| [Select menus](/elements/select-menus)           | `options`                                   | 100                                      | [Select menu element](https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element)               |
+| [Select menus](/elements/select-menus)           | `option_groups`; options in each group      | 100; 100                                 | [Select menu element](https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element)               |
+| [Multi-select menus](/elements/select-menus)     | `options`; `option_groups`                  | 100; 100                                 | [Multi-select menu element](https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element)   |
+| [Multi-select menus](/elements/select-menus)     | `max_selected_items`                        | At least 1                               | [Multi-select menu element](https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element)   |
+| [`plain_text_input`](/elements/text-inputs)      | `min_length`                                | 0 to 3,000                               | [Plain-text input element](https://docs.slack.dev/reference/block-kit/block-elements/plain-text-input-element)     |
+| [`plain_text_input`](/elements/text-inputs)      | `max_length`                                | 1 to 3,000                               | [Plain-text input element](https://docs.slack.dev/reference/block-kit/block-elements/plain-text-input-element)     |
+| [`rich_text_input`](/elements/rich-text-input)   | `min_lines`, `max_lines`                    | 1 to 100 each; `max_lines` defaults to 8 | [Rich text input element](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element)       |
+| [`file_input`](/elements/file-input)             | `max_files`                                 | 1 to 10, default 10                      | [File input element](https://docs.slack.dev/reference/block-kit/block-elements/file-input-element)                 |
+| [`file_input`](/elements/file-input)             | File size                                   | 100 MB                                   | [File input element](https://docs.slack.dev/reference/block-kit/block-elements/file-input-element)                 |
+| [`image`](/elements/image-element)               | `image_url`                                 | 3,000 characters                         | [Image element](https://docs.slack.dev/reference/block-kit/block-elements/image-element)                           |
+| [`workflow_button`](/elements/workflow-button)   | `text`; `accessibility_label`               | 75 characters each                       | [Workflow button element](https://docs.slack.dev/reference/block-kit/block-elements/workflow-button-element)       |
+| [`feedback_buttons`](/elements/feedback-buttons) | Each button's `text`; `accessibility_label` | 75 characters each                       | [Feedback buttons element](https://docs.slack.dev/reference/block-kit/block-elements/feedback-buttons-element)     |
+| [`feedback_buttons`](/elements/feedback-buttons) | Each button's `value`                       | 2,000 characters                         | [Feedback buttons element](https://docs.slack.dev/reference/block-kit/block-elements/feedback-buttons-element)     |
+| [`icon_button`](/elements/icon-button)           | `value`; `accessibility_label`              | 2,000 characters; 75 characters          | [Icon button element](https://docs.slack.dev/reference/block-kit/block-elements/icon-button-element)               |
+
+### Placeholders
+
+The `placeholder` text on a select menu, multi-select menu, date picker, time picker,
+`plain_text_input`, `email_text_input`, `url_text_input`, `number_input` and `rich_text_input` is
+limited to 150 characters each (see each element's page, for example the
+[select menu element](https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element)).
+
+## Composition objects
+
+| Object                                                | What                        | Limit                 | Source                                                                                                                  |
+| ----------------------------------------------------- | --------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Text object                                           | `text`                      | 1 to 3,000 characters | [Text object](https://docs.slack.dev/reference/block-kit/composition-objects/text-object)                               |
+| Option                                                | `text`, `description`       | 75 characters each    | [Option object](https://docs.slack.dev/reference/block-kit/composition-objects/option-object)                           |
+| Option                                                | `value`                     | 150 characters        | [Option object](https://docs.slack.dev/reference/block-kit/composition-objects/option-object)                           |
+| Option                                                | `url` (overflow menus only) | 3,000 characters      | [Option object](https://docs.slack.dev/reference/block-kit/composition-objects/option-object)                           |
+| Option group                                          | `label`                     | 75 characters         | [Option group object](https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object)               |
+| Option group                                          | `options`                   | 100                   | [Option group object](https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object)               |
+| [Confirmation dialog](/elements/confirmation-dialogs) | `title`                     | 100 characters        | [Confirmation dialog object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) |
+| [Confirmation dialog](/elements/confirmation-dialogs) | `text`                      | 300 characters        | [Confirmation dialog object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) |
+| [Confirmation dialog](/elements/confirmation-dialogs) | `confirm`, `deny`           | 30 characters each    | [Confirmation dialog object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) |
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Validation" href="/guides/validation" icon="circle-check">
+    The checks Slack's client runs on a modal before it sends `view_submission`.
+  </Card>
+  <Card title="Blocks" href="/blocks" icon="blocks">
+    Every block type, with its fields and live examples.
+  </Card>
+  <Card title="Block Kit editor" href="/guides/block-kit-editor" icon="square-pen">
+    Let your users edit a payload and see the Slack preview update as they type.
+  </Card>
+  <Card title="Examples" href="/examples" icon="layout-template">
+    Complete payloads for common messages, modals and Home tabs.
+  </Card>
+</CardGroup>

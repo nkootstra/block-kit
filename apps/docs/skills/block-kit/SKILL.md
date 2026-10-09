@@ -190,6 +190,10 @@ These props, and `resolvers`, are functions:
 
 - Every block: https://docs.block-kit.dev/blocks.md
 - Every element: https://docs.block-kit.dev/elements.md
+- Complete payloads for common messages, modals and Home tabs: https://docs.block-kit.dev/examples.md
+- Slack's limits on blocks, elements and text, which the renderer doesn't enforce:
+  https://docs.block-kit.dev/reference/limits.md
+- A JSON editor with a live preview: https://docs.block-kit.dev/guides/block-kit-editor.md
 - Provider props: https://docs.block-kit.dev/reference/block-kit-provider.md
 - Linking mentions and links into your app: https://docs.block-kit.dev/guides/linking-to-your-app.md
 - Modals: https://docs.block-kit.dev/guides/modals.md
