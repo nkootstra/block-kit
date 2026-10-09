@@ -994,24 +994,9 @@
   "extra/payloads/choices": [],
   "extra/payloads/choices@dark": [],
   "extra/payloads/choices@mobile": [],
-  "extra/payloads/dispatch-inputs": [
-    "y|Site|0",
-    "y|Live|0",
-    "extra|Press 'enter' to submit|0",
-    "extra|Press 'enter' to submit|1"
-  ],
-  "extra/payloads/dispatch-inputs@dark": [
-    "y|Site|0",
-    "y|Live|0",
-    "extra|Press 'enter' to submit|0",
-    "extra|Press 'enter' to submit|1"
-  ],
-  "extra/payloads/dispatch-inputs@mobile": [
-    "y|Site|0",
-    "y|Live|0",
-    "extra|Press 'enter' to submit|0",
-    "extra|Press 'enter' to submit|1"
-  ],
+  "extra/payloads/dispatch-inputs": [],
+  "extra/payloads/dispatch-inputs@dark": [],
+  "extra/payloads/dispatch-inputs@mobile": [],
   "extra/payloads/overflow-url": [],
   "extra/payloads/overflow-url@dark": [],
   "extra/payloads/overflow-url@mobile": [],
