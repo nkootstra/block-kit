@@ -5,44 +5,32 @@ import type { DirectoryEntry, Resolvers, UserProfile } from "@nkootstra/block-ki
  * Block Kit Builder lists the signed-in workspace's, and mentions show names. The ids match the
  * docs' examples, so a payload copied from the docs resolves here too.
  */
-const AVATARS = "https://api.slack.com/img/blocks/bkb_template_images";
 
 const PROFILES: Record<string, UserProfile> = {
   U0ADA: {
     name: "Ada Lovelace",
     title: "Staff Engineer",
     pronouns: "she/her",
-    avatarUrl: `${AVATARS}/beagle.png`,
+    avatarUrl: "https://cdn.block-kit.dev/samples/beagle.e3711bc4.jpg",
     status: { emoji: "palm_tree", text: "On vacation" },
     timeZone: "Europe/Amsterdam",
   },
   U0GRACE: {
     name: "Grace Hopper",
     title: "Engineering Manager",
-    avatarUrl: `${AVATARS}/profile_1.png`,
+    avatarUrl: "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
     timeZone: "America/New_York",
   },
   U0ALAN: {
     name: "Alan Turing",
     realName: "Alan Mathison Turing",
     title: "Principal Engineer",
-    avatarUrl: `${AVATARS}/profile_2.png`,
+    avatarUrl: "https://cdn.block-kit.dev/samples/portrait-2.bbcd2277.jpg",
     timeZone: "Europe/London",
-  },
-  U0KATHERINE: {
-    name: "Katherine Johnson",
-    title: "Data Scientist",
-    avatarUrl: `${AVATARS}/profile_3.png`,
-    timeZone: "America/Chicago",
-  },
-  U0MARGARET: {
-    name: "Margaret Hamilton",
-    title: "Head of Platform",
-    avatarUrl: `${AVATARS}/profile_4.png`,
-    timeZone: "America/Los_Angeles",
   },
   U0DEPLOYBOT: {
     name: "Deploy Bot",
+    avatarUrl: "https://cdn.block-kit.dev/samples/bot-avatar.3d9f1d46.png",
   },
 };
 
@@ -58,7 +46,7 @@ const CHANNELS: Record<string, string> = {
 const PRIVATE_CHANNELS = new Set(["C0DESIGN", "C0LEADERSHIP"]);
 
 /** Who's online, and which member is an app's bot user, for the rows' presence icon and badge. */
-const ACTIVE = new Set(["U0ADA", "U0ALAN", "U0KATHERINE", "U0DEPLOYBOT"]);
+const ACTIVE = new Set(["U0ADA", "U0ALAN", "U0DEPLOYBOT"]);
 const BOTS = new Set(["U0DEPLOYBOT"]);
 
 const PEOPLE: DirectoryEntry[] = Object.entries(PROFILES).map(([id, profile]) => ({
