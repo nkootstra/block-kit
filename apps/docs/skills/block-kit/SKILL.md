@@ -167,7 +167,12 @@ These props, and `resolvers`, are functions:
   `onAction`: a chart's View as table (a modal) and Download chart data (a `.tsv`), with Copy as
   image disabled; an image's Copy link and Hide image; a table's Copy table and Download table.
 - **Charts** are never narrower than 400px, as in Slack: in a narrower message the card scrolls
-  sideways inside the block (the page doesn't scroll sideways).
+  sideways inside the block (the page doesn't scroll sideways). Hovering a bar, point or slice shows
+  Slack's tooltip, which slides after the pointer and fades in and out.
+- **Touch, reduced motion and high contrast:** hover styles apply only to a precise pointer (a
+  mouse or trackpad); with reduced motion on, nothing slides or scales (fades stay); in forced
+  colours (high contrast), focused controls get an outline the system paints. A desktop message
+  looks the same either way. Details: https://docs.block-kit.dev/guides/theming.md
 - **Unknown block types** render the block's `fallback` array in their place when it has one.
 
 ## Entry points
