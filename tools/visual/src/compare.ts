@@ -327,7 +327,7 @@ for (const name of names) {
     await page.waitForSelector("#sbk-render > *", { timeout: 10_000 });
     await settle(page);
     if (state) {
-      await state.ours(page);
+      await state.ours(page, popovers ? refPage : undefined);
       await afterInteraction(page);
     }
     if (popovers) {

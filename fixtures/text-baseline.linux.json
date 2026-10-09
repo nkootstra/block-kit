@@ -408,21 +408,13 @@
   "catalog/section/markdown@mobile": [],
   "catalog/section/multi-conversations-select": [],
   "catalog/section/multi-conversations-select@dark": [],
-  "catalog/section/multi-conversations-select@dialog": [
-    "missing|Select conversations|1"
-  ],
-  "catalog/section/multi-conversations-select@dialog+dark": [
-    "missing|Select conversations|1"
-  ],
+  "catalog/section/multi-conversations-select@dialog": [],
+  "catalog/section/multi-conversations-select@dialog+dark": [],
   "catalog/section/multi-conversations-select@mobile": [],
   "catalog/section/multi-static-select": [],
   "catalog/section/multi-static-select@dark": [],
-  "catalog/section/multi-static-select@dialog": [
-    "missing|Select options|1"
-  ],
-  "catalog/section/multi-static-select@dialog+dark": [
-    "missing|Select options|1"
-  ],
+  "catalog/section/multi-static-select@dialog": [],
+  "catalog/section/multi-static-select@dialog+dark": [],
   "catalog/section/multi-static-select@mobile": [],
   "catalog/section/overflow": [],
   "catalog/section/overflow@dark": [],
@@ -482,9 +474,7 @@
   "catalog/structure/plain-text@mobile": [],
   "catalog/structure/text-and-images": [],
   "catalog/structure/text-and-images@dark": [],
-  "catalog/structure/text-and-images@mobile": [
-    "y|Author: K A Applegate|0"
-  ],
+  "catalog/structure/text-and-images@mobile": [],
   "catalog/table/basic-data-table": [
     "width|Acme Expansion Deal|0",
     "width|Weather Forecast Integration|0",
@@ -814,12 +804,8 @@
   "contexts/file_input/modal-input@dark": [],
   "contexts/multi_static_select/accessory": [],
   "contexts/multi_static_select/accessory@dark": [],
-  "contexts/multi_static_select/accessory@dialog": [
-    "missing|Select items|1"
-  ],
-  "contexts/multi_static_select/accessory@dialog+dark": [
-    "missing|Select items|1"
-  ],
+  "contexts/multi_static_select/accessory@dialog": [],
+  "contexts/multi_static_select/accessory@dialog+dark": [],
   "contexts/multi_static_select/accessory@mobile": [],
   "contexts/multi_static_select/modal-input": [],
   "contexts/multi_static_select/modal-input@dark": [],
@@ -827,12 +813,8 @@
   "contexts/multi_static_select/modal-input@open+dark": [],
   "contexts/multi_users_select/accessory": [],
   "contexts/multi_users_select/accessory@dark": [],
-  "contexts/multi_users_select/accessory@dialog": [
-    "missing|Select users|1"
-  ],
-  "contexts/multi_users_select/accessory@dialog+dark": [
-    "missing|Select users|1"
-  ],
+  "contexts/multi_users_select/accessory@dialog": [],
+  "contexts/multi_users_select/accessory@dialog+dark": [],
   "contexts/multi_users_select/accessory@mobile": [],
   "contexts/multi_users_select/modal-input": [],
   "contexts/multi_users_select/modal-input@dark": [],
@@ -952,10 +934,7 @@
   "extra/context-actions/feedback-row@mobile": [],
   "extra/context/mixed": [],
   "extra/context/mixed@dark": [],
-  "extra/context/mixed@mobile": [
-    "y|Last updated 5 min ago|0",
-    "y|Header with emoji|0"
-  ],
+  "extra/context/mixed@mobile": [],
   "extra/home/dashboard": [],
   "extra/home/dashboard@dark": [],
   "extra/home/dashboard@open": [],
@@ -994,24 +973,9 @@
   "extra/payloads/choices": [],
   "extra/payloads/choices@dark": [],
   "extra/payloads/choices@mobile": [],
-  "extra/payloads/dispatch-inputs": [
-    "y|Site|0",
-    "y|Live|0",
-    "extra|Press 'enter' to submit|0",
-    "extra|Press 'enter' to submit|1"
-  ],
-  "extra/payloads/dispatch-inputs@dark": [
-    "y|Site|0",
-    "y|Live|0",
-    "extra|Press 'enter' to submit|0",
-    "extra|Press 'enter' to submit|1"
-  ],
-  "extra/payloads/dispatch-inputs@mobile": [
-    "y|Site|0",
-    "y|Live|0",
-    "extra|Press 'enter' to submit|0",
-    "extra|Press 'enter' to submit|1"
-  ],
+  "extra/payloads/dispatch-inputs": [],
+  "extra/payloads/dispatch-inputs@dark": [],
+  "extra/payloads/dispatch-inputs@mobile": [],
   "extra/payloads/overflow-url": [],
   "extra/payloads/overflow-url@dark": [],
   "extra/payloads/overflow-url@mobile": [],
