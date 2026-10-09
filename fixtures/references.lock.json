@@ -3181,7 +3181,7 @@
   },
   "extra/payloads/selects": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
-    "reference": "34d22d6cbf625095d3eb46e969da75206fd5ff21013a9b04b4dfaa0d7db0d3f6",
+    "reference": "e188d7df1a2d27bd5483bfe7884fd2e69e257bad0a8d2dc7cb8fc745cd7d16fd",
     "captured": "2026-10-09"
   },
   "extra/payloads/selects@dark": {
