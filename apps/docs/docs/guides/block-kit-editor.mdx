@@ -1,0 +1,286 @@
+---
+title: Add a Block Kit editor with live preview to your React app
+sidebar:
+  label: Block Kit editor
+description: Build a Block Kit builder into your React app, a JSON editor next to a live Slack preview, so your users can customise a message and see it the way Slack shows it.
+seo:
+  title: "Build a Block Kit builder in React with live preview"
+  description: "Add a Slack Block Kit builder to your React app: a JSON editor with error handling, a live Message or modal preview, an action log, and an optional shareable URL."
+search:
+  keywords: [block kit builder, editor, live preview, json editor, message template]
+---
+
+Slack's [Block Kit Builder](https://app.slack.com/block-kit-builder) only runs inside Slack. If
+your users write or customise the messages your app sends (a notification template, a welcome
+message, an approval request), you can give them the same loop in your own product: edit the JSON
+on one side, see the message on the other, exactly as Slack will show it.
+
+The JSON tab of the preview below is such an editor. Change a word, break the JSON, then fix it:
+
+<Preview
+  actions
+  payload={{
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "*Welcome to the team, <@U0ADA>!* :wave:" },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Your first week starts with a call with your manager. Pick a time that suits you.",
+        },
+        accessory: {
+          type: "button",
+          action_id: "book_call",
+          style: "primary",
+          text: { type: "plain_text", text: "Book a time" },
+          value: "onboarding_call",
+        },
+      },
+    ],
+  }}
+/>
+
+This guide builds the same thing in three small files: a parser that tells the user what's wrong,
+an error boundary, and an editor component with a textarea, a preview that renders messages,
+modals and Home tabs, and a log of the actions the preview sends.
+
+## Parse what the user types
+
+Accept the three shapes Block Kit Builder accepts: `{ "blocks": [...] }` for a message, a bare
+array of blocks, and a `modal` or `home` view. Anything else throws an error with a message the
+user can act on.
+
+```ts parse-payload.ts
+import type { AnyView, MessageProps } from "@nkootstra/block-kit";
+
+type Blocks = NonNullable<MessageProps["blocks"]>;
+
+export type Payload = { kind: "message"; blocks: Blocks } | { kind: "view"; view: AnyView };
+
+/** Reads `{ blocks }`, a bare array of blocks, or a modal or Home tab view. */
+export function parsePayload(source: string): Payload {
+  const json: unknown = JSON.parse(source);
+  if (Array.isArray(json)) return { kind: "message", blocks: json as Blocks };
+  if (!json || typeof json !== "object") {
+    throw new Error("Expected a JSON object or an array of blocks.");
+  }
+  const { type, blocks } = json as { type?: unknown; blocks?: unknown };
+  if (!Array.isArray(blocks)) throw new Error('Expected a "blocks" array.');
+  if (type === "modal" || type === "home") return { kind: "view", view: json as AnyView };
+  return { kind: "message", blocks: blocks as Blocks };
+}
+```
+
+`JSON.parse` already throws a `SyntaxError` that names the position of the mistake, so the editor
+can show its message as is.
+
+## Catch payloads that can't render
+
+Valid JSON can still be invalid Block Kit. The renderer expects each block to have its required
+fields: a `section` whose `text` is an empty object, or a `button` without `text`, throws while
+rendering, and Slack's API would reject it too. An error boundary keeps that from taking down the
+page:
+
+```tsx preview-boundary.tsx
+import { Component, type ReactNode } from "react";
+
+/** Shows the render error instead of unmounting the page when a block is missing a field. */
+export class PreviewBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  override state = { error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  override render() {
+    if (this.state.error) {
+      return <p role="alert">This payload can't be rendered: {this.state.error.message}</p>;
+    }
+    return this.props.children;
+  }
+}
+```
+
+## The editor
+
+The component keeps two pieces of state: the text in the textarea, and the last payload that
+parsed. The preview renders the second, so it doesn't go blank while the user is halfway through
+typing a brace. A message renders with `<Message>`; a modal or Home tab view renders with `<View>`,
+which picks `<Modal>` or `<HomeTab>` from the view's `type`.
+
+```tsx block-kit-editor.tsx
+import { type BlockAction, BlockKitProvider, Message, View } from "@nkootstra/block-kit";
+import { useState } from "react";
+import { type Payload, parsePayload } from "./parse-payload";
+import { PreviewBoundary } from "./preview-boundary";
+
+const STARTER = JSON.stringify(
+  {
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: "Hello from *your app* :wave:" } },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "approve",
+            style: "primary",
+            text: { type: "plain_text", text: "Approve" },
+            value: "approve",
+          },
+        ],
+      },
+    ],
+  },
+  null,
+  2,
+);
+
+interface BlockKitEditorProps {
+  /** The JSON to start from. */
+  initial?: string;
+  /** Called with the text on every edit, valid or not. */
+  onChange?: (source: string) => void;
+}
+
+export function BlockKitEditor({ initial = STARTER, onChange }: BlockKitEditorProps) {
+  const [source, setSource] = useState(initial);
+  // The last payload that parsed, so the preview keeps showing while someone is mid-edit.
+  const [payload, setPayload] = useState<Payload>(() => {
+    try {
+      return parsePayload(initial);
+    } catch {
+      return parsePayload(STARTER);
+    }
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [actions, setActions] = useState<BlockAction[]>([]);
+
+  function edit(next: string) {
+    setSource(next);
+    onChange?.(next);
+    try {
+      setPayload(parsePayload(next));
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div>
+        <textarea
+          aria-label="Block Kit JSON"
+          aria-invalid={error !== null}
+          aria-describedby="payload-error"
+          spellCheck={false}
+          value={source}
+          onChange={(event) => edit(event.target.value)}
+          style={{ width: "100%", minHeight: 400, fontFamily: "monospace" }}
+        />
+        <p id="payload-error" role="status">
+          {error ? `Invalid payload, showing the last valid one. ${error}` : ""}
+        </p>
+      </div>
+      <div>
+        <BlockKitProvider
+          onAction={(action) => setActions((previous) => [action, ...previous].slice(0, 10))}
+        >
+          {/* A new boundary for every payload, so fixing the JSON clears a render error. */}
+          <PreviewBoundary key={JSON.stringify(payload)}>
+            {payload.kind === "view" ? (
+              <View view={payload.view} />
+            ) : (
+              <Message blocks={payload.blocks} app={{ name: "Your App" }} />
+            )}
+          </PreviewBoundary>
+        </BlockKitProvider>
+        <h3>Actions</h3>
+        <pre>{actions.map((action) => JSON.stringify(action, null, 2)).join("\n\n")}</pre>
+      </div>
+    </div>
+  );
+}
+```
+
+Import the stylesheet and fonts once, as in [Installation](/installation), and render
+`<BlockKitEditor />` anywhere in your app.
+
+A few details in there matter:
+
+- **`onAction` turns the preview into a test bench.** Every button, select and picker in the
+  preview works, and the log shows the `block_actions` action your app would receive, with its
+  `action_id`, `block_id` and `value`. To log the full payload Slack sends to your request URL
+  instead, use `onPayload`; see [Handling actions](/guides/interactivity).
+- **The boundary is keyed by the payload.** A new key mounts a new boundary, so once the user
+  fixes the block that failed, the preview comes back on its own. It also remounts the preview,
+  which clears anything typed into its inputs: the payload it rendered no longer exists.
+- **A modal validates on Submit.** Paste a `modal` view with an empty required input and press its
+  submit button: the preview shows Slack's own error. Add `onSubmit` to the provider to see the
+  `view_submission` payload; see [Modals](/guides/modals).
+
+## Render it on the client only
+
+The editor reads user input on every keystroke, so it belongs on the client. In a Next.js App
+Router project, put `"use client";` at the top of `block-kit-editor.tsx`. `<Message>` without a
+`ts` stamps the current time when it mounts, which is right for a live preview; for a message you
+render on the server, pass `ts` (see [Server rendering](/guides/server-rendering)).
+
+## Optional: share a payload by URL
+
+To let users send a draft to a teammate, keep the JSON in the URL. Block Kit Builder does the
+same. Read the hash once on load and replace it on every edit:
+
+```tsx shared-editor.tsx
+import { useState } from "react";
+import { BlockKitEditor } from "./block-kit-editor";
+
+/** The payload in the URL's hash, if there is one. */
+function readHash(): string | undefined {
+  const hash = window.location.hash.slice(1);
+  return hash ? decodeURIComponent(hash) : undefined;
+}
+
+export function SharedEditor() {
+  const [initial] = useState(readHash);
+  return (
+    <BlockKitEditor
+      initial={initial}
+      // replaceState, so each keystroke doesn't add a history entry.
+      onChange={(source) => history.replaceState(null, "", `#${encodeURIComponent(source)}`)}
+    />
+  );
+}
+```
+
+A hash never reaches your server, so a draft shared this way isn't stored anywhere. Long payloads
+make long URLs; for anything bigger than a few blocks, or a template your users keep, save the
+JSON in your own database and put its id in the URL instead.
+
+## Check payloads before you send them
+
+The preview shows what Slack renders, but Slack's API also rejects payloads past its limits: more
+than 50 blocks in a message, a button label over 75 characters, more than 100 options in a select.
+[Limits](/reference/limits) lists each one, so you can check them as the user types, or before your
+server calls `chat.postMessage`.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Examples" href="/examples" icon="layout-template">
+    Ready-made payloads to offer as starting points in your editor.
+  </Card>
+  <Card title="Surfaces" href="/surfaces" icon="app-window">
+    How `<Message>`, `<Modal>`, `<HomeTab>` and `<View>` lay out the same blocks.
+  </Card>
+  <Card title="Handling actions" href="/guides/interactivity" icon="mouse-pointer-click">
+    Everything `onAction` receives, and how to update the message in response.
+  </Card>
+  <Card title="Limits" href="/reference/limits" icon="ruler">
+    Every block, element and text limit Slack enforces.
+  </Card>
+</CardGroup>

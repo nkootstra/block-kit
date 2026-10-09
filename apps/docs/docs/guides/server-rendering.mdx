@@ -19,6 +19,7 @@ these components straight into a Next.js App Router Server Component with no wra
 ```tsx
 // app/page.tsx (a Server Component)
 import { Message } from "@nkootstra/block-kit";
+import type { AnyBlock } from "@slack/types";
 
 export default function Page({ blocks }: { blocks: AnyBlock[] }) {
   return <Message blocks={blocks} />;
@@ -40,7 +41,7 @@ component of your own marked `"use client"`:
 "use client";
 
 import { BlockKitProvider, Message } from "@nkootstra/block-kit";
-import type { AnyBlock } from "@nkootstra/block-kit";
+import type { AnyBlock } from "@slack/types";
 
 export function SlackMessage({ blocks }: { blocks: AnyBlock[] }) {
   return (
@@ -116,7 +117,7 @@ export default async function MessagePage({ params }: { params: { ts: string } }
 
 import { BlockKitProvider, Message } from "@nkootstra/block-kit";
 import { httpTransport } from "@nkootstra/block-kit/transport";
-import type { AnyBlock } from "@nkootstra/block-kit";
+import type { AnyBlock } from "@slack/types";
 
 const transport = httpTransport({ url: "/api/slack/relay" });
 
