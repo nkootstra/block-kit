@@ -299,6 +299,64 @@ describe("capture.js against the real Builder's controls", () => {
   });
 });
 
+/**
+ * A select whose field is an input, as in the Builder: a click opens its list, and the snapshot
+ * records which element has focus. `cancel` makes the field cancel mousedown, as a control that
+ * keeps focus elsewhere does.
+ */
+const focusBuilder = (
+  cancel: boolean,
+) => `<!doctype html><html class="sk-client-theme--light"><body>
+  <div class="p-bkb_preview__message" style="width:512px"><input class="c-select_input" aria-label="Pick"></div>
+  <script>
+    const field = document.querySelector(".c-select_input");
+    if (${cancel}) field.addEventListener("mousedown", (e) => e.preventDefault());
+    field.addEventListener("click", () => {
+      const portal = document.createElement("div");
+      portal.className = "ReactModalPortal";
+      portal.innerHTML = '<div class="ReactModal__Overlay c-popover"><div class="ReactModal__Content" style="height:40px">Option</div></div>';
+      document.body.append(portal);
+    });
+    window.adapter = {
+      load: async () => {}, theme: () => "light", setTheme: async () => {},
+      previewSize: () => "desktop", setPreviewSize: async () => {},
+    };
+    window.snap = async () => document.activeElement?.className || "none";
+  </script>
+</body></html>`;
+
+async function focusedAtSnap(cancel: boolean) {
+  page = await browser.newPage();
+  await page.setContent(focusBuilder(cancel));
+  await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+  return page.evaluate(async () => {
+    const w = window as unknown as {
+      capture: (o: unknown) => Promise<Record<string, string>>;
+      adapter: unknown;
+      snap: unknown;
+    };
+    const results = await w.capture({
+      items: [{ name: "catalog/section/static-select@open", payload: {} }],
+      snap: w.snap,
+      adapter: w.adapter,
+      settle: 0,
+    });
+    return results["catalog/section/static-select@open"];
+  });
+}
+
+// A real click focuses the field it opens, so Slack draws its focus ring around an open select. A
+// dispatched mousedown doesn't move focus, which left half the @open references without the ring.
+describe("capture.js opening a control", () => {
+  it("focuses the control it opens, as a real click does", async () => {
+    expect(await focusedAtSnap(false)).toBe("c-select_input");
+  });
+
+  it("leaves focus alone when the control cancels mousedown, as a browser does", async () => {
+    expect(await focusedAtSnap(true)).toBe("none");
+  });
+});
+
 describe("capture.js", () => {
   it("loads each fixture, sets the theme and width its name asks for, opens it and snapshots", async () => {
     const { results, log } = await run([

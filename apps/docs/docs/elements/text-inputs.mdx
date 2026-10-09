@@ -205,10 +205,11 @@ reads when the surface is submitted. Typing doesn't fire an action. Set the bloc
 
 `trigger_actions_on` accepts `on_enter_pressed` (the default) and `on_character_entered`, which
 sends one action with the full value once typing pauses for 300ms, as Slack coalesces keystrokes.
-Number, email and URL inputs take the same config. With the default, single-line fields also pick up a "Press 'enter' to submit" hint automatically. When the
-block has its own `hint`, both share one line, as in Slack: the hint gets a closing period, then
-the enter hint follows. Multiline fields never show it, since Enter inserts a newline there
-instead of submitting.
+Number, email and URL inputs take the same config. With the default, a single-line plain text
+input also picks up a "Press 'enter' to submit" hint automatically; number, email and URL inputs
+dispatch on Enter without it, as in Slack. When the block has its own `hint`, both share one line,
+as in Slack: the hint gets a closing period, then the enter hint follows. Multiline fields never
+show it, since Enter inserts a newline there instead of submitting.
 
 ### Initial value
 

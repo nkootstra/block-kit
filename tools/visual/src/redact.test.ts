@@ -212,4 +212,28 @@ describe("redact, on the widths frozen around a name", () => {
     ]);
     expect(redact(out)).toBe(out);
   });
+
+  // A select's channel row: the name sits in an ellipsis box inside the entity's content, a
+  // truncating box and the entity's text, which the snapshot froze to fit the real channel name.
+  // Left frozen, a longer placeholder is cut off mid-word ("channel-t").
+  const channel = (name: string) =>
+    `<div class="c-base_entity__text-contents" style="display:flex;width:420px;flex-basis:420px">` +
+    `<span class="c-base_entity__text" style="display:block;width:37.6px;min-width:0px">` +
+    `<span class="c-truncate c-truncate--break_words" style="display:flow-root;width:37.6px;overflow-x:hidden">` +
+    `<span class="c-small_channel_entity__content" style="display:inline;width:37.6px">` +
+    `<span class="c-channel_entity__name c-channel_entity__name--bold" style="overflow-x:hidden;text-overflow:ellipsis">${name}</span>` +
+    `</span></span></span></div>`;
+
+  it("releases the sizes a channel's name set through the entity's text", () => {
+    const out = redact(meta(payload) + channel("ops"));
+    expect(out).toContain(">channel-one<");
+    expect([0, 1, 2, 3, 4].map((n) => styleOf(out, n))).toEqual([
+      "display:flex;width:420px;flex-basis:420px",
+      "display:block;min-width:0px",
+      "display:flow-root;overflow-x:hidden",
+      "display:inline",
+      "overflow-x:hidden;text-overflow:ellipsis",
+    ]);
+    expect(redact(out)).toBe(out);
+  });
 });
