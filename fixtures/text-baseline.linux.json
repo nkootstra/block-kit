@@ -664,9 +664,10 @@
   "contexts/multi_users_select/modal-input@dark": [],
   "contexts/multi_users_select/modal-input@open": [],
   "contexts/multi_users_select/modal-input@open+dark": [
-    "color|User One|0",
-    "color|(you)|0",
-    "extra|Enter|0"
+    "x|AGENT|0",
+    "y|AGENT|0",
+    "missing|User Two|1",
+    "extra|User Four|1"
   ],
   "contexts/multiline_plain_text_input/modal-input": [],
   "contexts/multiline_plain_text_input/modal-input@dark": [],
