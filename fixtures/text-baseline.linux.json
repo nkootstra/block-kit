@@ -140,17 +140,14 @@
     "extra|, in progress|0"
   ],
   "catalog/callout/callout": [
-    "missing|(208 kB)|0",
     "missing|Workspace|0",
     "extra|Contact|0"
   ],
   "catalog/callout/callout@dark": [
-    "missing|(208 kB)|0",
     "missing|Workspace|0",
     "extra|Contact|0"
   ],
   "catalog/callout/callout@mobile": [
-    "missing|(208 kB)|0",
     "missing|This content could not be displayed.|0",
     "extra|Contact|0"
   ],
@@ -362,33 +359,17 @@
     "x|Free|0",
     "y|Free|0"
   ],
-  "catalog/image/no-title": [
-    "missing|(72 kB)|0"
-  ],
-  "catalog/image/no-title@dark": [
-    "missing|(72 kB)|0"
-  ],
-  "catalog/image/no-title@hidden": [
-    "missing|(72 kB)|0"
-  ],
-  "catalog/image/no-title@mobile": [
-    "missing|(72 kB)|0"
-  ],
+  "catalog/image/no-title": [],
+  "catalog/image/no-title@dark": [],
+  "catalog/image/no-title@hidden": [],
+  "catalog/image/no-title@mobile": [],
   "catalog/image/slack-image": [],
   "catalog/image/slack-image@dark": [],
   "catalog/image/slack-image@mobile": [],
-  "catalog/image/title": [
-    "missing|(72 kB)|0"
-  ],
-  "catalog/image/title@dark": [
-    "missing|(72 kB)|0"
-  ],
-  "catalog/image/title@hidden": [
-    "missing|(72 kB)|0"
-  ],
-  "catalog/image/title@mobile": [
-    "missing|(72 kB)|0"
-  ],
+  "catalog/image/title": [],
+  "catalog/image/title@dark": [],
+  "catalog/image/title@hidden": [],
+  "catalog/image/title@mobile": [],
   "catalog/input/checkboxes": [],
   "catalog/input/checkboxes@dark": [],
   "catalog/input/checkboxes@mobile": [],
@@ -1188,13 +1169,7 @@
     "missing|console.log(answer < 100);|0",
     "extra|const answer = 42; console.log(answer < 100);|0"
   ],
-  "message/section-accessory": [
-    "missing|(41 kB)|0"
-  ],
-  "message/section-accessory@dark": [
-    "missing|(41 kB)|0"
-  ],
-  "message/section-accessory@mobile": [
-    "missing|(41 kB)|0"
-  ]
+  "message/section-accessory": [],
+  "message/section-accessory@dark": [],
+  "message/section-accessory@mobile": []
 }
