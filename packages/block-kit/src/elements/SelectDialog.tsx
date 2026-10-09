@@ -36,6 +36,7 @@ export function SelectDialog({
   const titleId = useId();
   const [draft, setDraft] = useState(initial);
   const [query, setQuery] = useState("");
+  const dialogRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -67,17 +68,19 @@ export function SelectDialog({
     listRef,
   });
 
+  // Focus moves to the dialog once, when it opens. Slack focuses the dialog rather than its field,
+  // so the field opens at rest (no focus ring) and Tab moves into it.
   useEffect(() => {
-    combo.inputRef.current?.focus();
-    // Focus moves into the dialog once, when it opens.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    dialogRef.current?.focus();
   }, []);
 
   if (typeof document === "undefined") return null;
   return createPortal(
     <div className="sbk-root sbk-select-dialog__overlay" data-theme={theme}>
       <div
+        ref={dialogRef}
         className="sbk-select-dialog"
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -120,9 +123,15 @@ export function SelectDialog({
                 </button>
               </span>
             ))}
+            {draft.length === 0 && query === "" && (
+              // Slack draws the placeholder as its own element over the field, not as the input's.
+              <span className="sbk-select-dialog__placeholder" aria-hidden="true">
+                {placeholder}
+              </span>
+            )}
             <input
               {...combo.inputProps(undefined, placeholder)}
-              placeholder={draft.length > 0 ? "" : placeholder}
+              placeholder=""
               className="sbk-select-dialog__input"
             />
           </div>
