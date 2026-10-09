@@ -1,39 +1,43 @@
 import { type PointerEvent, useState } from "react";
 import { ChartTooltip } from "./ChartTooltip";
 import { colorForIndex, liftedColorForIndex } from "./palette";
+import { useContainerWidth } from "./useContainerWidth";
 
 export interface PieSegment {
   label: string;
   value: number;
 }
 
+/**
+ * Builder's pie plot area is as wide as the card's content (406px in a desktop message, 374px in a
+ * phone's 400px card) and 360px tall, with a pie of radius 144 centred in it.
+ */
 const WIDTH = 406;
-/** Builder's pie plot area is 406×360, not square, with the pie centred in it. */
 const HEIGHT = 360;
-const CENTER = { x: 203, y: 180 };
+const CENTER_Y = 180;
 const RADIUS = 144;
 /** How much a hovered slice grows, measured in Block Kit Builder (ECharts' `scaleSize`). */
 const HOVER_GROWTH = 5;
 
 /** Point on the pie's circle for a given angle in degrees, measured clockwise from 12 o'clock. */
-function pointAt(angleDeg: number, radius = RADIUS) {
+function pointAt(cx: number, angleDeg: number, radius = RADIUS) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: CENTER.x + radius * Math.cos(rad), y: CENTER.y + radius * Math.sin(rad) };
+  return { x: cx + radius * Math.cos(rad), y: CENTER_Y + radius * Math.sin(rad) };
 }
 
-function segmentPath(startAngle: number, endAngle: number, radius = RADIUS): string {
+function segmentPath(cx: number, startAngle: number, endAngle: number, radius = RADIUS): string {
   const sweep = endAngle - startAngle;
-  const start = pointAt(startAngle, radius);
-  const end = pointAt(endAngle, radius);
+  const start = pointAt(cx, startAngle, radius);
+  const end = pointAt(cx, endAngle, radius);
   const largeArc = sweep > 180 ? 1 : 0;
   if (sweep >= 359.999) {
     // A full circle, drawn as Slack's chart library does: one arc stopping 1e-4 rad short of its
     // start, with no edge to the centre (which would show as a white seam under the stroke).
-    const stop = pointAt(startAngle + 360 - (1e-4 * 180) / Math.PI, radius);
+    const stop = pointAt(cx, startAngle + 360 - (1e-4 * 180) / Math.PI, radius);
     const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
     return `M${r4(start.x)} ${r4(start.y)}A${radius} ${radius} 0 1 1 ${r4(stop.x)} ${r4(stop.y)}Z`;
   }
-  return `M${CENTER.x} ${CENTER.y}L${start.x} ${start.y}A${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}Z`;
+  return `M${cx} ${CENTER_Y}L${start.x} ${start.y}A${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}Z`;
 }
 
 interface Hover {
@@ -44,6 +48,8 @@ interface Hover {
 
 export function PieChart({ segments }: { segments: PieSegment[] }) {
   const [hover, setHover] = useState<Hover | null>(null);
+  const { ref, width } = useContainerWidth(WIDTH);
+  const cx = width / 2;
   const total = segments.reduce((sum, s) => sum + Math.max(0, s.value), 0);
   let angle = 0;
   const arcs = segments.map((segment, i) => {
@@ -57,7 +63,7 @@ export function PieChart({ segments }: { segments: PieSegment[] }) {
       key: i,
       hovered,
       // Slack lifts the slice under the pointer and grows it 5px.
-      d: segmentPath(start, end, hovered ? RADIUS + HOVER_GROWTH : RADIUS),
+      d: segmentPath(cx, start, end, hovered ? RADIUS + HOVER_GROWTH : RADIUS),
       color: hovered ? liftedColorForIndex(i) : colorForIndex(i),
     };
   });
@@ -82,12 +88,12 @@ export function PieChart({ segments }: { segments: PieSegment[] }) {
 
   const segment = hover ? segments[hover.index] : undefined;
   return (
-    <>
+    <div className="sbk-chart" ref={ref}>
       <svg
         className="sbk-chart__svg sbk-chart__svg--pie"
-        width={WIDTH}
+        width={width}
         height={HEIGHT}
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        viewBox={`0 0 ${width} ${HEIGHT}`}
         role="img"
         aria-label="Pie chart"
         onPointerMove={onPointerMove}
@@ -114,6 +120,6 @@ export function PieChart({ segments }: { segments: PieSegment[] }) {
           rows={[{ name: segment.label, value: segment.value, color: colorForIndex(hover.index) }]}
         />
       ) : null}
-    </>
+    </div>
   );
 }

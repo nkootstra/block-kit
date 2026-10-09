@@ -2319,12 +2319,11 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           const at = await center(page, ".sbk-chart__slice");
           await page.mouse.move(at.x, at.y);
           const after = (await page.locator(".sbk-chart__slice[data-hovered]").boundingBox())!;
-          // The pie is drawn in a 406px-wide box, scaled to the card.
-          const scale = (await page.locator(".sbk-chart__svg").boundingBox())!.width / 406;
+          // The pie is drawn at its own size (radius 144) in a plot as wide as the card.
           expect({
             fills: await paint(page, ".sbk-chart__slice:not([data-hovered])", "fill"),
             hovered: await paint(page, ".sbk-chart__slice[data-hovered]", "fill"),
-            grows: Math.round((after.height - before.height) / scale),
+            grows: Math.round(after.height - before.height),
             tooltip: await tooltip(page),
           }).toEqual({
             fills: [base[1], base[2], base[3]],
@@ -4325,6 +4324,67 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         ]);
       });
     }
+
+    // catalog/data-visualization/*@mobile: Slack keeps a chart card 400px wide in a 320px block.
+    // The card runs past the message, which cuts it off, so the last category ("Fri") is out of
+    // view; the plot inside is laid out as at 400px (bar-single-series@mobile: "Mon" centred
+    // 104px into the 374px plot, 117px from the card's edge).
+    it("keeps a chart card 400px wide in a narrow message, cut off by the message", async () => {
+      const page = await harness.open(
+        await fixture("catalog/data-visualization/bar-single-series"),
+        {
+          viewport: PHONE,
+        },
+      );
+      await settle(page);
+      const geometry = await page.evaluate(() => {
+        const card = document.querySelector(".sbk-dataviz")!.getBoundingClientRect();
+        const ticks = [...document.querySelectorAll(".sbk-chart__tick")].filter((t) =>
+          ["Mon", "Fri"].includes(t.textContent ?? ""),
+        );
+        const centre = (t: Element) => {
+          const r = t.getBoundingClientRect();
+          return r.x + r.width / 2 - card.x;
+        };
+        const message = document.querySelector(".sbk-message, .sbk-root")!.getBoundingClientRect();
+        const fri = ticks.find((t) => t.textContent === "Fri")!.getBoundingClientRect();
+        return {
+          width: Math.round(card.width),
+          mon: Math.round(centre(ticks.find((t) => t.textContent === "Mon")!)),
+          friVisible: fri.x + fri.width / 2 < message.right,
+          pageScrolls: document.documentElement.scrollWidth > window.innerWidth,
+        };
+      });
+      expect(geometry).toEqual({ width: 400, mon: 117, friVisible: false, pageScrolls: false });
+    });
+
+    // catalog/data-visualization/pie-*@mobile: the plot narrows to 374px but stays 360px tall,
+    // and the pie keeps its 144px radius, centred in the narrower plot (at 187, not 203).
+    it("keeps a pie at Slack's size in a narrow message", async () => {
+      const page = await harness.open(
+        await fixture("catalog/data-visualization/pie-multi-segment"),
+        { viewport: PHONE },
+      );
+      await settle(page);
+      const pie = await page.evaluate(() => {
+        const svg = document.querySelector(".sbk-chart__svg--pie")!;
+        const box = svg.getBoundingClientRect();
+        // The slices' geometry in the SVG's own units, without their 2px separating stroke.
+        const slices = [...document.querySelectorAll<SVGGraphicsElement>(".sbk-chart__slice")].map(
+          (s) => s.getBBox(),
+        );
+        const left = Math.min(...slices.map((b) => b.x));
+        const right = Math.max(...slices.map((b) => b.x + b.width));
+        const top = Math.min(...slices.map((b) => b.y));
+        return {
+          size: [Math.round(box.width), Math.round(box.height)],
+          viewBox: svg.getAttribute("viewBox"),
+          centre: Math.round((left + right) / 2),
+          top: Math.round(top),
+        };
+      });
+      expect(pie).toEqual({ size: [374, 360], viewBox: "0 0 374 360", centre: 187, top: 36 });
+    });
   });
 
   // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
