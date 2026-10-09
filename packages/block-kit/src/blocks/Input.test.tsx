@@ -133,6 +133,24 @@ describe("<Input> block", () => {
     expect(document.querySelector(".sbk-input__hint")?.textContent).not.toContain("Done..");
   });
 
+  // extra/payloads/dispatch-inputs: Slack's number and URL inputs dispatch on Enter without the
+  // hint; only a plain text input gets it (catalog/input/dispatches-actions).
+  it.each(["number_input", "url_text_input", "email_text_input"])(
+    "does not synthesize a hint for a dispatching %s",
+    (type) => {
+      render(
+        <BlockKitProvider>
+          <Input
+            block={block({ dispatch_action: true, element: { type, action_id: "a1" } })}
+            blockId="b1"
+            index={0}
+          />
+        </BlockKitProvider>,
+      );
+      expect(screen.queryByText("Press 'enter' to submit")).toBeNull();
+    },
+  );
+
   it("does not synthesize a hint for multiline inputs", () => {
     render(
       <BlockKitProvider>
