@@ -1,5 +1,6 @@
 import { type PointerEvent, useState } from "react";
 import { ChartTooltip } from "./ChartTooltip";
+import { useLastValue } from "./useLastValue";
 import { areaFillForIndex, colorForIndex, liftedColorForIndex } from "./palette";
 import { roundedBarPath, smoothLinePath } from "./paths";
 import { crispLine, formatTick, niceLinearScale } from "./scale";
@@ -95,6 +96,8 @@ export function CartesianChart({
     });
   }
   const hovered = hover?.index;
+  // The tooltip keeps the last category it showed while it fades out.
+  const shown = useLastValue(hover);
 
   return (
     <div className="sbk-chart" ref={ref}>
@@ -211,16 +214,17 @@ export function CartesianChart({
           ) : null}
         </g>
       </svg>
-      {hover ? (
+      {shown ? (
         <ChartTooltip
-          pointer={hover.pointer}
-          box={hover.box}
-          title={categories[hover.index]}
+          open={hover !== null}
+          pointer={shown.pointer}
+          box={shown.box}
+          title={categories[shown.index]}
           rows={series.map((s, si) => ({
             name: s.name,
             value:
-              s.data.find((d) => d.label === categories[hover.index])?.value ??
-              s.data[hover.index]?.value ??
+              s.data.find((d) => d.label === categories[shown.index])?.value ??
+              s.data[shown.index]?.value ??
               0,
             color: colorForIndex(si),
           }))}

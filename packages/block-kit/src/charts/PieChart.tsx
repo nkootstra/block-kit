@@ -1,6 +1,7 @@
 import { type PointerEvent, useState } from "react";
 import { ChartTooltip } from "./ChartTooltip";
 import { colorForIndex, liftedColorForIndex } from "./palette";
+import { useLastValue } from "./useLastValue";
 
 export interface PieSegment {
   label: string;
@@ -80,7 +81,9 @@ export function PieChart({ segments }: { segments: PieSegment[] }) {
     });
   }
 
-  const segment = hover ? segments[hover.index] : undefined;
+  // The tooltip keeps the last slice it showed while it fades out.
+  const shown = useLastValue(hover);
+  const segment = shown ? segments[shown.index] : undefined;
   return (
     <>
       <svg
@@ -107,11 +110,12 @@ export function PieChart({ segments }: { segments: PieSegment[] }) {
           />
         ))}
       </svg>
-      {hover && segment ? (
+      {shown && segment ? (
         <ChartTooltip
-          pointer={hover.pointer}
-          box={hover.box}
-          rows={[{ name: segment.label, value: segment.value, color: colorForIndex(hover.index) }]}
+          open={hover !== null}
+          pointer={shown.pointer}
+          box={shown.box}
+          rows={[{ name: segment.label, value: segment.value, color: colorForIndex(shown.index) }]}
         />
       ) : null}
     </>

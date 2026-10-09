@@ -2230,6 +2230,11 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           ),
         })),
       );
+    const visibleTooltips = (page: Page) =>
+      page.$$eval(
+        ".sbk-chart-tooltip",
+        (tips) => tips.filter((t) => getComputedStyle(t).visibility === "visible").length,
+      );
     const center = async (page: Page, selector: string, nth = 0) => {
       const box = (await page.locator(selector).nth(nth).boundingBox())!;
       // Whole pixels: Firefox and WebKit round the pointer's position.
@@ -2382,10 +2387,12 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
           const at = await center(page, ".sbk-chart__bar", 2);
           await page.mouse.move(at.x, at.y);
           await page.mouse.move(5, 5);
+          // The tooltip fades out (0.2s) rather than vanish.
+          await page.waitForTimeout(300);
           expect({
             bars: await paint(page, ".sbk-chart__bar", "fill"),
             pointer: await page.locator(".sbk-chart__pointer").count(),
-            tooltip: await page.locator(".sbk-chart-tooltip").count(),
+            tooltip: await visibleTooltips(page),
           }).toEqual({
             bars: [...Array(5).fill(base[0]), ...Array(5).fill(base[1])],
             pointer: 0,
@@ -2394,6 +2401,89 @@ describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
         });
       });
     }
+  });
+
+  // Slack's charts are ECharts, whose tooltip shows at once the first time (see "draws the tooltip
+  // on Slack's surface" above), then follows the pointer with a 0.4s slide and shows and hides with a 0.2s fade (cubic-bezier(0.23, 1, 0.32, 1)). Hidden
+  // for more than 500ms, it comes back with the fade only, where the pointer is.
+  describe("chart tooltip motion", () => {
+    const EASE = "cubic-bezier(0.23, 1, 0.32, 1)";
+    const motion = (page: Page) =>
+      page.locator(".sbk-chart-tooltip").evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          property: s.transitionProperty,
+          duration: s.transitionDuration,
+          ease: s.transitionTimingFunction,
+        };
+      });
+    const bars = async (options?: { reducedMotion?: boolean }) => {
+      const page = await harness.open(
+        await fixture("catalog/data-visualization/bar-multi-series"),
+        options,
+      );
+      const at = async (nth: number) => {
+        const box = (await page.locator(".sbk-chart__bar").nth(nth).boundingBox())!;
+        return { x: Math.round(box.x + box.width / 2), y: Math.round(box.y + box.height / 2) };
+      };
+      return { page, at };
+    };
+
+    it("slides the tooltip after the pointer and fades it, with ECharts' timing", async () => {
+      const { page, at } = await bars();
+      const first = await at(0);
+      await page.mouse.move(first.x, first.y);
+      const next = await at(2);
+      await page.mouse.move(next.x, next.y);
+      expect(await motion(page)).toEqual({
+        property: "opacity, visibility, transform",
+        duration: "0.2s, 0.2s, 0.4s",
+        ease: `${EASE}, ${EASE}, ${EASE}`,
+      });
+    });
+
+    it("fades the tooltip out when the pointer leaves", async () => {
+      const { page, at } = await bars();
+      const first = await at(0);
+      await page.mouse.move(first.x, first.y);
+      const next = await at(2);
+      await page.mouse.move(next.x, next.y);
+      await page.mouse.move(5, 5);
+      const tip = page.locator(".sbk-chart-tooltip");
+      // Leaving starts the fade; once it's done the tooltip is hidden.
+      const fading = await tip.evaluate((el) =>
+        el.getAnimations().some((a) => (a as CSSTransition).transitionProperty === "opacity"),
+      );
+      await page.waitForTimeout(300);
+      expect([fading, await tip.evaluate((el) => getComputedStyle(el).visibility)]).toEqual([
+        true,
+        "hidden",
+      ]);
+    });
+
+    it("brings the tooltip back with the fade only after a long hide", async () => {
+      const { page, at } = await bars();
+      const first = await at(0);
+      await page.mouse.move(first.x, first.y);
+      await page.mouse.move(5, 5);
+      await page.waitForTimeout(700);
+      const next = await at(4);
+      await page.mouse.move(next.x, next.y);
+      expect(await motion(page)).toEqual({
+        property: "opacity, visibility",
+        duration: "0.2s, 0.2s",
+        ease: `${EASE}, ${EASE}`,
+      });
+    });
+
+    it("keeps the tooltip from sliding when motion is reduced", async () => {
+      const { page, at } = await bars({ reducedMotion: true });
+      const first = await at(0);
+      await page.mouse.move(first.x, first.y);
+      const next = await at(2);
+      await page.mouse.move(next.x, next.y);
+      expect((await motion(page)).property).toBe("opacity, visibility");
+    });
   });
 
   // Measured in Block Kit Builder: a datetimepicker is a date field and a time field, each with its
