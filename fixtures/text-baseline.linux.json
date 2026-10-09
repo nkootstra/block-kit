@@ -408,21 +408,13 @@
   "catalog/section/markdown@mobile": [],
   "catalog/section/multi-conversations-select": [],
   "catalog/section/multi-conversations-select@dark": [],
-  "catalog/section/multi-conversations-select@dialog": [
-    "missing|Select conversations|1"
-  ],
-  "catalog/section/multi-conversations-select@dialog+dark": [
-    "missing|Select conversations|1"
-  ],
+  "catalog/section/multi-conversations-select@dialog": [],
+  "catalog/section/multi-conversations-select@dialog+dark": [],
   "catalog/section/multi-conversations-select@mobile": [],
   "catalog/section/multi-static-select": [],
   "catalog/section/multi-static-select@dark": [],
-  "catalog/section/multi-static-select@dialog": [
-    "missing|Select options|1"
-  ],
-  "catalog/section/multi-static-select@dialog+dark": [
-    "missing|Select options|1"
-  ],
+  "catalog/section/multi-static-select@dialog": [],
+  "catalog/section/multi-static-select@dialog+dark": [],
   "catalog/section/multi-static-select@mobile": [],
   "catalog/section/overflow": [],
   "catalog/section/overflow@dark": [],
@@ -812,12 +804,8 @@
   "contexts/file_input/modal-input@dark": [],
   "contexts/multi_static_select/accessory": [],
   "contexts/multi_static_select/accessory@dark": [],
-  "contexts/multi_static_select/accessory@dialog": [
-    "missing|Select items|1"
-  ],
-  "contexts/multi_static_select/accessory@dialog+dark": [
-    "missing|Select items|1"
-  ],
+  "contexts/multi_static_select/accessory@dialog": [],
+  "contexts/multi_static_select/accessory@dialog+dark": [],
   "contexts/multi_static_select/accessory@mobile": [],
   "contexts/multi_static_select/modal-input": [],
   "contexts/multi_static_select/modal-input@dark": [],
@@ -825,12 +813,8 @@
   "contexts/multi_static_select/modal-input@open+dark": [],
   "contexts/multi_users_select/accessory": [],
   "contexts/multi_users_select/accessory@dark": [],
-  "contexts/multi_users_select/accessory@dialog": [
-    "missing|Select users|1"
-  ],
-  "contexts/multi_users_select/accessory@dialog+dark": [
-    "missing|Select users|1"
-  ],
+  "contexts/multi_users_select/accessory@dialog": [],
+  "contexts/multi_users_select/accessory@dialog+dark": [],
   "contexts/multi_users_select/accessory@mobile": [],
   "contexts/multi_users_select/modal-input": [],
   "contexts/multi_users_select/modal-input@dark": [],
