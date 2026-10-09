@@ -7,7 +7,8 @@ import type { Page } from "playwright";
 import { parseReferenceName } from "./names";
 
 export interface State {
-  ours: (page: Page) => Promise<void>;
+  /** `reference` is the reference's page, open on its own when the state has a popover. */
+  ours: (page: Page, reference?: Page) => Promise<void>;
   reference?: (page: Page) => Promise<void>;
 }
 
@@ -68,8 +69,31 @@ export const OPENERS = {
   dialog: ".sbk-section__accessory .sbk-select__control",
 } as const;
 
+/** Whether the reference's first field (outside its popovers) was captured with a focus ring. */
+export function referenceFieldFocused(reference: Page): Promise<boolean> {
+  return reference.evaluate(() => {
+    const field = [...document.querySelectorAll<HTMLInputElement>("#sbk-reference input")].find(
+      (input) => !input.closest("[data-sbk-layer]"),
+    );
+    return !!field && getComputedStyle(field).boxShadow !== "none";
+  });
+}
+
 export const OPEN_STATES: Record<keyof typeof OPENERS, State> = {
-  open: { ours: (p) => p.locator(OPENERS.open).first().click() },
+  open: {
+    ours: async (p, reference) => {
+      const opener = p.locator(OPENERS.open).first();
+      await opener.click();
+      // Ours is a label, which focuses its input on any click. Slack's time picker field isn't,
+      // and capture.js opens it with scripted events, so most references show it unfocused (no
+      // ring, the time not selected); one opened with a real click shows Slack's ring on its
+      // input. Follow the reference: take the focus off ours (the list stays open) unless the
+      // reference's field has the ring.
+      if (reference && (await opener.evaluate((el) => el.matches(".sbk-timepicker__control"))))
+        if (!(await referenceFieldFocused(reference)))
+          await p.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    },
+  },
   confirm: { ours: (p) => p.locator(OPENERS.confirm).first().click() },
   dialog: { ours: (p) => p.locator(OPENERS.dialog).first().click() },
 };
