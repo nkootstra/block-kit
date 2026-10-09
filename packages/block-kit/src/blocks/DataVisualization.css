@@ -37,6 +37,10 @@
   border: 1px solid var(--sbk-dataviz-border);
   border-radius: 12px;
   overflow: hidden;
+  /* Slack doesn't narrow a chart below 400px: in a narrower block (a 320px phone message) the card
+     runs past the message, which cuts it off, so the plot keeps its desktop-like spacing and the
+     last category falls out of view. */
+  min-width: 400px;
 }
 
 .sbk-dataviz__title {
@@ -145,7 +149,12 @@
    per series (dot, name, and the value in black weight), each 13px tall and 10px apart. */
 .sbk-chart-tooltip {
   position: fixed;
+  /* Placed with a transform (ChartTooltip), so it can slide after the pointer. */
+  top: 0;
+  left: 0;
   z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
   padding: 10px;
   border: 1px solid var(--sbk-chart-tooltip-bg);
   border-radius: 4px;
@@ -156,6 +165,33 @@
   line-height: 1;
   white-space: nowrap;
   pointer-events: none;
+}
+
+.sbk-chart-tooltip--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ECharts' tooltip motion: a 0.2s fade and a 0.4s slide after the pointer, on its ease-out curve. */
+.sbk-chart-tooltip--animated {
+  transition:
+    opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.sbk-chart-tooltip--animated.sbk-chart-tooltip--fade-only {
+  transition:
+    opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sbk-chart-tooltip--animated {
+    transition:
+      opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+      visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  }
 }
 
 .sbk-chart-tooltip__title {

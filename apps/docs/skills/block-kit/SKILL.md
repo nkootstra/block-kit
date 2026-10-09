@@ -112,6 +112,10 @@ loadable URL and its size in bytes (shown as Slack's "(400 kB)", decimal kilobyt
 draws a resolved file at most 400 x 400, as Slack does, and without a resolver shows its alt-text
 placeholder.
 
+`imageSize: (url) => bytes` gives an `image_url` image block's size for the same caption; Slack
+shows the size of the image it downloaded, and block-kit doesn't download it, so without this the
+caption is left out.
+
 `directory: (source) => entries` lists the people and channels a users, conversations or channels
 select offers (`source` is `"users"`, `"conversations"` or `"channels"`), drawn as Slack's rows:
 `{ type: "user", id, name, realName?, avatarUrl?, self?, badge?, bot?, presence? }` or
@@ -162,6 +166,8 @@ These props, and `resolvers`, are functions:
 - **Hover menus on charts, images and tables** act in the page only, as in Slack, and never call
   `onAction`: a chart's View as table (a modal) and Download chart data (a `.tsv`), with Copy as
   image disabled; an image's Copy link and Hide image; a table's Copy table and Download table.
+- **Charts** are never narrower than 400px, as in Slack: in a narrower message the card runs
+  past the message, which cuts it off (the page doesn't scroll sideways).
 - **Unknown block types** render the block's `fallback` array in their place when it has one.
 
 ## Entry points

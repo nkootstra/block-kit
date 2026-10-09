@@ -99,6 +99,14 @@ charts always include zero in the y-axis range, so negative values extend below 
 pie charts clamp negative values to 0.
 :::
 
+## Narrow messages
+
+As in Slack, a chart card is never narrower than 400px. In a narrower message, such as Block Kit
+Builder's mobile preview, where blocks are 320px wide, the card keeps its 400px and runs past the
+message, which cuts it off at its edge: the plot keeps its spacing, a pie keeps its size, and the
+last category can fall out of view. The page doesn't scroll sideways, and the **More actions**
+button stays inside the message.
+
 ## Hover and actions
 
 As in Slack, pointing at a chart shows its values. Over a bar, line or area chart, a dashed line
@@ -106,6 +114,10 @@ marks the category under the pointer (the bar's band, or the nearest point) and 
 series' value there; a bar chart lifts that category's bars and a line chart lifts its lines. Over a
 pie, the slice under the pointer lifts, grows slightly and shows its label and value. Touch screens
 don't hover, so they don't show the tooltip.
+
+The tooltip moves as Slack's does: it appears at once the first time, then slides after the pointer
+(0.4s) and fades in and out (0.2s). After it has been hidden for more than half a second it comes
+back with the fade only. With reduced motion (`prefers-reduced-motion: reduce`) it only fades.
 
 The **More actions** button in the chart's top-right corner opens Slack's menu:
 

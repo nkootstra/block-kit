@@ -28,11 +28,38 @@ import { parsePayload } from "./payload";
  */
 const SLACK_FILE_PLACEHOLDER = "https://files.slack.com/files-pri/T0000001-F0000001/file";
 const SLACK_FILE_SIZE = 400_401;
+/**
+ * Block Kit Builder captions an image block's `image_url` with the size of the image it downloaded,
+ * so the render gives the sizes of the sample images (fixtures/assets/samples/; a sample's name
+ * carries its content hash, so its size never changes).
+ */
+const SAMPLE_BASE = "https://cdn.block-kit.dev/samples/";
+const SAMPLE_BYTES: Record<string, number> = {
+  "app-icon.81155d10.png": 641,
+  "beagle.e3711bc4.jpg": 207_759,
+  "bot-avatar.3d9f1d46.png": 598,
+  "cat.da842b96.jpg": 40_951,
+  "dinner-table.b8f41094.jpg": 305_583,
+  "kitten-tree.6f72129c.jpg": 208_116,
+  "kitten.4f40f3e3.jpg": 2282,
+  "laptop-icon.4575d6fc.png": 1890,
+  "mountain-lake.d12ac6fc.jpg": 42_701,
+  "palm-tree.3fcaecef.jpg": 102_321,
+  "plants.5b36fa8b.jpg": 221_056,
+  "play-icon.24cf386c.png": 758,
+  "portrait-2.bbcd2277.jpg": 2194,
+  "portrait.ab6c68cb.jpg": 1886,
+  "tacos.271c2dbf.jpg": 71_861,
+  "video-thumbnail.d894bef5.jpg": 24_581,
+  "warning-icon.491cc33b.png": 882,
+};
 const BUILDER_SAMPLE_FILES: Resolvers = {
   slackFile: (file) =>
     file.url === SLACK_FILE_PLACEHOLDER
       ? { url: SLACK_FILE_PLACEHOLDER, size: SLACK_FILE_SIZE }
       : undefined,
+  imageSize: (url) =>
+    url.startsWith(SAMPLE_BASE) ? SAMPLE_BYTES[url.slice(SAMPLE_BASE.length)] : undefined,
 };
 
 /**
