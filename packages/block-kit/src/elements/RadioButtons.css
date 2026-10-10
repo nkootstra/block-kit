@@ -16,7 +16,8 @@
   flex: 0 0 auto;
   width: 13px;
   height: 13px;
-  margin: 7px 7px 0 5px;
+  /* Slack's radio: 4px from the top of the 22px row, flush left, 12px before the text. */
+  margin: 4px 12px 0 0;
   accent-color: #000;
   cursor: pointer;
 }
