@@ -41,18 +41,18 @@
   },
   "catalog/actions/checkboxes": {
     "payload": "f3f37417e30c46da2b5cc96294b007086a70c3f79d0937f7e05b2858c3f12e8d",
-    "reference": "f92df150c75970aba3828350132dbd61475ba9eea9a3d81d9f002ba1f6b5fd4a",
-    "captured": "2026-10-07"
+    "reference": "bdf594bf6eacbca7487070b98f64ad36d84450d180cb391b8a37dd3a2ad0e7ce",
+    "captured": "2026-10-10"
   },
   "catalog/actions/checkboxes@dark": {
     "payload": "f3f37417e30c46da2b5cc96294b007086a70c3f79d0937f7e05b2858c3f12e8d",
-    "reference": "5c80ec1fb8483fc95c634f46bed461d5b81644dd2789ede9b30817df31e2681f",
-    "captured": "2026-10-07"
+    "reference": "32342660fc46274ed8c267dc5b4992182444f731d25e75232f5d835a7ddc4f0d",
+    "captured": "2026-10-10"
   },
   "catalog/actions/checkboxes@mobile": {
     "payload": "f3f37417e30c46da2b5cc96294b007086a70c3f79d0937f7e05b2858c3f12e8d",
-    "reference": "cc900d1350a0c27b808043c7a566789ab0badac52ae569b79a19048e1cf76209",
-    "captured": "2026-10-07"
+    "reference": "8e98c183e77b2843c627ecf7f6e8eff453a0f9ed4665d314cfebe21194747e18",
+    "captured": "2026-10-10"
   },
   "catalog/actions/datepickers": {
     "payload": "8142cbdf2d2a1cad4f6a47754b2847718c8da367a215a93f9eacfcb1e1e7f110",
@@ -106,18 +106,18 @@
   },
   "catalog/actions/radio-buttons": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "6c73331294a1032b925278132dcd3881a16b49796a4f36053a658fc0b71c9d30",
-    "captured": "2026-10-07"
+    "reference": "3a3ba0ec961634b665d0c24795f4f317d8f988c78634b0f2102092a8eb3bc1f0",
+    "captured": "2026-10-10"
   },
   "catalog/actions/radio-buttons@dark": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "daa393cb639f3c4be7c81004ac90d40ecb34b0ed0961d2d6b6d499dd38bfc70b",
-    "captured": "2026-10-07"
+    "reference": "fcff8324878b68cdc121f04008d12a25e6c1ff9fa89574966dfc985e99242c81",
+    "captured": "2026-10-10"
   },
   "catalog/actions/radio-buttons@mobile": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "6ba67b9fcc7c4eb53a022a208196c7c6bc8daeb5a0328a95c79c1c2c8601319e",
-    "captured": "2026-10-07"
+    "reference": "a37a3e18d13570bd8d8663e0baa3ba0f49b57f051d7faf8a94cc0e23ff5b2679",
+    "captured": "2026-10-10"
   },
   "catalog/actions/selects-with-initial-options": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
@@ -911,18 +911,18 @@
   },
   "catalog/input/checkboxes": {
     "payload": "5e18080db8432bc90cd8edc23c42363928958b2e18e2184464215f04a28d44f5",
-    "reference": "4b3f4ede6c9229cb26494d91633e3d41d1aef615de860c5441c3082545aac11d",
-    "captured": "2026-10-07"
+    "reference": "1dfc3c9980919091fd31f281aa5b8f7563a71ff0fd427fa131c8b8148038043c",
+    "captured": "2026-10-10"
   },
   "catalog/input/checkboxes@dark": {
     "payload": "5e18080db8432bc90cd8edc23c42363928958b2e18e2184464215f04a28d44f5",
-    "reference": "63655eca179b293d22fba7b6ad473bc7779e23ec8c8a1dda366cfd6e9dd3fccf",
-    "captured": "2026-10-07"
+    "reference": "381ba73f0a4af0a5bd7aee1472c74782a0efad0587614d137b71f5fe9d3925c4",
+    "captured": "2026-10-10"
   },
   "catalog/input/checkboxes@mobile": {
     "payload": "5e18080db8432bc90cd8edc23c42363928958b2e18e2184464215f04a28d44f5",
-    "reference": "1bec5e95b035de02f66d651b681f9a54a5c02ccac06f70e880d24e6afa92d5b1",
-    "captured": "2026-10-07"
+    "reference": "0de306f51c4222a45f1a367dc25fda3ba92991303b41e04199954435bf81cd7c",
+    "captured": "2026-10-10"
   },
   "catalog/input/datepicker": {
     "payload": "b69a49cd4e441b67260491a2786c402ae76587e2bd65781360821c7ee2e857cd",
@@ -1061,18 +1061,18 @@
   },
   "catalog/input/radio-buttons": {
     "payload": "d979bb6465d1b4c0c19a7cd2ea734bfcb663d57b14fdee97c6004a54fe4b3011",
-    "reference": "f507462d4fc5c95c59a351f1066ee3ec0e121ab30e6c68ebc8025000d528ab70",
-    "captured": "2026-10-07"
+    "reference": "13893d83095d975aad28368cccb644a241bfd987a62f9cc8b51ae3145897ca25",
+    "captured": "2026-10-10"
   },
   "catalog/input/radio-buttons@dark": {
     "payload": "d979bb6465d1b4c0c19a7cd2ea734bfcb663d57b14fdee97c6004a54fe4b3011",
-    "reference": "3874583f23019dd0450594c129bb14cc01dc6126594fc576df4cb4d9175adbda",
-    "captured": "2026-10-07"
+    "reference": "4e51dbec517787c2ae0a686b77eceb6bc19c322f0abaf19041352f267aed57dd",
+    "captured": "2026-10-10"
   },
   "catalog/input/radio-buttons@mobile": {
     "payload": "d979bb6465d1b4c0c19a7cd2ea734bfcb663d57b14fdee97c6004a54fe4b3011",
-    "reference": "55e146a29d78b48a6e0bdbb6db9957985e425fafab5d5caeb8e6704202a1f765",
-    "captured": "2026-10-07"
+    "reference": "9237603e8f4fb44f9cfda39c536d94607fc2932772f22df5f680e379d5171359",
+    "captured": "2026-10-10"
   },
   "catalog/input/static-select": {
     "payload": "7d931d0a273f2b7e8d2e8b5d694a8399b8647b21c0f0d1b82b500ddf9d9e35f6",
@@ -1336,18 +1336,18 @@
   },
   "catalog/section/checkboxes": {
     "payload": "3560c92e83dd60ed7ce86ab427b433cd25811f68377ba42611468b5838d9c2d9",
-    "reference": "0f1bc5215b269e62208b1bc95669e6b3d387a35cb9e449ee4ef7780037e63445",
-    "captured": "2026-10-07"
+    "reference": "fa7eb6c2dc60b24c63cece822e80d3ef7076c2625c065cbe36118652fe52c9e5",
+    "captured": "2026-10-10"
   },
   "catalog/section/checkboxes@dark": {
     "payload": "3560c92e83dd60ed7ce86ab427b433cd25811f68377ba42611468b5838d9c2d9",
-    "reference": "f2d66b66d1ea812e340048c5ae7d71da6cea0ad6fd9e6c54dc2b02372fdbe06f",
-    "captured": "2026-10-07"
+    "reference": "c8d7fe0118a1b557355b8571474eb162880f7a69d9c5290472adbb24f45576c7",
+    "captured": "2026-10-10"
   },
   "catalog/section/checkboxes@mobile": {
     "payload": "3560c92e83dd60ed7ce86ab427b433cd25811f68377ba42611468b5838d9c2d9",
-    "reference": "76f1bf9856168eb81b2a988b77cf60e9c8774e09d8942a121130a2668a109726",
-    "captured": "2026-10-07"
+    "reference": "ae2be80c51ab1729fdd3815342918a80bc346ca8dd2c3b553dde71754e40426c",
+    "captured": "2026-10-10"
   },
   "catalog/section/datepicker": {
     "payload": "ce3567b872029be16af4163077637a70d972feb7a2db3f1b9425eaf6bc06a3b6",
@@ -1511,18 +1511,18 @@
   },
   "catalog/section/radio-buttons": {
     "payload": "71603d252812165950048fce57b06f15e58b7f19640fb47091ea25da96dc0cfc",
-    "reference": "6c44ca30acc2a230b9d08e4bfb87f69450041d5bb6c7eb1a49634830da660c46",
-    "captured": "2026-10-07"
+    "reference": "de94671f4cfff8d5f2c2180a752d42ff3a74d391e40b158e3ea9d24d7c9d1c2f",
+    "captured": "2026-10-10"
   },
   "catalog/section/radio-buttons@dark": {
     "payload": "71603d252812165950048fce57b06f15e58b7f19640fb47091ea25da96dc0cfc",
-    "reference": "e640e1ad2bb37e8596bc3184b652978a388d82b6e5b46d01f1891d4899a91571",
-    "captured": "2026-10-07"
+    "reference": "45d93169cc2e7bbb70cb0b8a7b573dae5668e65bac70fecb0782370b78db1409",
+    "captured": "2026-10-10"
   },
   "catalog/section/radio-buttons@mobile": {
     "payload": "71603d252812165950048fce57b06f15e58b7f19640fb47091ea25da96dc0cfc",
-    "reference": "61aa2637d12564d94fc1daf60b06dfd6a4ae11615a8a59d1ee2b3be799d67ff8",
-    "captured": "2026-10-07"
+    "reference": "2122e5d473183b48d9fb6a68ed77456151c286c3774a5f8c7257f8080f1a53c7",
+    "captured": "2026-10-10"
   },
   "catalog/section/slack-image": {
     "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
@@ -1966,53 +1966,53 @@
   },
   "contexts/checkboxes/accessory": {
     "payload": "f3cfb8e5b18cd1225458184bcb57ec0cc0d8fe63469013a1461aaa49618fa9d0",
-    "reference": "b2f20cf9cfd0acd65d37a9ae5b392ef1b87507cd4f1f4b674569a90d5cef70bf",
-    "captured": "2026-10-07"
+    "reference": "b00b7c1561b365364f255250b365c573a5a3072179f69b08989c39638837934e",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/accessory@dark": {
     "payload": "f3cfb8e5b18cd1225458184bcb57ec0cc0d8fe63469013a1461aaa49618fa9d0",
-    "reference": "9068c3d83528960838b57c2e782107d64941b3698fdce0c02aa242f5c0cf2fff",
-    "captured": "2026-10-07"
+    "reference": "df71d63dcf9f8aa44bddee9712f3ebd4c20bb487e31c258af563451f93fcba2c",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/accessory@mobile": {
     "payload": "f3cfb8e5b18cd1225458184bcb57ec0cc0d8fe63469013a1461aaa49618fa9d0",
-    "reference": "8379fa37b9eb08f4ed3e4a311e9915e2c29dcbed73fe38f4d4bc801368d537b8",
-    "captured": "2026-10-07"
+    "reference": "f41b779821182947937b22cbcbe8fe1884612d1775fc75c49d94accaab18d0c6",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/actions": {
     "payload": "6a5cbcdd27594f5c8eacd6c4b8ca921786cac1f1d6dc1434135033c140dba392",
-    "reference": "1a3396d7c6945fa807a7cdcf2f791b4adce0167658e920a907d4d4a9d9996996",
-    "captured": "2026-10-07"
+    "reference": "0cb4e82f426e2940fcb35dd722a80b5342179c431942264d4e9f063554aa665e",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/actions@dark": {
     "payload": "6a5cbcdd27594f5c8eacd6c4b8ca921786cac1f1d6dc1434135033c140dba392",
-    "reference": "edc4049c0889820c33647ff54c81f27489e57a86292fd27bbc8a232c3644ad8f",
-    "captured": "2026-10-07"
+    "reference": "1326e48b2f48558b52f644e7cb0011d6b31af1f1424e917acf57bd2c028858e2",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/actions@mobile": {
     "payload": "6a5cbcdd27594f5c8eacd6c4b8ca921786cac1f1d6dc1434135033c140dba392",
-    "reference": "ba41c557643d2010acbbc83404e7752e75a466ea33f925f5def72307409cc16b",
-    "captured": "2026-10-07"
+    "reference": "264dad931b5a8fe7f0cdf3b39f987bef023204db1d70d72bf60073d150545221",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/home": {
     "payload": "114ea8df750431a9685ade6c7bb07b613316b90a8bf312a1098e652133599b95",
-    "reference": "ca9d2c05c51e7df5aa9a7185339c77a1337647e018baa2e77803a122478e172c",
-    "captured": "2026-10-07"
+    "reference": "25386d4b4b8257c039371ced325618466ddb9ca5f8ec8188c71a1ebda7f569fa",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/home@dark": {
     "payload": "114ea8df750431a9685ade6c7bb07b613316b90a8bf312a1098e652133599b95",
-    "reference": "1b0a5b825225cfff19dbb9d8f0b4db348e504e493e8a13058747160a80e682f4",
-    "captured": "2026-10-07"
+    "reference": "d6d158a3377e32ed26e45b6df282a0e6a511f22f57e2e03666b6f4749db34437",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/modal-input": {
     "payload": "ba4b88959385159e940c831abc9d50704b85ad529374d8458a23e3e97f9adf57",
-    "reference": "0de35ac8569ad2d8856a7d0767ce296d66e96cc6b9624eb577931c454022915c",
-    "captured": "2026-10-07"
+    "reference": "8506cc595628794a4055d3349901ea43c75320c5981b1245db3d0ad780d238ab",
+    "captured": "2026-10-10"
   },
   "contexts/checkboxes/modal-input@dark": {
     "payload": "ba4b88959385159e940c831abc9d50704b85ad529374d8458a23e3e97f9adf57",
-    "reference": "4899cb1c987c85617265bc562e3a38724ab7443e92c0c422b237cf8384fdc179",
-    "captured": "2026-10-07"
+    "reference": "d171a0aabaa2f0822662e1c26011e4ae45c3dfc342e23c00d8fdcc0b3ee1291e",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/accessory": {
     "payload": "7bdb07668554993856ff59ee026585ec32adeb5330c1fae3a5f352241f52b27d",
@@ -2541,53 +2541,53 @@
   },
   "contexts/radio_buttons/accessory": {
     "payload": "fac862c7e2ef9fe8762c6acc0605458064a7859b1a9f3c6b17705ecb948c07ea",
-    "reference": "385f91543e9016b7ccab625b89fad8d5a3c4a94ff7bbabed92d307fd95156dee",
-    "captured": "2026-10-07"
+    "reference": "a849f6e5b5a2ba96d5c7c3b4b86a098e2f41271fdfadf283467a670884f71aba",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/accessory@dark": {
     "payload": "fac862c7e2ef9fe8762c6acc0605458064a7859b1a9f3c6b17705ecb948c07ea",
-    "reference": "66bb5eecdf6b04111f577d54ea34aab330a473a5277ffd4cf93212b270655951",
-    "captured": "2026-10-07"
+    "reference": "95879d45df119f08fdcd4b4b1218e3e86a110c61d69d9fb755bac8f6d3fa275c",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/accessory@mobile": {
     "payload": "fac862c7e2ef9fe8762c6acc0605458064a7859b1a9f3c6b17705ecb948c07ea",
-    "reference": "0cc3511132d2f947b1cbd53af8225644361fdf762afec75a388f2ff55e9e0c93",
-    "captured": "2026-10-07"
+    "reference": "c198e3d7538f9cfc1514eaf1b626c85e50a4c92fbc7fda4ade5ee7a6e5fe4f90",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/actions": {
     "payload": "aa9cfd9e90c7d374a51adc6fbd9beffb891b4c52ec5db8eb36a5e3e8cc5f9f91",
-    "reference": "4971f234cd81fc913cffd52084aca28b74aaa282c7950d5a305246dada38e216",
-    "captured": "2026-10-07"
+    "reference": "6a7a317b53c9ee023f123ee11d9db38a36fb6c131231977771ca3d407a35b08b",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/actions@dark": {
     "payload": "aa9cfd9e90c7d374a51adc6fbd9beffb891b4c52ec5db8eb36a5e3e8cc5f9f91",
-    "reference": "93513da1658670cb3dba37ad6ff5fb7055c51febebcf688dc206c70e09e9736f",
-    "captured": "2026-10-07"
+    "reference": "b40409da9c45a84e92048a8370c40fe6fca6a6a66776d7fa41cd9d94eef9671d",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/actions@mobile": {
     "payload": "aa9cfd9e90c7d374a51adc6fbd9beffb891b4c52ec5db8eb36a5e3e8cc5f9f91",
-    "reference": "d8a0720401509233185268a3f267da1566573814ced807ad8b2314ab5cc9bb53",
-    "captured": "2026-10-07"
+    "reference": "3acf6d9aa2752ce8e43a7a63ffc31bd3585f22b9bd57bec9f66a617f40a3b26f",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/home": {
     "payload": "441309bd65ab4b35c89c98b8aa5abf69a704bdd5eb21a2a364a5c2a709a8c40e",
-    "reference": "5638faedd6e5a2567f382cfa6fc2da6353c4055036a6ee3de7ec668cbfc3fb40",
-    "captured": "2026-10-07"
+    "reference": "a4c9e3f2b5528a59fc5a0257a13fadd5592790174d2910fae344df209afc1b39",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/home@dark": {
     "payload": "441309bd65ab4b35c89c98b8aa5abf69a704bdd5eb21a2a364a5c2a709a8c40e",
-    "reference": "83d28cbc89c5a22508663f036d7b4fdb9c2ce127f4d401fe737595887b3ce4eb",
-    "captured": "2026-10-07"
+    "reference": "4b03485407cce6a210cddc04ef93d16afbc694b7c69ee9a7be26f98b642e9a26",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/modal-input": {
     "payload": "95bee96ccc9965830c0833e03df39e8b2f0b9c66e0b1c8ca7292cd0a03c0af04",
-    "reference": "9145df3a6cdac6307b04f30b2e9d395196db762fbbd17f9a8d17951e5020d2b5",
-    "captured": "2026-10-07"
+    "reference": "38f5ce3cc306115477b3729b0e4c56cd0a5ee2a6359eebfd5a1b61d284f513a3",
+    "captured": "2026-10-10"
   },
   "contexts/radio_buttons/modal-input@dark": {
     "payload": "95bee96ccc9965830c0833e03df39e8b2f0b9c66e0b1c8ca7292cd0a03c0af04",
-    "reference": "067b9b586f5848a04da12fd8fa3e2ab34e7cded020554bb0eefb037ff5ef7d8f",
-    "captured": "2026-10-07"
+    "reference": "37136db02fee6e09aeec1944c69099bdd21c70e3c60cb81ff854fefb0d3ad861",
+    "captured": "2026-10-10"
   },
   "contexts/rich_text_input/modal-input": {
     "payload": "7010395e16973f4f269d76de8e19663a592478e84a9ef314699b7c20752cdd93",
@@ -3056,23 +3056,23 @@
   },
   "extra/modal/form": {
     "payload": "ccbeda1e0a9b281e86d3e61ba5d23ac01e07b5c00ad4779cb7f7adf383659c6e",
-    "reference": "c616c01399b4b9b415fb97d04b714a77cb40a5dc86ceea3928e933f2b5c1526c",
-    "captured": "2026-10-09"
+    "reference": "b958fb8f7f3318e877737944d1bc1047d732739d82cab6941608f1c9d2522f61",
+    "captured": "2026-10-10"
   },
   "extra/modal/form@dark": {
     "payload": "ccbeda1e0a9b281e86d3e61ba5d23ac01e07b5c00ad4779cb7f7adf383659c6e",
-    "reference": "5edcb482b27e3c1068521c72404e823da0adba3f42f0655e415be579291dcfc7",
-    "captured": "2026-10-09"
+    "reference": "9ba76c926ec688c445461846e8dfc8af4933386a6c339af89324e164723555ab",
+    "captured": "2026-10-10"
   },
   "extra/modal/form@open": {
     "payload": "ccbeda1e0a9b281e86d3e61ba5d23ac01e07b5c00ad4779cb7f7adf383659c6e",
-    "reference": "31cf9c9822271957a851770331fbfbdb8fdab07314abd13955608683dcedb145",
-    "captured": "2026-10-09"
+    "reference": "8cb2d9b30fc956acf9560599db845c1cf7e5f56807b98de2d077360131630e3c",
+    "captured": "2026-10-10"
   },
   "extra/modal/form@open+dark": {
     "payload": "ccbeda1e0a9b281e86d3e61ba5d23ac01e07b5c00ad4779cb7f7adf383659c6e",
-    "reference": "f6d51e5f5aebdab7333a60186f203e33ecd9ebc6b569c2443023b87dbbe54643",
-    "captured": "2026-10-09"
+    "reference": "ac81a34c304ee20d0181aad1a9918aa23dc956d0802d24e09ed8f750efb649a2",
+    "captured": "2026-10-10"
   },
   "extra/modal/rich-and-file": {
     "payload": "da0bf26d945a72ff8ae94ba75e41b40ba5c759fd18bb65b42c5b79369a25b2d1",
@@ -3101,18 +3101,18 @@
   },
   "extra/payloads/choices": {
     "payload": "d5d779158508ca100dfb2cf8d130aa0266c28ae2557ea1a651c8190298970bab",
-    "reference": "48753d60a2f5f48f899c26879a91a4b380c41b86416f8b6597f226271641e68e",
-    "captured": "2026-10-07"
+    "reference": "2ded403ca4434de5bdb806d86ea2cce798794378dc4903816f33e361c7f2220f",
+    "captured": "2026-10-10"
   },
   "extra/payloads/choices@dark": {
     "payload": "d5d779158508ca100dfb2cf8d130aa0266c28ae2557ea1a651c8190298970bab",
-    "reference": "15c8fad9f3aa791d764098ecc90f093f9540f5c14787667dc98685b1bdb81acf",
-    "captured": "2026-10-07"
+    "reference": "26c9635f1e78e58edbd87e40ad1113ee156db707572db3c2dd7d6e24ebec4bcb",
+    "captured": "2026-10-10"
   },
   "extra/payloads/choices@mobile": {
     "payload": "d5d779158508ca100dfb2cf8d130aa0266c28ae2557ea1a651c8190298970bab",
-    "reference": "33ee3b2a599161091b57342601e141f7b8e34c8d89d8c3c2abbbbd76958337b3",
-    "captured": "2026-10-07"
+    "reference": "1eb5795857d418973f65328b90e8830abc53d313d23cd2c9c37cff6e1d75ec02",
+    "captured": "2026-10-10"
   },
   "extra/payloads/dispatch-inputs": {
     "payload": "b8a006ed7f0cde3862ae8f7f090fb42ce3c09a0a28b2dca921e29b13a475e807",

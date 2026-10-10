@@ -191,10 +191,14 @@ async ({
     }
   };
 
-  // References are captured at a 1440px viewport, where the message preview is 512px wide.
-  if (!adapter && viewport && win.innerWidth !== viewport)
+  // References are captured with the Builder's preview at its full width: a message 512px wide
+  // (400px in the Mobile preview), a modal 520px, App Home 512px. A window a few pixels off 1440 still
+  // gets those, but a narrower one (or DevTools' device mode) squeezes the preview, so each capture
+  // is checked against them below rather than the window against an exact width.
+  const PREVIEW_WIDTH = { message: 512, modal: 520, home: 512 };
+  if (!adapter && viewport && win.innerWidth < viewport - 8)
     throw new Error(
-      `resize the window so the viewport is ${viewport}px wide (it's ${win.innerWidth})`,
+      `make the window wider: the viewport is ${win.innerWidth}px, the preview needs about ${viewport}px`,
     );
 
   // Late in a long session the Builder can load a stylesheet that repeats rules it already has.
@@ -250,6 +254,26 @@ async ({
       ),
     );
 
+  // Key order doesn't matter: the Builder re-serializes the payload into its URL.
+  const canonical = (value) =>
+    Array.isArray(value)
+      ? value.map(canonical)
+      : value && typeof value === "object"
+        ? Object.fromEntries(
+            Object.keys(value)
+              .sort()
+              .map((key) => [key, canonical(value[key])]),
+          )
+        : value;
+  const sameJson = (a, b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
+  const shown = () => {
+    try {
+      return JSON.parse(decodeURIComponent(win.location.hash.slice(1)));
+    } catch {
+      return undefined;
+    }
+  };
+
   const results = {};
   let previous = "";
   let previousPayload;
@@ -272,6 +296,15 @@ async ({
     // for it to differ from the last capture.
     const same = JSON.stringify(payload) === previousPayload;
     if (!adapter) await settled(same ? undefined : previous);
+    // Switching from a modal back to a message, the Builder has kept showing the modal: the
+    // capture then froze the previous item under this name. Check the Builder's own record of
+    // what it shows (its URL) against the payload, reload once if it differs, then give up.
+    if (!adapter && !sameJson(shown(), swap(payload))) {
+      await builder.load(swap(payload));
+      await settled(previous);
+      if (!sameJson(shown(), swap(payload)))
+        throw new Error(`${name}: the Builder kept showing the previous payload`);
+    }
     previousPayload = JSON.stringify(payload);
 
     if (want.interaction && OPENERS[want.interaction]) {
@@ -298,7 +331,17 @@ async ({
           `(${repeated.slice(0, 3).join("; ")}), which reorders the cascade; reload the Builder, ` +
           "paste snapshot.js and capture.js again, and resume",
       );
-    results[name] = await snap(win);
+    const html = await snap(win);
+    if (!adapter) {
+      const meta = JSON.parse(/id="sbk-reference-meta">(\{.*?\})</.exec(html)?.[1] ?? "{}");
+      const expected = want.mobile ? 400 : PREVIEW_WIDTH[meta.surface];
+      if (expected && meta.width !== expected && !want.interaction)
+        throw new Error(
+          `${name}: the Builder's preview is ${meta.width}px wide, not ${expected}px; make the ` +
+            "window wider (and turn off DevTools' device mode), then capture again",
+        );
+    }
+    results[name] = html;
     previous = preview()?.innerHTML ?? "";
 
     if (want.interaction) {
