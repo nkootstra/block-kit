@@ -93,4 +93,26 @@ describe("popovers", () => {
     expect(top).toBeGreaterThanOrEqual(0);
     expect(top + 417).toBeLessThanOrEqual(500);
   });
+
+  it("puts a calendar right-aligned to a fractional-width field on a whole pixel", () => {
+    // Slack's datepicker field is 194.5px wide; its 349px calendar is right-aligned to it, which
+    // would start it on a half pixel.
+    vi.spyOn(document.documentElement, "clientWidth", "get").mockReturnValue(1200);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      if (this.classList.contains("sbk-popover")) return DOMRect.fromRect({ x: 0, y: 0 });
+      if (this.parentElement?.classList.contains("sbk-popover"))
+        return DOMRect.fromRect({ x: -154.5, y: 0, width: 349, height: 372 });
+      return DOMRect.fromRect({ x: 300, y: 40, width: 194.5, height: 28 });
+    });
+    render(
+      <BlockKitProvider>
+        <Element element={cases[0]!.element} blockId="b" />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(document.body.querySelector("input")!);
+    // 300 - 154.5 = 145.5 rounds to 146, so the layer moves half a pixel right.
+    expect(document.querySelector<HTMLElement>(POPUP)!.style.left).toBe("300.5px");
+  });
 });
