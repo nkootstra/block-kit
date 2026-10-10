@@ -33,15 +33,20 @@ async (win = window) => {
   // leave it out, and the replay would resolve 0.5em at Slack's 15px. So each probe sits in a
   // parent at the element's parent's font size and takes the element's own font size, except for
   // `font-size` itself, which defaults relative to the parent.
+  // An <input>'s defaults depend on its type: a checkbox or radio gets a 3px 3px 3px 4px margin
+  // where a text field has none. Probed as a plain <input>, Slack's zero margin on a checkbox
+  // matched the text field's default and was left out, and the replay put the box 3px lower.
   const defaults = new Map();
   const defaultsFor = (el, fontSize, parentFontSize) => {
-    const key = `${el.namespaceURI}|${el.localName}|${fontSize}|${parentFontSize}`;
+    const type = el.localName === "input" ? (el.getAttribute?.("type") ?? "") : "";
+    const key = `${el.namespaceURI}|${el.localName}|${type}|${fontSize}|${parentFontSize}`;
     if (!defaults.has(key)) {
       const probeIn = (ownFontSize) => {
         const wrapper = fdoc.createElement("div");
         if (parentFontSize) wrapper.style.fontSize = parentFontSize;
         fdoc.body.appendChild(wrapper);
         const probe = fdoc.createElementNS(el.namespaceURI, el.localName);
+        if (type) probe.setAttribute("type", type);
         if (ownFontSize && probe.style) probe.style.fontSize = ownFontSize;
         (el.namespaceURI === "http://www.w3.org/2000/svg" && el.localName !== "svg"
           ? wrapper.appendChild(fdoc.createElementNS(el.namespaceURI, "svg"))

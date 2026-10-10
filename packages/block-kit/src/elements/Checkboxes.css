@@ -17,7 +17,8 @@
   flex: 0 0 auto;
   width: 14px;
   height: 14px;
-  margin: 6px 4px 2px 4px;
+  /* Slack's box: 3px from the top of the 22px row, flush left, 8px before the text. */
+  margin: 3px 8px 5px 0;
   border: 1.5px solid var(--sbk-button-border);
   border-radius: 4px;
   background: var(--sbk-bg);

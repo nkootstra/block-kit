@@ -102,6 +102,8 @@ const REAL_BUILDER = `<!doctype html><html><body>
           const mobile = window.mobile && cls === "p-bkb_preview__message";
           document.getElementById("stage").innerHTML =
             '<div class="' + cls + '" style="width:' + (mobile ? 400 : 512) + 'px">' + v + "</div>";
+          // The Builder keeps the payload it shows in its URL.
+          location.hash = encodeURIComponent(JSON.stringify(payload));
         }, 50);
       },
     };
