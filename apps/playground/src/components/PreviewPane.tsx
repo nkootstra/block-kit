@@ -30,10 +30,17 @@ const PHONE = "@media (max-width: 800px)";
 
 const styles = stylex.create({
   // On a phone the pane scrolls as one column (toolbar, preview, payload), so a long payload
-  // never squeezes the preview away.
+  // never squeezes the preview away. Its rows are `max-content`, not `auto`: the pane has a
+  // fixed height, and `auto` rows shrink to share it, which let a long preview paint over the
+  // payload below it. The column is pinned to the pane's width: as an `auto` column it grew to
+  // fit a wide block (a carousel), pushing the preview and toolbar off the side of a phone.
   pane: {
     display: "grid",
-    gridTemplateRows: { default: "auto 1fr auto", [PHONE]: "auto auto auto" },
+    gridTemplateColumns: "minmax(0, 1fr)",
+    gridTemplateRows: {
+      default: "auto 1fr auto",
+      [PHONE]: "max-content max-content max-content",
+    },
     alignContent: "start",
     minWidth: 0,
     minHeight: 0,
@@ -49,7 +56,7 @@ const styles = stylex.create({
   // The room around the preview: the message, modal or Home tab sits in a frame on a well, as
   // the docs show it, rather than against the editor.
   stage: {
-    minHeight: 0,
+    minHeight: { default: 0, [PHONE]: "auto" },
     overflow: { default: "auto", [PHONE]: "visible" },
     padding: { default: 32, [PHONE]: 16 },
   },
