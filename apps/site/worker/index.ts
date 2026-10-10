@@ -3,6 +3,9 @@
 // - `Accept: text/markdown` on the home page gets `/index.md` (pages/index.md.ts).
 // - A missing page answers 404 with `/404.md` to a client that asks for Markdown, and with the
 //   RFC 9457 problem document in `/404.json` to one that asks for JSON or requests a `.json` URL.
+// - The home page names its machine-readable companions in a `Link` header (RFC 8288), for agents
+//   that read headers rather than HTML: llms.txt, its Markdown copy, and the docs' API catalog
+//   (RFC 9727), which lists the docs search API and MCP server with their descriptions.
 // Browsers keep getting the HTML page and 404 page. `run_worker_first` in wrangler.jsonc keeps the
 // Worker off the build assets, images and text files, which are served straight from the assets.
 // Kept in step with the docs' Worker (apps/docs/worker/index.ts), which does the same for its pages.
@@ -13,6 +16,19 @@ interface Env {
 
 const MARKDOWN = "text/markdown; charset=utf-8";
 const PROBLEM = "application/problem+json";
+const DOCS = "https://docs.block-kit.dev";
+
+const DISCOVERY = [
+  `</llms.txt>; rel="describedby"; type="text/plain"`,
+  `<${DOCS}/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json; profile=\\"https://www.rfc-editor.org/info/rfc9727\\""`,
+];
+
+// The home page's `Link` header. The HTML page also points at its Markdown copy, and the copy names
+// the page as canonical.
+const HOME_LINKS = {
+  html: [...DISCOVERY, `</index.md>; rel="alternate"; type="text/markdown"`].join(", "),
+  markdown: [...DISCOVERY, `<https://block-kit.dev/>; rel="canonical"`].join(", "),
+};
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -23,11 +39,17 @@ export default {
 
     if (wantsMarkdown && markdownUrl) {
       const markdown = await env.ASSETS.fetch(new Request(markdownUrl, request));
-      if (markdown.ok) return withVaryAccept(withType(markdown, MARKDOWN, 200, request));
+      if (markdown.ok) {
+        const response = withVaryAccept(withType(markdown, MARKDOWN, 200, request));
+        return isHome(request) ? withLink(response, HOME_LINKS.markdown) : response;
+      }
     }
 
     const response = await env.ASSETS.fetch(request);
-    if (response.status !== 404) return withVaryAccept(response);
+    if (response.status !== 404) {
+      const result = withVaryAccept(response);
+      return isHome(request) && response.ok ? withLink(result, HOME_LINKS.html) : result;
+    }
 
     if (wantsJsonError(request, accept)) return notFound(env, request, "/404.json", PROBLEM);
     if (wantsMarkdown || new URL(request.url).pathname.endsWith(".md")) {
@@ -86,6 +108,16 @@ function withType(response: Response, type: string, status: number, request: Req
   const headers = new Headers(response.headers);
   headers.set("Content-Type", type);
   return new Response(request.method === "HEAD" ? null : response.body, { status, headers });
+}
+
+function isHome(request: Request): boolean {
+  return new URL(request.url).pathname === "/";
+}
+
+/** `response` with `links` as its `Link` header. */
+function withLink(response: Response, links: string): Response {
+  response.headers.set("Link", links);
+  return response;
 }
 
 // The same URL now has several representations, so caches must key on Accept.
