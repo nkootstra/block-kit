@@ -89,8 +89,12 @@ export function Popover({
           Math.min(0, room - (contentLeft + content.width)),
         );
         left += shift;
+        // Slack places its popovers on whole pixels; a calendar right-aligned to a field 194.5px
+        // wide would otherwise start on a half pixel and blur its text.
+        const placedLeft = left + content.left - layerLeft;
+        left += Math.round(placedLeft) - placedLeft;
       }
-      setPosition({ top, left, width: a.width });
+      setPosition({ top: Math.round(top), left, width: a.width });
     }
     place();
     window.addEventListener("scroll", place, true);
