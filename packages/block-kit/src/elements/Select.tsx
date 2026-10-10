@@ -414,6 +414,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     // The button select opens on its chosen row, or on the "--placeholder--" row while nothing is
     // chosen.
     initialIndex: typeable || placeholderRow ? 0 : Math.max(0, flatOptions.findIndex(isSelected)),
+    // Opened with a click, Slack's multi-select highlights no row (Block Kit Builder).
+    clickedIndex: multi ? -1 : undefined,
     // Opened on a chosen option, Slack's first arrow key moves on from it (Block Kit Builder).
     holdFirstArrow: flatOptions.findIndex(isSelected) < 0 || query.trim() !== "",
     onChoose: (i) => {
@@ -664,7 +666,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
           // Slack's button select takes focus on a click, so the arrow keys move its highlight;
           // Safari doesn't focus a clicked button by itself.
           if (buttonSelect) e.currentTarget.focus();
-          setOpen((o) => !o);
+          combo.toggleFromTrigger(e);
         }}
         role={buttonSelect ? "combobox" : undefined}
         aria-haspopup="listbox"

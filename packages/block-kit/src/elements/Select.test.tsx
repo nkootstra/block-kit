@@ -748,6 +748,32 @@ describe("<Select> list states", () => {
     ).toBeNull();
   });
 
+  it("opens a clicked multi-select with no row highlighted, as Slack does", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              ...static3,
+              type: "multi_static_select",
+              options: [opt("a", "Alpha"), opt("b", "Bravo")],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const control = document.querySelector(".sbk-select__control")!;
+    // A pointer click (`detail` 1), not the button's Enter or Space.
+    fireEvent.click(control, { detail: 1 });
+    expect(document.querySelector("[data-active]")).toBeNull();
+    expect(screen.queryByText("Enter")).toBeNull();
+    // The first arrow key highlights the first row in the keyboard (blue) highlight.
+    fireEvent.keyDown(control, { key: "ArrowDown" });
+    const alpha = screen.getByText("Alpha").closest("[data-active]");
+    expect([Boolean(alpha), alpha?.hasAttribute("data-typed")]).toEqual([true, false]);
+  });
+
   it("separates option groups with a divider", () => {
     const input = renderSelect({
       ...static3,
