@@ -2,18 +2,8 @@
   "catalog/actions/all-selects": [],
   "catalog/actions/all-selects@dark": [],
   "catalog/actions/all-selects@mobile": [],
-  "catalog/actions/all-selects@open": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Two|1",
-    "extra|User Four|1"
-  ],
-  "catalog/actions/all-selects@open+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Two|1",
-    "extra|User Four|1"
-  ],
+  "catalog/actions/all-selects@open": [],
+  "catalog/actions/all-selects@open+dark": [],
   "catalog/actions/button": [],
   "catalog/actions/button@dark": [],
   "catalog/actions/button@mobile": [],
@@ -266,21 +256,13 @@
   "catalog/input/multi-static-select": [],
   "catalog/input/multi-static-select@dark": [],
   "catalog/input/multi-static-select@mobile": [],
-  "catalog/input/multi-static-select@open": [
-    "missing|Enter|0"
-  ],
-  "catalog/input/multi-static-select@open+dark": [
-    "missing|Enter|0"
-  ],
+  "catalog/input/multi-static-select@open": [],
+  "catalog/input/multi-static-select@open+dark": [],
   "catalog/input/multi-users-select": [],
   "catalog/input/multi-users-select@dark": [],
   "catalog/input/multi-users-select@mobile": [],
-  "catalog/input/multi-users-select@open": [
-    "missing|Enter|0"
-  ],
-  "catalog/input/multi-users-select@open+dark": [
-    "missing|Enter|0"
-  ],
+  "catalog/input/multi-users-select@open": [],
+  "catalog/input/multi-users-select@open+dark": [],
   "catalog/input/multiline-plain-text-input": [],
   "catalog/input/multiline-plain-text-input@dark": [],
   "catalog/input/multiline-plain-text-input@mobile": [],
@@ -561,7 +543,12 @@
   "contexts/conversations_select/actions": [],
   "contexts/conversations_select/actions@dark": [],
   "contexts/conversations_select/actions@mobile": [],
-  "contexts/conversations_select/actions@open": [],
+  "contexts/conversations_select/actions@open": [
+    "x|AGENT|0",
+    "y|AGENT|0",
+    "missing|User Four|1",
+    "extra|User Two|1"
+  ],
   "contexts/conversations_select/actions@open+dark": [],
   "contexts/conversations_select/home": [],
   "contexts/conversations_select/home@dark": [],
@@ -631,12 +618,8 @@
   "contexts/multi_static_select/accessory@mobile": [],
   "contexts/multi_static_select/modal-input": [],
   "contexts/multi_static_select/modal-input@dark": [],
-  "contexts/multi_static_select/modal-input@open": [
-    "missing|Enter|0"
-  ],
-  "contexts/multi_static_select/modal-input@open+dark": [
-    "missing|Enter|0"
-  ],
+  "contexts/multi_static_select/modal-input@open": [],
+  "contexts/multi_static_select/modal-input@open+dark": [],
   "contexts/multi_users_select/accessory": [],
   "contexts/multi_users_select/accessory@dark": [],
   "contexts/multi_users_select/accessory@dialog": [],
@@ -644,16 +627,8 @@
   "contexts/multi_users_select/accessory@mobile": [],
   "contexts/multi_users_select/modal-input": [],
   "contexts/multi_users_select/modal-input@dark": [],
-  "contexts/multi_users_select/modal-input@open": [
-    "missing|Enter|0"
-  ],
-  "contexts/multi_users_select/modal-input@open+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|Enter|0",
-    "missing|User Two|1",
-    "extra|User Four|1"
-  ],
+  "contexts/multi_users_select/modal-input@open": [],
+  "contexts/multi_users_select/modal-input@open+dark": [],
   "contexts/multiline_plain_text_input/modal-input": [],
   "contexts/multiline_plain_text_input/modal-input@dark": [],
   "contexts/number_input/modal-input": [],
@@ -819,8 +794,14 @@
   "extra/payloads/selects": [],
   "extra/payloads/selects@dark": [],
   "extra/payloads/selects@mobile": [],
-  "extra/payloads/selects@open": [],
-  "extra/payloads/selects@open+dark": [],
+  "extra/payloads/selects@open": [
+    "missing|Choose|0",
+    "extra|--Choose--|0"
+  ],
+  "extra/payloads/selects@open+dark": [
+    "missing|Choose|0",
+    "extra|--Choose--|0"
+  ],
   "extra/rich-text/mentions-and-styles": [
     "missing|· colour #1264A3|0",
     "extra|· colour|0",
