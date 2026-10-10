@@ -4,6 +4,8 @@
 
 Documentation: **<https://docs.block-kit.dev>**
 
+To try it without installing anything, paste your JSON into the [Block Kit playground](https://play.block-kit.dev): it renders the message, modal or Home tab with this package and shows the payload each click sends. No Slack sign-in.
+
 ## Install
 
 The package needs React 18 or later.
