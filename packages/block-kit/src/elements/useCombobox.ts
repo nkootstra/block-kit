@@ -1,6 +1,7 @@
 import {
   type ChangeEvent,
   type KeyboardEvent,
+  type MouseEvent,
   type RefObject,
   useEffect,
   useId,
@@ -20,6 +21,7 @@ export function useCombobox({
   onQueryChange,
   count,
   initialIndex,
+  clickedIndex = initialIndex,
   onChoose,
   onSubmitQuery,
   listRef,
@@ -39,6 +41,11 @@ export function useCombobox({
   count: number;
   /** The row highlighted when the list opens. */
   initialIndex: number;
+  /**
+   * The row highlighted when a click opens the list, if not `initialIndex`. Slack's multi-select
+   * opens on a click with no row highlighted; the first arrow key highlights the first.
+   */
+  clickedIndex?: number;
   onChoose: (index: number) => void;
   /** Enter with no highlighted row, e.g. a typed value the list doesn't offer. */
   onSubmitQuery?: (query: string) => void;
@@ -103,7 +110,8 @@ export function useCombobox({
   const nav = useMenuNavigation({
     open,
     count,
-    initialIndex,
+    // Read as the list opens, after the click that opens it marks `pointerOpen`.
+    initialIndex: pointerOpen.current ? clickedIndex : initialIndex,
     onChoose,
     onClose: () => {
       setOpen(false);
@@ -192,6 +200,12 @@ export function useCombobox({
   return {
     open,
     setOpen,
+    /** Opens or closes the list from a button trigger; a click opens it as `inputProps` does. */
+    toggleFromTrigger(e: MouseEvent) {
+      // A button's Enter or Space also clicks it, with no pointer behind it (`detail` 0).
+      if (!open && e.detail > 0) pointerOpen.current = true;
+      setOpenState(!open);
+    },
     onKeyDown,
     listId,
     optionId,
