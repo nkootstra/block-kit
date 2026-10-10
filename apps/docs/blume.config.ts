@@ -33,6 +33,9 @@ export default defineConfig({
       { label: "Docs", path: "/" },
       { label: "Changelog", path: "/changelog" },
     ],
+    // The playground renders pasted JSON without installing anything. Header actions hide on
+    // phones, so the home page links it too.
+    actions: [{ href: "https://play.block-kit.dev", label: "Playground" }],
   },
   // Publishes skills/*/SKILL.md for agents at /.well-known/agent-skills/.
   agents: { skills: "./skills" },

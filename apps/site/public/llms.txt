@@ -10,6 +10,7 @@ Install: `npm install @nkootstra/block-kit @fontsource/lato @fontsource/roboto-m
 - [Quickstart](https://docs.block-kit.dev/quickstart): render a message and handle a button click
 - [Installation](https://docs.block-kit.dev/installation): the package, its stylesheet and fonts
 - [Docs for agents](https://docs.block-kit.dev/llms.txt): the full docs index in this format
+- [Block Kit playground](https://play.block-kit.dev): paste Block Kit JSON and see it rendered as a message, modal or Home tab, no sign-in
 
 ## Project
 

@@ -194,6 +194,9 @@ These props, and `resolvers`, are functions:
 - Slack's limits on blocks, elements and text, which the renderer doesn't enforce:
   https://docs.block-kit.dev/reference/limits.md
 - A JSON editor with a live preview: https://docs.block-kit.dev/guides/block-kit-editor.md
+- To show a user a payload rendered without writing code: the Block Kit playground at
+  https://play.block-kit.dev renders pasted JSON as a message, modal or Home tab, and its links use
+  Block Kit Builder's URL format
 - Provider props: https://docs.block-kit.dev/reference/block-kit-provider.md
 - Linking mentions and links into your app: https://docs.block-kit.dev/guides/linking-to-your-app.md
 - Modals: https://docs.block-kit.dev/guides/modals.md

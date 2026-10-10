@@ -8,6 +8,8 @@ export const description =
 export const DOCS = "https://docs.block-kit.dev";
 export const GITHUB = "https://github.com/nkootstra/block-kit";
 export const NPM = "https://www.npmjs.com/package/@nkootstra/block-kit";
+/** The playground: paste Block Kit JSON and see it rendered, in the browser. */
+export const PLAYGROUND = "https://play.block-kit.dev";
 
 const PACKAGES = "@nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono";
 /** The install command per package manager; npm first, as the one everyone has. */

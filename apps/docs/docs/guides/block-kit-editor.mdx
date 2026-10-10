@@ -47,6 +47,9 @@ This guide builds the same thing in three small files: a parser that tells the u
 an error boundary, and an editor component with a textarea, a preview that renders messages,
 modals and Home tabs, and a log of the actions the preview sends.
 
+The [Block Kit playground](https://play.block-kit.dev) is the same loop at full size, built on this
+package: try it to see what the result can feel like before you build your own.
+
 ## Parse what the user types
 
 Accept the three shapes Block Kit Builder accepts: `{ "blocks": [...] }` for a message, a bare
@@ -260,6 +263,9 @@ export function SharedEditor() {
 A hash never reaches your server, so a draft shared this way isn't stored anywhere. Long payloads
 make long URLs; for anything bigger than a few blocks, or a template your users keep, save the
 JSON in your own database and put its id in the URL instead.
+
+The [playground](https://play.block-kit.dev) keeps its URL in Block Kit Builder's hash format, so
+a link copied from one opens in the other.
 
 ## Check payloads before you send them
 
