@@ -170,6 +170,13 @@ async (win = window) => {
       if (String(map.get("height")) === "auto" && collapsesMargins(el, cs, parentStyle)) {
         out.height = null;
       }
+      // A box that scrolls sideways and takes its height from its content (a code block, a
+      // markdown table) grows by its horizontal scrollbar where scrollbars take room, and the
+      // Builder's overlay scrollbars don't: frozen, its replay can't grow, the scrollbar eats into
+      // the content and a vertical one appears. Leave its height to the content.
+      if (String(map.get("height")) === "auto" && /^(auto|scroll)$/.test(cs.overflowX)) {
+        out.height = null;
+      }
       for (const prop of ["grid-template-rows", "grid-template-columns"]) {
         const value = String(map.get(prop));
         if (value !== "none") out[prop] = value;

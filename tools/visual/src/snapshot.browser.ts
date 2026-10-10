@@ -436,6 +436,23 @@ describe("snapshot.js", () => {
     });
   });
 
+  it("leaves a sideways-scrolling box's height to its content, and keeps one the page sets", async () => {
+    // A code block's scroll box: under classic scrollbars its horizontal scrollbar adds to its
+    // height. Frozen at the overlay-scrollbar height it was captured at, the replay drew a
+    // vertical scrollbar beside the code instead (catalog/rich-text/preformatted@mobile).
+    const wide = `<div style="width:600px;height:40px"></div>`;
+    await page.setContent(
+      `<!doctype html><body style="margin:0"><div class="p-bkb_preview__message" style="width:400px"><div id="auto" style="overflow-x:auto">${wide}</div><div id="fixed" style="overflow-x:auto;height:60px">${wide}</div></div></body>`,
+    );
+    const html = await snapshot(page);
+    const style = (id: string) =>
+      new RegExp(`id="${id}"[^>]*style="([^"]*)"`).exec(html)?.[1] ??
+      new RegExp(`style="([^"]*)"[^>]*id="${id}"`).exec(html)?.[1] ??
+      "";
+    expect(style("auto")).not.toMatch(/(^|;)height:/);
+    expect(style("fixed")).toMatch(/(^|;)height:60px/);
+  });
+
   it("keeps a size the page sets explicitly", async () => {
     const { live, replayed } = await snapshotAndReplay(
       `<div id="fixed" style="width:123.5px;height:45px"></div><div id="track" style="display:grid;grid-template-columns:100px 1fr"><div id="cell" style="height:20px"></div></div>`,
