@@ -163,29 +163,38 @@ const structuredData = {
       </p>
 
       <div class="install" data-install>
-        <div class="install__managers" role="group" aria-label="Package manager">
-          {
-            INSTALL.map(({ manager, command }, i) => (
-              <button type="button" data-manager={manager} data-command={command} aria-pressed={i === 0 ? "true" : "false"}>
-                {manager}
-              </button>
-            ))
-          }
-        </div>
-        <div class="install__command">
-          <code
-            ><span class="install__prompt">$ </span>{
-              INSTALL.map(({ manager, command }) => (
-                <span class="install__line" data-command-for={manager}>
-                  {command.split(" ").map((word, i) => (i === 0 ? <span>{word}</span> : <> <span>{word}</span></>))}
-                </span>
+        <div class="install__bar">
+          <div class="install__managers" role="group" aria-label="Package manager">
+            {
+              INSTALL.map(({ manager, command }, i) => (
+                <button type="button" data-manager={manager} data-command={command} aria-pressed={i === 0 ? "true" : "false"}>
+                  {manager}
+                </button>
               ))
-            }</code
-          >
-          <button type="button" class="ghost install__copy" data-copy>
+            }
+          </div>
+          <button type="button" class="install__copy" data-copy>
+            <svg class="install__icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" data-copy-icon="copy">
+              <rect x="5.5" y="5.5" width="8" height="8" rx="1.5"></rect>
+              <path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5"></path>
+            </svg>
+            <svg class="install__icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" data-copy-icon="done">
+              <path d="m3 8.5 3 3 7-7"></path>
+            </svg>
             <span data-copy-label>Copy</span><span class="sr-only"> install command</span>
           </button>
           <span class="sr-only" role="status" data-copy-status></span>
+        </div>
+        <div class="install__command" data-scroll-fade>
+          <div class="install__scroll" role="region" aria-label="Install command" data-scroll>
+            <code
+              ><span class="install__prompt">$ </span>{
+                INSTALL.map(({ manager, command }) => (
+                  <span class="install__line" data-command-for={manager}>{command}</span>
+                ))
+              }</code
+            >
+          </div>
         </div>
       </div>
       <p class="next">
@@ -323,6 +332,26 @@ const structuredData = {
         syncPressed("[data-manager]", "manager", manager);
       }
 
+      // The command stays on one line and scrolls sideways when the box is narrower. A fade marks
+      // each edge that has more command past it (phones show no scrollbar), and the scroller only
+      // takes keyboard focus when there is something to scroll.
+      const fade = document.querySelector<HTMLElement>("[data-scroll-fade]");
+      const scroller = document.querySelector<HTMLElement>("[data-scroll]");
+      if (fade && scroller) {
+        const update = () => {
+          const overflow = scroller.scrollWidth - scroller.clientWidth;
+          fade.toggleAttribute("data-more-start", scroller.scrollLeft > 1);
+          fade.toggleAttribute("data-more-end", scroller.scrollLeft < overflow - 1);
+          if (overflow > 0) scroller.tabIndex = 0;
+          else scroller.removeAttribute("tabindex");
+        };
+        scroller.addEventListener("scroll", update, { passive: true });
+        // The box's width and the chosen command's length both change what overflows.
+        const observer = new ResizeObserver(update);
+        observer.observe(scroller);
+        for (const code of scroller.children) observer.observe(code);
+      }
+
       applyTheme(root.dataset.themeChoice ?? "system");
       applyManager(root.dataset.pm ?? "npm");
       media.addEventListener("change", () => {
@@ -368,6 +397,7 @@ const structuredData = {
           // Select the command instead, so it can be copied by hand.
           if (line) getSelection()?.selectAllChildren(line);
         }
+        copy?.toggleAttribute("data-copied", copied);
         if (copyLabel) copyLabel.textContent = copied ? "Copied" : "Selected";
         if (copyStatus) {
           copyStatus.textContent = copied
@@ -376,6 +406,7 @@ const structuredData = {
         }
         window.clearTimeout(copyReset);
         copyReset = window.setTimeout(() => {
+          copy?.removeAttribute("data-copied");
           if (copyLabel) copyLabel.textContent = "Copy";
           if (copyStatus) copyStatus.textContent = "";
         }, 2000);
