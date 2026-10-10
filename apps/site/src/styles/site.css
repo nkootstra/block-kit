@@ -166,8 +166,7 @@ pre {
   text-decoration: none;
 }
 
-/* npm and GitHub are icons, each a 44px square target. Both glyphs are centred in the same 24px box,
-   so they share a baseline with the text links; aria-label and title say which is which. */
+/* GitHub is an icon in a 44px square target; aria-label and title say what it is. */
 .nav__icon {
   justify-content: center;
   min-width: 44px;
@@ -192,9 +191,9 @@ pre {
   }
 }
 
-/* Below 380px the logo stands in for the name (still read out), so the npm and GitHub icons keep
-   their 44px targets next to Docs and the theme toggle. */
-@media (max-width: 379px) {
+/* Below 340px the logo stands in for the name (still read out): with it, the theme toggle runs
+   past the gutter at 320px. */
+@media (max-width: 339px) {
   .brand__name {
     position: absolute;
     width: 1px;
@@ -877,6 +876,20 @@ h2 {
   min-height: 44px;
   color: var(--muted);
   text-decoration: none;
+}
+
+/* GitHub and npm are icons here; aria-label and title say which is which. The 16px glyphs suit the
+   footer's 13px type and are centred in the same 44px-tall box as the text links. The negative
+   margins take the flex gap back, so each 28px target touches its neighbour and the glyphs sit about
+   as far apart as the words. */
+.footer__icon {
+  justify-content: center;
+  min-width: 28px;
+  margin: 0 -6px;
+}
+
+.footer__icon svg {
+  display: block;
 }
 
 .footer > span {
