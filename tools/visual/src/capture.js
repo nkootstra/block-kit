@@ -335,7 +335,12 @@ async ({
     if (!adapter) {
       const meta = JSON.parse(/id="sbk-reference-meta">(\{.*?\})</.exec(html)?.[1] ?? "{}");
       const expected = want.mobile ? 400 : PREVIEW_WIDTH[meta.surface];
-      if (expected && meta.width !== expected && !want.interaction)
+      if (
+        expected &&
+        typeof meta.width === "number" &&
+        meta.width !== expected &&
+        !want.interaction
+      )
         throw new Error(
           `${name}: the Builder's preview is ${meta.width}px wide, not ${expected}px; make the ` +
             "window wider (and turn off DevTools' device mode), then capture again",
