@@ -4,8 +4,11 @@
   "description": "Render Slack Block Kit JSON in React, pixel-for-pixel the way Slack does.",
   "keywords": [
     "block-kit",
+    "block-kit-builder",
+    "block-kit-preview",
     "blocks",
     "mrkdwn",
+    "playground",
     "react",
     "renderer",
     "slack"
