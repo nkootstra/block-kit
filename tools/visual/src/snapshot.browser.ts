@@ -104,6 +104,23 @@ describe("snapshot.js", () => {
     expect(html).not.toContain('value="undefined"');
   });
 
+  it("records the focused field's selected text, and no other field's", async () => {
+    // Slack selects a time picker's time when its list opens; a frozen field can't hold that.
+    await page.setContent(
+      `<!doctype html><body><div class="p-bkb_preview__message"><input id="time" value="1:37 PM"><input id="other" value="Alpha"></div></body>`,
+    );
+    await page.evaluate(() => {
+      const other = document.getElementById("other") as HTMLInputElement;
+      other.setSelectionRange(0, 5);
+      const time = document.getElementById("time") as HTMLInputElement;
+      time.focus();
+      time.setSelectionRange(0, 7);
+    });
+    const html = await snapshot(page);
+    expect(html).toMatch(/<input\b[^>]*\bid="time"[^>]*\bdata-sbk-selection="0 7"/);
+    expect(html).not.toMatch(/<input\b[^>]*\bid="other"[^>]*\bdata-sbk-selection/);
+  });
+
   it("keeps a content-sized label on one line when its width is a sub-pixel value", async () => {
     // Slack's input label is a flex item sized to its content. Its used width (100.0625px here)
     // serializes as "100.062px"; frozen at that, the second part no longer fits and wraps.

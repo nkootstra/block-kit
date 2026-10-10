@@ -147,6 +147,18 @@ const SCROLLBAR_CSS = `
 [class*="scrollContainer__"]::-webkit-scrollbar, .sbk-dataviz-scroll::-webkit-scrollbar { width: 0; height: 0; }
 `;
 
+/** Selects again the text snapshot.js recorded as selected in the reference's focused field. */
+const restoreSelection = (p: Page) =>
+  p.evaluate(() => {
+    const field = document.querySelector<HTMLInputElement>("[data-sbk-selection]");
+    if (!field) return;
+    const [start, end] = (field.dataset.sbkSelection ?? "").split(" ").map(Number);
+    // The frozen field draws Slack's ring itself; the browser's focus outline isn't Slack's.
+    field.style.outline = "none";
+    field.focus({ preventScroll: true });
+    field.setSelectionRange(start ?? 0, end ?? 0);
+  });
+
 // Slack's font CDN doesn't send CORS headers for a null origin; serve fonts through the harness.
 const fontCache = new Map<string, Buffer>();
 await context.route(/\.(woff2?|ttf|otf)(\?.*)?$/, async (route) => {
@@ -233,11 +245,16 @@ async function boxesOf(page: Page, selector: string): Promise<Box[]> {
 async function shotBox(page: Page, selector: string, box: Box): Promise<PNG> {
   const origin = await page.locator(selector).first().boundingBox();
   if (!origin) throw new Error(`no element matches ${selector}`);
+  const clip = { x: origin.x + box.x, y: origin.y + box.y, width: box.width, height: box.height };
+  const viewport = page.viewportSize();
   return PNG.sync.read(
     await page.screenshot({
       animations: "disabled",
-      fullPage: true,
-      clip: { x: origin.x + box.x, y: origin.y + box.y, width: box.width, height: box.height },
+      // Only for a box below the fold: a full-page capture resizes the page to its content and
+      // loses a scroller's thumb on the way (our time list drew none where Slack's had one).
+      fullPage:
+        !viewport || clip.y + clip.height > viewport.height || clip.x + clip.width > viewport.width,
+      clip,
     }),
   );
 }
@@ -289,6 +306,7 @@ for (const name of names) {
   await page.setContent(html, { waitUntil: "load" });
   await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
   await settle(page);
+  await restoreSelection(page);
   const state = stateFor(name);
   if (parsed.interaction && !state)
     console.warn(`  no STATES entry for ${name}; comparing its initial state`);
@@ -299,6 +317,7 @@ for (const name of names) {
     await refPage.setContent(html, { waitUntil: "load" });
     await refPage.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
     await settle(refPage);
+    await restoreSelection(refPage);
   }
   const refBoxes = popovers ? await boxesOf(refPage, refTarget) : [];
   let reference = popovers ? undefined : await shot(page, refTarget);

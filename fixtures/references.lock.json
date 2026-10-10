@@ -96,8 +96,8 @@
   },
   "catalog/actions/filtered-conversations-select@open": {
     "payload": "dd853792bc0eee78b474123fdeaabf6637730bb3c604d1fec340f480463436fa",
-    "reference": "ed90dacee6397e7ba853025bad973ae97f68589052fb83f776d72fe1b0a2f3a6",
-    "captured": "2026-10-07"
+    "reference": "2b9b6004be8266bc40b44f8d077c9cd47e3f8f275e86f6ca97f3c34eaa14aa34",
+    "captured": "2026-10-10"
   },
   "catalog/actions/filtered-conversations-select@open+dark": {
     "payload": "dd853792bc0eee78b474123fdeaabf6637730bb3c604d1fec340f480463436fa",
@@ -136,13 +136,13 @@
   },
   "catalog/actions/selects-with-initial-options@open": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "75adb3e848f6b506fb5eea88cb7190081e4f015c93d7063de193f075ced0fbeb",
-    "captured": "2026-10-07"
+    "reference": "38dde360a91447a53150897254475e920995a8d3f46de092bbe04adfd17603e1",
+    "captured": "2026-10-10"
   },
   "catalog/actions/selects-with-initial-options@open+dark": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "764b21d7e1f956b4b015be4c5a02eec2475e5de5c4062d805591387e5780c62c",
-    "captured": "2026-10-07"
+    "reference": "5aa5c841059f87e916138ddd2df71dd4d9d6e5ada8d87d0491ca9ea7305d1b78",
+    "captured": "2026-10-10"
   },
   "catalog/actions/timepicker": {
     "payload": "e35edcb7eecdba3e4e4d76e324296a399db87b138d3a90166f5db94026f94b62",
@@ -161,13 +161,13 @@
   },
   "catalog/actions/timepicker@open": {
     "payload": "e35edcb7eecdba3e4e4d76e324296a399db87b138d3a90166f5db94026f94b62",
-    "reference": "f6e6637bce9393f9e4d6fa4033dc4a22d7cf58463464feaeb2e9a1b3136f48e3",
-    "captured": "2026-10-07"
+    "reference": "e6894609cdeec224171f2a3332e35e8bd7ff17319b547ccb9e7089b8583a13c0",
+    "captured": "2026-10-10"
   },
   "catalog/actions/timepicker@open+dark": {
     "payload": "e35edcb7eecdba3e4e4d76e324296a399db87b138d3a90166f5db94026f94b62",
-    "reference": "7dc7ff814c41980524f2e1125a3802087dbcf0b23a443c3f31df19a177ae72ab",
-    "captured": "2026-10-07"
+    "reference": "494dcd3953570b9de4987ab500de811a5a9184eda6739432533f4c442edb6786",
+    "captured": "2026-10-10"
   },
   "catalog/agents/message-feedback": {
     "payload": "244eeeb7db99806f921e82725cd66dc5d952ce698fdc3118a48fe83f4e7d0e3d",
@@ -996,13 +996,13 @@
   },
   "catalog/input/multi-static-select@open": {
     "payload": "d4c4eb73aa4f29addca664f84adde59bf15226cd6f560c388a792898f75fc164",
-    "reference": "55157aafe7360912b10f035b80a9288bafa0b90bfd436ce858844bc774219d78",
-    "captured": "2026-10-07"
+    "reference": "360d83d24221a76b2ed55c9a8c280eaddc1a90ea9c56021165240e100132c63b",
+    "captured": "2026-10-10"
   },
   "catalog/input/multi-static-select@open+dark": {
     "payload": "d4c4eb73aa4f29addca664f84adde59bf15226cd6f560c388a792898f75fc164",
-    "reference": "195e840439d8bd7b718243366d3bac68c0c1f9a9d57e5afaaaab2745a45f11d4",
-    "captured": "2026-10-07"
+    "reference": "5269879349377dedb881d17f9d6ad9a3970ba704978e8a9ed0bbd220b21cd350",
+    "captured": "2026-10-10"
   },
   "catalog/input/multi-users-select": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
@@ -1021,13 +1021,13 @@
   },
   "catalog/input/multi-users-select@open": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "b776746b4a2effd16aaa9509ed8b16684a28ba5ada138e0c07b5a424b3250b39",
-    "captured": "2026-10-07"
+    "reference": "6605d15f9d5f7615e673bea172dd194417e0c1aaabbe6aa4da694495149a7428",
+    "captured": "2026-10-10"
   },
   "catalog/input/multi-users-select@open+dark": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "b83d5b85cd1f703dafbd0119512a81874ae70827785ee57ad7ee9e8de0be6a30",
-    "captured": "2026-10-07"
+    "reference": "cb2e99121c78a456ea69dd9cb4dc26d1b2498ab6a6bc43ed68bacda24e5685e0",
+    "captured": "2026-10-10"
   },
   "catalog/input/multiline-plain-text-input": {
     "payload": "dc38565d44db7e479f61a7712145cd0bf370141015a98f711ee27298e629da85",
@@ -1621,13 +1621,13 @@
   },
   "catalog/section/users-select@open": {
     "payload": "012ac95643f89c0662d5b8b7074db764f137bbf6bdac7e3e8d7bed9c5a819194",
-    "reference": "d290958bc531eb0ed9e84ab1f051ed66331a9e80c805ea42eb97666a2445459c",
-    "captured": "2026-10-07"
+    "reference": "b23d710f493c620137b8049f6bc5caed0233f3f7b8a552b0e3208b7ea489a0d3",
+    "captured": "2026-10-10"
   },
   "catalog/section/users-select@open+dark": {
     "payload": "012ac95643f89c0662d5b8b7074db764f137bbf6bdac7e3e8d7bed9c5a819194",
-    "reference": "341bb50d5a6dd8950776bc67c483cce982e862b6d2833cf0f291a2c1d15946be",
-    "captured": "2026-10-07"
+    "reference": "e0dd16560d2439c5a592e069d6e7e71f4df96bd1298ef85656b1d90fc07b31e5",
+    "captured": "2026-10-10"
   },
   "catalog/structure/default": {
     "payload": "ed552a0bfeef70e7c93c73ad33ad94918f830c51186d7d586083243dbffab514",
@@ -2031,13 +2031,13 @@
   },
   "contexts/conversations_select/accessory@open": {
     "payload": "7bdb07668554993856ff59ee026585ec32adeb5330c1fae3a5f352241f52b27d",
-    "reference": "5ac6a7be7d7bb9ac5ffa21adc8dfae4b0158eb38482901b05d5aa9fb6c63a0f8",
-    "captured": "2026-10-09"
+    "reference": "1e2b87ba746f2814ef90f4cbb3f88deb9c248e1da8493180b429f663d848bd7e",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/accessory@open+dark": {
     "payload": "7bdb07668554993856ff59ee026585ec32adeb5330c1fae3a5f352241f52b27d",
-    "reference": "24932d857c77a9fe580340eb6949c402dee054f7e98caf1a370921c860dac990",
-    "captured": "2026-10-09"
+    "reference": "099779be8d8d9b361645f138ffb0f94cac2e10eb7581569344bce53a18157cc3",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/actions": {
     "payload": "ec6c0722050325cf896122c6683df276d063b152abc638aaf5d045b9df8a936b",
@@ -2057,12 +2057,12 @@
   "contexts/conversations_select/actions@open": {
     "payload": "ec6c0722050325cf896122c6683df276d063b152abc638aaf5d045b9df8a936b",
     "reference": "b4afa482fbe42048e031209a482136d58835cfe5fbd345ee874b3db87c54ee4b",
-    "captured": "2026-10-09"
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/actions@open+dark": {
     "payload": "ec6c0722050325cf896122c6683df276d063b152abc638aaf5d045b9df8a936b",
-    "reference": "49f029ab2b08391c8661b73765d006cc9921cedc9ad19de1b81a9ffbca8688d6",
-    "captured": "2026-10-09"
+    "reference": "e7fb8bad7bac2389509d3cb1cbf8f7e5eaf3f886d4245a66cfb10e1f0750bb0f",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/home": {
     "payload": "9fcec194958e4fcc7e108e5d120e73ee3ce84155ce68eab4ab09698bbc271285",
@@ -2076,13 +2076,13 @@
   },
   "contexts/conversations_select/home@open": {
     "payload": "9fcec194958e4fcc7e108e5d120e73ee3ce84155ce68eab4ab09698bbc271285",
-    "reference": "5b7fd185fe144ec394c3b7cce9dd5270f70d05ed40ecdc98d576bd3d6c4ee17b",
-    "captured": "2026-10-09"
+    "reference": "5a23cbc223df762c6ac2a89927dc9106c6147c5e7f65b8bd48cd22c541edd8d4",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/home@open+dark": {
     "payload": "9fcec194958e4fcc7e108e5d120e73ee3ce84155ce68eab4ab09698bbc271285",
-    "reference": "4e239c20029a72baa04d3b08b7e0803acc0dbe094117a19e4b6b4ebe22b00c83",
-    "captured": "2026-10-09"
+    "reference": "aa30bc3947028937f621d329e1a3135947c1a857b2e1f6bd1ac48bf64636b80e",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/modal-input": {
     "payload": "a5a96d5fdd4142adc7f5396f5464e71dd654cf8eb715d7c2022cc5141ba0bb87",
@@ -2096,13 +2096,13 @@
   },
   "contexts/conversations_select/modal-input@open": {
     "payload": "a5a96d5fdd4142adc7f5396f5464e71dd654cf8eb715d7c2022cc5141ba0bb87",
-    "reference": "2835f9ba1e8921a34a9510c8766ae4a69d0d268c8b3dd5d2a315ffe6e7016243",
-    "captured": "2026-10-09"
+    "reference": "dd88800c00818d76020f29a7a24155dba59f4edbe9953ac3aa36a06f4e943f03",
+    "captured": "2026-10-10"
   },
   "contexts/conversations_select/modal-input@open+dark": {
     "payload": "a5a96d5fdd4142adc7f5396f5464e71dd654cf8eb715d7c2022cc5141ba0bb87",
-    "reference": "ac1c7aaa137bd664af78fae3d53ebab6339add12742ca4c2e97dd2c899df3d9f",
-    "captured": "2026-10-09"
+    "reference": "b37e2b2c11787a808695fa3d3fe98ae0e20141c883681d55d357f8bb12876130",
+    "captured": "2026-10-10"
   },
   "contexts/datepicker/accessory": {
     "payload": "ddc7725f9dfafa30d702baa3ab81c20d0356c94518b3b171228e8a524582701b",
@@ -2291,13 +2291,13 @@
   },
   "contexts/external_select/actions@open": {
     "payload": "b84c99f839b733ceaf4d078c6be6bff536cc28d1cc3da0700f30e4064af6578c",
-    "reference": "746b336ae73d995787d0b438fb7b13b56030d85d31a7737e70b05baf3966ef9c",
-    "captured": "2026-10-07"
+    "reference": "b59eeacd6fd8657569b773fe4338cec8f1bd8fe4d82afff04692d177315db145",
+    "captured": "2026-10-10"
   },
   "contexts/external_select/actions@open+dark": {
     "payload": "b84c99f839b733ceaf4d078c6be6bff536cc28d1cc3da0700f30e4064af6578c",
-    "reference": "8bd2fc865dd55504937e56679465950fb1973612f2e7e818a6363c755579f133",
-    "captured": "2026-10-07"
+    "reference": "77a436701581b357f23233635fa0d6b3e570a216f732b26b8bf2f5444b3c8843",
+    "captured": "2026-10-10"
   },
   "contexts/external_select/home": {
     "payload": "1a06e1ab22e39dbb586b0933ff02ffcfb9dfcf4a11313d2342ebec63411b1dd2",
@@ -2386,13 +2386,13 @@
   },
   "contexts/multi_static_select/modal-input@open": {
     "payload": "d5730726b87fa5dc719cb90e6e41fc9604726460eabe0c87f92e35367a83fdbd",
-    "reference": "b40b377a726a93ce7c35eb74a75da515f7dc673958a6f66ed355fdcfa00dc3ce",
-    "captured": "2026-10-07"
+    "reference": "ec7b75ee0c424b14b9de2f893986befbac61836d0b01638bae7836360b8ba583",
+    "captured": "2026-10-10"
   },
   "contexts/multi_static_select/modal-input@open+dark": {
     "payload": "d5730726b87fa5dc719cb90e6e41fc9604726460eabe0c87f92e35367a83fdbd",
-    "reference": "64454176641191de471b7a4d810786819dd769f060b1a015548aa6f726e8e505",
-    "captured": "2026-10-07"
+    "reference": "c82f49c988be387f04710d7682549a8f7d82d585808be7ca7c29852b35c1c4cf",
+    "captured": "2026-10-10"
   },
   "contexts/multi_users_select/accessory": {
     "payload": "8284b568186a0327b4e7879837c1fa6697693023e904438027c3f464c0f90ded",
@@ -2431,13 +2431,13 @@
   },
   "contexts/multi_users_select/modal-input@open": {
     "payload": "2d9c19b5a4bd78573b646f9a1e4ab4ee9334896b3a3c1517d5b355ceacd14d2e",
-    "reference": "dd0c31cc324a3c8c26c08bf1b9462dd6e229dcc113745fcc1154459b015c6afb",
-    "captured": "2026-10-07"
+    "reference": "5a44ff1af0aad574050fafc3ba3d051afb807500aec89b44c4d64b0396968735",
+    "captured": "2026-10-10"
   },
   "contexts/multi_users_select/modal-input@open+dark": {
     "payload": "2d9c19b5a4bd78573b646f9a1e4ab4ee9334896b3a3c1517d5b355ceacd14d2e",
-    "reference": "c4991edfc6e71b79742997cdec0535d32bb57f61083732cb7a210edb69e3f7ce",
-    "captured": "2026-10-09"
+    "reference": "be282bad6b0d085c77b35c6cbc63bd4d199eee41ac69888c602633367d8c6aee",
+    "captured": "2026-10-10"
   },
   "contexts/multiline_plain_text_input/modal-input": {
     "payload": "77b59eacd40ba64c03827cd77b7ef0b5660d9b7ba977b60eb8c12534fc3865d8",
@@ -2706,13 +2706,13 @@
   },
   "contexts/timepicker/accessory@open": {
     "payload": "0e91da1c6c08ded2ac9c5df3af7a2b3842f7a57cab7ef03295b2019d1353330f",
-    "reference": "968c5c19c69cdebcd08f70182dbc2d4db2e31ffa82ed9b9a51a4888c0ceb4813",
-    "captured": "2026-10-07"
+    "reference": "47148986c48895260086b9b44cfc16c7175477abb64cb1f0605eda2a3f5eb295",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/accessory@open+dark": {
     "payload": "0e91da1c6c08ded2ac9c5df3af7a2b3842f7a57cab7ef03295b2019d1353330f",
-    "reference": "ffda0e4ebc99686dd365b3f72438cd05b1973737b9e8e676d7d0212389bde3c4",
-    "captured": "2026-10-07"
+    "reference": "cbab5740d1f0b5edee7fd867d86529630f258c63ecb76f4c4115e5d2b241f2a8",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/actions": {
     "payload": "37537f689578d923ac3be990a84d21fdf91b53e2b9daaf87d975aa485e9506ff",
@@ -2731,13 +2731,13 @@
   },
   "contexts/timepicker/actions@open": {
     "payload": "37537f689578d923ac3be990a84d21fdf91b53e2b9daaf87d975aa485e9506ff",
-    "reference": "7be28f5f8ed33239a34e06fb0cb735454d8aad0c8abb497b61e387f9741897bf",
-    "captured": "2026-10-07"
+    "reference": "192161acff6107a640e6f3087089294e34b15f60ee4f310a4f5e501ffe28824c",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/actions@open+dark": {
     "payload": "37537f689578d923ac3be990a84d21fdf91b53e2b9daaf87d975aa485e9506ff",
-    "reference": "118c0ae235153552006b1bcbbc54e13e2720eda89606ad71e80547df6fdf8003",
-    "captured": "2026-10-07"
+    "reference": "5c1c34b235e416eb18359519446e573cb957e5d7bc5134a1a9e85ba6b556bf36",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/home": {
     "payload": "e9fb13fcf8409c81a29f8271c9291f413b5a61b3716a9bb0dd2d411485d1fe93",
@@ -2751,13 +2751,13 @@
   },
   "contexts/timepicker/home@open": {
     "payload": "e9fb13fcf8409c81a29f8271c9291f413b5a61b3716a9bb0dd2d411485d1fe93",
-    "reference": "7a8112d4c11ad320494d2b297e6c6dbb54f9e4b6c07ccd6fcde5322f7725bbd2",
-    "captured": "2026-10-07"
+    "reference": "6477cc134d0395f0a842b3977ea06612b4e0714bd8a1e4f871b2969f43c7401f",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/home@open+dark": {
     "payload": "e9fb13fcf8409c81a29f8271c9291f413b5a61b3716a9bb0dd2d411485d1fe93",
-    "reference": "3b71f0b2d5cc12f49932281ebf729f8b417a12f695bc891387bf75dcb0cf703f",
-    "captured": "2026-10-07"
+    "reference": "85537a6513e42acc40aa717b0e40f3dd72abb42cbe2a30f9765ece7d0f6f2fa9",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/modal-input": {
     "payload": "eceec9f6b6f130409363714e7434184cce732c85298caa4551c0f616796424b1",
@@ -2771,13 +2771,13 @@
   },
   "contexts/timepicker/modal-input@open": {
     "payload": "eceec9f6b6f130409363714e7434184cce732c85298caa4551c0f616796424b1",
-    "reference": "3e814b92a770de34f944f48da3bd4e2d28dc5db95aa1a617f0533c988880a0af",
-    "captured": "2026-10-07"
+    "reference": "31dd0cc02a4e294d64c0533df88dc1366d6bcee9a2ceecf5778fa3ccd7586488",
+    "captured": "2026-10-10"
   },
   "contexts/timepicker/modal-input@open+dark": {
     "payload": "eceec9f6b6f130409363714e7434184cce732c85298caa4551c0f616796424b1",
-    "reference": "19b492dc13c5462e50e85be67e895b740af44cdb708e163fbca727bd7f636f6d",
-    "captured": "2026-10-07"
+    "reference": "7bdb10d028efd78a8092c3c2b26da1ae0ab2f80046ae7e48391c1f4f4ce97542",
+    "captured": "2026-10-10"
   },
   "contexts/url_text_input/modal-input": {
     "payload": "9b654bb982406302d5c1277e463ece4acfd8bd9c0dff2faf2590ec40413f6579",
@@ -2806,13 +2806,13 @@
   },
   "contexts/users_select/accessory@open": {
     "payload": "e0ff6393a757400da0298b813e4461887fca2a635134ada1d99c2511d8327889",
-    "reference": "f3cefb55bb91b1bd457520394fcddef88ef3a3e1aed854ef3f70cd1362de6ebd",
-    "captured": "2026-10-07"
+    "reference": "b7353c612c945284e4ff4d1dbde86e58c6bd7da2298dc24251b38d589480a455",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/accessory@open+dark": {
     "payload": "e0ff6393a757400da0298b813e4461887fca2a635134ada1d99c2511d8327889",
-    "reference": "68172cbf590f29926ca1bbfaa7a6826dbfd2ae8926fda967791d0396a98aa03c",
-    "captured": "2026-10-07"
+    "reference": "7802928ecac4bc22c1d6339c249f79ee88f781ed823ca4f5ec3fc960266be080",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/actions": {
     "payload": "a8d6badd60f94e9bd082a96be76e851f32313cfe7afcc4a5e997f8a1bdc0dc97",
@@ -2831,13 +2831,13 @@
   },
   "contexts/users_select/actions@open": {
     "payload": "a8d6badd60f94e9bd082a96be76e851f32313cfe7afcc4a5e997f8a1bdc0dc97",
-    "reference": "01f50136fc079bcb7e9b254c0be59ba470dbdea19a879f5f2d199c4a9f211ba5",
-    "captured": "2026-10-07"
+    "reference": "b43b167d3e9aa587a42493c3f32e639398e2fc576833a212558b8544b5b441bb",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/actions@open+dark": {
     "payload": "a8d6badd60f94e9bd082a96be76e851f32313cfe7afcc4a5e997f8a1bdc0dc97",
-    "reference": "b91632469fddd123f9e887ca34b95bbea8e2e8279489ffd45e79c286ba57a1fa",
-    "captured": "2026-10-07"
+    "reference": "ffa58101c26589a69ccd635c7c133e50d9ed847d474e9aa83060806163f05f3f",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/home": {
     "payload": "4ff6b1ea58d937209d308950c611930a2ace6b8bd76241ab6593aa88de41d21b",
@@ -2851,13 +2851,13 @@
   },
   "contexts/users_select/home@open": {
     "payload": "4ff6b1ea58d937209d308950c611930a2ace6b8bd76241ab6593aa88de41d21b",
-    "reference": "8cc960e89e9b6b358261052f9e31a9906bb84bf41351f56e5c512b0e59657054",
-    "captured": "2026-10-07"
+    "reference": "5dab3d4c1bcd4d7819d15c52b92a0243d05f60419c13967347dce0ae69457a7c",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/home@open+dark": {
     "payload": "4ff6b1ea58d937209d308950c611930a2ace6b8bd76241ab6593aa88de41d21b",
-    "reference": "a692c40d9b14d1ea6b688d437d3d27ddff69e40e704aa8627d1138d415800085",
-    "captured": "2026-10-07"
+    "reference": "14d3261177da15b5e5a275e8b737b842f5be53385dbae6eb0aa071e8ae30217f",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/modal-input": {
     "payload": "35350f3e6ea0f873b93ced3e2276a9d92d47ea15148b1dd58d38bad83c15cb24",
@@ -2871,13 +2871,13 @@
   },
   "contexts/users_select/modal-input@open": {
     "payload": "35350f3e6ea0f873b93ced3e2276a9d92d47ea15148b1dd58d38bad83c15cb24",
-    "reference": "1b56c12fc2eaaf060e72efb145646f95f8126e9b96295a0abf78e0ae60c08cfc",
-    "captured": "2026-10-07"
+    "reference": "b91d09bde5731ce9f8d07dc1524b9f1d65de3e21f4d758f58c066f0063a1a6e4",
+    "captured": "2026-10-10"
   },
   "contexts/users_select/modal-input@open+dark": {
     "payload": "35350f3e6ea0f873b93ced3e2276a9d92d47ea15148b1dd58d38bad83c15cb24",
-    "reference": "dcf1e73ba16ddc82ea27d952d124f134e95367e0279bb40547337a5e31e6af76",
-    "captured": "2026-10-07"
+    "reference": "bdc006f26c7e9d0a02a19bf8e9e1cd2f21d34fb10b0488b186d7c6221caa689b",
+    "captured": "2026-10-10"
   },
   "extra/actions/more-elements": {
     "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
@@ -3006,13 +3006,13 @@
   },
   "extra/input/more-selects@open": {
     "payload": "402a7b1fc7de6ac6b272568c0189df727280d1520822e1bed036fa0761cb7e9d",
-    "reference": "6c396c1b3d9bb335fd6be58157fe906cb979ab4be08baa52b3f56c76b2359ee4",
-    "captured": "2026-10-07"
+    "reference": "eaaa1a6f2c46cdda1fe7787943ec1235c4324aa35f11ceec421e5b575c8edee4",
+    "captured": "2026-10-10"
   },
   "extra/input/more-selects@open+dark": {
     "payload": "402a7b1fc7de6ac6b272568c0189df727280d1520822e1bed036fa0761cb7e9d",
-    "reference": "14d7e98807f18d617ac35c6544042735adcced7cc3fc8efdec284f377e4369d0",
-    "captured": "2026-10-07"
+    "reference": "bf1c78a4cd3055e22471dc879fec142eee2340da2d2f31ddc63b9cccfb87bc0b",
+    "captured": "2026-10-10"
   },
   "extra/input/text-inputs": {
     "payload": "ddc630b1fa42a6b563bf3336051781314a8c5cf2ab2f7dd15e26dc53e6fe673c",
@@ -3196,13 +3196,13 @@
   },
   "extra/payloads/selects@open": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
-    "reference": "20ab1f056a7ca454af35fa2e8ed88620e414bcd92780ef75d78efe715536551d",
-    "captured": "2026-10-09"
+    "reference": "d052b6ac9d4480ed9a0256f304cc29f7c04499111d428afee84cae3c03124945",
+    "captured": "2026-10-10"
   },
   "extra/payloads/selects@open+dark": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
-    "reference": "0340f04dc91a02f3203c11cd2862ed4dacf2f3947751e50272b9cb830da80b54",
-    "captured": "2026-10-09"
+    "reference": "073b20c32f84796d1964c696d9467980bdca2b66c6b07b97280a28492247a22c",
+    "captured": "2026-10-10"
   },
   "extra/rich-text/mentions-and-styles": {
     "payload": "5170379412f358b28ec8efe56a0608415cf55ab44bcc5547bc1d3b50e2fe5b4e",
