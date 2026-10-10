@@ -353,6 +353,7 @@
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
+  color-scheme: dark;
   --sbk-text: #f8f8f8;
   --sbk-text-body: #d1d2d3;
   --sbk-block-error-text: #e8e8e8;

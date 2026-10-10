@@ -116,6 +116,12 @@
   --sbk-hover-actions-icon: #616061;
 }
 
+/* A chosen theme also sets the browser's color scheme, as Slack does, so text selections, native
+   scrollbars and the caret are drawn for it. Left alone otherwise: the host page owns its own. */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
 .sbk-root {
   font-family: var(--sbk-font);
   font-size: 15px;
