@@ -1131,13 +1131,13 @@
   },
   "catalog/markdown/code@dark": {
     "payload": "48f129cfc9848c163e10d5e58d1dc976ed7e30cefc97e5c49935efa7e277b255",
-    "reference": "d2f570ecc49dc2c2d6d058fe7b9c2a6fedeb7a2bc49aa352f4492e003f214f7e",
-    "captured": "2026-10-07"
+    "reference": "7815681b99df539ec51a2d5db7053a7951db7663f155afc6160b9eff38ec93f3",
+    "captured": "2026-10-10"
   },
   "catalog/markdown/code@mobile": {
     "payload": "48f129cfc9848c163e10d5e58d1dc976ed7e30cefc97e5c49935efa7e277b255",
-    "reference": "2f7ce5915c40d3d119b5a8d217318d986a9c0d4e5f33ed2db0c60687a939437b",
-    "captured": "2026-10-07"
+    "reference": "f202603e2e48b780e0f73e203323abb8349c9c3bb08869503ecd5c146a48a08d",
+    "captured": "2026-10-10"
   },
   "catalog/markdown/headings-and-dividers": {
     "payload": "bcc5a961be13bea1fbd9526794b36d7d4ab57033acbe476a1eefe259e4cea5e5",
@@ -1176,13 +1176,13 @@
   },
   "catalog/markdown/table@dark": {
     "payload": "ddb39b8303103ddf563eea461a6c51eddb544c974f1ec7aa8f14a86449d37f02",
-    "reference": "c1a454ee9eac1109e3d227c23c5013b92d0943a2f75e72b80136f389dd98f00c",
-    "captured": "2026-10-07"
+    "reference": "4a24167adf5e9092097ebd7ee62f403229023fcc656be3404110afcfb09e13c3",
+    "captured": "2026-10-10"
   },
   "catalog/markdown/table@mobile": {
     "payload": "ddb39b8303103ddf563eea461a6c51eddb544c974f1ec7aa8f14a86449d37f02",
-    "reference": "d526f3f10644617ee0b1576042687d286a2587d64fabf6c96183569f9f877ae5",
-    "captured": "2026-10-07"
+    "reference": "5d9fbe71269019038d8e1eba104b84d4442f68989af74ef9aeab867c2c5043c5",
+    "captured": "2026-10-10"
   },
   "catalog/reference/fallback-canary": {
     "payload": "4399802cfb66e55acfb6ef593c84d36686850fb0306a1510f68f3663ba60b391",
@@ -1296,13 +1296,13 @@
   },
   "catalog/rich-text/preformatted@dark": {
     "payload": "02b99facee658e98df3f2aff0fb87cd69980ed084983fedcfaf1cc3cfde3fca0",
-    "reference": "90692231c73f8f7f6fe9bbbe7ce797da2cdb0dbe0285ed838faa7e1bc63ae3dc",
-    "captured": "2026-10-07"
+    "reference": "318ca1dca73b171282dd593d759f4c3ed82ce7c7e09b118cb703bbbd3787f22a",
+    "captured": "2026-10-10"
   },
   "catalog/rich-text/preformatted@mobile": {
     "payload": "02b99facee658e98df3f2aff0fb87cd69980ed084983fedcfaf1cc3cfde3fca0",
-    "reference": "85ecf8354d141b5051c6dd844546a5bba6274870ecf878be9e48b706664a06da",
-    "captured": "2026-10-07"
+    "reference": "b1eafd2f16e0617e594226faf98b6abfb5a205662b6f154afaeb9017e0cf3330",
+    "captured": "2026-10-10"
   },
   "catalog/rich-text/strikethrough": {
     "payload": "13e47efe9565d27a18e43d7c7449701003e69fc11fa930fbca0d47e05a6eeff2",
