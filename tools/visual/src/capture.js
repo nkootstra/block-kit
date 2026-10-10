@@ -279,6 +279,15 @@ async ({
   let previousPayload;
   for (const { name, payload } of items) {
     const want = parse(name);
+    // Without focus the Builder draws an open select without its focus ring, and a modal can be
+    // frozen mid fade-in: started from DevTools in its own window, the page has neither. Wait for a
+    // click into the page.
+    if (!adapter && !doc.hasFocus()) {
+      win.sbkCaptureWaiting = `${name}: click into the Builder page so it has focus`;
+      console.log(win.sbkCaptureWaiting);
+      await waitFor(name, () => doc.hasFocus());
+      win.sbkCaptureWaiting = undefined;
+    }
     if (builder.theme() !== want.theme) await builder.setTheme(want.theme);
     const size = want.mobile ? "mobile" : "desktop";
     // The Builder disables its preview-size menu for App Home and modals, which it previews only at

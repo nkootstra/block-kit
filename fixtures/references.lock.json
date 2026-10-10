@@ -2586,7 +2586,7 @@
   },
   "contexts/radio_buttons/modal-input@dark": {
     "payload": "95bee96ccc9965830c0833e03df39e8b2f0b9c66e0b1c8ca7292cd0a03c0af04",
-    "reference": "37136db02fee6e09aeec1944c69099bdd21c70e3c60cb81ff854fefb0d3ad861",
+    "reference": "3c883fc1414cbae853336d1b595fc66e094039d99cff73d1999c4ac7bfce0ecb",
     "captured": "2026-10-10"
   },
   "contexts/rich_text_input/modal-input": {
@@ -3066,12 +3066,12 @@
   },
   "extra/modal/form@open": {
     "payload": "ccbeda1e0a9b281e86d3e61ba5d23ac01e07b5c00ad4779cb7f7adf383659c6e",
-    "reference": "8cb2d9b30fc956acf9560599db845c1cf7e5f56807b98de2d077360131630e3c",
+    "reference": "9136b25996c6a2aaf3eec2fb149e7fefdc9598019e1f2dd0f3581aa9da1b4160",
     "captured": "2026-10-10"
   },
   "extra/modal/form@open+dark": {
     "payload": "ccbeda1e0a9b281e86d3e61ba5d23ac01e07b5c00ad4779cb7f7adf383659c6e",
-    "reference": "ac81a34c304ee20d0181aad1a9918aa23dc956d0802d24e09ed8f750efb649a2",
+    "reference": "e198434109985f51ac8682b39dd714db4d9b7b084c318c0d24fdef835dfe7cd9",
     "captured": "2026-10-10"
   },
   "extra/modal/rich-and-file": {
