@@ -32,8 +32,11 @@
     -->
     <script>
       (() => {
-        if (new URLSearchParams(location.search).has("render")) return;
         const root = document.documentElement;
+        if (new URLSearchParams(location.search).has("render")) {
+          root.dataset.render = "";
+          return;
+        }
         let theme = "system";
         try {
           theme = localStorage.getItem("theme") || theme;
@@ -47,9 +50,204 @@
           ?.setAttribute("content", root.dataset.theme === "dark" ? "#0a0a0a" : "#ffffff");
       })();
     </script>
+    <!--
+      What the playground is, for search engines and agents. The same facts as the "about" section
+      in <body>.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "@id": "https://play.block-kit.dev/#app",
+        "name": "Block Kit Playground",
+        "url": "https://play.block-kit.dev/",
+        "description": "Paste or edit Slack Block Kit JSON and see the message, modal or Home tab the way Slack renders it, with working buttons and menus and the payloads they send. No Slack sign-in.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": {
+          "@type": "Person",
+          "name": "Niels Kootstra",
+          "url": "https://github.com/nkootstra"
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "Niels Kootstra",
+          "url": "https://github.com/nkootstra"
+        },
+        "isBasedOn": {
+          "@type": "SoftwareSourceCode",
+          "name": "@nkootstra/block-kit",
+          "codeRepository": "https://github.com/nkootstra/block-kit",
+          "license": "https://opensource.org/licenses/MIT"
+        }
+      }
+    </script>
+    <!--
+      The about section below is the page before the app mounts, and what crawlers that don't run
+      JavaScript read. It waits a moment before it shows, so a normal load goes from blank to the
+      app without flashing it. Once the app is in #root it stays in the page for search engines
+      and screen readers, visually hidden. The render page (?render) never shows it.
+    -->
+    <style>
+      #root:empty {
+        display: none;
+      }
+      .about {
+        box-sizing: border-box;
+        min-height: 100%;
+        margin: 0;
+        padding: 48px 16px;
+        background: #fff;
+        color: #0a0a0a;
+        font:
+          15px/1.6 system-ui,
+          sans-serif;
+        animation: about-in 0.2s ease-out 1s both;
+      }
+      :root[data-theme="dark"] .about {
+        background: #0a0a0a;
+        color: #fafafa;
+      }
+      .about > * {
+        max-width: 620px;
+        margin-inline: auto;
+      }
+      .about h1 {
+        margin-block: 0 12px;
+        font-size: 28px;
+        line-height: 1.2;
+      }
+      .about p,
+      .about ul {
+        margin-block: 0 12px;
+      }
+      .about code {
+        font-size: 0.88em;
+      }
+      .about a {
+        color: #2f5be0;
+      }
+      :root[data-theme="dark"] .about a {
+        color: #8aa5ff;
+      }
+      .about__note {
+        color: #6b6b6b;
+        font-size: 13px;
+      }
+      :root[data-theme="dark"] .about__note {
+        color: #a3a3a3;
+      }
+      #root:not(:empty) ~ .about {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        min-height: 0;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      /* The header's About button opens it as a panel over the app. */
+      #root:not(:empty) ~ .about[data-open] {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        width: auto;
+        height: auto;
+        padding: 48px 16px;
+        overflow: auto;
+        clip-path: none;
+        white-space: normal;
+        animation: none;
+      }
+      .about__close {
+        display: none;
+      }
+      #root:not(:empty) ~ .about .about__close {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 8px 14px;
+        border: 1px solid currentColor;
+        border-radius: 8px;
+        background: none;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      [data-render] .about {
+        display: none;
+      }
+      @keyframes about-in {
+        from {
+          opacity: 0;
+        }
+      }
+    </style>
+    <noscript>
+      <style>
+        .about {
+          animation: none;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <div id="root"></div>
+    <section id="about" class="about" aria-labelledby="about-title" tabindex="-1">
+      <h1 id="about-title">Block Kit Playground</h1>
+      <p>
+        Paste or edit Slack Block Kit JSON and see it rendered as a message, modal or Home tab, the
+        way Slack draws it. You don't need to sign in to Slack or install anything.
+      </p>
+      <p>
+        The editor takes the JSON your app sends to <code>chat.postMessage</code>,
+        <code>views.open</code> or <code>views.publish</code>: an object with <code>blocks</code>, a
+        bare array of blocks, or a whole view. The preview follows as you type, and while the JSON
+        doesn't parse it says what's wrong and keeps the last version that did.
+      </p>
+      <p>
+        Buttons, menus, date pickers and inputs work. Click one and the log under the preview shows
+        the <code>block_actions</code> payload Slack would send your app, with its
+        <code>action_id</code>, <code>block_id</code> and <code>value</code>, so you can check them
+        before you write the handler.
+      </p>
+      <p>
+        The address keeps your JSON in Block Kit Builder's URL format, so a link copied from one
+        opens in the other. The JSON stays in the link; nothing is saved on a server.
+      </p>
+      <p>
+        The playground is built on <code>@nkootstra/block-kit</code>, an open-source React package
+        that renders Block Kit the way Slack does and is compared, pixel by pixel, against Slack's
+        own rendering. Use it to show the same messages in your own product.
+      </p>
+      <ul>
+        <li><a href="https://docs.block-kit.dev">Documentation</a></li>
+        <li><a href="https://github.com/nkootstra/block-kit">Source on GitHub</a></li>
+        <li><a href="https://block-kit.dev">block-kit.dev</a></li>
+      </ul>
+      <p class="about__note">
+        MIT licensed. Not affiliated with Slack. Slack and Block Kit are trademarks of Slack
+        Technologies, LLC.
+      </p>
+      <p><button type="button" class="about__close">Back to the playground</button></p>
+    </section>
+    <script>
+      (() => {
+        const about = document.getElementById("about");
+        const close = () => {
+          if (!about.hasAttribute("data-open")) return;
+          about.removeAttribute("data-open");
+          document.getElementById("about-button")?.focus();
+        };
+        about.querySelector(".about__close").addEventListener("click", close);
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") close();
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

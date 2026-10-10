@@ -11,7 +11,7 @@ import AgentDemo from "../islands/AgentDemo";
 import proofOurs from "../assets/proof/approval.actual.png";
 import proofDiff from "../assets/proof/approval.diff.png";
 import proofSlack from "../assets/proof/approval.reference.png";
-import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, description, headline, title } from "../lib/site";
+import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, PLAYGROUND, description, headline, title } from "../lib/site";
 
 // The social card, drawn at build time by pages/og.png.ts.
 const ogImage = new URL("/og.png", Astro.site).toString();
@@ -130,6 +130,7 @@ const structuredData = {
       <div class="nav__links">
         <nav aria-label="Main" class="nav__main">
           <a class="nav__link" href={DOCS}>Docs</a>
+          <a class="nav__link nav__link--wide" href={PLAYGROUND}>Playground</a>
           <a class="nav__link nav__link--wide" href={`${DOCS}/changelog`}>Changelog</a>
           <a class="nav__link" href={GITHUB}>GitHub</a>
         </nav>
@@ -188,6 +189,10 @@ const structuredData = {
       <p class="next">
         <a href={`${DOCS}/quickstart`}>Read the quickstart <span aria-hidden="true">→</span></a>
         <span class="next__hint">Add the stylesheet, render a message, handle a click.</span>
+      </p>
+      <p class="next">
+        <a href={PLAYGROUND}>Try it in the Block Kit playground <span aria-hidden="true">→</span></a>
+        <span class="next__hint">Paste your JSON and see it rendered. No install, no sign-in.</span>
       </p>
 
       <AgentDemo client:load />
@@ -279,6 +284,7 @@ const structuredData = {
         <span>MIT licensed. Not affiliated with Slack.</span>
         <nav aria-label="Footer">
           <a href={DOCS}>Docs</a>
+          <a href={PLAYGROUND}>Playground</a>
           <a href={`${DOCS}/changelog`}>Changelog</a>
           <a href={GITHUB}>GitHub</a>
           <a href={NPM}>npm</a>

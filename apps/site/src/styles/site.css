@@ -172,8 +172,9 @@ pre {
   }
 }
 
-/* The changelog is in the footer too; on a phone the nav keeps the two links people come for. */
-@media (max-width: 479px) {
+/* The changelog and the playground are in the footer too (the playground also under the install
+   command); on a phone the nav keeps the two links people come for. */
+@media (max-width: 559px) {
   .nav__link--wide {
     display: none;
   }

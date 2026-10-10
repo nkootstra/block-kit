@@ -1,4 +1,14 @@
-import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, description, title } from "./site";
+import {
+  BLOCKS,
+  blockDocs,
+  DOCS,
+  GITHUB,
+  INSTALL,
+  NPM,
+  PLAYGROUND,
+  description,
+  title,
+} from "./site";
 
 /**
  * The home page as Markdown, for agents that ask for it (`Accept: text/markdown`): the same
@@ -40,7 +50,7 @@ export function App() {
 }
 \`\`\`
 
-The [quickstart](${DOCS}/quickstart) wires up an interactive approval message.
+The [quickstart](${DOCS}/quickstart) wires up an interactive approval message. To try it without installing anything, paste your JSON into the [Block Kit playground](${PLAYGROUND}).
 
 ## Buttons that work
 
@@ -58,6 +68,7 @@ ${BLOCKS.map((type) => `- [\`${type}\`](${blockDocs(type)})`).join("\n")}
 
 - [Documentation](${DOCS})
 - [Docs for agents](${DOCS}/llms.txt)
+- [Block Kit playground](${PLAYGROUND}): paste Block Kit JSON and see it rendered, no sign-in
 - [npm](${NPM})
 - [GitHub](${GITHUB})
 - [Changelog](${DOCS}/changelog)
