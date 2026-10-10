@@ -37,6 +37,10 @@ Block Kit content):
 `data-theme="light"` also works as an escape hatch to opt an element back out of dark mode even when
 the OS prefers it.
 
+`data-theme` also sets the element's `color-scheme`, as Slack does, so text selections, native
+scrollbars and the caret are drawn for that theme. Without `data-theme` the package leaves
+`color-scheme` to your page.
+
 ### The theme prop
 
 `<BlockKitProvider theme="light" | "dark">` sets `data-theme` on a wrapper `<div>` around its children,
