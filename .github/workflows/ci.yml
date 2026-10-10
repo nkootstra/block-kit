@@ -59,6 +59,26 @@ jobs:
           cat test-results/visual/coverage.md >> "$GITHUB_STEP_SUMMARY"
       # The release and preview helpers the workflows run.
       - run: bun test scripts
+      # The docs' changelog is fetched from the GitHub releases while they build, and Blume ships an
+      # empty one when that fetch fails ("fetch failed" without its cause), as most CI builds did.
+      # Before a deploy, rebuild the docs once if the changelog came out empty, then fail rather
+      # than ship it empty; the direct request logs the network error Blume leaves out.
+      - name: Docs changelog
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          empty() { grep -q "No changelog entries yet" apps/docs/dist/changelog/index.html; }
+          empty || exit 0
+          echo "::warning::The docs' changelog came out empty; rebuilding the docs once."
+          curl -sS -o /dev/null -w "GitHub releases API: HTTP %{http_code}\n" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases?per_page=1" || true
+          bunx turbo run build --filter=@nkootstra/block-kit-docs --force
+          if empty; then
+            echo "::error::The docs' changelog is still empty: the GitHub releases couldn't be fetched."
+            exit 1
+          fi
       # Hand the docs build to deploy-docs, so it ships exactly what passed the checks.
       - if: github.event_name == 'workflow_dispatch' && inputs.deploy
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
