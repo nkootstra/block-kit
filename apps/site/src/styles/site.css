@@ -166,6 +166,18 @@ pre {
   text-decoration: none;
 }
 
+/* npm and GitHub are icons, each a 44px square target. Both glyphs are centred in the same 24px box,
+   so they share a baseline with the text links; aria-label and title say which is which. */
+.nav__icon {
+  justify-content: center;
+  min-width: 44px;
+  padding: 0;
+}
+
+.nav__icon svg {
+  display: block;
+}
+
 @media (hover: hover) {
   .nav__link:hover {
     color: var(--ink);
@@ -177,6 +189,19 @@ pre {
 @media (max-width: 559px) {
   .nav__link--wide {
     display: none;
+  }
+}
+
+/* Below 380px the logo stands in for the name (still read out), so the npm and GitHub icons keep
+   their 44px targets next to Docs and the theme toggle. */
+@media (max-width: 379px) {
+  .brand__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
