@@ -290,6 +290,10 @@ async (win = window) => {
     // setAttribute would write a missing value as the text "undefined", which then paints.
     if (el.localName === "input" || el.localName === "textarea")
       el.setAttribute("value", typeof src.value === "string" ? src.value : "");
+    // A frozen field can't hold a text selection; record the focused field's so the comparison
+    // can select it again (Slack selects a time picker's time when its list opens).
+    if (src === doc.activeElement && src.selectionStart !== src.selectionEnd)
+      el.setAttribute("data-sbk-selection", `${src.selectionStart} ${src.selectionEnd}`);
     const base = defaultsFor(src, cs.fontSize, parent?.fontSize);
     el.setAttribute("style", diff(cs, base, parent, true, sizeOverrides(src, cs, parent)));
     // The Builder's draggable block wrapper transitions its selection highlight; that's the
