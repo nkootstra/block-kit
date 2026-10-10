@@ -64,6 +64,30 @@ describe("home page", () => {
   });
 });
 
+describe("home page Link header", () => {
+  const catalog =
+    '<https://docs.block-kit.dev/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json; profile=\\"https://www.rfc-editor.org/info/rfc9727\\""';
+
+  test("names llms.txt, the API catalog and the Markdown copy on the HTML page", async () => {
+    const link = (await get("/", browser)).headers.get("Link");
+    expect(link).toContain('</llms.txt>; rel="describedby"; type="text/plain"');
+    expect(link).toContain(catalog);
+    expect(link).toContain('</index.md>; rel="alternate"; type="text/markdown"');
+  });
+
+  test("names the HTML page as canonical on the Markdown copy", async () => {
+    const link = (await get("/", "text/markdown")).headers.get("Link");
+    expect(link).toContain(catalog);
+    expect(link).toContain('<https://block-kit.dev/>; rel="canonical"');
+    expect(link).not.toContain('rel="alternate"');
+  });
+
+  test("is left off other responses", async () => {
+    expect((await get("/nope", browser)).headers.get("Link")).toBeNull();
+    expect((await get("/llms.txt")).headers.get("Link")).toBeNull();
+  });
+});
+
 describe("missing pages", () => {
   test("answer a browser with the HTML 404 page", async () => {
     const response = await get("/nope", browser);
