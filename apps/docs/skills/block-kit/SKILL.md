@@ -122,7 +122,11 @@ select offers (`source` is `"users"`, `"conversations"` or `"channels"`), drawn 
 `{ type: "channel", id, name, private? }`. A conversations select
 applies its `filter` to them.
 
-`@nkootstra/block-kit/web-api` builds resolvers from the Slack Web API (needs `@slack/web-api`).
+`@nkootstra/block-kit/web-api` builds resolvers (names and `userProfile`) from the Slack Web API.
+The bot token never goes to the browser: on the server, `createResolverRelay({ client, authorize })`
+from `/server` answers lookups with a `WebClient`; in the browser, `useWebApiResolvers` gets
+`httpResolverClient({ url })` from `/transport`, created once at module scope. Never construct a
+`WebClient` in client code or give the token a `NEXT_PUBLIC_`/`VITE_` prefix.
 
 To link mentions to the app's own pages and route links through its router (full examples per
 framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
@@ -177,14 +181,14 @@ These props, and `resolvers`, are functions:
 
 ## Entry points
 
-| Import                            | Contains                                                  |
-| --------------------------------- | --------------------------------------------------------- |
-| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders      |
-| `@nkootstra/block-kit/styles.css` | The stylesheet                                            |
-| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React                          |
-| `@nkootstra/block-kit/transport`  | Sends interactions to an app's request URL from a browser |
-| `@nkootstra/block-kit/server`     | Signs and relays interactions from a server               |
-| `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API                     |
+| Import                            | Contains                                                    |
+| --------------------------------- | ----------------------------------------------------------- |
+| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders        |
+| `@nkootstra/block-kit/styles.css` | The stylesheet                                              |
+| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React                            |
+| `@nkootstra/block-kit/transport`  | Browser-safe: interactions to the app, lookups to the relay |
+| `@nkootstra/block-kit/server`     | Server only: interaction relay and resolver relay           |
+| `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API                       |
 
 ## Where to look next
 

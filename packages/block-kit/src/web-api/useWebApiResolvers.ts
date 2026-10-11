@@ -1,5 +1,5 @@
-import type { WebClient } from "@slack/web-api";
 import { useEffect, useMemo, useState } from "react";
+import type { WebApiClient } from "./client";
 import {
   createWebApiResolvers,
   type WebApiResolvers,
@@ -14,7 +14,7 @@ import {
  * called once per client rather than on every render.
  */
 export function useWebApiResolvers(
-  client: WebClient,
+  client: WebApiClient,
   opts?: WebApiResolversOptions,
 ): WebApiResolvers {
   // `opts` is a snapshot taken at creation time, like `client`: intentionally excluded below.

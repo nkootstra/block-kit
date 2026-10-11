@@ -39,14 +39,14 @@ The [installation guide](https://docs.block-kit.dev/installation) lists the rema
 
 ## Entry points
 
-| Import                            | What it contains                                                  |
-| --------------------------------- | ----------------------------------------------------------------- |
-| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders              |
-| `@nkootstra/block-kit/styles.css` | The stylesheet                                                    |
-| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React                                  |
-| `@nkootstra/block-kit/transport`  | Sends interactions to your app's request URL from the browser     |
-| `@nkootstra/block-kit/server`     | Signs and relays interactions to your app from your server        |
-| `@nkootstra/block-kit/web-api`    | User, channel and usergroup resolvers backed by the Slack Web API |
+| Import                            | What it contains                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------- |
+| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders                                        |
+| `@nkootstra/block-kit/styles.css` | The stylesheet                                                                              |
+| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React                                                            |
+| `@nkootstra/block-kit/transport`  | Browser-safe: sends interactions to your app, and resolver lookups to your server           |
+| `@nkootstra/block-kit/server`     | Server only: signs and relays interactions, and answers resolver lookups with the bot token |
+| `@nkootstra/block-kit/web-api`    | User, channel, usergroup and profile resolvers backed by the Slack Web API                  |
 
 ## Repository layout
 

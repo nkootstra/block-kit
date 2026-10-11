@@ -180,9 +180,9 @@ client): construct the `WebClient` outside the component, or memoize it, so it h
 across renders.
 
 :::note
-`createWebApiResolvers`/`useWebApiResolvers` implement `user`, `channel` and `usergroup`, not
-`userProfile`. Supply `userProfile` yourself (e.g. from `users.info`'s `profile` fields) if you want
-the profile card to show more than a name.
+`createWebApiResolvers`/`useWebApiResolvers` implement `user`, `channel`, `usergroup` and
+`userProfile`. The profile card's name, title, pronouns, avatar, status and local time come from the
+same `users.info` call as the name.
 :::
 
 ## Related

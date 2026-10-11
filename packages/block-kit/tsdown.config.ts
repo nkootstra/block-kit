@@ -13,7 +13,7 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     mrkdwn: "src/parser/index.ts",
-    transport: "src/interactivity/transport.ts",
+    transport: "src/transport.ts",
     server: "src/interactivity/index.ts",
     "web-api": "src/web-api/index.ts",
   },
