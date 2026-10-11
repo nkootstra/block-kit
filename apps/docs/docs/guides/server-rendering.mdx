@@ -133,6 +133,14 @@ export function InteractiveMessage({ ts, blocks }: { ts: string; blocks: AnyBloc
 The page itself stays a Server Component fetching data; only the piece that needs `onAction` and friends
 opts into the client, per [Connecting to your app](/guides/connecting-your-app).
 
+`resolvers` work the same way: the provider and the resolver functions go in the `"use client"` file,
+but the data they return comes from the server. Either the Server Component looks the names up and
+passes them down as plain `{ id: name }` props, or the client file uses `httpResolverClient` to ask a
+resolver relay. The `WebClient` and the bot token stay in server code (a route handler, the Server
+Component), never in the client file: see
+[Keep the bot token on the server](/guides/mentions-and-resolvers#keep-the-bot-token-on-the-server)
+and [`examples/nextjs`](https://github.com/nkootstra/block-kit/tree/main/examples/nextjs).
+
 ## Related
 
 <CardGroup cols={2}>

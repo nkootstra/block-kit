@@ -66,7 +66,7 @@ screenshot, photo, or diagram inline in a message, modal, or App Home surface.
 :::note
 Slack files aren't public, so a `slack_file` needs your app to resolve it, e.g. with an authenticated
 `files.info` call. Pass `resolvers.slackFile` to the provider: it returns a URL the browser can load
-and, optionally, the size in bytes, which shows as Slack's "(400 kB)" caption next to the caret
+(your own route, see [Slack files](#slack-files)) and, optionally, the size in bytes, which shows as Slack's "(400 kB)" caption next to the caret
 (decimal kilobytes, as Slack counts them). A resolved file shows at most 400 x 400, as Slack draws
 it from its 800px thumbnail; an `image_url` fills the message's width. A file it can't resolve (or
 no resolver) renders Slack's documented fallback: a placeholder box with the `alt_text`.
@@ -121,7 +121,7 @@ the caret does). They stay in the page: none of them calls `onAction`.
   }}
 />
 
-### Referencing a Slack file
+### Slack files
 
 <Preview
   payload={{
@@ -143,10 +143,24 @@ shows like an `image_url`, at most 400 x 400:
 ```tsx
 <BlockKitProvider
   resolvers={{
-    slackFile: (file) => files.get(file.id ?? file.url ?? ""), // { url, size } or undefined
+    slackFile: (file) => (file.id ? { url: `/api/slack/files/${file.id}` } : undefined),
   }}
 >
 ```
+
+Downloading a Slack file takes the bot token, so the URL `slackFile` returns is a route on your own
+server, never Slack's `url_private` and never a URL with a token in its query string. The route:
+
+1. Checks that the visitor may see the file, the way the rest of your app checks access.
+2. Looks the file up with `files.info` (the `files:read` scope; the bot has to be able to see the
+   file).
+3. Fetches its `url_private` with the bot token in an `Authorization` header, only when that URL is
+   on `https://files.slack.com`, and without following redirects.
+4. Streams the body back if it's an image, with your own cache headers.
+
+The [examples](https://github.com/nkootstra/block-kit/tree/main/examples) include this route for
+Next.js and Hono. A payload whose `slack_file` only has a `url` carries the file id in it (`F…` after
+the team id), so `slackFile` can pass that on instead.
 
 ## Related
 

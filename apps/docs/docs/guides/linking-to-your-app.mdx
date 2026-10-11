@@ -102,6 +102,12 @@ React Router's and TanStack Router's `Link` take `to`; Next.js's `next/link` tak
 runs in the browser. Each example below ran in a production build of that framework, with the links
 navigating client-side where the framework routes on the client.
 
+Only the functions live in the browser file, never what they look names up with. The names come from
+your server: pass them in as plain `{ id: name }` props, or point `useWebApiResolvers` at a resolver
+relay with `httpResolverClient`. A `WebClient` and the bot token never belong in that file. See
+[Keep the bot token on the server](/guides/mentions-and-resolvers#keep-the-bot-token-on-the-server)
+and [`examples/nextjs`](https://github.com/nkootstra/block-kit/tree/main/examples/nextjs).
+
 <Tabs>
 <Tab title="Next.js">
 
@@ -320,7 +326,8 @@ const message = await getMessage(Astro.params.ts);
 :::warning
 Don't pass `mentionHref`, `linkComponent` or `resolvers` from an `.astro` file. Astro serializes
 island props and silently turns a function into `null`: no error, the mentions just render without
-links. Only data, like the message, can cross into the island.
+links. Only data, like the message, can cross into the island. Resolved names are data too: look
+them up in the `.astro` frontmatter, which runs on the server, and pass the `{ id: name }` maps in.
 :::
 
 </Tab>

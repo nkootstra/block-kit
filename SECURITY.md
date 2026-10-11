@@ -25,6 +25,11 @@ untrusted. In scope, for example:
 - The signing secret given to `createInteractionRelay` reaching the browser, a response or a log.
 - A relay that forwards a request it should refuse, or signs anything other than the interaction
   the page sent.
+- The bot token given to `createResolverRelay` (or any `WebClient` the docs or examples set up)
+  reaching the browser, a response or a log.
+- The resolver relay accepting a missing or wrong `token` when one is set, calling anything but
+  `users.info`, `conversations.info` and `usergroups.list`, or returning fields outside its
+  allowlist, such as an email address or phone number.
 - A published version without a provenance attestation (see below).
 
 Out of scope: Slack's own services and APIs (report those to Slack), and what an app does with the

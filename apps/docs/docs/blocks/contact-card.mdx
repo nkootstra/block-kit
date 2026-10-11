@@ -40,7 +40,9 @@ appear in the public `@slack/types` package, so treat this page's field list as 
 
 The preview above resolves `U0ADA` to Ada Lovelace using the preview's sample directory. In your own
 app, wire up a [resolver](/guides/mentions-and-resolvers) backed by the Slack Web API so real user ids
-resolve to real names.
+resolve to real names. The lookups run on your server, through a resolver relay or before the page
+renders, so the bot token never reaches the browser: see
+[Keep the bot token on the server](/guides/mentions-and-resolvers#keep-the-bot-token-on-the-server).
 
 ### Unresolved user
 
