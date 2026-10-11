@@ -88,7 +88,7 @@ empty paragraph) counts as empty for the required check, the same way Slack trea
 ## Messages
 
 Every message comes from `VALIDATION_MESSAGES`, exported so you can read (or override, in your own
-copy) Slack's exact client-side wording:
+copy) the wording Slack's client shows, as closely as observed:
 
 ```ts
 import { VALIDATION_MESSAGES } from "@nkootstra/block-kit";
@@ -130,7 +130,7 @@ const errors = validateView(view.blocks, state);
 // { email: "Please complete this required field." }
 
 if (Object.keys(errors).length === 0) {
-  // safe to submit
+  // passes the client-side checks; your app still re-validates the submission on the server
 }
 ```
 

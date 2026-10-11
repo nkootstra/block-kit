@@ -71,7 +71,10 @@ navigation inside your app. It renders every link that comes from the payload:
 - mentions linked by `mentionHref`
 
 It gets `LinkProps`: `href`, `className`, `children`, and `target` and `rel` for links that open
-a new tab, as Slack's do. Pass `className` on: it carries block-kit's styling. Route your own
+a new tab, as Slack's do. Pass `className` on: it carries block-kit's styling. The `href` has
+already passed the renderer's [URL safety](/reference/block-kit-provider#url-safety) check, so a
+`javascript:` URL never reaches it. The examples check for `//` as well as `/`, because `//host/path`
+is a link to another site, not a path in your app. Route your own
 paths and leave everything else a plain `<a>`:
 
 ```tsx
@@ -79,7 +82,7 @@ import { Link } from "react-router";
 import type { LinkProps } from "@nkootstra/block-kit";
 
 export function AppLink({ href, className, target, rel, children }: LinkProps) {
-  if (href.startsWith("/")) {
+  if (href.startsWith("/") && !href.startsWith("//")) {
     return (
       <Link to={href} className={className} target={target} rel={rel}>
         {children}
@@ -123,7 +126,7 @@ import { BlockKitProvider, type LinkProps, type Resolvers } from "@nkootstra/blo
 import type { ReactNode } from "react";
 
 function AppLink({ href, className, target, rel, children }: LinkProps) {
-  if (href.startsWith("/")) {
+  if (href.startsWith("/") && !href.startsWith("//")) {
     return (
       <Link href={href} className={className} target={target} rel={rel}>
         {children}
@@ -190,7 +193,7 @@ import { Link } from "react-router";
 import type { LinkProps } from "@nkootstra/block-kit";
 
 export function AppLink({ href, className, target, rel, children }: LinkProps) {
-  if (href.startsWith("/")) {
+  if (href.startsWith("/") && !href.startsWith("//")) {
     return (
       <Link to={href} className={className} target={target} rel={rel}>
         {children}
@@ -237,7 +240,7 @@ import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@nkootstra/block-kit";
 
 export function AppLink({ href, className, target, rel, children }: LinkProps) {
-  if (href.startsWith("/")) {
+  if (href.startsWith("/") && !href.startsWith("//")) {
     return (
       <Link to={href} className={className} target={target} rel={rel}>
         {children}
@@ -379,7 +382,8 @@ leave your app through a redirect page:
 
 ```tsx
 function AppLink({ href, className, target, rel, children }: LinkProps) {
-  const url = href.startsWith("/") ? href : `/out?to=${encodeURIComponent(href)}`;
+  const internal = href.startsWith("/") && !href.startsWith("//");
+  const url = internal ? href : `/out?to=${encodeURIComponent(href)}`;
   return (
     <a href={url} className={className} target={target} rel={rel}>
       {children}
@@ -387,6 +391,10 @@ function AppLink({ href, className, target, rel, children }: LinkProps) {
   );
 }
 ```
+
+`/out` is an open redirect unless it checks where it sends people: anyone can link to
+`/out?to=https://phishing.example` with your domain in front. Have the page show the destination and
+ask before leaving, or only redirect to an `http` or `https` URL whose host you allow.
 
 ## Related
 
