@@ -44,6 +44,23 @@ describe("safeUrl", () => {
     expect(safeUrl("  https://example.com/a\tb  ")).toBe("https://example.com/ab");
   });
 
+  it("keeps an image's own blob: and data:image/ URLs only when asked to", () => {
+    const png = "data:image/png;base64,iVBORw0KGgo=";
+    expect(safeUrl(png)).toBeUndefined();
+    expect(safeUrl(png, { image: true })).toBe(png);
+    expect(safeUrl("blob:https://example.com/0f1e", { image: true })).toBe(
+      "blob:https://example.com/0f1e",
+    );
+    expect(safeUrl("data:text/html,<script>alert(1)</script>", { image: true })).toBeUndefined();
+    expect(safeUrl("javascript:alert(1)", { image: true })).toBeUndefined();
+  });
+
+  it("stays fast on a long run of control characters", () => {
+    const start = performance.now();
+    expect(safeUrl(`${"\u0000".repeat(100_000)}x${"\u0000".repeat(100_000)}`)).toBe("x");
+    expect(performance.now() - start).toBeLessThan(100);
+  });
+
   it("drops a missing url", () => {
     expect(safeUrl(undefined)).toBeUndefined();
   });
