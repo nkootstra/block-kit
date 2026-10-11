@@ -1,9 +1,11 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { renderToStaticMarkup } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type LinkProps } from "./context";
 import { Blocks } from "./Blocks";
 import { Message } from "./Message";
+import { clickAsync } from "./elements/test-utils";
 import { Mrkdwn } from "./Mrkdwn";
 
 afterEach(cleanup);
@@ -367,5 +369,96 @@ describe("mentionHref", () => {
       </BlockKitProvider>,
     );
     expect(screen.queryByRole("link")).toBeNull();
+  });
+});
+
+describe("unsafe URLs from the payload", () => {
+  const unsafe = "javascript:alert(document.domain)";
+
+  it("renders a mrkdwn, rich text and attachment link with a javascript: URL without a destination", () => {
+    const { container } = render(
+      <BlockKitProvider linkComponent={RouterLink}>
+        <Message
+          blocks={[
+            { type: "section", text: { type: "mrkdwn", text: `<${unsafe}|mrkdwn link>` } },
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "link", url: `\tJaVaScRiPt:alert(1)`, text: "rich link" }],
+                },
+              ],
+            },
+          ]}
+          message={{ ts: "1.000", attachments: [{ title: "attachment link", title_link: unsafe }] }}
+        />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelector("a[href]")).toBeNull();
+    // The text stays, and the app's link component never sees the URL.
+    expect(screen.getByText("mrkdwn link")).toBeTruthy();
+    expect(screen.getByText("rich link")).toBeTruthy();
+    expect(screen.getByText("attachment link")).toBeTruthy();
+    expect(container.querySelector("[data-router]")).toBeNull();
+  });
+
+  it("drops a javascript: URL a mentionHref returns", () => {
+    const { container } = render(
+      <BlockKitProvider
+        mentionHref={() => unsafe}
+        resolvers={{ channel: (id) => (id === "C0123456789" ? "releases" : undefined) }}
+      >
+        <Mrkdwn text="<#C0123456789>" />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelector("a[href]")).toBeNull();
+    expect(container.textContent).toContain("releases");
+  });
+
+  it("doesn't open a button's javascript: URL, but still sends the action", async () => {
+    const onAction = vi.fn();
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Message
+          blocks={[
+            {
+              type: "actions",
+              elements: [
+                {
+                  type: "button",
+                  action_id: "go",
+                  text: { type: "plain_text", text: "Go" },
+                  url: unsafe,
+                },
+              ],
+            },
+          ]}
+        />
+      </BlockKitProvider>,
+    );
+    await clickAsync(screen.getByRole("button", { name: "Go" }));
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ url: unsafe }),
+      expect.anything(),
+    );
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
+  it("leaves no javascript: href in server-rendered HTML", () => {
+    const html = renderToStaticMarkup(
+      <Message
+        blocks={[
+          {
+            type: "section",
+            text: { type: "mrkdwn", text: `<${unsafe}|x> <https://example.com|ok>` },
+          },
+        ]}
+      />,
+    );
+    expect(html).not.toMatch(/javascript:/i);
+    expect(html).toContain('href="https://example.com"');
   });
 });

@@ -118,7 +118,9 @@ also carry a `url` to open a link, or a `confirm` object to ask before it fires.
 ### Link button
 
 A `url` button still fires a `block_actions` payload; the browser navigation is a side effect the
-component performs in addition to dispatching.
+component performs in addition to dispatching. Only an `http`, `https`, `mailto` or `slack` URL (or
+a relative one) opens; anything else, like `javascript:`, is still sent in the action but never
+followed (see [URL safety](/reference/block-kit-provider#url-safety)).
 
 <Preview
   payload={{

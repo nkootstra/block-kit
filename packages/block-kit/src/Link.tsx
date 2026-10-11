@@ -1,16 +1,19 @@
 import type { ReactNode } from "react";
 import { type LinkProps, type MentionRef, useBlockKit } from "./context";
+import { safeUrl } from "./safeUrl";
 
 /**
  * A link from the payload, rendered by the provider's `linkComponent` when it has one. Without an
- * `href` (a payload missing its URL) it stays a plain `<a>`, so the app's component always gets one.
+ * `href` (a payload missing its URL, or one `safeUrl` drops, like `javascript:`) it stays a plain
+ * `<a>` with no destination, so the app's component always gets a safe one.
  */
 export function Link({
-  href,
+  href: rawHref,
   children,
   ...props
 }: Omit<LinkProps, "href"> & { href: string | undefined }) {
   const { linkComponent: Component } = useBlockKit();
+  const href = safeUrl(rawHref);
   if (Component && href !== undefined)
     return (
       <Component href={href} {...props}>
