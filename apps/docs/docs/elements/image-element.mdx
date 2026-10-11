@@ -1,6 +1,6 @@
 ---
 title: Image element
-description: A small image used as a section accessory or context_actions decoration.
+description: A small image used as a section accessory or in a context block.
 seo:
   description: "Render Slack's image element in React: a small image used as a section accessory or in a context block, sized and cropped the way Slack displays it."
   title: "Slack image element"
@@ -8,7 +8,8 @@ seo:
 
 The `image` element renders a single `<img>` from `image_url`, with `alt_text` as its accessible
 text. Use it where an image needs to sit alongside other content (as a section's accessory, or
-inside a `context_actions` row) rather than as its own block. For a full-width standalone image,
+inside a [`context`](/blocks/context) block) rather than as its own block. Slack accepts it in
+those two places only. For a full-width standalone image,
 see the [`image` block](/blocks/image) instead.
 
 <Preview
