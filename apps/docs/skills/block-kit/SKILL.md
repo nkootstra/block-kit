@@ -128,6 +128,18 @@ from `/server` answers lookups with a `WebClient`; in the browser, `useWebApiRes
 `httpResolverClient({ url })` from `/transport`, created once at module scope. Never construct a
 `WebClient` in client code or give the token a `NEXT_PUBLIC_`/`VITE_` prefix.
 
+**Rule: the Slack bot token (`xoxb-…`) and `@slack/web-api` only ever run on the server.** Never
+generate code that creates a `WebClient` in a `"use client"` file, a React component, an Astro island
+or anything a bundler ships to the browser. Resolver data reaches the browser one of two ways:
+`httpResolverClient` asking a `createResolverRelay` route (development and preview tooling: set the
+same `token` on both whenever the route is reachable beyond the developer's machine, and don't deploy
+it publicly), or names resolved on the server and passed as plain `{ id: name }` maps.
+`resolvers.slackFile` returns a URL on the app's own server that downloads the file with the token
+(never `url_private`, never a token in a query string); `resolvers.directory` entries are fetched on
+the server and passed as data. Scopes: `users:read`, `channels:read` (`groups:read` only for private
+channels), `usergroups:read`, and `files:read` for files; never `users:read.email`. Working examples:
+https://github.com/nkootstra/block-kit/tree/main/examples
+
 To link mentions to the app's own pages and route links through its router (full examples per
 framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
 

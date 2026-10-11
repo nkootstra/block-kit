@@ -1,6 +1,6 @@
 ---
 title: Mentions and resolvers
-description: Resolve user, channel and usergroup ids to names, show unresolved mentions like Slack, and back it with the real Slack Web API.
+description: Resolve user, channel and usergroup ids to names, show unresolved mentions like Slack, and back it with the Slack Web API without the bot token reaching the browser.
 seo:
   title: "Slack mentions and user resolvers"
 ---
@@ -129,43 +129,149 @@ set. Without a `userProfile` resolver it still opens, showing just the name from
 `mentionHref` turns resolved mentions into links to your own pages, and `linkComponent` sends every
 link in a message through your router. See [Linking to your app](/guides/linking-to-your-app).
 
-## createWebApiResolvers
+## Resolving names from the Slack Web API
 
-`@nkootstra/block-kit/web-api` builds `Resolvers` backed by a real `@slack/web-api` `WebClient` (or an
-emulator that implements the same methods): `users.info` and `conversations.info` per id, and
-`usergroups.list` once for every usergroup id (the Web API has no per-id usergroup lookup).
+`@nkootstra/block-kit/web-api` builds `Resolvers` from three Web API methods: `users.info` for a
+user's name and profile card, `conversations.info` for a channel, and `usergroups.list` once for every
+usergroup id (the Web API has no per-id usergroup lookup). Those calls need your bot token, and the
+bot token must never reach the browser, so the lookups run on your server. There are two ways to set
+that up:
 
-```tsx
-import { WebClient } from "@slack/web-api";
-import { BlockKitProvider, Message } from "@nkootstra/block-kit";
-import { createWebApiResolvers } from "@nkootstra/block-kit/web-api";
+- **A relay**, when the page decides which ids it needs: `createResolverRelay` answers lookups on
+  your server, and `httpResolverClient` asks it from the browser.
+- **Resolve on the server**, when you render the page on the server: look the ids up there and hand
+  the browser plain `{ id: name }` maps.
 
-const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-const resolvers = createWebApiResolvers(client, { batchWindowMs: 20 });
+[`examples/nextjs`](https://github.com/nkootstra/block-kit/tree/main/examples/nextjs) and
+[`examples/vite-hono`](https://github.com/nkootstra/block-kit/tree/main/examples/vite-hono) show both,
+and run without a Slack workspace.
 
-<BlockKitProvider resolvers={resolvers}>
-  <Message blocks={[{ type: "section", text: { type: "mrkdwn", text: "<@U0ADA>" } }]} />
-</BlockKitProvider>;
+## Keep the bot token on the server
+
+A bot token (`xoxb-…`) is your app's identity in the workspace: whoever has it can call the Web API as
+your app, with every scope it was granted. Code that constructs a `WebClient` next to
+`useWebApiResolvers` runs in the browser, so the token has to be in the page's JavaScript for it to
+work. Then anyone who opens the page can read it out of the bundle. If the environment variable isn't
+exposed to the browser, the lookups just fail, and the usual "fix" is a `NEXT_PUBLIC_` or `VITE_`
+prefix, which publishes the token.
+
+The same trust boundary as the [signing secret](/guides/connecting-your-app#why-the-signing-secret-must-stay-server-side)
+applies: only your server holds the bot token, and the browser only talks to your own origin.
+
+```mermaid
+sequenceDiagram
+  participant P as useWebApiResolvers (browser)
+  participant R as Your server (the resolver relay)
+  participant S as Slack Web API
+  P->>R: POST { users, channels } via httpResolverClient
+  Note over R: Check the relay token, validate the ids
+  R->>S: users.info, conversations.info with the bot token
+  S-->>R: Full user and channel objects
+  Note over R: Keep only the name and profile fields
+  R-->>P: { id: fields } for each id
 ```
 
-Because the resolver functions must stay synchronous, a lookup that hasn't finished yet returns
-`undefined` immediately and schedules a background fetch. Calls for the same kind (`user` or
-`channel`) made within `batchWindowMs` (default 20ms), for example every mention in a long message, are
-coalesced into one batch of concurrent requests rather than firing one at a time.
+Whoever can reach the relay can look up every name the bot can see, so give the bot a token with only
+the scopes these lookups need:
 
-## useWebApiResolvers
+| Lookup               | Method               | Scope                                                         |
+| -------------------- | -------------------- | ------------------------------------------------------------- |
+| User names, profiles | `users.info`         | `users:read`                                                  |
+| Channel names        | `conversations.info` | `channels:read`, plus `groups:read` only for private channels |
+| User group names     | `usergroups.list`    | `usergroups:read`                                             |
 
-In a component, `useWebApiResolvers` wraps `createWebApiResolvers` and re-renders you automatically
-whenever a lookup completes, so a mention that started unresolved shows its name once it arrives:
+Never add `users:read.email`: nothing here reads an email address.
 
-```tsx
+The same goes for everything else that needs the token: [`slack_file` images](/blocks/image#slack-files)
+and the [directory](/elements/select-menus) a users or conversations select lists come from your
+server too.
+
+## The resolver relay
+
+On the server, `createResolverRelay` from `@nkootstra/block-kit/server` answers the lookups with your
+`WebClient`. It's a Fetch API `(Request) => Response` handler, like the interaction relay:
+
+```ts app/api/slack/resolve/route.ts
+import "server-only";
 import { WebClient } from "@slack/web-api";
+import { createResolverRelay } from "@nkootstra/block-kit/server";
+
+const client = new WebClient(process.env.SLACK_BOT_TOKEN, {
+  // Answer "try again later" instead of holding the request while Slack's rate limit resets.
+  rejectRateLimitedCalls: true,
+  retryConfig: { retries: 1 },
+});
+
+export const POST = createResolverRelay({
+  client,
+  // A development secret the page sends along; see below.
+  token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN,
+});
+```
+
+<TypeTable
+  type={{
+    client: {
+      type: "WebApiClient",
+      required: true,
+      description:
+        "A WebClient from @slack/web-api, or anything with users.info, conversations.info and usergroups.list.",
+    },
+    token: {
+      type: "string",
+      description:
+        "When set, a request without Authorization: Bearer <token> gets a 401, before its body is read. Without it, the relay answers anyone who can reach it.",
+    },
+    maxIds: {
+      type: "number",
+      description:
+        "The most ids one request may ask for. Defaults to 100, which is also the ceiling.",
+    },
+    onError: {
+      type: "(error: unknown) => void",
+      description:
+        "Called with the Slack errors the relay answers 502 or 429 for. The response itself never includes them.",
+    },
+  }}
+/>
+
+It only calls those three methods, accepts only ids in Slack's formats (`U0123456789`,
+`C0123456789`) and at most 100 of them per request, and returns only the fields mentions and the
+profile card use: never an email, a phone number or the rest of the user object. A request that isn't
+JSON is refused, so a form on another site can't post to it.
+
+### Development and previews only
+
+Like the [interaction relay](/guides/connecting-your-app), the resolver relay is development and
+preview tooling. Don't deploy it publicly: without a `token`, anyone who can reach the route can look
+up any user and channel the bot can see.
+
+- Set `token` whenever the route is reachable beyond your machine: a tunnel, a preview deploy, a
+  shared network.
+- The relay token is a development secret shared with the page, not a Slack credential, so it's fine
+  in browser code (and in a `NEXT_PUBLIC_` or `VITE_` variable). Pass the same value to
+  `httpResolverClient`.
+- The bot token is the opposite: it never leaves the server, and it has only the scopes above.
+
+## In the browser: httpResolverClient
+
+`httpResolverClient` from `@nkootstra/block-kit/transport` stands in for the `WebClient`: it asks your
+relay, and lookups made in the same tick go out as one request.
+
+```tsx app/slack-preview.tsx
+"use client";
+
+import type { AnyBlock } from "@slack/types";
 import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+import { httpResolverClient } from "@nkootstra/block-kit/transport";
 import { useWebApiResolvers } from "@nkootstra/block-kit/web-api";
 
-const client = new WebClient(process.env.SLACK_BOT_TOKEN);
+const client = httpResolverClient({
+  url: "/api/slack/resolve",
+  token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN,
+});
 
-export function Channel({ blocks }: { blocks: AnyBlock[] }) {
+export function SlackPreview({ blocks }: { blocks: AnyBlock[] }) {
   const resolvers = useWebApiResolvers(client);
   return (
     <BlockKitProvider resolvers={resolvers}>
@@ -175,15 +281,80 @@ export function Channel({ blocks }: { blocks: AnyBlock[] }) {
 }
 ```
 
-`client` is captured once (like `createWebApiResolvers`, `opts` is only read on first render for that
-client): construct the `WebClient` outside the component, or memoize it, so it has a stable identity
-across renders.
+Create the client once, outside the component: the resolvers belong to the client they were made
+with, so a new client on every render would start every lookup over. `token` is sent as
+`Authorization: Bearer <token>`; `headers` adds any others.
 
-:::note
-`createWebApiResolvers`/`useWebApiResolvers` implement `user`, `channel`, `usergroup` and
-`userProfile`. The profile card's name, title, pronouns, avatar, status and local time come from the
-same `users.info` call as the name.
-:::
+`useWebApiResolvers` re-renders the component whenever a lookup completes, so a mention that started
+unresolved shows its name once it arrives. `createWebApiResolvers` is the same without React: call
+`subscribe` to hear when a lookup completes. Because the resolver functions must stay synchronous, a
+lookup that hasn't finished returns `undefined` and schedules a background fetch; lookups made within
+`batchWindowMs` (default 20ms) are sent together.
+
+They implement `user`, `channel`, `usergroup` and `userProfile`: the profile card's name, title,
+pronouns, avatar, status and local time come from the same `users.info` call as the name.
+
+## Resolve on the server instead
+
+When a Server Component (or any server-rendered page) has the blocks, it can look the ids up itself
+and pass the browser only the names. Nothing about Slack reaches the client, not even a relay to ask:
+
+```tsx app/page.tsx
+import "server-only";
+import { WebClient } from "@slack/web-api";
+import { SlackPreview } from "./slack-preview";
+
+const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
+
+/** Looks every id up at once, leaving out the ones Slack doesn't know. */
+async function resolveAll(ids: string[], name: (id: string) => Promise<string | undefined>) {
+  const found = await Promise.allSettled(ids.map(async (id) => [id, await name(id)] as const));
+  return Object.fromEntries(
+    found.flatMap((r) => (r.status === "fulfilled" && r.value[1] ? [r.value] : [])),
+  );
+}
+
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const blocks = await loadBlocks();
+  // The ids in the blocks' mentions; the examples include a small collector.
+  const ids = mentionIds(blocks);
+  const [names, channelNames] = await Promise.all([
+    resolveAll(ids.users, async (user) => {
+      const res = await slack.users.info({ user });
+      return res.user?.profile?.display_name || res.user?.real_name;
+    }),
+    resolveAll(ids.channels, async (channel) => {
+      return (await slack.conversations.info({ channel })).channel?.name;
+    }),
+  ]);
+  return <SlackPreview blocks={blocks} names={names} channelNames={channelNames} />;
+}
+```
+
+```tsx app/slack-preview.tsx
+"use client";
+
+import type { AnyBlock } from "@slack/types";
+import { BlockKitProvider, Message } from "@nkootstra/block-kit";
+
+export function SlackPreview(props: {
+  blocks: AnyBlock[];
+  names: Record<string, string>;
+  channelNames: Record<string, string>;
+}) {
+  return (
+    <BlockKitProvider
+      resolvers={{ user: (id) => props.names[id], channel: (id) => props.channelNames[id] }}
+    >
+      <Message blocks={props.blocks} />
+    </BlockKitProvider>
+  );
+}
+```
+
+The props are plain objects, so they cross from the server to the client like any other props.
 
 ## Related
 
@@ -197,7 +368,7 @@ same `users.info` call as the name.
   <Card title="Handling actions" href="/guides/interactivity" icon="mouse-pointer-click">
     The ids you'll see in state.values and payloads are the same ones resolvers work from.
   </Card>
-  <Card title="Installation" href="/installation" icon="download">
-    @slack/web-api is an optional peer dependency, only needed for createWebApiResolvers.
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="plug">
+    The interaction relay, and why the signing secret stays on the server too.
   </Card>
 </CardGroup>
