@@ -24,7 +24,9 @@ untrusted. In scope, for example:
   isn't `http:` or `https:`.
 - The signing secret given to `createInteractionRelay` reaching the browser, a response or a log.
 - A relay that forwards a request it should refuse, or signs anything other than the interaction
-  the page sent.
+  the page sent. For `createInteractionRelay`, that includes accepting a missing or wrong `token`
+  when one is set, relaying a browser request from another site's page, and putting the app's
+  request URL or a connection error in its response.
 - The bot token given to `createResolverRelay` (or any `WebClient` the docs or examples set up)
   reaching the browser, a response or a log.
 - The resolver relay accepting a missing or wrong `token` when one is set, calling anything but

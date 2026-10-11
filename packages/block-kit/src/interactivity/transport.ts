@@ -1,4 +1,5 @@
 import type { BlockKitProviderProps, OptionsResponse, ViewResponseAction } from "../index";
+import { TRANSPORT_HEADER } from "./guard";
 
 // Browser-safe: no Node imports here, so `@nkootstra/block-kit/transport` can be
 // bundled into a page. Signing lives in `sign.ts`/`relay.ts`, which only run on a server.
@@ -63,6 +64,11 @@ export interface HttpTransportOptions {
    * signatures (e.g. Bolt with `signatureVerification: false`).
    */
   url: string;
+  /**
+   * The relay's `token`, sent as `Authorization: Bearer <token>`. A development secret shared
+   * with the page, not a Slack credential.
+   */
+  token?: string;
   headers?: HeadersInit;
   /** Injectable for tests; defaults to the global `fetch`. */
   fetch?: typeof fetch;
@@ -97,6 +103,9 @@ export function httpTransport(options: HttpTransportOptions): InteractionTranspo
           method: "POST",
           headers: {
             "content-type": "application/x-www-form-urlencoded",
+            // Marks the request as the transport's, which a cross-site form can't send.
+            [TRANSPORT_HEADER]: "http",
+            ...(options.token === undefined ? {} : { authorization: `Bearer ${options.token}` }),
             ...Object.fromEntries(new Headers(options.headers)),
           },
           body: encodeInteraction(payload),
