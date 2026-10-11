@@ -8,8 +8,10 @@ seo:
   description: "Render Slack's image block in React: a standalone image with an optional title row and a toggle to hide it, sized and shown the way Slack displays it."
 ---
 
-`image` renders a single image, either from a public URL or a title-less caption. Use it to show a
-screenshot, photo, or diagram inline in a message, modal, or App Home surface.
+`image` renders a single image, from either a public URL (`image_url`) or a file in the workspace
+(`slack_file`): exactly one of the two is required. Use it to show a screenshot, photo, or diagram
+inline in a message, modal, or App Home surface. See [Limits](/reference/limits) for its field
+lengths.
 
 <Preview
   payload={{

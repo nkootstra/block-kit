@@ -35,7 +35,8 @@ produced, where you don't control the exact markdown shape ahead of time.
     },
     text: {
       type: "string",
-      description: "Standard markdown-formatted text. Limit 12,000 characters.",
+      description:
+        "Standard markdown-formatted text. Slack allows 12,000 characters across all `markdown` blocks in a payload, not per block.",
       required: true,
     },
     block_id: {
