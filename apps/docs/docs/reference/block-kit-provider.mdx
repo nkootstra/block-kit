@@ -103,6 +103,19 @@ One provider can hold several surfaces. Each action still carries the message or
 `mentionHref` and `linkComponent` connect a message to your app's own pages and router: see
 [Linking to your app](/guides/linking-to-your-app).
 
+#### URL safety
+
+A message's URLs come from whoever wrote it, so the renderer only follows the ones that can't run
+code. Links (mrkdwn, rich text, markdown, data tables, plan and task card sources, videos,
+attachments, and what `mentionHref` returns), link buttons and overflow options keep an `http`,
+`https`, `mailto` or `slack` URL, or a relative one like `/settings` or `#notes`. Any other scheme,
+such as `javascript:`, `data:` or `vbscript:`, is dropped: the link keeps its text but has no
+`href`, and a button still sends its action but opens nothing. The check strips the spaces, tabs
+and newlines a browser would strip first, so `\tjava\nscript:` is caught too.
+
+`linkComponent` only ever receives a URL that passed this check, so it doesn't need its own. Image
+URLs (`image_url`, icons, avatars, thumbnails) are left as they are: an image can't run a script.
+
 ### Display
 
 <TypeTable

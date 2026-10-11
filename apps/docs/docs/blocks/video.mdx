@@ -47,7 +47,8 @@ narrower, as on a phone.
     },
     video_url: {
       type: "string",
-      description: "An embeddable video URL, opened in a new tab when the frame is clicked.",
+      description:
+        "An embeddable video URL, opened in a new tab when the frame is clicked. Slack requires HTTPS, a domain in your app's unfurl domains (not a Slack domain), and the `links.embed:write` scope.",
       required: true,
     },
     thumbnail_url: {
@@ -62,7 +63,7 @@ narrower, as on a phone.
     },
     title: {
       type: "PlainTextElement",
-      description: "The video's title, shown below the description.",
+      description: "The video's title, shown below the description. Less than 200 characters.",
       required: true,
     },
     title_url: {
@@ -71,11 +72,11 @@ narrower, as on a phone.
     },
     description: {
       type: "PlainTextElement",
-      description: "A line of text shown above the title.",
+      description: "A line of text shown above the title. Less than 200 characters.",
     },
     author_name: {
       type: "string",
-      description: "Shown in the byline, after the provider name.",
+      description: "Shown in the byline, after the provider name. Less than 50 characters.",
     },
     provider_name: {
       type: "string",
@@ -123,6 +124,8 @@ The preview above sets every optional field: `description`, `title_url`, `author
 
 Without `provider_name` or `author_name`, the byline row doesn't render at all. Without
 `description`, that line is skipped too, leaving only the thumbnail and title.
+
+See [Limits](/reference/limits) for every block's field lengths.
 
 ## Related
 

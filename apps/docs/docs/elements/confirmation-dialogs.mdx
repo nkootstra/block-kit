@@ -51,7 +51,9 @@ changes.
   type={{
     title: {
       type: "PlainTextElement",
-      description: "The dialog's heading. Maximum length is 100 characters.",
+      description:
+        "The dialog's heading. Maximum length is 100 characters. Without one the renderer shows no heading.",
+      required: true,
     },
     text: {
       type: "PlainTextElement | MrkdwnElement",
@@ -61,12 +63,14 @@ changes.
     confirm: {
       type: "PlainTextElement",
       description:
-        'Label for the button that confirms the action. Maximum length is 30 characters. Defaults to "Confirm".',
+        'Label for the button that confirms the action. Maximum length is 30 characters. Without one the renderer shows "Confirm".',
+      required: true,
     },
     deny: {
       type: "PlainTextElement",
       description:
-        'Label for the button that cancels the action. Maximum length is 30 characters. Defaults to "Cancel".',
+        'Label for the button that cancels the action. Maximum length is 30 characters. Without one the renderer shows "Cancel".',
+      required: true,
     },
     style: {
       type: '"primary" | "danger"',
@@ -75,6 +79,10 @@ changes.
     },
   }}
 />
+
+Slack requires `title`, `text`, `confirm` and `deny`, and rejects a dialog missing any of them. The
+renderer still shows one, with the fallbacks above, so a payload that works here can fail in
+Slack.
 
 ## Examples
 

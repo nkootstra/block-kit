@@ -12,8 +12,8 @@ seo:
 timestamp together. In a message too narrow for both, such as on a phone, the time field moves
 under the date field and each takes the full width, as in Slack. The date field opens the same calendar as the [date picker](/elements/date-picker)
 and the time field the same hourly list as the [time picker](/elements/time-picker), typeable for a
-time off the hour. Slack allows it in `actions` blocks, section accessories, and `input` blocks, but
-not in App Home.
+time off the hour. Slack allows it in `actions` and `input` blocks, in messages and modals; it isn't
+available as a section accessory or in App Home.
 
 <Preview
   actions
@@ -59,7 +59,7 @@ not in App Home.
     focus_on_load: {
       type: "boolean",
       description:
-        "Focuses this element when its modal or Home tab loads. Only one element per view. Slack ignores it in messages.",
+        "Focuses this element when its modal opens. Only one element per view. Slack ignores it in messages.",
       default: "false",
     },
   }}

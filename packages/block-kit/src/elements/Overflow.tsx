@@ -3,6 +3,7 @@ import { useId, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { KebabIcon } from "../icons";
+import { safeUrl } from "../safeUrl";
 import type { ElementProps } from "../types";
 import { useMenuNavigation } from "./useMenuNavigation";
 import { Popover } from "./Popover";
@@ -31,7 +32,8 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
         ...(option.value !== undefined ? { value: option.value } : {}),
       },
     });
-    if (option.url) window.open(option.url, "_blank", "noopener,noreferrer");
+    const url = safeUrl(option.url);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
   }
 
   const nav = useMenuNavigation({
