@@ -20,8 +20,9 @@ you unless you'd rather stay anonymous.
 Block Kit JSON often comes from somewhere the app doesn't control, so the package treats it as
 untrusted. In scope, for example:
 
-- Block Kit JSON or mrkdwn that runs script, injects HTML, or renders a link or image whose URL
-  isn't `http:` or `https:`.
+- Block Kit JSON or mrkdwn that runs script, injects HTML, or renders a link, link button or
+  overflow option whose URL isn't `http:`, `https:`, `mailto:`, `slack:` or relative (see
+  [URL safety](https://docs.block-kit.dev/reference/block-kit-provider#url-safety)).
 - The signing secret given to `createInteractionRelay` reaching the browser, a response or a log.
 - A relay that forwards a request it should refuse, or signs anything other than the interaction
   the page sent. For `createInteractionRelay`, that includes accepting a missing or wrong `token`
