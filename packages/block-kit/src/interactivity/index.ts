@@ -15,3 +15,5 @@ export {
   type InteractionTransport,
   readInteractionResponse,
 } from "./transport";
+export type { ResolveRequest, ResolveResponse } from "../web-api/protocol";
+export { createResolverRelay, type ResolverRelayOptions } from "../web-api/relay";

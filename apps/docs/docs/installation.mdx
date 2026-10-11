@@ -77,22 +77,22 @@ export function App() {
   }}
 />
 
-## Optional peer dependencies
+## Optional packages
 
-| Package          | When you need it                                                                                                    |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `@slack/web-api` | To resolve user, channel and usergroup names with [`@nkootstra/block-kit/web-api`](/guides/mentions-and-resolvers). |
+| Package          | When you need it                                                                                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@slack/web-api` | On your server, for the `WebClient` that resolves user, channel and usergroup names. See [Mentions and resolvers](/guides/mentions-and-resolvers). |
 
 ## Entry points
 
-| Import                            | What it contains                                                                                                       |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders.                                                                  |
-| `@nkootstra/block-kit/styles.css` | The stylesheet.                                                                                                        |
-| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React. See [mrkdwn](/guides/mrkdwn).                                                        |
-| `@nkootstra/block-kit/transport`  | Sends interactions to your app's request URL from the browser. See [Connecting your app](/guides/connecting-your-app). |
-| `@nkootstra/block-kit/server`     | Signs and relays interactions to your app from your server.                                                            |
-| `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API.                                                                                 |
+| Import                            | What it contains                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@nkootstra/block-kit`            | Components, the provider, hooks and payload builders.                                                                                      |
+| `@nkootstra/block-kit/styles.css` | The stylesheet.                                                                                                                            |
+| `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React. See [mrkdwn](/guides/mrkdwn).                                                                            |
+| `@nkootstra/block-kit/transport`  | Browser-safe. Sends interactions to your app, and resolver lookups to your server. See [Connecting your app](/guides/connecting-your-app). |
+| `@nkootstra/block-kit/server`     | Server only. Signs and relays interactions, and answers resolver lookups with the bot token.                                               |
+| `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API. In the browser, give them `httpResolverClient`, never a `WebClient`.                                |
 
 ## Give your coding agent the docs
 

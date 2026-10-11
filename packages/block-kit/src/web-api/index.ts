@@ -1,3 +1,4 @@
+export type { WebApiChannel, WebApiClient, WebApiUser, WebApiUsergroup } from "./client";
 export {
   createWebApiResolvers,
   type WebApiResolvers,

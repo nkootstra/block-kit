@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import config from "../tsdown.config";
 
@@ -22,4 +23,16 @@ describe("build", () => {
       expect(banner(fileName)).toBeUndefined();
     },
   );
+
+  // The browser entries must not pull the Node Slack SDK into a page, or a bundler would ship it
+  // (and invite a bot token in with it). Their sources may not import it, not even as a type.
+  it.each([
+    "src/transport.ts",
+    "src/interactivity/transport.ts",
+    ...readdirSync("src/web-api")
+      .filter((file) => !file.includes(".test."))
+      .map((file) => `src/web-api/${file}`),
+  ])("keeps @slack/web-api out of %s", (file) => {
+    expect(readFileSync(file, "utf8")).not.toMatch(/(from|import)\s*\(?\s*["']@slack\/web-api/);
+  });
 });

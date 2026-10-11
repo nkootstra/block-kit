@@ -1,5 +1,5 @@
-import type { WebClient } from "@slack/web-api";
-import type { Resolvers } from "../index";
+import type { Resolvers, UserProfile } from "../index";
+import type { WebApiClient, WebApiUser } from "./client";
 
 export interface WebApiResolversOptions {
   /**
@@ -22,10 +22,12 @@ export interface WebApiResolvers extends Resolvers {
 type Kind = "user" | "channel" | "usergroup";
 
 /**
- * Builds `Resolvers` (see `context.tsx`) backed by the real Slack Web API
- * or an emulator's implementation of it: `users.info`, `conversations.info`, and `usergroups.list`
- * for usergroups (there is no per-id usergroup lookup in the Web API, so the whole list is fetched
- * once and cached).
+ * Builds `Resolvers` (see `context.tsx`) backed by the Slack Web API: `users.info` for names and
+ * the profile card, `conversations.info`, and `usergroups.list` for usergroups (there is no per-id
+ * usergroup lookup in the Web API, so the whole list is fetched once and cached).
+ *
+ * On a server, pass a `WebClient`. In the browser, pass `httpResolverClient`, which asks a
+ * `createResolverRelay` on your server, so the bot token never reaches the page.
  *
  * The resolver functions are synchronous — `(id) => string | undefined` — so a lookup that hasn't
  * completed yet returns `undefined` immediately and schedules a background fetch; call `subscribe`
@@ -33,13 +35,15 @@ type Kind = "user" | "channel" | "usergroup";
  * with the resolved name.
  */
 export function createWebApiResolvers(
-  client: WebClient,
+  client: WebApiClient,
   opts: WebApiResolversOptions = {},
 ): WebApiResolvers {
   const batchWindowMs = opts.batchWindowMs ?? 20;
 
   // `undefined` = not yet looked up, `null` = looked up and unknown/failed, `string` = resolved.
   const cache = new Map<string, string | null>();
+  // Filled by the same `users.info` call as the user's name.
+  const profiles = new Map<string, UserProfile>();
   const inflight = new Set<string>();
   const queues = new Map<Kind, Set<string>>([
     ["user", new Set()],
@@ -95,7 +99,7 @@ export function createWebApiResolvers(
   async function fetchOne(kind: "user" | "channel", id: string) {
     const key = cacheKey(kind, id);
     try {
-      const name = kind === "user" ? await fetchUserName(id) : await fetchChannelName(id);
+      const name = kind === "user" ? await fetchUser(id) : await fetchChannelName(id);
       cache.set(key, name ?? null);
     } catch {
       // Unknown id, revoked token, rate limit, or an emulator that doesn't implement the method:
@@ -107,16 +111,11 @@ export function createWebApiResolvers(
     }
   }
 
-  async function fetchUserName(id: string): Promise<string | undefined> {
+  async function fetchUser(id: string): Promise<string | undefined> {
     const res = await client.users.info({ user: id });
-    const user = res.user;
-    return (
-      user?.profile?.display_name ||
-      user?.profile?.real_name ||
-      user?.real_name ||
-      user?.name ||
-      undefined
-    );
+    const name = userName(res.user);
+    if (res.user && name) profiles.set(id, toProfile(res.user, name));
+    return name;
   }
 
   async function fetchChannelName(id: string): Promise<string | undefined> {
@@ -129,7 +128,7 @@ export function createWebApiResolvers(
     if (usergroupsLoaded || usergroupsLoading) return;
     usergroupsLoading = (async () => {
       try {
-        const res = await client.usergroups.list({});
+        const res = await client.usergroups.list();
         for (const group of res.usergroups ?? []) {
           if (!group.id) continue;
           cache.set(cacheKey("usergroup", group.id), group.handle || group.name || null);
@@ -154,11 +153,42 @@ export function createWebApiResolvers(
 
   return {
     user: (id) => lookup("user", id),
+    userProfile: (id) => {
+      lookup("user", id);
+      return profiles.get(id);
+    },
     channel: (id) => lookup("channel", id),
     usergroup: (id) => lookupUsergroup(id),
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
+  };
+}
+
+function userName(user: WebApiUser | undefined): string | undefined {
+  return (
+    user?.profile?.display_name ||
+    user?.profile?.real_name ||
+    user?.real_name ||
+    user?.name ||
+    undefined
+  );
+}
+
+/** `users.info` in the shape the profile card reads. Slack wraps the status emoji in colons. */
+function toProfile(user: WebApiUser, name: string): UserProfile {
+  const profile = user.profile ?? {};
+  const realName = profile.real_name || user.real_name || undefined;
+  const emoji = profile.status_emoji?.replace(/^:|:$/g, "") || undefined;
+  const text = profile.status_text || undefined;
+  return {
+    name,
+    realName: realName === name ? undefined : realName,
+    title: profile.title || undefined,
+    pronouns: profile.pronouns || undefined,
+    avatarUrl: profile.image_72 || undefined,
+    status: emoji || text ? { emoji, text } : undefined,
+    timeZone: user.tz || undefined,
   };
 }

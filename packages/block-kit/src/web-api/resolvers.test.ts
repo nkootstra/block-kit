@@ -1,5 +1,6 @@
-import type { WebClient } from "@slack/web-api";
+import { WebClient } from "@slack/web-api";
 import { describe, expect, it, vi } from "vitest";
+import type { WebApiClient } from "./client";
 import { createWebApiResolvers } from "./resolvers";
 
 /** A minimal mock of the slice of WebClient this package calls. */
@@ -167,5 +168,62 @@ describe("createWebApiResolvers", () => {
     resolvers.user?.("U2");
     await flushed();
     expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("fills userProfile from the same users.info call, without the status emoji's colons", async () => {
+    const client = mockClient();
+    const info = client.users.info as ReturnType<typeof vi.fn>;
+    info.mockResolvedValue({
+      ok: true,
+      user: {
+        id: "U0123456789",
+        real_name: "Ada Lovelace",
+        tz: "Europe/London",
+        profile: {
+          display_name: "ada",
+          real_name: "Ada Lovelace",
+          title: "Analyst",
+          pronouns: "she/her",
+          image_72: "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+          status_emoji: ":books:",
+          status_text: "Reading",
+          email: "name@example.com",
+        },
+      },
+    });
+    const resolvers = createWebApiResolvers(client, { batchWindowMs: 0 });
+
+    expect(resolvers.userProfile?.("U0123456789")).toBeUndefined();
+    await flushed();
+    expect(resolvers.userProfile?.("U0123456789")).toEqual({
+      name: "ada",
+      realName: "Ada Lovelace",
+      title: "Analyst",
+      pronouns: "she/her",
+      avatarUrl: "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+      status: { emoji: "books", text: "Reading" },
+      timeZone: "Europe/London",
+    });
+    expect(resolvers.user?.("U0123456789")).toBe("ada");
+    expect(info).toHaveBeenCalledOnce();
+  });
+
+  it("leaves out profile fields Slack leaves empty", async () => {
+    const client = mockClient();
+    (client.users.info as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      user: { id: "U0123456789", name: "ada", profile: { status_emoji: "", status_text: "" } },
+    });
+    const resolvers = createWebApiResolvers(client, { batchWindowMs: 0 });
+
+    resolvers.userProfile?.("U0123456789");
+    await flushed();
+    expect(resolvers.userProfile?.("U0123456789")).toEqual({ name: "ada" });
+  });
+
+  it("accepts a real WebClient", () => {
+    // Type-level: a WebClient has to fit WebApiClient, so passing one stays a non-breaking call.
+    const client: WebApiClient = new WebClient("xoxb-not-a-real-token");
+    expect(() => createWebApiResolvers(client)).not.toThrow();
   });
 });
