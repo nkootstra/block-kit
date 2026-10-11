@@ -123,7 +123,7 @@ select offers (`source` is `"users"`, `"conversations"` or `"channels"`), drawn 
 applies its `filter` to them.
 
 `@nkootstra/block-kit/web-api` builds resolvers (names and `userProfile`) from the Slack Web API.
-The bot token never goes to the browser: on the server, `createResolverRelay({ client, authorize })`
+The bot token never goes to the browser: on the server, `createResolverRelay({ client, token? })`
 from `/server` answers lookups with a `WebClient`; in the browser, `useWebApiResolvers` gets
 `httpResolverClient({ url })` from `/transport`, created once at module scope. Never construct a
 `WebClient` in client code or give the token a `NEXT_PUBLIC_`/`VITE_` prefix.

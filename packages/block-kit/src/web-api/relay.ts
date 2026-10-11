@@ -5,11 +5,13 @@ export interface ResolverRelayOptions {
   /** A `WebClient` (or anything with the same three methods). Its bot token stays on the server. */
   client: WebApiClient;
   /**
-   * Decides whether a request may look anything up, before its body is read: check your session
-   * cookie or auth header. Return `true` to allow it, `false` for a 403, or a `Response` to send
-   * instead. There is no default: anyone it lets through can read every name the bot can see.
+   * When set, a request must carry `Authorization: Bearer <token>`, or it gets a 401 before its
+   * body is read. Without it, anyone who can reach the route can look up every user and channel
+   * the bot can see. Set it whenever the route is reachable beyond your machine (a tunnel, a
+   * preview deploy, a shared network). It's a development secret shared with the page, not a
+   * Slack credential, so it's fine in browser code.
    */
-  authorize: (request: Request) => boolean | Response | Promise<boolean | Response>;
+  token?: string;
   /** The most ids one request may ask for. Defaults to 100, which is also the ceiling. */
   maxIds?: number;
   /**
@@ -33,6 +35,15 @@ class Refusal {
     readonly status: number,
     readonly error: string,
   ) {}
+}
+
+/** Compares in time that depends only on the lengths, so a wrong token can't be guessed by timing. */
+function sameToken(given: string, expected: string): boolean {
+  const a = new TextEncoder().encode(given);
+  const b = new TextEncoder().encode(expected);
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < b.length; i++) diff |= (a[i] ?? 0) ^ b[i]!;
+  return diff === 0;
 }
 
 function json(status: number, body: unknown, headers: Record<string, string> = {}): Response {
@@ -174,7 +185,8 @@ async function orNull<T>(lookup: () => Promise<T | null>): Promise<T | null> {
 
 /**
  * A server-side `(Request) => Response` handler that answers `httpResolverClient`'s lookups with
- * the bot's `WebClient`, so the page can show names without the bot token reaching it. It only
+ * the bot's `WebClient`, so the page can show names without the bot token reaching it. Like
+ * `createInteractionRelay`, it's development and preview tooling: don't deploy it publicly. It only
  * calls `users.info`, `conversations.info` and `usergroups.list`, and only returns the fields
  * mentions and the profile card use.
  *
@@ -191,9 +203,12 @@ export function createResolverRelay(
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
     }
-    const allowed = await options.authorize(request);
-    if (allowed instanceof Response) return allowed;
-    if (allowed !== true) return json(403, { error: "forbidden" });
+    if (options.token !== undefined) {
+      const given = /^Bearer (.+)$/i.exec(request.headers.get("authorization") ?? "")?.[1];
+      if (given === undefined || !sameToken(given, options.token)) {
+        return json(401, { error: "unauthorized" }, { "www-authenticate": "Bearer" });
+      }
+    }
 
     // JSON only, so a cross-site form post can't use the visitor's cookies to ask.
     const type = request.headers.get("content-type") ?? "";

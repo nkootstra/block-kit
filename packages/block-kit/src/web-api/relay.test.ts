@@ -66,11 +66,9 @@ function post(body: unknown, headers: Record<string, string> = {}) {
   });
 }
 
-const allow = () => true;
-
 describe("createResolverRelay", () => {
   it("returns only the allowlisted user, channel and user group fields", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     const res = await relay(post({ users: [ADA], channels: [RELEASES], usergroups: true }));
 
     expect(res.status).toBe(200);
@@ -99,7 +97,7 @@ describe("createResolverRelay", () => {
   });
 
   it("never passes on an email, phone or anything outside the allowlist", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     const text = await (await relay(post({ users: [ADA], usergroups: true }))).text();
 
     for (const leak of ["name@example.com", "+00", "skype", "team_id", "is_admin", 'users":[']) {
@@ -108,45 +106,47 @@ describe("createResolverRelay", () => {
   });
 
   it("maps an id Slack doesn't know to null", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     const res = await relay(post({ users: [ADA, GRACE] }));
 
     expect(res.status).toBe(200);
     expect((await res.json()).users[GRACE]).toBeNull();
   });
 
-  it("refuses a request authorize turns down, before reading it or calling Slack", async () => {
-    const c = client();
-    const relay = createResolverRelay({ client: c, authorize: () => false });
-    const request = post({ users: [ADA] });
-    const res = await relay(request);
+  describe("with a token", () => {
+    const token = "placeholder-relay-token";
 
-    expect(res.status).toBe(403);
-    expect(request.bodyUsed).toBe(false);
-    expect(c.users.info).not.toHaveBeenCalled();
+    it.each([
+      ["no Authorization header", {}],
+      ["a wrong token", { authorization: "Bearer placeholder-wrong-token" }],
+      ["a token that only starts right", { authorization: `Bearer ${token}x` }],
+      ["another scheme", { authorization: `Basic ${token}` }],
+    ])("answers 401 to %s, before reading the body or calling Slack", async (_, headers) => {
+      const c = client();
+      const relay = createResolverRelay({ client: c, token });
+      const request = post({ users: [ADA] }, headers);
+      const res = await relay(request);
+
+      expect(res.status).toBe(401);
+      expect(res.headers.get("www-authenticate")).toBe("Bearer");
+      expect(request.bodyUsed).toBe(false);
+      expect(c.users.info).not.toHaveBeenCalled();
+    });
+
+    it("answers a request with the right token", async () => {
+      const relay = createResolverRelay({ client: client(), token });
+      const res = await relay(post({ users: [ADA] }, { authorization: `Bearer ${token}` }));
+      expect(res.status).toBe(200);
+    });
   });
 
-  it("sends the Response authorize returns instead", async () => {
-    const relay = createResolverRelay({
-      client: client(),
-      authorize: async () => new Response("Sign in first", { status: 401 }),
-    });
-    const res = await relay(post({ users: [ADA] }));
-
-    expect(res.status).toBe(401);
-    expect(await res.text()).toBe("Sign in first");
-  });
-
-  it("only treats an explicit true as allowed", async () => {
-    const relay = createResolverRelay({
-      client: client(),
-      authorize: (() => "yes") as unknown as () => boolean,
-    });
-    expect((await relay(post({ users: [ADA] }))).status).toBe(403);
+  it("answers without any Authorization header when no token is set", async () => {
+    const relay = createResolverRelay({ client: client() });
+    expect((await relay(post({ users: [ADA] }))).status).toBe(200);
   });
 
   it("only answers POSTs", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     const res = await relay(new Request("https://app.example.com/api/slack/resolve"));
 
     expect(res.status).toBe(405);
@@ -154,7 +154,7 @@ describe("createResolverRelay", () => {
   });
 
   it("refuses anything but JSON, so a cross-site form can't post to it", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     const res = await relay(
       post(`users=${ADA}`, { "content-type": "application/x-www-form-urlencoded" }),
     );
@@ -173,7 +173,7 @@ describe("createResolverRelay", () => {
     ["a body that isn't an object", [ADA]],
   ])("rejects %s", async (_, body) => {
     const c = client();
-    const relay = createResolverRelay({ client: c, authorize: allow });
+    const relay = createResolverRelay({ client: c });
     const res = await relay(post(body));
 
     expect(res.status).toBe(400);
@@ -181,13 +181,13 @@ describe("createResolverRelay", () => {
   });
 
   it("rejects a body that isn't JSON", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     expect((await relay(post("{"))).status).toBe(400);
   });
 
   it("rejects more ids than maxIds, counted after removing duplicates", async () => {
     const c = client();
-    const relay = createResolverRelay({ client: c, authorize: allow, maxIds: 2 });
+    const relay = createResolverRelay({ client: c, maxIds: 2 });
     const id = (n: number) => `U${String(n).padStart(10, "0")}`;
 
     expect((await relay(post({ users: [ADA, ADA, ADA, GRACE] }))).status).toBe(200);
@@ -197,13 +197,13 @@ describe("createResolverRelay", () => {
   });
 
   it("can't raise maxIds past 100", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow, maxIds: 1000 });
+    const relay = createResolverRelay({ client: client(), maxIds: 1000 });
     const users = Array.from({ length: 101 }, (_, n) => `U${String(n).padStart(10, "0")}`);
     expect((await relay(post({ users }))).status).toBe(413);
   });
 
   it("rejects a body over 16 KB", async () => {
-    const relay = createResolverRelay({ client: client(), authorize: allow });
+    const relay = createResolverRelay({ client: client() });
     const res = await relay(post({ users: [ADA], pad: "x".repeat(17 * 1024) }));
     expect(res.status).toBe(413);
   });
@@ -218,7 +218,6 @@ describe("createResolverRelay", () => {
           },
         },
       }),
-      authorize: allow,
       onError,
     });
     const res = await relay(post({ users: [ADA] }));
@@ -237,7 +236,6 @@ describe("createResolverRelay", () => {
           },
         },
       }),
-      authorize: allow,
     });
     expect((await relay(post({ channels: [RELEASES] }))).status).toBe(502);
   });
@@ -254,7 +252,6 @@ describe("createResolverRelay", () => {
           },
         },
       }),
-      authorize: allow,
     });
     const res = await relay(post({ users: [ADA] }));
 

@@ -12,7 +12,12 @@ import {
 export interface HttpResolverClientOptions {
   /** Where a `createResolverRelay` answers, e.g. `/api/slack/resolve`. */
   url: string;
-  /** Sent with every request, e.g. a CSRF or auth header your relay's `authorize` checks. */
+  /**
+   * The relay's `token`, sent as `Authorization: Bearer <token>`. A development secret shared
+   * with the page, not a Slack credential.
+   */
+  token?: string;
+  /** Sent with every request, e.g. a header your own session check reads. */
   headers?: HeadersInit;
   /** Injectable for tests; defaults to the global `fetch`. */
   fetch?: typeof fetch;
@@ -45,6 +50,7 @@ export function httpResolverClient(options: HttpResolverClientOptions): WebApiCl
       headers: {
         "content-type": "application/json",
         ...Object.fromEntries(new Headers(options.headers)),
+        ...(options.token === undefined ? {} : { authorization: `Bearer ${options.token}` }),
       },
       body: JSON.stringify(body),
     });

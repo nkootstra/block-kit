@@ -21,13 +21,14 @@ function setup() {
   };
   const relay = createResolverRelay({
     client: workspace,
-    authorize: (request) => request.headers.get("x-session") === "placeholder-session",
+    token: "placeholder-relay-token",
   });
   const fetch = vi.fn((url: string | URL | Request, init?: RequestInit) =>
     relay(new Request(new URL(String(url), "https://app.example.com"), init)),
   );
   const client = httpResolverClient({
     url: "/api/slack/resolve",
+    token: "placeholder-relay-token",
     headers: { "x-session": "placeholder-session" },
     fetch: fetch as typeof globalThis.fetch,
   });
@@ -67,13 +68,23 @@ describe("httpResolverClient", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("sends the token and the headers with every request", async () => {
+    const { client, fetch } = setup();
+    await client.users.info({ user: ADA });
+    const headers = new Headers(fetch.mock.calls[0]?.[1]?.headers);
+
+    expect(headers.get("authorization")).toBe("Bearer placeholder-relay-token");
+    expect(headers.get("x-session")).toBe("placeholder-session");
+  });
+
   it("rejects when the relay refuses, which the resolvers treat as unknown", async () => {
-    const relay = createResolverRelay({ client: setup().client, authorize: () => false });
+    const relay = createResolverRelay({ client: setup().client, token: "placeholder-relay-token" });
     const client = httpResolverClient({
       url: "https://app.example.com/api/slack/resolve",
+      token: "placeholder-wrong-token",
       fetch: ((url: string, init?: RequestInit) => relay(new Request(url, init))) as typeof fetch,
     });
-    await expect(client.users.info({ user: ADA })).rejects.toThrow("answered 403");
+    await expect(client.users.info({ user: ADA })).rejects.toThrow("answered 401");
   });
 
   it("drives createWebApiResolvers end to end", async () => {
