@@ -12,7 +12,7 @@
   "dependencies": {
     "@nkootstra/block-kit": "workspace:*",
     "@slack/types": "^3.1.0",
-    "@slack/web-api": "^8.1.1",
+    "@slack/web-api": "^8.2.0",
     "next": "16.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
