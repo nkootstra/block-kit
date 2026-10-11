@@ -244,8 +244,13 @@ import { BlockKitEditor } from "./block-kit-editor";
 
 /** The payload in the URL's hash, if there is one. */
 function readHash(): string | undefined {
+  if (typeof window === "undefined") return undefined; // server rendering
   const hash = window.location.hash.slice(1);
-  return hash ? decodeURIComponent(hash) : undefined;
+  try {
+    return hash ? decodeURIComponent(hash) : undefined;
+  } catch {
+    return undefined; // a malformed shared link (a stray `%`) opens the empty editor
+  }
 }
 
 export function SharedEditor() {

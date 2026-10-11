@@ -105,8 +105,9 @@ If your dark/light choice comes from a cookie instead, set `data-theme` directly
 import { Message } from "@nkootstra/block-kit";
 import { getMessage } from "@/lib/slack";
 
-export default async function MessagePage({ params }: { params: { ts: string } }) {
-  const message = await getMessage(params.ts);
+export default async function MessagePage({ params }: { params: Promise<{ ts: string }> }) {
+  const { ts } = await params;
+  const message = await getMessage(ts);
   return <Message ts={message.ts} timeZone="America/New_York" blocks={message.blocks} />;
 }
 ```

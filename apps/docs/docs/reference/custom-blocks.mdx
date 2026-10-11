@@ -78,7 +78,7 @@ function Rating({ element, blockId }: ElementProps<RatingElement>) {
 elementComponents.rating = Rating;
 ```
 
-The element works in `actions`, `input` and section accessories, and its clicks reach `onAction` like any built-in element's. For an input, call `setValue(blockId, element.action_id, { type: "rating", value })` on change so the value appears in `state` and the `view_submission` payload.
+The element works in `actions`, `input` and section accessories, and its clicks reach `onAction` like any built-in element's. For an input, call `setValue(blockId, element.action_id, { type: "rating", value })` (also from `useBlockKit()`) on change so the value appears in `state` and the `view_submission` payload.
 
 ## Replace a built-in
 
@@ -86,15 +86,22 @@ Assign over an existing entry, keeping the original to fall back to:
 
 ```tsx
 import { blockComponents } from "@nkootstra/block-kit";
+import { PrivateImage } from "./PrivateImage"; // your component for images behind your auth
 
 const BuiltInImage = blockComponents.image;
 
+// Compare the parsed host: a prefix check like startsWith("https://internal.") also matches
+// https://internal.attacker.example.
+const isInternal = (url: string | undefined) => {
+  try {
+    return url !== undefined && new URL(url).hostname === "internal.example.com";
+  } catch {
+    return false;
+  }
+};
+
 blockComponents.image = (props) =>
-  props.block.image_url?.startsWith("https://internal.") ? (
-    <PrivateImage {...props} />
-  ) : (
-    <BuiltInImage {...props} />
-  );
+  isInternal(props.block.image_url) ? <PrivateImage {...props} /> : <BuiltInImage {...props} />;
 ```
 
 :::warning
