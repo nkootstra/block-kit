@@ -81,6 +81,32 @@ describe("<Overflow>", () => {
     openSpy.mockRestore();
   });
 
+  it("doesn't open a link option's javascript: URL", async () => {
+    const onAction = vi.fn();
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Overflow
+          element={element({
+            options: [
+              {
+                value: "a",
+                text: { type: "plain_text", text: "Open docs" },
+                url: "javascript:alert(1)",
+              },
+            ],
+          })}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    await clickAsync(screen.getByText("Open docs"));
+    expect(onAction).toHaveBeenCalledTimes(1);
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
   // Slack's overflow action carries the option's text and value only, never its url: Bolt's
   // OverflowAction declares `selected_option: { text, value }`, and the Builder's Actions Preview
   // sent no url (state audit, "Overflow menu": "sends overflow with selected_option {text, value},

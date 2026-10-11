@@ -9,6 +9,7 @@ import {
   OpenInWindowIcon,
   TableIcon,
 } from "../icons";
+import { safeUrl } from "../safeUrl";
 import { Tooltip } from "../Tooltip";
 
 export interface HoverMenuItem {
@@ -57,10 +58,10 @@ export function HoverActions({
           <MenuAction key={action.label} action={action} items={action.menu} side={menuSide} />
         ) : (
           <Tooltip key={action.label} label={action.label}>
-            {action.href ? (
+            {safeUrl(action.href, { image: true }) ? (
               <a
                 className="sbk-hover-actions__button"
-                href={action.href}
+                href={safeUrl(action.href, { image: true })}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={action.label}

@@ -148,6 +148,10 @@ framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
   profile card, whose name links to the URL. Unresolved mentions stay unlinked.
 - `linkComponent` renders every link from the payload (and linked mentions). It receives
   `LinkProps` (`href`, `className`, `children`, `target`, `rel`); pass `className` on.
+- Payload URLs are filtered: links, link buttons and overflow options only follow `http`, `https`,
+  `mailto`, `slack` or relative URLs; `javascript:`, `data:` and other schemes render without an
+  `href` and open nothing. `linkComponent` only gets URLs that passed, so don't re-add a check there,
+  and never bypass it by rendering a payload URL into your own `<a>` or `window.open`.
 
 ```tsx
 import { Link } from "react-router"; // TanStack: "@tanstack/react-router". Next.js: next/link, with href.

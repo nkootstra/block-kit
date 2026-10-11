@@ -1,6 +1,7 @@
 import type { Button as ButtonElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
+import { safeUrl } from "../safeUrl";
 import type { ElementProps } from "../types";
 
 export function Button({ element, blockId }: ElementProps<ButtonElement>) {
@@ -23,7 +24,9 @@ export function Button({ element, blockId }: ElementProps<ButtonElement>) {
       // Slack echoes the button's confirm dialog back in the action.
       ...(element.confirm ? { confirm: element.confirm } : {}),
     });
-    if (element.url) window.open(element.url, "_blank", "noopener,noreferrer");
+    // The action still carries the url, as Slack's does; only a safe one opens.
+    const url = safeUrl(element.url);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
