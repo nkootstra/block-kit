@@ -89,6 +89,11 @@ text, and buttons) inside a bordered box. It's a library-invented block, not par
       type: "Element[]",
       description: "Buttons and other interactive elements, rendered along the bottom of the card.",
     },
+    block_id: {
+      type: "string",
+      description:
+        "A unique identifier, up to 255 characters. Actions from the card's buttons carry it as their `block_id`.",
+    },
   }}
 />
 

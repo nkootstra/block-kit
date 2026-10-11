@@ -88,7 +88,7 @@ field list as the reference.
     rows: {
       type: "Cell[][]",
       description:
-        "The grid, header row first. `rows[0]` is the header and `rows.length - 1` sets the column count; every subsequent row is a data row.",
+        "The grid, header row first. `rows[0]` is the header and sets the column count (`rows[0].length`); every subsequent row is a data row.",
       required: true,
     },
   }}
