@@ -80,7 +80,7 @@ describe("createWebApiResolvers", () => {
     expect(resolvers.user?.("U3")).toBe("u3");
   });
 
-  it("resolves channels with a leading #", async () => {
+  it("resolves channels to their bare name", async () => {
     const client = mockClient();
     (client.conversations.info as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
@@ -90,7 +90,7 @@ describe("createWebApiResolvers", () => {
 
     resolvers.channel?.("C1");
     await flushed();
-    expect(resolvers.channel?.("C1")).toBe("#general");
+    expect(resolvers.channel?.("C1")).toBe("general");
   });
 
   it("treats an unknown id as permanently undefined without throwing", async () => {
@@ -131,7 +131,7 @@ describe("createWebApiResolvers", () => {
     resolvers.usergroup?.("S2");
     await flushed();
 
-    expect(resolvers.usergroup?.("S1")).toBe("@eng");
+    expect(resolvers.usergroup?.("S1")).toBe("eng");
     expect(resolvers.usergroup?.("S2")).toBe("Design");
     expect(list).toHaveBeenCalledTimes(1);
   });
