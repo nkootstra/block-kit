@@ -41,6 +41,11 @@ bun run references:check
 `bun run format` fixes formatting. Pull requests that touch rendering also run the visual comparison
 against Slack; [`tools/visual/README.md`](tools/visual/README.md) explains how to run it locally.
 
+The apps in `examples/` keep the Slack bot token on the server. CI builds them with a fake token,
+`xoxb-block-kit-canary`, and `bun scripts/check-examples.ts --smoke` fails if it (or
+`@slack/web-api`) shows up in what a browser downloads or in a response. Never create a `WebClient`
+in browser code.
+
 ## Rendering changes
 
 Slack's rendering is the reference, not our opinion of it. For a change to how something looks:

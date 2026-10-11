@@ -1,0 +1,9 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["SLACK_BOT_TOKEN", "VITE_SLACK_RELAY_TOKEN"]
+    }
+  }
+}

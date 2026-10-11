@@ -16,6 +16,9 @@ tools/visual/.auth/
 .env*.local
 # Blume docs build output
 .blume/
+# Next.js build output and generated types (examples/nextjs)
+.next/
+next-env.d.ts
 # Astro types generated for the landing site
 .astro/
 # Local wrangler dev state

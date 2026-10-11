@@ -192,10 +192,11 @@ const SOURCES = [
   "apps/playground/src/**/*.{ts,tsx,css,html,json}",
   "packages/block-kit/**/*.test.{ts,tsx}",
   "packages/block-kit/README.md",
+  "examples/**/*.{md,ts,tsx,html}",
   "docs/**/*.md",
   "*.md",
 ];
-const SKIP = /(^|\/)(node_modules|dist|\.blume|\.astro|\.wrangler|\.turbo|test-results)\//;
+const SKIP = /(^|\/)(node_modules|dist|\.blume|\.astro|\.wrangler|\.turbo|\.next|test-results)\//;
 
 /** The files checkSampleImages() covers, by repository-relative path. */
 export async function readSampleSources(): Promise<Map<string, string>> {

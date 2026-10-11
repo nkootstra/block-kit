@@ -37,6 +37,8 @@
     "**/*.generated.ts",
     "fixtures/**",
     "apps/docs/.blume/**",
-    "apps/site/.astro/**"
+    "apps/site/.astro/**",
+    "**/.next/**",
+    "**/next-env.d.ts"
   ]
 }

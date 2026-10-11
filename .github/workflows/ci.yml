@@ -49,6 +49,14 @@ jobs:
           TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
           # The docs' changelog reads the GitHub releases; anonymous requests are rate limited.
           GITHUB_TOKEN: ${{ github.token }}
+          # A fake bot token the examples build with, so the next step can check it never reaches
+          # the browser. Only the examples declare it in turbo.json; everything else never sees it.
+          SLACK_BOT_TOKEN: xoxb-block-kit-canary
+      # The examples keep the bot token on the server: fail if the canary, any bot token or the
+      # Slack SDK is in what a browser downloads, or in what a started example answers. Examples
+      # Turbo skipped as unaffected have no build output and are skipped here too.
+      - name: Examples keep the bot token server-side
+        run: bun scripts/check-examples.ts --smoke
       # Every reference snapshot must still show Slack's rendering of its fixture's payload.
       - run: bun run references:check
       # How many of the states Slack should be compared in have a reference, and which
