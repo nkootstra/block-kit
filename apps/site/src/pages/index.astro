@@ -11,7 +11,7 @@ import AgentDemo from "../islands/AgentDemo";
 import proofOurs from "../assets/proof/approval.actual.png";
 import proofDiff from "../assets/proof/approval.diff.png";
 import proofSlack from "../assets/proof/approval.reference.png";
-import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, PLAYGROUND, description, headline, title } from "../lib/site";
+import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, PLAYGROUND, SITE_NAME, description, headline, title } from "../lib/site";
 
 // The social card, drawn at build time by pages/og.png.ts.
 const ogImage = new URL("/og.png", Astro.site).toString();
@@ -33,7 +33,13 @@ function lastModified(): string | undefined {
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": "https://block-kit.dev/#website", url: "https://block-kit.dev/", name: "block-kit" },
+    {
+      "@type": "WebSite",
+      "@id": "https://block-kit.dev/#website",
+      url: "https://block-kit.dev/",
+      name: SITE_NAME,
+      alternateName: ["block-kit.dev", "@nkootstra/block-kit"],
+    },
     {
       "@type": "WebPage",
       "@id": "https://block-kit.dev/#webpage",
@@ -77,7 +83,7 @@ const structuredData = {
     <!-- Follows the chosen theme, not just the system's: the head script below sets it. -->
     <meta name="theme-color" content="#ffffff" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="block-kit" />
+    <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={Astro.site} />
