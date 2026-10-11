@@ -121,8 +121,8 @@ export function createWebApiResolvers(
 
   async function fetchChannelName(id: string): Promise<string | undefined> {
     const res = await client.conversations.info({ channel: id });
-    const name = res.channel?.name;
-    return name ? `#${name}` : undefined;
+    // Bare, like every resolver: the renderers add the `#` (and the `@` for usergroups).
+    return res.channel?.name || undefined;
   }
 
   function loadUsergroups(): void {
@@ -132,8 +132,7 @@ export function createWebApiResolvers(
         const res = await client.usergroups.list({});
         for (const group of res.usergroups ?? []) {
           if (!group.id) continue;
-          const name = group.handle ? `@${group.handle}` : (group.name ?? undefined);
-          cache.set(cacheKey("usergroup", group.id), name ?? null);
+          cache.set(cacheKey("usergroup", group.id), group.handle || group.name || null);
         }
       } catch {
         // Several emulators (and workspaces without Enterprise Grid) don't implement
