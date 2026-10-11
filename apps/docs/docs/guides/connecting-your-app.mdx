@@ -7,8 +7,8 @@ seo:
 
 Everything so far handles interactions locally with `onAction`/`onSubmit`/`onOptions`. To instead
 drive a real Slack app (the same Bolt or raw HTTP app you'd deploy), point the provider at your
-app's request URL. Two pieces make this safe: `httpTransport` on the client, and a relay on your
-server that signs the request the way Slack does.
+app's request URL. Two pieces keep the signing secret off the page: `httpTransport` on the client,
+and a relay on your server that signs the request the way Slack does.
 
 ```mermaid
 sequenceDiagram
@@ -24,6 +24,13 @@ sequenceDiagram
 
 The signing secret never reaches the browser: only your server has it. The browser only ever
 talks to its own origin.
+
+:::warning
+The relay is development and preview tooling. It signs whatever it's sent, so anyone who can reach
+it can send your app requests that pass its signature check. Keep it on your machine, and set a
+[`token`](#protecting-the-relay) as soon as it's reachable from anywhere else: a tunnel, a preview
+deploy, a shared network. Don't deploy it alongside your production app.
+:::
 
 ## Client: httpTransport
 
@@ -70,11 +77,16 @@ export function App() {
       type: "string",
       required: true,
       description:
-        "Where payloads are POSTed: your relay route, or an app with signature verification disabled.",
+        "Where payloads are POSTed: your relay route, or an app with signature verification disabled (only ever one running on your own machine).",
+    },
+    token: {
+      type: "string",
+      description:
+        "The relay's `token`, sent as `Authorization: Bearer <token>`. A development secret, not a Slack credential.",
     },
     headers: {
       type: "HeadersInit",
-      description: "Extra headers, e.g. an internal auth token for your own relay route.",
+      description: "Extra headers sent with every payload.",
     },
     fetch: {
       type: "typeof fetch",
@@ -122,6 +134,16 @@ export const relay = createInteractionRelay({
       required: true,
       description: "The same signing secret your app is configured with.",
     },
+    token: {
+      type: "string",
+      description:
+        "When set, a request without `Authorization: Bearer <token>` gets a 401 before it's read. See [Protecting the relay](#protecting-the-relay).",
+    },
+    onError: {
+      type: "(error: unknown) => void",
+      description:
+        "Called when the app couldn't be reached. The browser only gets a 502, without the URL or the reason.",
+    },
     fetch: {
       type: "typeof fetch",
       description: "Injectable for tests; defaults to the global fetch.",
@@ -165,14 +187,54 @@ Bun.serve({
 The relay works with any framework that speaks the Fetch API `Request`/`Response` pair: Hono, Vite
 middleware, Cloudflare Workers, and so on.
 
+## Protecting the relay
+
+Out of the box the relay refuses two things: a body over 1 MB, and a request a browser sends from
+another site's page. `httpTransport` marks every request with a header a cross-site HTML form can't
+set, so a page you happen to visit while your dev server runs can't post a payload to
+`localhost` and have the relay sign it. Calls from your own server, which send no `Origin`, pass.
+
+That doesn't stop someone who can reach the route directly. When it's reachable beyond your
+machine, give the relay a `token` and pass the same value to `httpTransport`:
+
+```ts app/api/slack/relay/route.ts
+import { createInteractionRelay } from "@nkootstra/block-kit/server";
+
+export const POST = createInteractionRelay({
+  requestUrl: process.env.SLACK_REQUEST_URL!,
+  signingSecret: process.env.SLACK_SIGNING_SECRET!,
+  token: process.env.NEXT_PUBLIC_RELAY_TOKEN,
+});
+```
+
+```tsx
+const transport = httpTransport({
+  url: "/api/slack/relay",
+  token: process.env.NEXT_PUBLIC_RELAY_TOKEN,
+});
+```
+
+A request without `Authorization: Bearer <token>`, or with a different one, gets a 401 before the
+relay reads it. The token is compared in constant time.
+
+The token ships in your page, so anyone who can open the page can read it. That's fine because it's
+a development secret shared between the page and its own relay, not a Slack credential: it can't
+reach Slack, and you can change it whenever you like. Never reuse the signing secret or a bot token
+as the relay's token.
+
 ## Why the signing secret must stay server-side
 
 Slack's apps verify every incoming request with an HMAC computed from the signing secret, the request
 timestamp and the raw body (`X-Slack-Signature` / `X-Slack-Request-Timestamp`); an unsigned request is
 rejected. If the secret shipped in your page's JavaScript, anyone could read it out of the bundle and
 forge requests to your app as if they came from Slack. Keeping `signingSecret` only on the server, and
-having the browser talk only to your own relay route, over your own origin's auth, is the same trust
-boundary a real Slack app relies on.
+having the browser talk only to your own relay route, is the same trust boundary a real Slack app
+relies on.
+
+The relay signs each request with a fresh timestamp, so your app's replay protection (Bolt rejects
+a request more than five minutes old) doesn't limit what reaches it through the relay: every request
+it forwards is new. That's another reason the relay belongs on your machine or behind a `token`, not
+in front of an app that holds real data.
 
 ## Signing without the relay
 

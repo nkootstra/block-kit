@@ -4,6 +4,7 @@ import { signSlackRequest } from "./sign";
 import { httpTransport, InteractionError } from "./transport";
 
 const payload = { type: "block_actions", actions: [{ action_id: "approve" }] };
+const form = `payload=${encodeURIComponent(JSON.stringify(payload))}`;
 
 function replying(body: string, init?: ResponseInit) {
   return vi.fn(async (_url: RequestInfo | URL, _init?: RequestInit) => new Response(body, init));
@@ -20,6 +21,9 @@ describe("httpTransport", () => {
       "application/x-www-form-urlencoded",
     );
     expect(new Headers(init?.headers).has("x-slack-signature")).toBe(false);
+    // The header a cross-site form can't send, which the relay looks for.
+    expect(new Headers(init?.headers).get("x-block-kit-transport")).toBe("http");
+    expect(new Headers(init?.headers).has("authorization")).toBe(false);
     expect(JSON.parse(new URLSearchParams(init?.body as string).get("payload") ?? "")).toEqual(
       payload,
     );
@@ -107,6 +111,134 @@ describe("createInteractionRelay", () => {
       new Request("http://dev/relay", { method: "POST", body: "payload=%7B%7D" }),
     );
     expect(res.status).toBe(502);
-    expect(await res.text()).toMatch(/ECONNREFUSED/);
+    expect(await res.text()).not.toMatch(/ECONNREFUSED|http:\/\/app/);
+  });
+
+  it("tells onError why the app couldn't be reached, without telling the browser", async () => {
+    const onError = vi.fn();
+    const relay = createInteractionRelay({
+      requestUrl: "http://app",
+      signingSecret,
+      onError,
+      fetch: vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    });
+    const res = await relay(new Request("http://dev/relay", { method: "POST", body: form }));
+    expect(res.status).toBe(502);
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: "ECONNREFUSED" }));
+  });
+
+  it("refuses a body over 1 MB", async () => {
+    const fetch = replying("");
+    const relay = createInteractionRelay({ requestUrl: "http://app", signingSecret, fetch });
+    const res = await relay(
+      new Request("http://dev/relay", {
+        method: "POST",
+        body: `payload=${"x".repeat(1024 * 1024)}`,
+      }),
+    );
+    expect(res.status).toBe(413);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  describe("token", () => {
+    const token = "dev-relay-token-for-tests";
+
+    it("refuses a request without the token, or with the wrong one, before reading it", async () => {
+      const fetch = replying("");
+      const relay = createInteractionRelay({
+        requestUrl: "http://app",
+        signingSecret,
+        token,
+        fetch,
+      });
+      for (const authorization of [undefined, "Bearer wrong", `Basic ${token}`, token]) {
+        const res = await relay(
+          new Request("http://dev/relay", {
+            method: "POST",
+            body: form,
+            headers: authorization ? { authorization } : {},
+          }),
+        );
+        expect(res.status).toBe(401);
+        expect(res.headers.get("www-authenticate")).toBe("Bearer");
+      }
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it("relays a request with the token, which httpTransport's token option sends", async () => {
+      const app = replying("");
+      const relay = createInteractionRelay({
+        requestUrl: "http://app",
+        signingSecret,
+        token,
+        fetch: app,
+      });
+      const transport = httpTransport({
+        url: "http://dev/relay",
+        token,
+        fetch: (url, init) => relay(new Request(url, init)),
+      });
+      await transport.onSubmit(payload as never, {} as never);
+      expect(app).toHaveBeenCalledTimes(1);
+      // The token stays between the page and the relay: the app gets Slack's headers only.
+      expect(new Headers(app.mock.calls[0]?.[1]?.headers).has("authorization")).toBe(false);
+    });
+
+    it("needs no token when none is set", async () => {
+      const app = replying("");
+      const relay = createInteractionRelay({ requestUrl: "http://app", signingSecret, fetch: app });
+      const res = await relay(new Request("http://dev/relay", { method: "POST", body: form }));
+      expect(res.status).toBe(200);
+    });
+  });
+
+  describe("cross-site requests", () => {
+    const post = (headers: Record<string, string>) =>
+      new Request("http://localhost:3000/slack/relay", { method: "POST", body: form, headers });
+
+    it("refuses a form another site's page posts", async () => {
+      const app = replying("");
+      const relay = createInteractionRelay({ requestUrl: "http://app", signingSecret, fetch: app });
+      const formHeaders = { "content-type": "application/x-www-form-urlencoded" };
+      for (const headers of [
+        { ...formHeaders, origin: "https://evil.example", "sec-fetch-site": "cross-site" },
+        { ...formHeaders, origin: "https://evil.example" },
+        { ...formHeaders, "sec-fetch-site": "cross-site" },
+        { ...formHeaders, origin: "null" },
+        { ...formHeaders, origin: "http://localhost:5173" },
+      ]) {
+        expect((await relay(post(headers))).status).toBe(403);
+      }
+      expect(app).not.toHaveBeenCalled();
+    });
+
+    it("relays the page's own requests, httpTransport's and server-to-server calls", async () => {
+      const app = replying("");
+      const relay = createInteractionRelay({ requestUrl: "http://app", signingSecret, fetch: app });
+      expect(
+        (await relay(post({ origin: "http://localhost:3000", "sec-fetch-site": "same-origin" })))
+          .status,
+      ).toBe(200);
+      expect((await relay(post({}))).status).toBe(200);
+      // A dev-server proxy forwards the page's Origin to a relay on another port; the transport's
+      // header, which a cross-site form can't set, lets it through.
+      const transport = httpTransport({
+        url: "http://localhost:3000/slack/relay",
+        fetch: (url, init) =>
+          relay(
+            new Request(url, {
+              ...init,
+              headers: {
+                ...Object.fromEntries(new Headers(init?.headers)),
+                origin: "http://localhost:5173",
+              },
+            }),
+          ),
+      });
+      await transport.onSubmit(payload as never, {} as never);
+      expect(app).toHaveBeenCalledTimes(3);
+    });
   });
 });

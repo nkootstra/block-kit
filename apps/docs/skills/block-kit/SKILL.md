@@ -90,7 +90,11 @@ function handleAction(action: BlockAction, { message }: ActionContext) {
 ```
 
 Modal submissions arrive through `onSubmit`. To send interactions to a real Slack app's request URL
-instead, see https://docs.block-kit.dev/guides/connecting-your-app.md.
+instead, see https://docs.block-kit.dev/guides/connecting-your-app.md: `httpTransport({ url, token? })`
+in the browser, `createInteractionRelay({ requestUrl, signingSecret, token? })` on the server. The
+relay is development and preview tooling (it signs whatever it's sent): keep the signing secret on
+the server, set the same `token` on both whenever the route is reachable beyond the developer's
+machine, and never deploy it in front of a production app.
 
 ## Mentions
 
@@ -203,7 +207,7 @@ These props, and `resolvers`, are functions:
 | `@nkootstra/block-kit/styles.css` | The stylesheet                                              |
 | `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React                            |
 | `@nkootstra/block-kit/transport`  | Browser-safe: interactions to the app, lookups to the relay |
-| `@nkootstra/block-kit/server`     | Server only: interaction relay and resolver relay           |
+| `@nkootstra/block-kit/server`     | Server only, dev tooling: interaction and resolver relays   |
 | `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API                       |
 
 ## Where to look next

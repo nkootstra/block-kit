@@ -73,7 +73,14 @@ async function toRequest(req: IncomingMessage): Promise<Request> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
   const body = req.method === "GET" || req.method === "HEAD" ? undefined : Buffer.concat(chunks);
-  return new Request(`http://localhost${req.url ?? "/"}`, { method: req.method, body });
+  // The page's own host and headers, so the relay can tell its requests from another site's.
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (typeof value === "string") headers.set(key, value);
+    else if (value) for (const v of value) headers.append(key, v);
+  }
+  const host = req.headers.host ?? "localhost";
+  return new Request(`http://${host}${req.url ?? "/"}`, { method: req.method, headers, body });
 }
 
 async function send(res: ServerResponse, response: Response) {

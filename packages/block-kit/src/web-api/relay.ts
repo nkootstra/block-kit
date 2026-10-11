@@ -1,3 +1,4 @@
+import { hasBearer, readCapped } from "../interactivity/guard";
 import type { WebApiChannel, WebApiClient, WebApiUser, WebApiUsergroup } from "./client";
 import { CHANNEL_ID, MAX_RESOLVE_IDS, type ResolveResponse, USER_ID } from "./protocol";
 
@@ -37,15 +38,6 @@ class Refusal {
   ) {}
 }
 
-/** Compares in time that depends only on the lengths, so a wrong token can't be guessed by timing. */
-function sameToken(given: string, expected: string): boolean {
-  const a = new TextEncoder().encode(given);
-  const b = new TextEncoder().encode(expected);
-  let diff = a.length ^ b.length;
-  for (let i = 0; i < b.length; i++) diff |= (a[i] ?? 0) ^ b[i]!;
-  return diff === 0;
-}
-
 function json(status: number, body: unknown, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -58,30 +50,10 @@ function json(status: number, body: unknown, headers: Record<string, string> = {
 }
 
 /** Reads the body, refusing it once it passes `MAX_BODY_BYTES` instead of buffering all of it. */
-async function readCapped(request: Request): Promise<string> {
-  const length = Number(request.headers.get("content-length"));
-  if (length > MAX_BODY_BYTES) throw new Refusal(413, "request_too_large");
-  if (!request.body) return "";
-  const reader = request.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    size += value.byteLength;
-    if (size > MAX_BODY_BYTES) {
-      void reader.cancel();
-      throw new Refusal(413, "request_too_large");
-    }
-    chunks.push(value);
-  }
-  const bytes = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return new TextDecoder().decode(bytes);
+async function readBody(request: Request): Promise<string> {
+  const body = await readCapped(request, MAX_BODY_BYTES);
+  if (body === undefined) throw new Refusal(413, "request_too_large");
+  return body;
 }
 
 function ids(value: unknown, pattern: RegExp): string[] {
@@ -204,8 +176,7 @@ export function createResolverRelay(
       return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
     }
     if (options.token !== undefined) {
-      const given = /^Bearer (.+)$/i.exec(request.headers.get("authorization") ?? "")?.[1];
-      if (given === undefined || !sameToken(given, options.token)) {
+      if (!hasBearer(request, options.token)) {
         return json(401, { error: "unauthorized" }, { "www-authenticate": "Bearer" });
       }
     }
@@ -217,7 +188,7 @@ export function createResolverRelay(
     }
 
     try {
-      const query = parse(await readCapped(request), maxIds);
+      const query = parse(await readBody(request), maxIds);
       const [users, channels, usergroups] = await Promise.all([
         Promise.all(
           query.users.map(async (id) => {
