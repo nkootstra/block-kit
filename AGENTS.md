@@ -20,6 +20,10 @@ Bun + Turborepo; `docs/README.md` describes the layout.
   the same PR. `packages/block-kit/README.md` is the npm page: it repeats the install and
   entry-point sections of `docs/README.md`, so change them together.
   `packages/block-kit/LICENSE` is a copy of the root `LICENSE`.
+- `examples/` holds runnable apps that keep the Slack bot token on the server. CI builds them with
+  `SLACK_BOT_TOKEN=xoxb-block-kit-canary` and `scripts/check-examples.ts --smoke` fails if the
+  token or `@slack/web-api` reaches what a browser downloads, or a response. Never construct a
+  `WebClient` in browser code, in an example or in the docs.
 - `CONTRIBUTING.md` repeats these rules for people. A change to the rules here changes it too.
 
 ## Visual references

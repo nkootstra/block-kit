@@ -52,15 +52,16 @@ The [installation guide](https://docs.block-kit.dev/installation) lists the rema
 
 This is a Bun workspace run with Turborepo.
 
-| Path                 | What it is                                                                    |
-| -------------------- | ----------------------------------------------------------------------------- |
-| `packages/block-kit` | The published package                                                         |
-| `apps/docs`          | The documentation site, built with [Blume](https://blume.dev)                 |
-| `apps/site`          | The landing page for `block-kit.dev`, built with [Astro](https://astro.build) |
-| `apps/playground`    | The playground at `play.block-kit.dev`, and the visual harness's render page  |
-| `fixtures`           | Block Kit Builder payloads with Slack's reference renders                     |
-| `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference     |
-| `tools/react-18`     | Runs the package's tests and type-check against React 18                      |
+| Path                 | What it is                                                                       |
+| -------------------- | -------------------------------------------------------------------------------- |
+| `packages/block-kit` | The published package                                                            |
+| `apps/docs`          | The documentation site, built with [Blume](https://blume.dev)                    |
+| `apps/site`          | The landing page for `block-kit.dev`, built with [Astro](https://astro.build)    |
+| `apps/playground`    | The playground at `play.block-kit.dev`, and the visual harness's render page     |
+| `fixtures`           | Block Kit Builder payloads with Slack's reference renders                        |
+| `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference        |
+| `tools/react-18`     | Runs the package's tests and type-check against React 18                         |
+| `examples`           | Runnable apps that keep the Slack bot token on the server (Next.js, Vite + Hono) |
 
 ## Develop
 
