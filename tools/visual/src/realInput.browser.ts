@@ -941,3 +941,140 @@ describe("our video player and tooltips", () => {
     expect(await tip.evaluate((el) => getComputedStyle(el as Element).pointerEvents)).toBe("none");
   });
 });
+
+describe("capture.js real-input fixes from the Builder run", () => {
+  /** A time picker as the Builder draws it: its value in an overlay over the matched input. */
+  const PICKER = `<!doctype html><html><body style="margin:0">
+    <div class="p-bkb_preview__message" style="width:512px;padding:20px">
+      <div class="c-select_input__wrapper" style="position:relative;width:190px;height:28px">
+        <input class="c-select_input" role="combobox" style="width:190px;height:28px;box-sizing:border-box">
+        <div class="c-select_input__content" style="position:absolute;inset:0;background:#fff">1:37 PM</div>
+      </div>
+      <button class="c-button" type="button">Go</button>
+    </div>
+    <script>
+      window.adapter = {
+        load: async () => {}, theme: () => "light", setTheme: async () => {},
+        previewSize: () => "desktop", setPreviewSize: async () => {},
+      };
+    </script>
+  </body></html>`;
+
+  it("sees a hover on an overlay drawn over the control, and only after the pointer moves there", async () => {
+    const page = await browser.newPage({ viewport: { width: 900, height: 600 } });
+    await page.setContent(PICKER);
+    await page.addScriptTag({
+      content: `window.capture = ${CAPTURE}; window.observe = ${OBSERVE};`,
+    });
+    // The pointer already rests on the picker, as if left there by an earlier item.
+    await page.mouse.move(100, 34);
+    await page.evaluate(() => {
+      const w = window as unknown as Record<string, any>;
+      w.capture({
+        items: [
+          {
+            name: "contexts/timepicker/accessory@poke-field-1",
+            payload: {},
+            probe: { steps: [{ hover: "field-1" }] },
+          },
+        ],
+        snap: async () => "",
+        observe: w.observe,
+        adapter: w.adapter,
+        settle: 0,
+      }).then(() => (w.done = true));
+    });
+    const first = await page.evaluate(() =>
+      (window as unknown as Record<string, any>).sbkAwaitInstruction(undefined, 5000, 0.5),
+    );
+    expect(first.instruction).toMatchObject({ do: "hover", target: "field-1" });
+    expect(first.screen.x).toBe(Math.round(first.instruction.x * 0.5));
+    await page.waitForTimeout(800);
+    // Resting there doesn't count: the step still waits.
+    expect(
+      await page.evaluate(() => (window as unknown as Record<string, any>).done),
+    ).toBeUndefined();
+    await page.mouse.move(first.instruction.x, first.instruction.y);
+    const next = await page.evaluate(
+      (seq) => (window as unknown as Record<string, any>).sbkAwaitInstruction(seq, 5000),
+      first.seq,
+    );
+    expect(next).toEqual({ done: true });
+    await page.close();
+  });
+
+  it("leaves the time the tab was hidden out of a wait's timeout", async () => {
+    const page = await browser.newPage({ viewport: { width: 900, height: 600 } });
+    await page.setContent(PICKER);
+    await page.addScriptTag({
+      content: `window.capture = ${CAPTURE}; window.observe = ${OBSERVE};`,
+    });
+    await page.evaluate(() => {
+      const w = window as unknown as Record<string, any>;
+      w.capture({
+        items: [{ name: "x/y@poke", payload: {}, probe: { steps: [{ hover: "button-1" }] } }],
+        snap: async () => "",
+        observe: w.observe,
+        adapter: w.adapter,
+        settle: 0,
+        timeout: 1000,
+      }).then(
+        () => (w.done = "ok"),
+        (e: Error) => (w.done = String(e)),
+      );
+    });
+    const hide = (state: string) =>
+      page.evaluate((s) => {
+        Object.defineProperty(document, "visibilityState", { value: s, configurable: true });
+        document.dispatchEvent(new Event("visibilitychange"));
+      }, state);
+    await page.waitForTimeout(300);
+    await hide("hidden");
+    await page.waitForTimeout(2000);
+    await hide("visible");
+    await page.waitForTimeout(200);
+    const box = (await page.locator(".c-button").boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.waitForFunction(() => (window as unknown as Record<string, any>).done);
+    expect(await page.evaluate(() => (window as unknown as Record<string, any>).done)).toBe("ok");
+    await page.close();
+  });
+
+  it("freezes a tall preview at its full width, without the pane's scrollbar", async () => {
+    // Classic scrollbars take room, as on the maintainer's screen.
+    const classic = await chromium.launch({ ignoreDefaultArgs: ["--hide-scrollbars"] });
+    const page = await classic.newPage({ viewport: { width: 900, height: 400 } });
+    await page.setContent(`<!doctype html><html><head>
+      <style>#pane::-webkit-scrollbar { width: 15px; background: #eee; }
+      #pane::-webkit-scrollbar-thumb { background: #999; }</style></head><body style="margin:0">
+      <div id="pane" style="width:532px;height:300px;overflow-y:auto">
+        <div class="p-bkb_preview__message" style="padding:0 10px"><div style="height:900px">Tall</div></div>
+      </div>
+      <script>
+        window.adapter = {
+          load: async () => {}, theme: () => "light", setTheme: async () => {},
+          previewSize: () => "desktop", setPreviewSize: async () => {},
+        };
+      </script>
+    </body></html>`);
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE}; window.snap = ${SNAPSHOT};` });
+    const { width, after } = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      const refs = await w.capture({
+        items: [{ name: "x/tall", payload: {} }],
+        snap: w.snap,
+        adapter: w.adapter,
+        settle: 0,
+      });
+      const html = refs["x/tall"] as string;
+      return {
+        width: JSON.parse(/id="sbk-reference-meta">(\{.*?\})</.exec(html)![1]!).width,
+        after: document.querySelector(".p-bkb_preview__message")!.getBoundingClientRect().width,
+      };
+    });
+    expect(width).toBe(532);
+    // The scrollbar is back afterwards.
+    expect(after).toBeLessThan(532);
+    await classic.close();
+  });
+});

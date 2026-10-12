@@ -8,7 +8,8 @@
  * and `container`/`message`/`channel`, which the Builder only simulates.
  *
  * Every difference that remains is listed in KNOWN_DIFFERENCES, so the check fails both on a
- * new difference and on a listed one that no longer happens: a fix removes its entries.
+ * new difference and on a listed one that no longer happens: a fix removes its entries. A
+ * recording block-kit sends nothing for yet is listed in KNOWN_UNSENT, the same way.
  *
  * A recording made by a behaviour probe (`<fixture>@<probe>.probe.json` next to it, see
  * tools/visual/src/probes.ts) needs no INTERACTIONS entry: its steps are replayed here. Recordings
@@ -19,7 +20,7 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { BlockKitProvider, type StateValues } from "./context";
+import { BlockKitProvider, type Resolvers, type StateValues } from "./context";
 import { CHARACTER_DISPATCH_DELAY } from "./elements/characterDispatch";
 import { clickAsync, keyDownAsync } from "./elements/test-utils";
 import { Message } from "./Message";
@@ -299,7 +300,21 @@ async function pickColours(...names: string[]) {
  * Provider settings a recording depends on. The Builder that recorded the date and time pickers
  * ran in Europe/Amsterdam, which `selected_date_time` is computed in.
  */
-const PROVIDER: Record<string, { timeZone?: string }> = {
+/**
+ * The Builder workspace's members and channels, as the recordings redact them (U0000001, the
+ * first member; C0000001, the first channel), for the directory selects' probes.
+ */
+const workspace: Resolvers = {
+  directory: (source) =>
+    source === "channels"
+      ? [{ type: "channel", id: "C0000001", name: "channel-one" }]
+      : [{ type: "user", id: "U0000001", name: "User One" }],
+};
+
+const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
+  "contexts/users_select/actions@pick": { resolvers: workspace },
+  "contexts/conversations_select/actions@pick": { resolvers: workspace },
+  "contexts/channels_select/actions@pick": { resolvers: workspace },
   "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
@@ -321,6 +336,18 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'state.values.<block_id>.static.selected_option.text.text: Slack "Option 3", ours "Option 2"',
     'state.values.<block_id>.static.selected_option.value: Slack "value-3", ours "value-2"',
   ],
+};
+
+/**
+ * Recordings block-kit sends nothing for yet, with why. The test fails once it does send, so a fix
+ * moves the recording back to a full comparison.
+ */
+const KNOWN_UNSENT: Record<string, string> = {
+  // Slack's open list starts on its first entry, so Enter right after opening picks it; ours
+  // starts with nothing highlighted (fidelity finding static-select-keyboard).
+  "contexts/users_select/actions@pick": "Enter on a just-opened list picks nothing",
+  "contexts/conversations_select/actions@pick": "Enter on a just-opened list picks nothing",
+  "contexts/channels_select/actions@pick": "Enter on a just-opened list picks nothing",
 };
 
 interface Recording {
@@ -413,9 +440,22 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
     expect(Object.keys(KNOWN_DIFFERENCES).filter((n) => !all.some((r) => r.name === n))).toEqual(
       [],
     );
+    expect(Object.keys(KNOWN_UNSENT).filter((n) => !all.some((r) => r.name === n))).toEqual([]);
   });
 
-  for (const { name, slack } of all) {
+  for (const name of Object.keys(KNOWN_UNSENT))
+    it(`${name} still sends nothing: ${KNOWN_UNSENT[name]}`, async () => {
+      let payload: BlockActionsPayload | undefined;
+      render(
+        <BlockKitProvider {...PROVIDER[name]} onPayload={(p) => (payload = p)}>
+          <Message blocks={fixtureBlocks(name)} />
+        </BlockKitProvider>,
+      );
+      await interactionFor(name)!();
+      expect(payload).toBeUndefined();
+    });
+
+  for (const { name, slack } of all.filter((r) => !(r.name in KNOWN_UNSENT))) {
     it(`${name} sends what Slack sends`, async () => {
       let payload: BlockActionsPayload | undefined;
       let initial: StateValues = {};

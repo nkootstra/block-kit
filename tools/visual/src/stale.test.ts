@@ -203,4 +203,18 @@ describe("foreignState", () => {
       [],
     );
   });
+
+  it("counts a user chip once, not its avatar's c-token--member class", () => {
+    const users = {
+      blocks: [
+        {
+          type: "input",
+          element: { type: "multi_users_select", action_id: "u", initial_users: ["U0123456789"] },
+        },
+      ],
+    };
+    const chip =
+      '<span class="c-token c-token--medium"><div class="c-token--member c-token__avatar c-member"></div></span>';
+    expect(foreignState(`<div>${chip}</div>`, users)).toEqual([]);
+  });
 });

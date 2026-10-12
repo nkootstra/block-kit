@@ -67,6 +67,55 @@ async ({
   const doc = document;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+  // For a driver that follows the instructions: resolves with the next instruction after
+  // `prevSeq` (`{ seq, instruction, screen }`, `screen` being its x, y and box times `scale`, for
+  // screenshot coordinates), with `{ done: true, error }` once the run has finished, or with
+  // `{ timeout: true }` after `timeoutMs`. A plain-string instruction (a fixture-specific state)
+  // comes as `{ do: "manual", name }`: perform it, then set sbkCaptureReady.
+  win.sbkAwaitInstruction = (prevSeq, timeoutMs = 60_000, scale = 1) =>
+    new Promise((resolve) => {
+      const t0 = performance.now();
+      const scaled = (v) => (typeof v === "number" ? Math.round(v * scale) : v);
+      const tick = () => {
+        const waiting = win.sbkCaptureWaiting;
+        const seq = win.sbkCaptureSeq;
+        if (waiting !== undefined && seq !== prevSeq) {
+          const instruction =
+            typeof waiting === "string" ? { seq, do: "manual", name: waiting } : waiting;
+          const { x, y, box } = instruction;
+          resolve({
+            seq,
+            instruction,
+            ...(x !== undefined && {
+              screen: {
+                x: scaled(x),
+                y: scaled(y),
+                ...(box && {
+                  box: {
+                    x: scaled(box.x),
+                    y: scaled(box.y),
+                    width: scaled(box.width),
+                    height: scaled(box.height),
+                  },
+                }),
+              },
+            }),
+          });
+        } else if (!win.sbkCaptureRunning) resolve({ done: true, error: win.sbkCaptureError });
+        else if (performance.now() - t0 > timeoutMs) resolve({ timeout: true, seq: prevSeq });
+        else setTimeout(tick, 100);
+      };
+      tick();
+    });
+  win.sbkCaptureRunning = true;
+  win.sbkCaptureError = undefined;
+  // A run that stops before it starts isn't running.
+  const refuse = (message) => {
+    win.sbkCaptureRunning = false;
+    win.sbkCaptureError = message;
+    throw new Error(message);
+  };
+
   // targets.ts, inlined (targets.test.ts keeps the selectors in step): the preview's controls by
   // address, `<kind>-<n>`, the nth outermost match of the kind's selector.
   const SLACK = {
@@ -290,12 +339,27 @@ async ({
       : !!doc.querySelector(
           '.ReactModalPortal [role="dialog"], .ReactModalPortal [role="alertdialog"]',
         );
+  // A hidden tab pauses the clock, as it pauses the page. A hidden tab's timers are throttled, so
+  // a wait may not poll while hidden at all: the time spent hidden is counted from
+  // visibilitychange instead, and left out of every timeout.
+  const hidden = (win.sbkCaptureHidden ??= { total: 0, since: undefined });
+  if (!win.sbkCaptureHiddenListener) {
+    win.sbkCaptureHiddenListener = () => {
+      if (doc.visibilityState === "hidden") hidden.since = performance.now();
+      else if (hidden.since !== undefined) {
+        hidden.total += performance.now() - hidden.since;
+        hidden.since = undefined;
+      }
+    };
+    doc.addEventListener("visibilitychange", win.sbkCaptureHiddenListener);
+  }
+  const hiddenMs = () =>
+    hidden.total + (hidden.since !== undefined ? performance.now() - hidden.since : 0);
   const waitFor = async (name, done) => {
-    let t0 = performance.now();
+    const t0 = performance.now();
+    const h0 = hiddenMs();
     while (!done()) {
-      // A hidden tab pauses the clock, as it pauses the page.
-      if (doc.visibilityState === "hidden") t0 = performance.now();
-      if (performance.now() - t0 > timeout)
+      if (performance.now() - t0 - (hiddenMs() - h0) > timeout)
         throw new Error(`${name}: timed out waiting for the interaction`);
       await sleep(250);
     }
@@ -307,7 +371,7 @@ async ({
   // is checked against them below rather than the window against an exact width.
   const PREVIEW_WIDTH = { message: 512, modal: 520, home: 512 };
   if (!adapter && viewport && win.innerWidth < viewport - 8)
-    throw new Error(
+    refuse(
       `make the window wider: the viewport is ${win.innerWidth}px, the preview needs about ${viewport}px`,
     );
 
@@ -586,15 +650,45 @@ async ({
     };
   };
   // Trusted input since the runner started listening: the browser marks real input `isTrusted`.
+  // Pointer moves are many, so only the last one is kept.
   const trusted = [];
+  let lastMove;
   const listen = (event) => {
-    if (event.isTrusted) trusted.push(event);
+    if (!event.isTrusted) return;
+    if (event.type === "pointermove" || event.type === "pointerover")
+      lastMove = { at: performance.now(), target: event.target };
+    else trusted.push(event);
   };
-  for (const type of ["pointerdown", "mousedown", "click", "keydown"])
-    win.addEventListener(type, listen, true);
+  const LISTENED = ["pointerdown", "mousedown", "click", "keydown", "pointermove", "pointerover"];
+  for (const type of LISTENED) win.addEventListener(type, listen, true);
+  // A control and the wrappers that draw the same box: the pointer can rest on an overlay beside
+  // the matched element (a time picker's value drawn over its input), so the control counts as
+  // hovered when any of them is.
+  const sameBox = (a, b) =>
+    ["left", "top", "right", "bottom"].every((k) => Math.abs(a[k] - b[k]) <= 4);
+  const hoverChain = (el) => {
+    const box = el.getBoundingClientRect();
+    const chain = [el];
+    for (
+      let a = el.parentElement;
+      a && sameBox(a.getBoundingClientRect(), box);
+      a = a.parentElement
+    )
+      chain.push(a);
+    return chain;
+  };
+  const hovers = (el) => hoverChain(el).some((c) => c.matches(":hover"));
+  // Hover by real input: the pointer has to move onto the control after `since`, so a pointer
+  // that happens to rest there from an earlier item doesn't count.
+  const movedOnto = (el, since) =>
+    !!lastMove &&
+    lastMove.at >= since &&
+    hoverChain(el).some((c) => c === lastMove.target || c.contains(lastMove.target));
   const ask = async (name, instruction, done) => {
     win.sbkCaptureReady = false;
-    win.sbkCaptureWaiting = { name, ...instruction };
+    // A number per instruction, so a driver can wait for the next one (sbkAwaitInstruction).
+    win.sbkCaptureSeq = (win.sbkCaptureSeq ?? 0) + 1;
+    win.sbkCaptureWaiting = { seq: win.sbkCaptureSeq, name, ...instruction };
     console.log("sbkCaptureWaiting", JSON.stringify(win.sbkCaptureWaiting));
     await waitFor(name, done);
     win.sbkCaptureWaiting = undefined;
@@ -608,14 +702,18 @@ async ({
   // Holds real input on a control for a snapshot: the pointer on it, or keyboard focus.
   const hold = async (name, input, el, address) => {
     if (input === "hover") {
-      await ask(name, { do: "hover", target: address, ...center(el) }, () => el.matches(":hover"));
-      return () => el.matches(":hover");
+      const since = performance.now();
+      await ask(
+        name,
+        { do: "hover", target: address, ...center(el) },
+        () => hovers(el) && movedOnto(el, since),
+      );
+      return () => hovers(el);
     }
     // A scripted focus matches :focus-visible once the last input was a key press. Ask for one Tab
     // (anywhere) when it doesn't, then focus the control again. The pointer must be off it, or the
     // snapshot shows hover and focus together.
-    if (el.matches(":hover"))
-      await ask(name, { do: "move-away", target: address }, () => !el.matches(":hover"));
+    if (hovers(el)) await ask(name, { do: "move-away", target: address }, () => !hovers(el));
     focusable(el).focus({ preventScroll: true });
     if (!focusVisible(el)) {
       const since = trusted.length;
@@ -627,7 +725,7 @@ async ({
       if (!focusVisible(el))
         throw new Error(`${name}: ${address} took focus without :focus-visible after a Tab`);
     }
-    return () => focusVisible(el) && !el.matches(":hover");
+    return () => focusVisible(el) && !hovers(el);
   };
 
   // A probe step's target: a control address, or `{ role, name }` anywhere in the preview and its
@@ -720,8 +818,11 @@ async ({
           "the page's own world)",
       );
     if (step.hover !== undefined) {
-      await ask(name, { ...where, do: "hover", target: describe(spec), ...center(el) }, () =>
-        el.matches(":hover"),
+      const since = performance.now();
+      await ask(
+        name,
+        { ...where, do: "hover", target: describe(spec), ...center(el) },
+        () => hovers(el) && movedOnto(el, since),
       );
       return el;
     }
@@ -737,6 +838,32 @@ async ({
             (el.contains(e.target) || e.target === el),
         ),
     );
+  };
+
+  // A tall payload gives the Builder's preview pane a vertical scrollbar, which takes 8px off the
+  // message (504px, not 512). Its scrollbar is hidden while the preview is frozen, so it lays out
+  // at its full width as a shorter payload does; nothing else moves.
+  const hideScrollbars = async () => {
+    const marked = [];
+    for (let a = preview()?.parentElement; a && a !== doc.body; a = a.parentElement) {
+      const cs = win.getComputedStyle(a);
+      if (/^(auto|scroll)$/.test(cs.overflowY) && a.scrollHeight > a.clientHeight + 1) {
+        a.setAttribute("data-sbk-noscrollbar", "");
+        marked.push(a);
+      }
+    }
+    if (marked.length === 0) return () => {};
+    const style = doc.createElement("style");
+    style.textContent =
+      "[data-sbk-noscrollbar]{scrollbar-width:none!important}" +
+      "[data-sbk-noscrollbar]::-webkit-scrollbar{display:none!important;width:0!important}";
+    doc.head.append(style);
+    // Let the Builder's own layout code see the wider pane.
+    await sleep(Math.min(300, settle || 1));
+    return () => {
+      style.remove();
+      for (const a of marked) a.removeAttribute("data-sbk-noscrollbar");
+    };
   };
 
   // Freezes the preview as the reference `refName`: waits for transitions, checks the cascade
@@ -755,6 +882,7 @@ async ({
     };
     reordered("before the snapshot,");
     if (!holds()) throw new Error(`${refName}: the ${held.input} didn't hold until the snapshot`);
+    const scrollbars = await hideScrollbars();
     const full = want.full ? await widen() : undefined;
     let html;
     try {
@@ -768,6 +896,7 @@ async ({
       });
     } finally {
       full?.undo();
+      scrollbars();
     }
     html = html.replace(/ data-sbk-full="[^"]*"/g, "");
     // A sheet that arrived while the snapshot was taken (a chart's, as it rendered wider).
@@ -910,8 +1039,7 @@ async ({
   let urlButtons = [];
 
   const references = {};
-  if (reset)
-    throw new Error("capture.js no longer takes reset: true; call window.sbkCaptureReset() first");
+  if (reset) refuse("capture.js no longer takes reset: true; call window.sbkCaptureReset() first");
   win.sbkCaptureReset = () => {
     win.sbkCaptureOutput = { references: {}, actions: {}, behaviour: {} };
     stored(win.sbkCaptureOutput);
@@ -1026,7 +1154,7 @@ async ({
               want: { ...want, interaction: step.snapshot },
               ...(el && {
                 held: { input: "hover", target: describe(steps[i - 1].hover) },
-                holds: () => el.matches(":hover"),
+                holds: () => hovers(el),
               }),
             });
           } else hovered = await runStep(name, step, i, steps.length);
@@ -1039,7 +1167,7 @@ async ({
         if (probe.snapshot && hovered) {
           const el = hovered;
           held = { input: "hover", target: describe(steps.at(-1).hover) };
-          holds = () => el.matches(":hover");
+          holds = () => hovers(el);
         }
       } else if (input) {
         const t = target(input[2]);
@@ -1102,11 +1230,14 @@ async ({
         }
         if (!opened(want.interaction)) {
           win.sbkCaptureReady = false;
+          win.sbkCaptureSeq = (win.sbkCaptureSeq ?? 0) + 1;
+          win.sbkCaptureSeq = (win.sbkCaptureSeq ?? 0) + 1;
           win.sbkCaptureWaiting = name;
           await waitFor(name, () => opened(want.interaction) || win.sbkCaptureReady);
         }
       } else if (want.interaction) {
         win.sbkCaptureReady = false;
+        win.sbkCaptureSeq = (win.sbkCaptureSeq ?? 0) + 1;
         win.sbkCaptureWaiting = name;
         await waitFor(name, () => win.sbkCaptureReady);
       }
@@ -1129,12 +1260,13 @@ async ({
     }
   } catch (error) {
     failed = true;
+    win.sbkCaptureError = String(error);
     throw error;
   } finally {
+    win.sbkCaptureRunning = false;
     win.open = open;
     win.removeEventListener("click", noNavigation, true);
-    for (const type of ["pointerdown", "mousedown", "click", "keydown"])
-      win.removeEventListener(type, listen, true);
+    for (const type of LISTENED) win.removeEventListener(type, listen, true);
     win.sbkCaptureWaiting = undefined;
     const count =
       Object.keys(references).length +

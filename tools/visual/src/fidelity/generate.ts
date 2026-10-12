@@ -420,6 +420,7 @@ if (import.meta.main) {
     sources.payloads,
     new Set(sources.references.keys()),
     await readProbes(),
+    new Set(sources.behaviour?.keys() ?? []),
   );
   const out = resolve(ROOT, "test-results/fidelity");
   await mkdir(out, { recursive: true });

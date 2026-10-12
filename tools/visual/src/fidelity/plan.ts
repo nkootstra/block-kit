@@ -647,6 +647,8 @@ export function capturePlan(
   payloads: Map<string, unknown>,
   references: Set<string> = new Set(),
   probes: Map<string, Probe> = new Map(),
+  /** Behaviour recordings already made (`<fixture>@<probe>`). */
+  recorded: Set<string> = new Set(),
 ): CapturePlan {
   // The inventory's components carry the states the stylesheet discovery added: plan with those.
   const cellStates = new Map<string, Set<string>>();
@@ -721,6 +723,8 @@ export function capturePlan(
   const byName = new Map<string, Option>();
   const orphans: Cell[] = [];
   const unplanned: Cell[] = [];
+  /** Cells only a probe that's already recorded could show: the recording didn't. */
+  const recordedOnly = new Set<string>();
   for (const cell of open) {
     const component = byId.get(cell.component)!;
     const found = candidates(
@@ -737,9 +741,18 @@ export function capturePlan(
       (fixtureFirst ? orphans : unplanned).push(cell);
       continue;
     }
+    let planned = false;
     for (const cand of found) {
       const theme: Theme = cand.theme ?? (cell.theme === "any" ? "light" : cell.theme);
       const width: Width = cand.width ?? (cell.width === "any" ? "desktop" : cell.width);
+      // A probe recorded in light desktop has shown what it shows: its cells need another capture.
+      if (
+        cand.kind === "probe" &&
+        theme === "light" &&
+        width === "desktop" &&
+        recorded.has(`${cand.fixture}@${cand.interaction}`)
+      )
+        continue;
       const name = formatReferenceName({
         fixture: cand.fixture,
         interaction: cand.interaction,
@@ -749,6 +762,11 @@ export function capturePlan(
       });
       if (!byName.has(name)) byName.set(name, { ...cand, theme, width, cells: [] });
       byName.get(name)!.cells.push(cell);
+      planned = true;
+    }
+    if (!planned) {
+      unplanned.push(cell);
+      if (found.length > 0) recordedOnly.add(cellKey(cell));
     }
   }
 
@@ -785,8 +803,9 @@ export function capturePlan(
 
   // Every probe spec is recorded, also one whose cells another probe covers: probes tell apart
   // what the inventory's states don't (arrow keys from Escape from typeahead).
+  // A probe already recorded (its .behaviour.json exists) isn't run again.
   for (const [name, { fixture }] of forecasts)
-    if (!items.some((i) => i.name === name))
+    if (!items.some((i) => i.name === name) && !recorded.has(name))
       items.push(
         item(
           name,
@@ -875,8 +894,9 @@ export function capturePlan(
   );
   const reasons = new Map<string, Cell[]>();
   for (const c of unplanned) {
-    const r =
-      c.fact === "styles" && snapped.has(`${c.component} ${c.state}`)
+    const r = recordedOnly.has(cellKey(c))
+      ? `${c.state} ${c.fact}: the probe that should show it is recorded and didn't`
+      : c.fact === "styles" && snapped.has(`${c.component} ${c.state}`)
         ? `${c.state} styles a probe snapshot shows, but probes record in light at desktop width only`
         : unplannedReason(c);
     if (!reasons.has(r)) reasons.set(r, []);

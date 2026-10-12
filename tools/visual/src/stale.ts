@@ -172,7 +172,9 @@ export function foreignState(html: string, payload: unknown): string[] {
       (n, e) => n + INITIAL.reduce((m, f) => m + ((e[f] as unknown[] | undefined)?.length ?? 0), 0),
       0,
     );
-  const shownChips = [...message.matchAll(/class="[^"]*\bc-token\b/g)].length;
+  // The chip itself, `c-token`, not its parts (`c-token--member c-token__avatar`): `\b` alone would
+  // also match `c-token--member`, which a user chip's avatar carries.
+  const shownChips = [...message.matchAll(/class="(?:[^"]*\s)?c-token(?=[\s"])/g)].length;
   if (shownChips !== chips) out.push(`chips: ${shownChips}, expected ${chips}`);
   const values = els
     .filter((e) => TEXT_INPUTS.test(e.type as string))

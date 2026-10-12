@@ -340,6 +340,20 @@ be held this way: it's recorded as state styles instead. `real: false` dispatche
 for clicks, keys and typing instead (a quick run; React's handlers see them, the browser's default
 actions don't).
 
+A hover counts only once the pointer moves onto the control after the instruction appears (a
+pointer resting there from an earlier item doesn't), and on the control or any wrapper drawing the
+same box (a time picker's value is an overlay beside its input). Every wait leaves out the time the
+tab was hidden, counted from `visibilitychange`, since a hidden tab's timers barely run. A tall
+payload gives the preview pane a scrollbar that takes 8px off the message; it's hidden while the
+preview is frozen, so the message keeps its full width.
+
+A driver can wait for the next instruction instead of polling:
+`await sbkAwaitInstruction(prevSeq, timeoutMs, scale)` resolves with `{ seq, instruction, screen }`
+(the instruction's `x`, `y` and `box` times `scale`, for screenshot coordinates such as 1412/1440),
+with `{ done: true, error }` once the run finished, or `{ timeout: true }`. Pass the `seq` it
+returned as `prevSeq` next time; every instruction carries its `seq` too (`key` stays the key to
+press). A plain-string instruction arrives as `{ do: "manual", name }`.
+
 `capture.js` also reads Block Kit Builder's Actions Preview for every probe step, `@submit-errors`
 and fixture-specific interaction, and records a new payload under the interaction. Actions Preview
 is a tab next to Payload in the right pane (`role="tab"`, matched by its text) that must be selected

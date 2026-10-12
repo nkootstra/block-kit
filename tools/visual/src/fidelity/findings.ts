@@ -206,6 +206,7 @@ export const FINDINGS: Finding[] = [
     evidence: [
       'Probe contexts/static_select/actions@keyboard (verification session): Slack\'s first ArrowDown highlights "Option 2" (option 1 is already highlighted when the list opens), ours "Option 1"; after two ArrowDowns and Enter, Slack picks "Option 3", ours "Option 2".',
       "After Enter, Slack keeps focus on the field; ours moves it to the option.",
+      "The same start shows in the users, conversations and channels selects: Slack's Enter right after opening picks the first entry (contexts/*_select/actions@pick recordings); ours picks nothing and sends no payload (listed in actionPayloads.test.tsx KNOWN_UNSENT).",
       'Ours marks option 1 aria-selected="true" before anything is chosen, and lists an extra option-4 entry Slack doesn\'t have.',
     ],
     suspect: [
@@ -256,7 +257,8 @@ export const FINDINGS: Finding[] = [
     title:
       "Block Kit Builder keeps an element's state across payloads with the same block and action IDs",
     evidence: [
-      'Light desktop chunks: a value from one payload (the "Red" chip of extra/fidelity/multi-static-select/initial-value, a radio choice, a placeholder) showed in the next payloads with the same block_id and action_id. Contaminated references were dropped: multi-static-select/many-items and /mixed, radio-buttons/mixed, multi-users-select/initial-value.',
+      'Light desktop chunks: a value from one payload (the "Red" chip of extra/fidelity/multi-static-select/initial-value, a radio choice, a placeholder) showed in the next payloads with the same block_id and action_id. Contaminated references were dropped: multi-static-select/many-items and /mixed, radio-buttons/mixed.',
+      'Not contamination: extra/fidelity/multi-users-select/initial-value showed "chips: 2, expected 1" because the chip check matched the user chip\'s avatar (class c-token--member) as a second chip. It has one chip, as its payload sets; the check now matches the c-token class itself.',
     ],
     suspect: [
       "Not a package bug: a capture hazard. The fidelity fixtures without a reference now carry unique block and action IDs; fixtures that share IDs and already have references (contexts, catalog) can still carry state into each other.",
