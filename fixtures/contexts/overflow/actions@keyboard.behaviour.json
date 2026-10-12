@@ -1,0 +1,141 @@
+{
+  "steps": [
+    {
+      "click": "overflow-1"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "Option 1 Option 2 Option 3",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "Option 1 Option 2 Option 3",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Option 1",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "Option 1 Option 2 Option 3",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Option 2",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "overflow-1",
+        "role": "button",
+        "name": "More options",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {}
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "overflow",
+            "block_id": "<block_id>",
+            "action_id": "overflow",
+            "selected_option": {
+              "text": {
+                "type": "plain_text",
+                "text": "Option 2",
+                "emoji": true
+              },
+              "value": "value-2"
+            },
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    }
+  ]
+}

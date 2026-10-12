@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "hover": "icon-1"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "snapshot": "tooltip-over-icon-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

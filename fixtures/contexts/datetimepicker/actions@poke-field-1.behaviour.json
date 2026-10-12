@@ -1,0 +1,143 @@
+{
+  "steps": [
+    {
+      "hover": "field-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "field-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    }
+  ]
+}

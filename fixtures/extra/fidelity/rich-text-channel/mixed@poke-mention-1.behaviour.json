@@ -1,0 +1,50 @@
+{
+  "steps": [
+    {
+      "hover": "mention-1"
+    },
+    {
+      "wait": 1500
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

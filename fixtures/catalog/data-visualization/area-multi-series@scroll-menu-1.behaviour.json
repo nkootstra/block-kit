@@ -1,0 +1,336 @@
+{
+  "steps": [
+    {
+      "click": "menu-1"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "View as table",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Download chart data",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Copy as image",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "View as table",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Download chart data",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Copy as image",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "View as table",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Download chart data",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Copy as image",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "View as table",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Download chart data",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "View as table Download chart data Copy as image",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Copy as image",
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "menu-1",
+        "role": "button",
+        "name": "More actions",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "More actions",
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}
