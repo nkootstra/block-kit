@@ -200,11 +200,12 @@ export const LAYER_KINDS: readonly Kind[] = ["option", "menuitem", "confirm", "d
 export const UNVERIFIED: readonly Kind[] = ["more", "action", "tooltip"];
 
 /**
- * Kinds Block Kit Builder's preview draws as plain text, which takes no keyboard focus: the message
- * header's app name and time are spans there (the Slack client makes them a button and a link). A
+ * Kinds that take no keyboard focus themselves in Block Kit Builder's preview: the message header's
+ * app name and time are plain spans there (the Slack client makes them a button and a link), and a
+ * card is a container whose first focusable part is one of its buttons (ours is the same). A
  * `focus-<kind>-<n>` capture of one can't hold, so the capture plan doesn't ask for it.
  */
-export const UNFOCUSABLE: readonly Kind[] = ["sender", "time"];
+export const UNFOCUSABLE: readonly Kind[] = ["sender", "time", "card"];
 
 /** Where a kind's controls are counted on our side: the message, or the whole page. */
 export const ourRoot = (kind: Kind): string | null =>

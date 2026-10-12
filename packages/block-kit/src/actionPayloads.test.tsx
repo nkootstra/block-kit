@@ -172,6 +172,22 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     fireEvent.click(screen.getByRole("combobox", { name: "Pick a channel" }));
     await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
   },
+  // The channels select's second row, "channel-two" (redacted to C0000001; PROVIDER), under
+  // its initial channel.
+  "catalog/actions/selects-with-initial-options@pick": async () => {
+    fireEvent.click(screen.getAllByRole("combobox")[2]!);
+    await clickAsync(screen.getByRole("option", { name: /channel-two/ }));
+  },
+  "catalog/container/data-entry-form@pick": async () => {
+    fireEvent.click(screen.getByText("--Select priority--"));
+    await clickAsync(screen.getByRole("option", { name: "High" }));
+  },
+  "catalog/input/radio-buttons@pick": () =>
+    clickAsync(screen.getByRole("radio", { name: "*plain_text option 1*" })),
+  "extra/fidelity/channels-select/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: /^This sentence is here/ }));
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
@@ -270,8 +286,8 @@ const TABBABLE =
 
 /**
  * A key press with the default action a browser adds and jsdom doesn't: Space clicks a focused
- * checkbox, radio or button, and Tab (Shift+Tab) moves the focus to the next (previous) control in
- * tab order. Without them a recording made with the keyboard (contexts/checkboxes/actions@space)
+ * checkbox, radio or button, Tab (Shift+Tab) moves the focus to the next (previous) control in
+ * tab order, and an arrow key moves a radio group's choice to the next (previous) radio. Without them a recording made with the keyboard (contexts/checkboxes/actions@space)
  * replays as a click and nothing else. A handler that prevents the key's default keeps it.
  */
 async function pressKey(el: HTMLElement, combo: string) {
@@ -285,7 +301,20 @@ async function pressKey(el: HTMLElement, combo: string) {
   if (!allowed) return;
   if (key === " " && el.matches('input[type="checkbox"], input[type="radio"], button'))
     await clickAsync(el);
-  else if (key === "Tab") {
+  else if (/^Arrow(Up|Down|Left|Right)$/.test(key) && el.matches('input[type="radio"]')) {
+    const group = [
+      ...document.querySelectorAll<HTMLInputElement>(
+        `input[type="radio"][name="${(el as HTMLInputElement).name}"]`,
+      ),
+    ];
+    const step = key === "ArrowDown" || key === "ArrowRight" ? 1 : -1;
+    const next =
+      group[(group.indexOf(el as HTMLInputElement) + step + group.length) % group.length];
+    if (next) {
+      await act(async () => next.focus());
+      await clickAsync(next);
+    }
+  } else if (key === "Tab") {
     const order = [...document.querySelectorAll<HTMLElement>(TABBABLE)].filter(
       (e) => e.tabIndex >= 0,
     );
@@ -307,7 +336,12 @@ function probeInteraction(name: string): (() => Promise<void>) | undefined {
       const at = () => (document.activeElement as HTMLElement | null) ?? document.body;
       if ("click" in step) {
         const el = probeTarget(step.click);
-        el.focus();
+        // A click focuses what it lands on, or a label's control (ours wraps a time picker's
+        // input in its label); jsdom does neither.
+        const focusable = el.matches(TABBABLE)
+          ? el
+          : (el.querySelector<HTMLElement>(TABBABLE) ?? el);
+        focusable.focus();
         await clickAsync(el);
       } else if ("hover" in step) fireEvent.mouseEnter(probeTarget(step.hover));
       else if ("key" in step) await pressKey(at(), step.key);
@@ -355,9 +389,25 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "contexts/conversations_select/actions@pick": { resolvers: workspace },
   "contexts/channels_select/actions@pick": { resolvers: workspace },
   "extra/actions/more-elements@pick": { resolvers: workspace },
+  "extra/fidelity/channels-select/long-content@pick": { resolvers: workspace },
+  "catalog/actions/selects-with-initial-options@pick": {
+    resolvers: {
+      directory: (source) =>
+        source === "channels"
+          ? [
+              { type: "channel", id: "C12345678", name: "general" },
+              { type: "channel", id: "C0000001", name: "channel-two" },
+            ]
+          : [],
+    },
+  },
+  "extra/payloads/accessory-multi-selects@pick-confirm-users": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick-confirm-channels": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": { resolvers: workspace },
   "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
+  "contexts/datetimepicker/actions@keyboard": { timeZone: "Europe/Amsterdam" },
 };
 
 /**
@@ -369,8 +419,42 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
   // Slack's users, conversations and channels selects send no placeholder in their action (its
-  // static and multi-static selects do); ours echoes it (fidelity finding
-  // directory-select-placeholder). Removed once that's fixed.
+  // static and multi-static selects do), and echo their initial_user, initial_conversation or
+  // initial_channel; ours does the opposite (fidelity finding directory-select-placeholder).
+  // Removed once that's fixed.
+  "catalog/actions/selects-with-initial-options@pick": [
+    'actions.0.initial_channel: Slack "C12345678", ours missing',
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
+  ],
+  "contexts/channels_select/actions@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
+  ],
+  "contexts/conversations_select/actions@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a conversation","emoji":true}',
+  ],
+  "contexts/users_select/actions@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a user","emoji":true}',
+  ],
+  "extra/fidelity/channels-select/long-content@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
+  ],
+  // Our selection dialog lists no workspace members or channels (only typed IDs), so a pick from
+  // its list confirms nothing (fidelity finding select-dialog-directory).
+  "extra/payloads/accessory-multi-selects@pick-confirm-users": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
+    'actions.0.selected_users.0: Slack "U0000001", ours missing',
+    'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours missing',
+  ],
+  "extra/payloads/accessory-multi-selects@pick-confirm-channels": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
+    'actions.0.selected_channels.0: Slack "C0000001", ours missing',
+    'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
+  ],
+  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
+    'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
+    'state.values.<block_id>.conversations.selected_conversations.0: Slack "U0000001", ours missing',
+  ],
   "extra/actions/more-elements@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
   ],
@@ -389,11 +473,15 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
  * moves the recording back to a full comparison.
  */
 const KNOWN_UNSENT: Record<string, string> = {
-  // Slack's open list starts on its first entry, so Enter right after opening picks it; ours
-  // starts with nothing highlighted (fidelity finding static-select-keyboard).
-  "contexts/users_select/actions@pick": "Enter on a just-opened list picks nothing",
-  "contexts/conversations_select/actions@pick": "Enter on a just-opened list picks nothing",
-  "contexts/channels_select/actions@pick": "Enter on a just-opened list picks nothing",
+  // Slack's open static list starts on its first option, so Enter (here after a "3" that matches
+  // no option's start) picks it; ours starts on the placeholder row (fidelity finding
+  // static-select-keyboard). The users, conversations and channels selects already pick.
+  "contexts/static_select/actions@typeahead": "Enter on a just-opened list picks nothing",
+  // Block Kit Builder sends block_actions from an input block's element without
+  // `dispatch_action`; ours follows Slack's docs and doesn't (fidelity finding
+  // input-block-dispatch).
+  "catalog/input/radio-buttons@pick": "an input block without dispatch_action sends nothing",
+  "catalog/container/data-entry-form@pick": "an input block without dispatch_action sends nothing",
 };
 
 interface Recording {

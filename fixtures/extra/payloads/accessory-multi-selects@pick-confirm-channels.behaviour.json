@@ -237,9 +237,7 @@
             "<block_id>": {
               "channels": {
                 "type": "multi_channels_select",
-                "selected_channels": [
-                  "C0000001"
-                ]
+                "selected_channels": ["C0000001"]
               }
             }
           }
@@ -250,9 +248,7 @@
             "type": "multi_channels_select",
             "block_id": "<block_id>",
             "action_id": "channels",
-            "selected_channels": [
-              "C0000001"
-            ],
+            "selected_channels": ["C0000001"],
             "action_ts": "<action_ts>"
           }
         ]

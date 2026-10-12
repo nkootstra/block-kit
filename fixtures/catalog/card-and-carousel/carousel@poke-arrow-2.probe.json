@@ -1,13 +1,13 @@
 {
   "steps": [
     {
-      "hover": "contact-1"
+      "hover": "arrow-2"
     },
     {
       "wait": 1000
     },
     {
-      "click": "contact-1"
+      "click": "arrow-2"
     },
     {
       "wait": 300

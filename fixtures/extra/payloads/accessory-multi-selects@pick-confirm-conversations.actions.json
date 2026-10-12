@@ -24,9 +24,7 @@
       "<block_id>": {
         "conversations": {
           "type": "multi_conversations_select",
-          "selected_conversations": [
-            "U0000001"
-          ]
+          "selected_conversations": ["U0000001"]
         }
       }
     }
@@ -37,9 +35,7 @@
       "type": "multi_conversations_select",
       "block_id": "<block_id>",
       "action_id": "conversations",
-      "selected_conversations": [
-        "U0000001"
-      ],
+      "selected_conversations": ["U0000001"],
       "action_ts": "<action_ts>"
     }
   ]

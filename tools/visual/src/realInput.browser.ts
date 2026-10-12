@@ -1166,6 +1166,23 @@ describe("capture.js fixes from the third Builder run", () => {
     }
   });
 
+  it("counts a hover anywhere in a time picker's field, whose input is narrower than the field", async () => {
+    // Slack's time picker input sits under the value overlay and doesn't draw the field's box, so
+    // no wrapper the same size as the input holds the overlay.
+    const run = await start(
+      stand(`<div class="c-select_input__wrapper" style="position:relative;width:220px;height:28px">
+        <input class="c-select_input" role="combobox" style="position:absolute;left:0;top:0;width:60px;height:28px;box-sizing:border-box">
+        <div class="c-select_input__content" style="position:absolute;inset:0;background:#fff">1:37 PM</div>
+      </div>`),
+      [{ name: "x/time@hover", payload: {}, probe: { steps: [{ hover: "field-1" }] } }],
+    );
+    const { instruction } = await run.next();
+    expect(instruction).toMatchObject({ do: "hover", target: "field-1" });
+    await run.page.mouse.move(instruction.x, instruction.y);
+    expect((await run.result()).done).toBe("ok");
+    await run.page.close();
+  });
+
   it("counts a press on a control that re-renders its icon as it's pressed", async () => {
     const run = await start(
       stand(
@@ -1263,6 +1280,20 @@ describe("capture.js fixes from the third Builder run", () => {
     const run = await start(stand(""), [{ name: "x/header@focus-sender-1", payload: {} }]);
     const { done } = await run.result();
     expect(done).toContain("sender-1 can't take focus in the Builder");
+    await run.page.close();
+  });
+
+  it("says a container that takes no focus itself would hand it to its button", async () => {
+    const run = await start(
+      stand(
+        `<div class="card__Sefd2"><p>Body</p><button class="c-button" type="button">Go</button></div>`,
+      ),
+      [{ name: "x/card@focus-card-1", payload: {} }],
+    );
+    const { done } = await run.result();
+    expect(done).toContain(
+      "card-1 can't take focus itself in the Builder; the focus would go to button-1",
+    );
     await run.page.close();
   });
 

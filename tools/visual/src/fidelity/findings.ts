@@ -269,16 +269,78 @@ export const FINDINGS: Finding[] = [
   },
   {
     id: "directory-select-placeholder",
-    title: "Our users, conversations and channels selects send their placeholder; Slack's don't",
+    title:
+      "Our users, conversations and channels selects send their placeholder and not their initial value; Slack's do the opposite",
     evidence: [
-      'extra/actions/more-elements@pick (light desktop run): Slack\'s channels_select action has no placeholder; ours echoes {"type":"plain_text","text":"Pick a channel","emoji":true}. Listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.',
-      "The same shows in contexts/users_select, conversations_select and channels_select/actions@pick: their fixtures set a placeholder and Slack's actions have none. Slack's static_select and multi_static_select actions do carry it (catalog/actions/all-selects@pick, extra/payloads/selects@pick-multi).",
+      'extra/actions/more-elements@pick, contexts/{users,conversations,channels}_select/actions@pick and extra/fidelity/channels-select/long-content@pick: Slack\'s action has no placeholder; ours echoes it (e.g. {"type":"plain_text","text":"Pick a channel","emoji":true}). Slack\'s static_select and multi_static_select actions do carry it (catalog/actions/all-selects@pick, extra/payloads/selects@pick-multi).',
+      "catalog/actions/selects-with-initial-options@pick: Slack's channels_select action echoes initial_channel \"C12345678\"; ours leaves it out (Select.tsx echoes only a static select's initial_option).",
+      "All listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
     ],
     suspect: [
-      "packages/block-kit/src/payloads.ts and the select's action builder (elements/Select.tsx): the placeholder is echoed for every select type.",
+      "packages/block-kit/src/elements/Select.tsx, where the action echoes the placeholder and initial_option for every select type.",
     ],
-    next: "Leave the placeholder out of users, conversations and channels select actions (single and multi, once a multi recording confirms it), then drop the KNOWN_DIFFERENCES entry.",
+    next: "For users, conversations and channels selects, leave the placeholder out and echo initial_user / initial_conversation / initial_channel (multi variants once a recording with initial values shows them), then drop the KNOWN_DIFFERENCES entries.",
     components: ["channels_select", "users_select", "conversations_select"],
+  },
+  {
+    id: "select-dialog-directory",
+    title: "Our accessory multi-select dialog lists no members or channels for a directory select",
+    evidence: [
+      "extra/payloads/accessory-multi-selects@pick-confirm-{users,channels,conversations} (light desktop retry): in Slack the dialog's field opens a list of the workspace's members or channels, ArrowDown and Enter pick the first, Confirm sends it (selected_users [\"U0000001\"] and so on).",
+      "Ours, replayed in Chromium with a directory resolver: the dialog's list opens empty, so nothing is picked and Confirm sends an empty selection. Listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
+    ],
+    suspect: [
+      "packages/block-kit/src/elements/Select.tsx passes the SelectDialog `options={directory ? [] : allOptions(element)}`: a directory select only gets `addTyped`, never the resolver's entries.",
+    ],
+    next: "List resolvers.directory entries in the dialog (as the inline users, conversations and channels selects do), then drop the KNOWN_DIFFERENCES entries.",
+    components: [
+      "select-dialog",
+      "multi_users_select",
+      "multi_channels_select",
+      "multi_conversations_select",
+    ],
+  },
+  {
+    id: "input-block-dispatch",
+    title:
+      "Block Kit Builder sends block_actions from an input block's element without dispatch_action",
+    evidence: [
+      'catalog/input/radio-buttons@pick and catalog/container/data-entry-form@pick (light desktop retry): picking a radio or a static select option in an input block without dispatch_action made Actions Preview show a block_actions payload (selected "*plain_text option 1*", "High").',
+      "Ours sends nothing there, on purpose: Slack's docs say an input block's element dispatches only with dispatch_action (context.tsx, blocks/Input.tsx). Listed in actionPayloads.test.tsx KNOWN_UNSENT.",
+    ],
+    suspect: [
+      "Either Block Kit Builder simulates a payload real Slack wouldn't send, or real Slack does send it in messages. Ours: packages/block-kit/src/blocks/Input.tsx (`__dispatchAction`).",
+    ],
+    next: "Check a real app's message with an input block (no dispatch_action) before changing ours; then either keep the KNOWN_UNSENT entries as a Builder quirk or dispatch.",
+    components: ["input", "radio_buttons", "static_select"],
+  },
+  {
+    id: "datepicker-calendar-keyboard",
+    title:
+      "Arrow keys and Enter in Slack's open calendar don't change the date; ours pick the next day",
+    evidence: [
+      "contexts/datetimepicker/actions@keyboard (light desktop retry): after a click on the date field, ArrowRight then Enter left Slack's calendar open, focus on the date textbox and the date January 1st, 2026; the final payload's selected_date_time keeps that date.",
+      "Ours, replayed in Chromium: the click moves focus into the calendar grid, ArrowRight moves to January 2nd and Enter picks it, so our payload would carry a day later. The jsdom replay in actionPayloads.test.tsx doesn't reproduce our focus move and passes, so no KNOWN_DIFFERENCES entry shows it.",
+    ],
+    suspect: [
+      "packages/block-kit/src/elements/DatePicker.tsx and calendar/Calendar.tsx: focus moves into the grid on open, where Slack keeps it on the input.",
+    ],
+    next: "Replay the recording on ours (bun tools/visual/src/probes.ts contexts/datetimepicker) after a fix; check how Slack's calendar is reached by keyboard (Tab into the grid?) with a probe.",
+    components: ["datetimepicker", "datepicker"],
+  },
+  {
+    id: "builder-contact-card",
+    title: "Block Kit Builder doesn't reliably draw a contact card for a placeholder user",
+    evidence: [
+      "catalog/callout/callout: the references of 7 and 8 October draw its contact_card (U0123456789, shown as an unknown member); @mobile (7 October) and @focus-menu-1 (12 October) have none, 35px shorter. extra/fidelity/contact-card/mixed (12 October) draws one of its two cards.",
+      "Light desktop retry: callout@hover-contact-1 and @poke-contact-1 found no contact card within 5 s of the preview settling.",
+    ],
+    suspect: [
+      "Not a harness or package bug: the Builder looks the user up, and a user outside the workspace renders only sometimes. A real member would render but put private data in the capture.",
+    ],
+    next: "Plan no real input on contact cards (plan.ts NOT_DRAWN; the callout@poke-contact-1 probe is gone). If a capture is wanted, find a redaction-safe way to show a card, then drop NOT_DRAWN.",
+    components: ["contact_card"],
+    status: "verified",
   },
   {
     id: "select-space-picks-while-typing",

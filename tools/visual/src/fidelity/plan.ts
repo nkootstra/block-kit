@@ -461,6 +461,22 @@ export function openSteps(payload: unknown, address: string): Step[] {
   return [{ click: address }];
 }
 
+/**
+ * Kinds Block Kit Builder doesn't reliably draw for a fixture's placeholder IDs, so real input on
+ * them can't be captured: a contact card for a user outside the workspace (U0123456789) rendered
+ * in some captures and not in others (catalog/callout/callout has it on 7 and 8 October, not in
+ * @focus-menu-1 on 12 October; extra/fidelity/contact-card/mixed shows one of its two), and a
+ * live run found none within 5 s. Fidelity finding builder-contact-card.
+ */
+export const NOT_DRAWN = new Set<string>(["contact"]);
+
+/**
+ * The control a person sees at rest in place of `address`: a carousel's left arrow (arrow-1) is
+ * drawn hidden (opacity 0 in Slack, disabled in ours) until the carousel has scrolled, so its
+ * right arrow (arrow-2) is the one to hover, focus or click.
+ */
+export const shownAtRest = (address: string) => (address === "arrow-1" ? "arrow-2" : address);
+
 /** The click that makes a control exist (a collapsed plan's or task card's pill), if it needs one. */
 export function revealSteps(payload: unknown, address: string): Step[] {
   const pill = revealedBy(payload, address);
@@ -594,6 +610,7 @@ function candidates(
         }).filter(
           (a) =>
             !revealedBy(f.payload, a) &&
+            !NOT_DRAWN.has(parseTarget(a)!.kind) &&
             !(state === "focus-visible" && UNFOCUSABLE.includes(parseTarget(a)!.kind)),
         );
         if (addresses.length === 0) continue;
@@ -605,7 +622,7 @@ function candidates(
           out.push({
             fixture,
             kind: state === "hover" ? "hover" : "focus",
-            interaction: `${state === "hover" ? "hover" : "focus"}-${addresses[0]}`,
+            interaction: `${state === "hover" ? "hover" : "focus"}-${shownAtRest(addresses[0]!)}`,
           });
       }
     else if (state === "validation-error")
@@ -670,12 +687,14 @@ function candidates(
 function unplannedReason(cell: Cell): string {
   const capability = cell.capture!.capability;
   const state = String(cell.state);
+  if (capability === "real-input" && cell.component === "contact_card")
+    return `${state} of a contact card, which Block Kit Builder doesn't reliably draw for a placeholder user (NOT_DRAWN)`;
   if (
     capability === "real-input" &&
     state === "focus-visible" &&
-    cell.component === "message-header"
+    (cell.component === "message-header" || cell.component === "card")
   )
-    return "focus-visible styles of the message header, which the Builder draws as plain text (targets.ts UNFOCUSABLE)";
+    return `focus-visible styles of the ${cell.component}, which takes no focus itself in the Builder (targets.ts UNFOCUSABLE)`;
   if (capability === "real-input")
     return cell.fact === "styles"
       ? `${state} styles of something that isn't a control address (targets.ts kinds)`
@@ -1212,9 +1231,11 @@ function behaviourProbes(
     );
     for (const [fixture, f] of fixtures) {
       const addresses = addressesOf(f.payload, id, components);
-      const address =
+      const first =
         addresses.find((a) => !UNVERIFIED.includes(parseTarget(a)!.kind)) ?? addresses[0];
-      if (!address) continue;
+      if (!first) continue;
+      const address = shownAtRest(first);
+      if (NOT_DRAWN.has(parseTarget(address)!.kind)) continue;
       const kind = parseTarget(address)!.kind;
       const counted = controlComponents(f.payload);
       const opener = (["field", "overflow", "menu"] as const).find(

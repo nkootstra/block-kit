@@ -314,6 +314,50 @@ describe("probes on controls Slack draws only after a click", () => {
     expect(hover.covers).toContain("url_source hover");
   });
 
+  it("hovers and pokes a carousel's right arrow, the one shown before it scrolls", () => {
+    const card = (n: number) => ({ type: "card", title: plain(`Card ${n}`) });
+    const carousel = { blocks: [{ type: "carousel", elements: [1, 2, 3, 4].map(card) }] };
+    const c = pick("carousel");
+    const payloads = new Map<string, unknown>([["catalog/carousel", carousel]]);
+    const result = capturePlan(
+      buildInventory(c, sources(payloads, ["catalog/carousel"])),
+      c,
+      payloads,
+      new Set(["catalog/carousel"]),
+    );
+    const names = [
+      ...result.sessions.flatMap((s) => [...s.automatic, ...s.realInput]).map((i) => i.name),
+      ...result.probeProposals.map((p) => p.name),
+    ].filter((n) => n.includes("arrow-"));
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.every((n) => n.includes("arrow-2"))).toBe(true);
+  });
+
+  it("plans no real input on a contact card, which the Builder doesn't reliably draw", () => {
+    const callout = {
+      blocks: [
+        {
+          type: "callout",
+          child_blocks: [{ type: "contact_card", contact_user_id: "U0123456789" }],
+        },
+      ],
+    };
+    const c = pick("contact_card");
+    const payloads = new Map<string, unknown>([["catalog/callout", callout]]);
+    const result = capturePlan(
+      buildInventory(c, sources(payloads, ["catalog/callout"])),
+      c,
+      payloads,
+      new Set(["catalog/callout"]),
+    );
+    const names = [
+      ...result.sessions.flatMap((s) => [...s.automatic, ...s.realInput]).map((i) => i.name),
+      ...result.probeProposals.map((p) => p.name),
+    ];
+    expect(names.filter((n) => n.includes("contact-"))).toEqual([]);
+    expect(result.unplanned.some((u) => u.reason.includes("contact card"))).toBe(true);
+  });
+
   it("plans no keyboard focus on the message header, which the Builder draws as plain text", () => {
     const c = pick("message-header");
     const payloads = new Map<string, unknown>([["catalog/select", select]]);

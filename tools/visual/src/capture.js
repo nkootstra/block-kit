@@ -708,7 +708,6 @@ async ({
       chain.push(a);
     return chain;
   };
-  const hovers = (el) => hoverChain(el).some((c) => c.matches(":hover"));
   // Whether a press counts as the click an instruction asked for on `el`: it went through the
   // control, a wrapper drawing its box, or the select or picker field around it (Slack draws a
   // time picker's value as an overlay beside its input, the chevron beside that, a date picker's
@@ -717,6 +716,9 @@ async ({
   // it, so the control under it never sees it, is Slack's behaviour, and the probe records it.
   const FIELD_BOX = ".c-select_input__wrapper, .c-date_picker__select_container";
   const clickArea = (el) => [...hoverChain(el), el.closest?.(FIELD_BOX)].filter(Boolean);
+  // A time picker's matched input sits under its value overlay (and the chevron beside it), so the
+  // control counts as hovered, and the pointer as moved onto it, anywhere in the field.
+  const hovers = (el) => clickArea(el).some((c) => c.matches(":hover"));
   const pressed = (since, el, box) => {
     const area = clickArea(el);
     return trusted
@@ -747,7 +749,7 @@ async ({
   const movedOnto = (el, since) =>
     !!lastMove &&
     lastMove.at >= since &&
-    hoverChain(el).some((c) => c === lastMove.target || c.contains(lastMove.target));
+    clickArea(el).some((c) => c === lastMove.target || c.contains(lastMove.target));
   const ask = async (name, instruction, done) => {
     win.sbkCaptureReady = false;
     // A number per instruction, so a driver can wait for the next one (sbkAwaitInstruction).
@@ -778,7 +780,18 @@ async ({
     // (anywhere) when it doesn't, then focus the control again. The pointer must be off it, or the
     // snapshot shows hover and focus together.
     if (hovers(el)) await ask(name, { do: "move-away", target: address }, () => !hovers(el));
-    focusable(el).focus({ preventScroll: true });
+    // A container that takes no focus itself (a card) would hand it to its first control (a
+    // button of the card's): that's a capture of the button, not of the container.
+    const kind = address.split("-")[0];
+    const part = focusable(el);
+    const other =
+      part !== el &&
+      allControls(preview()).find((c) => c.el === part && !c.address.startsWith(`${kind}-`));
+    if (other)
+      throw new Error(
+        `${name}: ${address} can't take focus itself in the Builder; the focus would go to ${other.address}`,
+      );
+    part.focus({ preventScroll: true });
     // Block Kit Builder draws some controls as plain text (the message header's app name and
     // time are spans): no Tab makes them focused, so say so rather than ask for one.
     if (!el.contains(doc.activeElement))
