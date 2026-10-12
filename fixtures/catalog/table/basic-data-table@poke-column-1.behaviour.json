@@ -1,0 +1,161 @@
+{
+  "steps": [
+    {
+      "hover": "column-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "column-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "Sort Ascending Descending",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "Sort Ascending Descending",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "column-1",
+        "role": "button",
+        "name": "Name",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    }
+  ]
+}

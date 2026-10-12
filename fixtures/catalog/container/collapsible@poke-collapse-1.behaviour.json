@@ -1,0 +1,113 @@
+{
+  "steps": [
+    {
+      "hover": "collapse-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "collapse-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "collapse-1": {
+          "expanded": "true"
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "collapse-1": {
+          "expanded": "true"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "collapse-1": {
+          "expanded": "true"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "collapse-1",
+        "role": "button",
+        "name": "Collapsible Container (Expanded)",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "collapse-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "collapse-1",
+        "role": "button",
+        "name": "Collapsible Container (Expanded)",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "collapse-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "collapse-1",
+        "role": "button",
+        "name": "Collapsible Container (Expanded)",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "collapse-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    }
+  ]
+}
