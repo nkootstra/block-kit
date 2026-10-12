@@ -1,0 +1,105 @@
+{
+  "steps": [
+    {
+      "click": "input-2"
+    },
+    {
+      "type": "https://example.com"
+    },
+    {
+      "key": "Enter"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        },
+        "input-3": {
+          "value": ""
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "input-2",
+        "role": "textbox",
+        "name": "Site",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        },
+        "input-3": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "input-2",
+        "role": "textbox",
+        "name": "Site",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": "https://example.com"
+        },
+        "input-3": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "input-2",
+        "role": "textbox",
+        "name": "Site",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": "https://example.com"
+        },
+        "input-3": {
+          "value": ""
+        }
+      },
+      "action": null
+    }
+  ]
+}
