@@ -273,7 +273,8 @@ export const FINDINGS: Finding[] = [
       "Our users, conversations and channels selects send their placeholder and not their initial value; Slack's do the opposite",
     evidence: [
       'extra/actions/more-elements@pick, contexts/{users,conversations,channels}_select/actions@pick and extra/fidelity/channels-select/long-content@pick: Slack\'s action has no placeholder; ours echoes it (e.g. {"type":"plain_text","text":"Pick a channel","emoji":true}). Slack\'s static_select and multi_static_select actions do carry it (catalog/actions/all-selects@pick, extra/payloads/selects@pick-multi).',
-      "catalog/actions/selects-with-initial-options@pick: Slack's channels_select action echoes initial_channel \"C12345678\"; ours leaves it out (Select.tsx echoes only a static select's initial_option).",
+      'catalog/actions/selects-with-initial-options@pick: Slack\'s channels_select action echoes initial_channel "C12345678"; ours leaves it out (Select.tsx echoes only a static select\'s initial_option). extra/fidelity/users-select/long-content@pick (dark desktop session) shows the same for a users_select\'s initial_user "U12345678".',
+      "extra/fidelity/confirm/long-content@pick and users-select/long-content@pick add two more placeholders Slack doesn't send.",
       "All listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
     ],
     suspect: [
@@ -305,7 +306,7 @@ export const FINDINGS: Finding[] = [
     title:
       "Block Kit Builder sends block_actions from an input block's element without dispatch_action",
     evidence: [
-      'catalog/input/radio-buttons@pick and catalog/container/data-entry-form@pick (light desktop retry): picking a radio or a static select option in an input block without dispatch_action made Actions Preview show a block_actions payload (selected "*plain_text option 1*", "High").',
+      'catalog/input/radio-buttons@pick and catalog/container/data-entry-form@pick (light desktop retry), catalog/input/static-select@pick (dark desktop session): picking a radio or a static select option in an input block without dispatch_action made Actions Preview show a block_actions payload (selected "*plain_text option 1*", "High").',
       "Ours sends nothing there, on purpose: Slack's docs say an input block's element dispatches only with dispatch_action (context.tsx, blocks/Input.tsx). Listed in actionPayloads.test.tsx KNOWN_UNSENT.",
     ],
     suspect: [

@@ -188,6 +188,32 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     fireEvent.click(screen.getByRole("combobox", { name: /^This sentence is here/ }));
     await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
   },
+  // ArrowDown from 1:37 PM, which isn't a list entry, then Enter.
+  "catalog/actions/timepicker@pick": async () => {
+    const field = screen.getByDisplayValue("1:37 PM");
+    field.focus();
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+  },
+  "catalog/input/static-select@pick": async () => {
+    fireEvent.click(screen.getByText("--Select an item--"));
+    await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
+  },
+  "catalog/section/radio-buttons@pick": () =>
+    clickAsync(screen.getByRole("radio", { name: "*plain_text option 1*" })),
+  // The long first checkbox; SMS is checked from the start.
+  "extra/fidelity/checkboxes/long-content@pick": () =>
+    clickAsync(screen.getAllByRole("checkbox")[0]!),
+  "extra/fidelity/confirm/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Pick a channel" }));
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
+  // Slackbot, redacted to U0000001 (PROVIDER), in the users select.
+  "extra/fidelity/users-select/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: /^This sentence is here/ }));
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
@@ -390,6 +416,13 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "contexts/channels_select/actions@pick": { resolvers: workspace },
   "extra/actions/more-elements@pick": { resolvers: workspace },
   "extra/fidelity/channels-select/long-content@pick": { resolvers: workspace },
+  "extra/fidelity/confirm/long-content@pick": { resolvers: workspace },
+  "extra/fidelity/users-select/long-content@pick": {
+    resolvers: {
+      directory: (source) =>
+        source === "users" ? [{ type: "user", id: "U0000001", name: "Slackbot" }] : [],
+    },
+  },
   "catalog/actions/selects-with-initial-options@pick": {
     resolvers: {
       directory: (source) =>
@@ -425,6 +458,13 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   "catalog/actions/selects-with-initial-options@pick": [
     'actions.0.initial_channel: Slack "C12345678", ours missing',
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
+  ],
+  "extra/fidelity/confirm/long-content@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
+  ],
+  "extra/fidelity/users-select/long-content@pick": [
+    'actions.0.initial_user: Slack "U12345678", ours missing',
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
   ],
   "contexts/channels_select/actions@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
@@ -482,6 +522,7 @@ const KNOWN_UNSENT: Record<string, string> = {
   // input-block-dispatch).
   "catalog/input/radio-buttons@pick": "an input block without dispatch_action sends nothing",
   "catalog/container/data-entry-form@pick": "an input block without dispatch_action sends nothing",
+  "catalog/input/static-select@pick": "an input block without dispatch_action sends nothing",
 };
 
 interface Recording {
