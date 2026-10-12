@@ -2,7 +2,7 @@
   "blocks": [
     {
       "type": "input",
-      "block_id": "colours",
+      "block_id": "colours--multi-static-select-mixed",
       "dispatch_action": true,
       "label": {
         "type": "plain_text",
@@ -10,7 +10,7 @@
       },
       "element": {
         "type": "multi_static_select",
-        "action_id": "multi",
+        "action_id": "multi--multi-static-select-mixed",
         "placeholder": {
           "type": "plain_text",
           "text": "Pick some"

@@ -57,6 +57,7 @@ async ({
   allowUrls = false,
   reset = false,
   stateStyles = true,
+  chipTimeout = 30_000,
   settle = 1000,
   timeout = 120_000,
   viewport = 1440,
@@ -813,6 +814,90 @@ async ({
   // What this call captured, and everything since the page loaded or `sbkCaptureReset()`, for a
   // runner that calls this once per item and copies the output at the end. Starting over is a
   // call of its own, so a runner can't drop what it captured by passing an option every time.
+  // Block Kit Builder keeps an element's state across payloads (keyed by block and action id): a
+  // multi-select's chosen "Red" stayed in every later payload with the same ids, even one whose
+  // options don't have it. So before a payload with interactive elements the preview is first
+  // given a neutral payload of the same surface, which unmounts every element, and after loading,
+  // what the preview shows is checked against what the payload sets: chips, input values, checked
+  // boxes. A difference is retried once through the neutral payload, then the run stops.
+  const NEUTRAL = {
+    message: { blocks: [{ type: "divider" }] },
+    modal: {
+      type: "modal",
+      title: { type: "plain_text", text: "Reset" },
+      blocks: [{ type: "divider" }],
+    },
+    home: { type: "home", blocks: [{ type: "divider" }] },
+  };
+  const surfaceOf = (payload) =>
+    payload?.type === "modal" ? "modal" : payload?.type === "home" ? "home" : "message";
+  const elementsOf = (value, out = [], key) => {
+    if (Array.isArray(value)) for (const v of value) elementsOf(v, out, key);
+    else if (value && typeof value === "object") {
+      if (typeof value.type === "string" && typeof value.action_id === "string")
+        out.push(key === "accessory" ? { ...value, accessory: true } : value);
+      for (const [k, v] of Object.entries(value))
+        if (v && typeof v === "object") elementsOf(v, out, k);
+    }
+    return out;
+  };
+  const TEXT_INPUTS = /^(plain_text_input|number_input|email_text_input|url_text_input)$/;
+  const INITIAL = ["initial_options", "initial_users", "initial_conversations", "initial_channels"];
+  /** What the preview shows that its payload doesn't set, as "chips: 1, expected 0". */
+  const foreignState = (payload) => {
+    const els = elementsOf(payload);
+    const root = preview();
+    if (!root) return [];
+    const out = [];
+    // A section accessory's multi-select is a button that counts its choices; it shows no chips.
+    const chips = els
+      .filter((e) => e.type.startsWith("multi_") && !e.accessory)
+      .reduce((n, e) => n + INITIAL.reduce((m, f) => m + (e[f]?.length ?? 0), 0), 0);
+    const shownChips = root.querySelectorAll(".c-token").length;
+    if (shownChips !== chips) out.push(`chips: ${shownChips}, expected ${chips}`);
+    const values = els
+      .filter((e) => TEXT_INPUTS.test(e.type))
+      .map((e) => `${e.initial_value ?? ""}`);
+    const shownValues = controls(root, "input").map((el) => el.value ?? "");
+    if (shownValues.length === values.length)
+      shownValues.forEach((v, i) => {
+        if (v !== values[i]) out.push(`input-${i + 1}: "${v}", expected "${values[i]}"`);
+      });
+    const checked = els
+      .filter((e) => e.type === "checkboxes")
+      .reduce((n, e) => n + (e.initial_options?.length ?? 0), 0);
+    const shownChecked = controls(root, "checkbox").filter((el) => el.checked).length;
+    if (shownChecked !== checked) out.push(`checked boxes: ${shownChecked}, expected ${checked}`);
+    const radios = els.filter((e) => e.type === "radio_buttons" && e.initial_option).length;
+    const shownRadios = controls(root, "radio").filter((el) => el.checked).length;
+    if (shownRadios !== radios) out.push(`checked radios: ${shownRadios}, expected ${radios}`);
+    return out;
+  };
+
+  // What was captured survives a reload of the Builder: it's kept in this origin's IndexedDB as
+  // well as on the window, and a call after a reload picks it up again.
+  const idb = () =>
+    new Promise((resolve, reject) => {
+      const request = win.indexedDB.open("sbk-capture", 1);
+      request.onupgradeneeded = () => request.result.createObjectStore("output");
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  const stored = async (value) => {
+    try {
+      const db = await idb();
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction("output", value === undefined ? "readonly" : "readwrite");
+        const store = tx.objectStore("output");
+        const request = value === undefined ? store.get("output") : store.put(value, "output");
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    } catch {
+      return undefined; // No IndexedDB (a private window): the window's copy is all there is.
+    }
+  };
+
   // Which of the payload's buttons, in document order (as `button-<n>` counts them), have a url.
   const buttonsWithUrls = (value, out = []) => {
     if (Array.isArray(value)) for (const v of value) buttonsWithUrls(v, out);
@@ -829,8 +914,13 @@ async ({
     throw new Error("capture.js no longer takes reset: true; call window.sbkCaptureReset() first");
   win.sbkCaptureReset = () => {
     win.sbkCaptureOutput = { references: {}, actions: {}, behaviour: {} };
+    stored(win.sbkCaptureOutput);
   };
-  if (!win.sbkCaptureOutput) win.sbkCaptureReset();
+  if (!win.sbkCaptureOutput) {
+    const kept = await stored();
+    if (kept?.references) win.sbkCaptureOutput = kept;
+    else win.sbkCaptureReset();
+  }
   const recorded = win.sbkCaptureOutput;
   // The clipboard has turned non-ASCII into "?" before; this JSON is pure ASCII.
   win.sbkCaptureJson = () =>
@@ -864,6 +954,14 @@ async ({
         throw new Error(`${name}: the Builder previews ${desktopOnly} only at desktop width`);
       // Load first: it switches the surface, and App Home and modals disable the size menu, so a
       // mobile message right after a modal couldn't set its width the other way round.
+      const stateful = elementsOf(payload).length > 0;
+      const neutral = async () => {
+        await builder.load(NEUTRAL[surfaceOf(payload)]);
+        if (!adapter) await settled(preview()?.innerHTML ?? "");
+      };
+      // A payload with interactive elements starts from a clean preview, also the first after a
+      // load: the Builder's own sample payload uses the same action ids as its catalog's.
+      if (stateful) await neutral();
       await builder.load(swap(payload));
       if (builder.previewSize() !== size) await builder.setPreviewSize(size);
       if (builder.previewSize() !== size)
@@ -882,6 +980,17 @@ async ({
           throw new Error(`${name}: the Builder kept showing the previous payload`);
       }
       previousPayload = JSON.stringify(payload);
+      if (stateful && foreignState(payload).length > 0) {
+        await neutral();
+        await builder.load(swap(payload));
+        if (!adapter) await settled(undefined);
+        const foreign = foreignState(payload);
+        if (foreign.length > 0)
+          throw new Error(
+            `${name}: the Builder kept state from an earlier item (${foreign.join("; ")}); ` +
+              "reload the Builder (what was captured is kept), paste the scripts again and resume",
+          );
+      }
 
       const input = /^(hover|focus)-(.*)$/.exec(want.interaction ?? "");
       const actionKey = name.replace(/\+(mobile|full|dark)/g, "");
@@ -966,6 +1075,31 @@ async ({
         const opener = preview()?.querySelector(OPENERS[want.interaction]);
         if (opener) press(opener);
         await sleep(Math.min(600, settle || 1));
+        // A multi-select showing chips didn't open on a click or ArrowDown in the Builder. Ask for
+        // a click past the chips, at the field's empty end, then a typed letter; give up quickly.
+        const field = opener && controls(preview(), "field").find((f) => f.contains(opener));
+        if (!opened(want.interaction) && field?.querySelector(".c-token")) {
+          const { box, y } = center(field);
+          const since = performance.now();
+          await ask(
+            name,
+            {
+              do: "click",
+              target: "field-1",
+              x: box.x + box.width - 12,
+              y,
+              box,
+              fallback: "if the list doesn't open, type one letter",
+            },
+            () => opened(want.interaction) || performance.now() - since > chipTimeout,
+          );
+          if (!opened(want.interaction))
+            throw new Error(
+              `${name}: the multi-select shows chips and the Builder doesn't open its list (not on ` +
+                "a scripted press, a click past the chips or a typed letter); capture its @open " +
+                "from a payload without initial options",
+            );
+        }
         if (!opened(want.interaction)) {
           win.sbkCaptureReady = false;
           win.sbkCaptureWaiting = name;
@@ -983,6 +1117,7 @@ async ({
       }
       if (probe && !probe.snapshot) {
         await dismissAll();
+        await stored(recorded);
         continue;
       }
       await freezeAs(name, { want, held, holds });
@@ -990,6 +1125,7 @@ async ({
 
       if (want.interaction) await dismissAll();
       if (input?.[1] === "focus") doc.activeElement?.blur?.();
+      await stored(recorded);
     }
   } catch (error) {
     failed = true;

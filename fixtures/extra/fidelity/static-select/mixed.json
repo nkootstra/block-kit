@@ -2,11 +2,11 @@
   "blocks": [
     {
       "type": "actions",
-      "block_id": "selects",
+      "block_id": "selects--static-select-mixed",
       "elements": [
         {
           "type": "static_select",
-          "action_id": "single",
+          "action_id": "single--static-select-mixed",
           "placeholder": {
             "type": "plain_text",
             "text": "Pick one"

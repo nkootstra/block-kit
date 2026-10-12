@@ -260,30 +260,49 @@ to the preview):
    snapshots, and closes what it opened. When a scripted click doesn't open a control, or the
    interaction is fixture-specific, it waits: `window.sbkCaptureWaiting` names the item. Perform it
    with a real click and set `window.sbkCaptureReady = true`.
-   The preview must be at its full width (a message 512px, 400px in Mobile): use a 1440px window
-   and the Builder's default split. The Builder remembers the split in `localStorage` `bkb_layout`;
-   with a narrow code pane (`codePaneRatio` 0.32) a desktop message was 660px wide, which `capture.js`
-   refuses. Reset it with `localStorage.setItem("bkb_layout", JSON.stringify({ codePaneRatio: 0.5 }))`
-   and reload.
-   Keep the Builder tab visible: macOS pauses a hidden tab and the preview never settles. When the
-   run is done, switch the Builder back to light.
-   Paste the scripts into a freshly loaded Builder. Late in a long session the Builder can load a
-   stylesheet that repeats rules it already has, which reorders the cascade (it once shifted every
-   datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
-   keeps every rule a later sheet repeats as a suspect. A repeat only matters where it changes a
-   style, and rendering a chart on a fresh load brings a sheet that repeats hundreds of the message
-   chrome's rules, so before and after each snapshot (also for `+full`) the suspects that match an
-   element in the preview or an open layer are taken out for a moment, and the properties they set
-   are read on those elements without them and with them, transitions off. The capture stops only
-   where a value differs, naming the first changes (`selector { property: fresh -> now }`), and
-   keeps stopping until the Builder is reloaded: reload, paste the scripts again and resume from
-   the item it names. A repeated rule for a pseudo-element (`::before`) isn't checked.
-   A fixture that needs a real workspace file (`slack_file`) carries the placeholder file URL
-   (`https://files.slack.com/files-pri/T0000001-F0000001/file`). Map it to the file's link in
-   `tools/visual/capture.local.json` (`{ "<placeholder>": "<link>" }`, ignored by git) and pass
-   that object as `substitute`: only the Builder sees the link, and `import.ts` redacts it again.
-   The comparison serves `fixtures/assets/slack-file.png`, a copy of that file, for the placeholder
-   to both sides.
+   Block Kit Builder keeps an element's state across payloads, by block and action id: a
+   multi-select's chosen "Red" stayed in every later payload with the same ids, even one whose
+   options don't have it. So `capture.js` first loads a neutral payload of the item's surface (one
+   divider), which unmounts every element, before any payload with interactive elements, and after
+   loading checks what the preview shows against what the payload sets: multi-select chips, text
+   input values, checked boxes and radios. A difference is retried once through the neutral payload;
+   then the run stops: reload the Builder and resume. What was captured is kept: besides
+   `window.sbkCaptureOutput` it's stored in the page's IndexedDB (`sbk-capture`) after every item, and
+   the first call after a reload picks it up again (`sbkCaptureReset()` clears both).
+   `references:check` fails on a reference that shows chips or input values its payload doesn't set
+   (`stale.ts` `foreignState`), for the rest state and the generic states (`@open`, `@confirm`,
+   `@dialog`, held input, `@scrolled-end`); a section accessory's multi-select counts its choices on a
+   button and shows no chips.
+
+A multi-select that shows chips didn't open its list in the Builder, not on a scripted press, a
+click or ArrowDown. `@open` on one asks for a click past the chips (at the field's empty end), then
+a typed letter, and stops after 30 seconds (`chipTimeout`) with a message to capture its `@open`
+from a payload without initial options.
+
+The preview must be at its full width (a message 512px, 400px in Mobile): use a 1440px window
+and the Builder's default split. The Builder remembers the split in `localStorage` `bkb_layout`;
+with a narrow code pane (`codePaneRatio` 0.32) a desktop message was 660px wide, which `capture.js`
+refuses. Reset it with `localStorage.setItem("bkb_layout", JSON.stringify({ codePaneRatio: 0.5 }))`
+and reload.
+Keep the Builder tab visible: macOS pauses a hidden tab and the preview never settles. When the
+run is done, switch the Builder back to light.
+Paste the scripts into a freshly loaded Builder. Late in a long session the Builder can load a
+stylesheet that repeats rules it already has, which reorders the cascade (it once shifted every
+datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
+keeps every rule a later sheet repeats as a suspect. A repeat only matters where it changes a
+style, and rendering a chart on a fresh load brings a sheet that repeats hundreds of the message
+chrome's rules, so before and after each snapshot (also for `+full`) the suspects that match an
+element in the preview or an open layer are taken out for a moment, and the properties they set
+are read on those elements without them and with them, transitions off. The capture stops only
+where a value differs, naming the first changes (`selector { property: fresh -> now }`), and
+keeps stopping until the Builder is reloaded: reload, paste the scripts again and resume from
+the item it names. A repeated rule for a pseudo-element (`::before`) isn't checked.
+A fixture that needs a real workspace file (`slack_file`) carries the placeholder file URL
+(`https://files.slack.com/files-pri/T0000001-F0000001/file`). Map it to the file's link in
+`tools/visual/capture.local.json` (`{ "<placeholder>": "<link>" }`, ignored by git) and pass
+that object as `substitute`: only the Builder sees the link, and `import.ts` redacts it again.
+The comparison serves `fixtures/assets/slack-file.png`, a copy of that file, for the placeholder
+to both sides.
 
 3. Copy the resulting `refs` JSON and write it to `fixtures/` with
    `pbpaste | bun tools/visual/src/import.ts`, or pass `download: "<session>"` and import the file

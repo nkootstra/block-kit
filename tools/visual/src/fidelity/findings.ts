@@ -48,12 +48,14 @@ export const FINDINGS: Finding[] = [
   },
   {
     id: "icon-button-icons",
-    title: "Icon buttons know ten icon names",
+    title: "Icon buttons: Slack offers only trash; ours draws ten names",
     evidence: [
-      "IconButton.tsx maps about ten of Slack's icon names to glyphs; any other falls back to a kebab glyph, while Slack's icon set is far larger (the Slack icon object alone documents about 55 names).",
+      "The icon button reference says trash is the only icon available, and Block Kit Builder refused extra/fidelity/icon-button/mixed for its calendar and link icons. IconButton.tsx maps about ten names and falls back to a kebab glyph; only trash is a Slack fact. The Slack icon object (cards) is a separate set of about 55 names.",
     ],
-    suspect: ["packages/block-kit/src/elements/IconButton.tsx, the ICONS map."],
-    next: "Capture extra/fidelity/icon-button/mixed and the slack-icon fixtures to see the glyphs Slack uses.",
+    suspect: [
+      "packages/block-kit/src/elements/IconButton.tsx, the ICONS map: the names beyond trash aren't Slack's.",
+    ],
+    next: "Capture extra/fidelity/icon-button/mixed (now two trash buttons, one with a confirm) and the slack-icon fixtures.",
     components: ["icon_button", "slack_icon"],
   },
   {
@@ -236,5 +238,31 @@ export const FINDINGS: Finding[] = [
     ],
     next: "Compare message/mrkdwn and @hover-link-1 side by side (bun tools/visual/src/inspect.ts) to see what grows by 22px.",
     components: ["rich_text.link", "text_object"],
+  },
+  {
+    id: "accessory-multi-select-count",
+    title: 'Slack labels an accessory multi-select holding a value "1 selected" (to compare)',
+    evidence: [
+      'Light desktop chunks: a section accessory multi-select with an initial value shows a "1 selected" button, not a chip.',
+    ],
+    suspect: [
+      "packages/block-kit/src/elements/Select.tsx and SelectDialog.tsx: the accessory button's label before the dialog opens (the interaction test checks the count after Confirm).",
+    ],
+    next: "Compare extra/fidelity/multi-conversations-select/initial-value and the contexts accessory references with ours.",
+    components: ["select-dialog", "multi_static_select"],
+  },
+  {
+    id: "builder-carries-element-state",
+    title:
+      "Block Kit Builder keeps an element's state across payloads with the same block and action IDs",
+    evidence: [
+      'Light desktop chunks: a value from one payload (the "Red" chip of extra/fidelity/multi-static-select/initial-value, a radio choice, a placeholder) showed in the next payloads with the same block_id and action_id. Contaminated references were dropped: multi-static-select/many-items and /mixed, radio-buttons/mixed, multi-users-select/initial-value.',
+    ],
+    suspect: [
+      "Not a package bug: a capture hazard. The fidelity fixtures without a reference now carry unique block and action IDs; fixtures that share IDs and already have references (contexts, catalog) can still carry state into each other.",
+    ],
+    next: "The harness could load an empty payload between items, or check each reference's selected values against its payload.",
+    components: ["multi_static_select", "radio_buttons"],
+    status: "verified",
   },
 ];

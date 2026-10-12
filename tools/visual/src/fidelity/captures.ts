@@ -93,7 +93,7 @@ export function controlComponents(payload: unknown): Partial<Record<Kind, string
     if (type === "plan" || type === "task_card") push("pill", type);
     if (type === "url" && key === "sources") push("source", "url_source");
     // A multi-select's chips: one per initial option, user, conversation or channel.
-    if (type.startsWith("multi_"))
+    if (type.startsWith("multi_") && key !== "accessory")
       for (const field of [
         "initial_options",
         "initial_users",

@@ -15,14 +15,14 @@
   "blocks": [
     {
       "type": "input",
-      "block_id": "summary",
+      "block_id": "summary--rich-text-input-initial-value",
       "label": {
         "type": "plain_text",
         "text": "Summary"
       },
       "element": {
         "type": "rich_text_input",
-        "action_id": "summary_input",
+        "action_id": "summary_input--rich-text-input-initial-value",
         "placeholder": {
           "type": "plain_text",
           "text": "Write something"

@@ -5,7 +5,7 @@
       "elements": [
         {
           "type": "workflow_button",
-          "action_id": "run_primary",
+          "action_id": "run_primary--workflow-button-mixed",
           "style": "primary",
           "text": {
             "type": "plain_text",
@@ -20,7 +20,7 @@
         },
         {
           "type": "workflow_button",
-          "action_id": "run_danger",
+          "action_id": "run_danger--workflow-button-mixed",
           "style": "danger",
           "text": {
             "type": "plain_text",

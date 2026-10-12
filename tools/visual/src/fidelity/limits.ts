@@ -312,6 +312,28 @@ export const LIMITS: Limit[] = [
       o === root && o.type !== "modal" ? more(o.blocks, o.type === "home" ? 100 : 50) : undefined,
   },
   {
+    id: "unique-action-ids",
+    rule: "Action IDs are unique within their block",
+    docs: "block-elements/button-element",
+    refused: ["extra/fidelity/actions/many-items"],
+    check: (o, key) => {
+      if (!BLOCK_KEYS.has(key) || !Array.isArray(o.elements)) return undefined;
+      const ids = (o.elements as Obj[])
+        .map((e) => e.action_id)
+        .filter((id) => typeof id === "string");
+      const repeat = ids.find((id, i) => ids.indexOf(id) !== i);
+      return repeat ? `action_id "${String(repeat)}" repeats` : undefined;
+    },
+  },
+  {
+    id: "icon-button-icon",
+    rule: "An icon button's icon is trash, the only one available",
+    docs: "block-elements/icon-button-element",
+    refused: ["extra/fidelity/icon-button/mixed"],
+    check: (o) =>
+      o.type === "icon_button" && o.icon !== "trash" ? `icon "${String(o.icon)}"` : undefined,
+  },
+  {
     id: "unique-block-ids",
     rule: "Block IDs are unique within a payload",
     docs: "blocks",

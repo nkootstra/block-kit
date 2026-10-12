@@ -163,6 +163,8 @@ export interface CapturePlan {
   sessions: Session[];
   /** Items whose fixture shows a real workspace file: only the maintainer can capture them. */
   maintainer: PlanItem[];
+  /** Items left out because Block Kit Builder can't capture their fixture (NOT_CAPTURABLE). */
+  skipped: { name: string; reason: string }[];
   proposals: Proposal[];
   /** Probe specs no fixture has yet, for behaviour cells no probe reaches: write them, then re-plan. */
   probeProposals: ProbeProposal[];
@@ -182,6 +184,18 @@ export interface CapturePlan {
     proposals: number;
   };
 }
+
+/**
+ * Fixtures Block Kit Builder can't capture usefully: nothing of them goes in a session.
+ */
+export const NOT_CAPTURABLE: Record<string, string> = {
+  "extra/fidelity/message-attachments/mixed":
+    'Block Kit Builder shows "This content could not be displayed." for a legacy attachment\'s fields',
+  "extra/fidelity/workflow-button/mixed":
+    "Block Kit Builder refuses a workflow_button whose trigger isn't a real workflow's",
+  "extra/actions/workflow-button.unverified":
+    "Block Kit Builder refuses a workflow_button whose trigger isn't a real workflow's",
+};
 
 /** The placeholder a fixture names a real workspace file by (samples.ts, capture.local.json). */
 const FILE_PLACEHOLDER = "files.slack.com/files-pri/T0000001-F0000001";
@@ -414,6 +428,28 @@ export function forecastFocus(
   return undefined;
 }
 
+/**
+ * Whether the payload's first control that opens is a multi-select already holding a value: in
+ * Block Kit Builder a click or ArrowDown on one with a chip doesn't open its list (light desktop
+ * chunks, pending the harness's answer).
+ */
+function openerHasChips(payload: unknown): boolean {
+  for (const [o] of objects(payload))
+    if (
+      typeof o.type === "string" &&
+      /^(multi_)?(static|external|users|conversations|channels)_select$|^(datepicker|timepicker|datetimepicker|overflow)$/.test(
+        o.type,
+      )
+    )
+      return (
+        o.type.startsWith("multi_") &&
+        Object.keys(o).some(
+          (k) => k.startsWith("initial_") && Array.isArray(o[k]) && (o[k] as unknown[]).length > 0,
+        )
+      );
+  return false;
+}
+
 /** Plain-reference states (a, today's flow). */
 function referenceCandidates(cell: Cell, component: Component, fixtures: Where): Candidate[] {
   const out: Candidate[] = [];
@@ -438,7 +474,7 @@ function referenceCandidates(cell: Cell, component: Component, fixtures: Where):
           out.push({ fixture, kind: "dialog", interaction: "dialog" });
       } else if (component.id === "option_group") {
         if (firstOpener(f.payload)) out.push({ fixture, kind: "open", interaction: "open" });
-      } else if (firstOpener(f.payload) === component.id)
+      } else if (firstOpener(f.payload) === component.id && !openerHasChips(f.payload))
         out.push({ fixture, kind: "open", interaction: "open" });
       else if (fixtureInteraction(component, state))
         out.push({
@@ -798,10 +834,13 @@ export function capturePlan(
   // A fixture that shows a real workspace file needs the maintainer's capture.local.json
   // substitute (README: Capture new references); it can't go in an ordinary session.
   const maintainer = items.filter((i) => needsFileSubstitute(payloads.get(i.fixture)));
+  const skipped = items
+    .filter((i) => i.fixture in NOT_CAPTURABLE)
+    .map((i) => ({ name: i.name, reason: NOT_CAPTURABLE[i.fixture]! }));
 
   // One session per surface, theme and width, with every kind of capture in it.
   const groups = new Map<string, PlanItem[]>();
-  for (const i of items.filter((x) => !maintainer.includes(x))) {
+  for (const i of items.filter((x) => !maintainer.includes(x) && !(x.fixture in NOT_CAPTURABLE))) {
     const k = `${i.surface}+${i.theme}+${i.width}`;
     if (!groups.has(k)) groups.set(k, []);
     groups.get(k)!.push(i);
@@ -846,10 +885,11 @@ export function capturePlan(
 
   const proposals = propose(orphans, byId, where, payloads);
   const probeProposals = proposeProbes(unplanned, where, components, probes);
-  const live = items.filter((i) => !maintainer.includes(i));
+  const live = items.filter((i) => !maintainer.includes(i) && !(i.fixture in NOT_CAPTURABLE));
   return {
     sessions,
     maintainer,
+    skipped,
     proposals,
     probeProposals,
     unplanned: [...reasons]
@@ -920,6 +960,8 @@ function snapshotProbes(
     (a, b) => preference(a) - preference(b) || a.localeCompare(b),
   )) {
     const payload = [...where.values()].find((w) => w.has(fixture))!.get(fixture)!.payload;
+    // A multi-select showing chips may not open its list in Block Kit Builder.
+    if (openerHasChips(payload)) continue;
     const counted = controlComponents(payload);
     const opener = (["field", "overflow", "menu"] as const).find(
       (k) => (counted[k]?.length ?? 0) > 0,
@@ -1322,7 +1364,13 @@ function varyOptions(node: Obj, state: string): Obj | undefined {
       n[key] =
         key === "options"
           ? Array.from({ length: count }, (_, i) => option(i + 1))
-          : Array.from({ length: count }, (_, i) => structuredClone(list[i % list.length]));
+          : Array.from({ length: count }, (_, i) => {
+              // Action and block IDs stay unique, as Slack requires (limits.ts).
+              const copy = structuredClone(list[i % list.length]) as Obj;
+              if (typeof copy.action_id === "string") copy.action_id = `${copy.action_id}_${i + 1}`;
+              if (typeof copy.block_id === "string") copy.block_id = `${copy.block_id}_${i + 1}`;
+              return copy;
+            });
       return n;
     }
     case "mixed": {

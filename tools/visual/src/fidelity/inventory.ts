@@ -707,11 +707,21 @@ export const BUILDER_NEVER = {
     "Block Kit Builder draws no message hover toolbar and no hover background (verification session); only the real Slack client does",
   loading:
     "Block Kit Builder has no app behind it, so nothing waits on a response and no loading state shows; only the real Slack client does",
+  externalOpen:
+    "An external select has no options in Block Kit Builder (no options load URL), so its list has nothing to open (light desktop chunks; verify with the harness)",
+  legacyFields:
+    'Block Kit Builder shows "This content could not be displayed." for a legacy attachment\'s pretext, author, title, text and fields (light desktop chunks)',
+  workflow:
+    "Block Kit Builder refuses a workflow_button whose trigger isn't a real workflow's (light desktop chunks; verify)",
   showMore:
     "Block Kit Builder shows no section Show more (a 980-character section renders in full, verification session); extra/fidelity/section/long-content checks the 3,000-character limit (verify), otherwise only the real Slack client",
 };
 
 export function unobservableInBuilder(c: Component, state: Cell["state"]): string | undefined {
+  if (state === "open" && (c.id === "external_select" || c.id === "multi_external_select"))
+    return BUILDER_NEVER.externalOpen;
+  if (c.id === "message-attachments" && state === "mixed") return BUILDER_NEVER.legacyFields;
+  if (c.id === "workflow_button") return BUILDER_NEVER.workflow;
   if (state === "validation-error") return BUILDER_NEVER.validation;
   if (state === "loading") return BUILDER_NEVER.loading;
   if (c.id === "message-actions") return BUILDER_NEVER.toolbar;
@@ -721,7 +731,22 @@ export function unobservableInBuilder(c: Component, state: Cell["state"]): strin
 }
 
 /** Cells that don't apply at a width: a surface variant on a surface without a mobile preview. */
+/** Blocks Slack lays out within the 512px desktop preview: nothing scrolls sideways there. */
+const FITS_DESKTOP = new Set([
+  "data_visualization",
+  "table",
+  "data_table",
+  "markdown",
+  "rich_text.rich_text_preformatted",
+]);
+
 function notApplicableAt(component: Component, cell: CellKey): string | undefined {
+  if (
+    (cell.state === "scrolled-end" || cell.state === "full-content") &&
+    cell.width === "desktop" &&
+    FITS_DESKTOP.has(component.id)
+  )
+    return "At the desktop width Slack doesn't overflow this block (512px preview): nothing to scroll or unclip (light desktop chunks)";
   if (cell.state === "validation-error" && cell.width === "mobile")
     return "Only a modal's submit validates, and Block Kit Builder previews modals at desktop width only";
   if (

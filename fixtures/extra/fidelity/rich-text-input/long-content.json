@@ -15,14 +15,14 @@
   "blocks": [
     {
       "type": "input",
-      "block_id": "summary",
+      "block_id": "summary--rich-text-input-long-content",
       "label": {
         "type": "plain_text",
         "text": "Summary"
       },
       "element": {
         "type": "rich_text_input",
-        "action_id": "summary_input",
+        "action_id": "summary_input--rich-text-input-long-content",
         "placeholder": {
           "type": "plain_text",
           "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the"

@@ -25,7 +25,7 @@
       },
       "element": {
         "type": "url_text_input",
-        "action_id": "link",
+        "action_id": "link--url-text-input-long-content",
         "initial_value": "https://example.com/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/end"
       }
     }

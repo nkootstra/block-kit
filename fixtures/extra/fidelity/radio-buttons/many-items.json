@@ -2,11 +2,11 @@
   "blocks": [
     {
       "type": "actions",
-      "block_id": "choices",
+      "block_id": "choices--radio-buttons-many-items",
       "elements": [
         {
           "type": "checkboxes",
-          "action_id": "boxes",
+          "action_id": "boxes--radio-buttons-many-items",
           "initial_options": [
             {
               "text": {
@@ -39,7 +39,7 @@
         },
         {
           "type": "radio_buttons",
-          "action_id": "level",
+          "action_id": "level--radio-buttons-many-items",
           "initial_option": {
             "text": {
               "type": "plain_text",
