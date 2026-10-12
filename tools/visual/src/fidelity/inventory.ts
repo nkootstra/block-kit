@@ -370,7 +370,8 @@ function evidence(components: Component[], sources: Sources, hits: Map<string, H
       for (const state of states) {
         if (!c.states.includes(state)) continue;
         add({ component: c.id, state, theme, width, fact: "styles" }, tags);
-        if (motion && FACT_STATES.motion.includes(state))
+        // Motion recorded without a transition is a fact too: Slack doesn't animate it.
+        if ((motion || meta.motionFacts) && FACT_STATES.motion.includes(state))
           add(
             { component: c.id, state, theme: "any", width: "any", fact: "motion" },
             `motion in ${name}`,
@@ -709,6 +710,8 @@ export const BUILDER_NEVER = {
     "Block Kit Builder has no app behind it, so nothing waits on a response and no loading state shows; only the real Slack client does",
   externalOpen:
     "An external select has no options in Block Kit Builder (no options load URL), so its list has nothing to open (light desktop chunks; verify with the harness)",
+  externalPick:
+    "An external select has no options in Block Kit Builder (no options load URL), so nothing can be picked (light mobile session: multi-external-select/empty@pick+mobile)",
   legacyFields:
     'Block Kit Builder shows "This content could not be displayed." for a legacy attachment\'s pretext, author, title, text and fields (light desktop chunks)',
   workflow:
@@ -720,6 +723,8 @@ export const BUILDER_NEVER = {
 export function unobservableInBuilder(c: Component, state: Cell["state"]): string | undefined {
   if (state === "open" && (c.id === "external_select" || c.id === "multi_external_select"))
     return BUILDER_NEVER.externalOpen;
+  if (state === "selected" && (c.id === "external_select" || c.id === "multi_external_select"))
+    return BUILDER_NEVER.externalPick;
   if (c.id === "message-attachments" && state === "mixed") return BUILDER_NEVER.legacyFields;
   if (c.id === "workflow_button") return BUILDER_NEVER.workflow;
   if (state === "validation-error") return BUILDER_NEVER.validation;

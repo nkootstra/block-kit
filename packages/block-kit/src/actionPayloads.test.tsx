@@ -214,6 +214,29 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     fireEvent.click(screen.getByRole("combobox", { name: /^This sentence is here/ }));
     await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
   },
+  "catalog/agents/message-feedback@pick": () => clickAsync(screen.getAllByRole("radio")[0]!),
+  "catalog/input/multi-static-select@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
+  },
+  // The first channel (redacted to C0000001; PROVIDER) in the "Select channels" dialog.
+  "extra/payloads/accessory-multi-selects@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Select channels" }));
+    const field = within(screen.getByRole("dialog")).getByRole("combobox");
+    field.focus();
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+    await clickAsync(screen.getByRole("button", { name: "Confirm" }));
+  },
+  // ArrowDown from 1:37 PM, which isn't a list entry, then Enter.
+  "extra/payloads/pickers@pick": async () => {
+    const field = screen.getByDisplayValue("1:37 PM");
+    field.focus();
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+  },
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
@@ -417,6 +440,7 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "extra/actions/more-elements@pick": { resolvers: workspace },
   "extra/fidelity/channels-select/long-content@pick": { resolvers: workspace },
   "extra/fidelity/confirm/long-content@pick": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick": { resolvers: workspace },
   "extra/fidelity/users-select/long-content@pick": {
     resolvers: {
       directory: (source) =>
@@ -485,6 +509,11 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'actions.0.selected_users.0: Slack "U0000001", ours missing',
     'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours missing',
   ],
+  "extra/payloads/accessory-multi-selects@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
+    'actions.0.selected_channels.0: Slack "C0000001", ours missing',
+    'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
+  ],
   "extra/payloads/accessory-multi-selects@pick-confirm-channels": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
     'actions.0.selected_channels.0: Slack "C0000001", ours missing',
@@ -523,6 +552,7 @@ const KNOWN_UNSENT: Record<string, string> = {
   "catalog/input/radio-buttons@pick": "an input block without dispatch_action sends nothing",
   "catalog/container/data-entry-form@pick": "an input block without dispatch_action sends nothing",
   "catalog/input/static-select@pick": "an input block without dispatch_action sends nothing",
+  "catalog/input/multi-static-select@pick": "an input block without dispatch_action sends nothing",
 };
 
 interface Recording {

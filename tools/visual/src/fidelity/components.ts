@@ -392,7 +392,8 @@ export const COMPONENTS: Component[] = [
   blk("condition", "condition-block", ["message"], 3, ["default", "mixed"], {
     source: "builder",
     docs: undefined,
-    notes: "Shows a branch per client platform: compare desktop and mobile widths.",
+    notes:
+      "Shows a branch per client platform. Block Kit Builder evaluates it as the desktop client at both widths (finding builder-condition-desktop).",
   }),
   blk("fallback_canary", "fallback-canary-block", ["message"], 3, ["default"], {
     source: "builder",

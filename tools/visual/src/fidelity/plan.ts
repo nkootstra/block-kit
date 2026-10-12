@@ -726,6 +726,8 @@ export function capturePlan(
    * Slack fits the block at desktop width, so a probe can't scroll it (probes record at desktop).
    */
   fits: Set<string> = new Set(),
+  /** The same at the mobile width: nothing scrolls sideways, so `@scrolled-end+mobile` can't. */
+  fitsMobile: Set<string> = new Set(),
 ): CapturePlan {
   // The inventory's components carry the states the stylesheet discovery added: plan with those.
   const cellStates = new Map<string, Set<string>>();
@@ -811,6 +813,9 @@ export function capturePlan(
       forecasts,
       components,
       snapshots,
+    ).filter(
+      (c) =>
+        c.kind !== "scrolled-end" || !(cell.width === "mobile" ? fitsMobile : fits).has(c.fixture),
     );
     if (found.length === 0) {
       const fixtureFirst =
@@ -906,6 +911,12 @@ export function capturePlan(
     for (const suffix of expectedStates(payload)) {
       const name = fixture + suffix;
       if (references.has(name) || planned.has(name)) continue;
+      // Nothing scrolls sideways at that width, as its references measured.
+      if (
+        suffix.startsWith("@scrolled-end") &&
+        (suffix.includes("mobile") ? fitsMobile : fits).has(fixture)
+      )
+        continue;
       const parsed = parseReferenceName(name);
       const kind: ItemKind = (parsed.interaction as ItemKind | undefined) ?? "rest";
       items.push({
@@ -1313,22 +1324,28 @@ function behaviourProbes(
 }
 
 /**
- * The fixtures whose desktop references recorded their scroll containers and none overflowing
- * (capturePlan's `fits`), from the references' metas (captures.ts referenceMeta). One reference
- * that overflowed keeps the fixture out.
+ * The fixtures whose references at `width` measured their content's width (scroll containers, or
+ * a `+full` capture) and found nothing overflowing (capturePlan's `fits` and `fitsMobile`), from
+ * the references' metas (captures.ts referenceMeta). One reference that overflowed keeps the
+ * fixture out.
  */
-export function fitsAtDesktop(
-  references: Map<string, { scrollers?: boolean; overflows?: boolean }>,
+export function fitsAt(
+  references: Map<string, { measured?: boolean; overflows?: boolean }>,
+  width: Width,
 ): Set<string> {
   const fits = new Set<string>();
   const overflows = new Set<string>();
   for (const [name, meta] of references) {
     const { fixture, mobile } = parseReferenceName(name);
-    if (!meta.scrollers || mobile) continue;
+    if (!meta.measured || (mobile ? "mobile" : "desktop") !== width) continue;
     (meta.overflows ? overflows : fits).add(fixture);
   }
   return new Set([...fits].filter((f) => !overflows.has(f)));
 }
+
+export const fitsAtDesktop = (
+  references: Map<string, { measured?: boolean; overflows?: boolean }>,
+) => fitsAt(references, "desktop");
 
 /** Splits a session's items into runs of at most SESSION_SIZE, numbered `#a01`, `#r01`…. */
 function chunk(session: string, prefix: "a" | "r", items: PlanItem[]): Session["chunks"] {

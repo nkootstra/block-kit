@@ -230,9 +230,45 @@ describe("capture evidence", () => {
     expect(referenceMeta(html)).toEqual({
       stateStyles: { "button-1": [":hover", ":active"] },
       scrollers: true,
+      measured: true,
       overflows: true,
     });
     expect(referenceMeta("<p></p>")).toEqual({});
+  });
+
+  it("counts a plain capture's control without an :active rule as no pressed style", () => {
+    const html = `<script type="application/json" id="sbk-reference-meta">${JSON.stringify({
+      targets: { "field-1": "3", "field-2": "4" },
+      stateStyles: { "4": { target: "field-2", states: { ":active": {} } } },
+      motion: { "3": { cursor: "pointer" } },
+    })}</script>`;
+    const meta = referenceMeta(html);
+    expect(meta).toMatchObject({ targets: ["field-1", "field-2"], motionFacts: true });
+    const twoSelects = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            { type: "users_select", action_id: "u" },
+            { type: "static_select", action_id: "s", options: [] },
+          ],
+        },
+      ],
+    };
+    const states = [
+      component("users_select", ["default", "pressed"]),
+      component("static_select", ["default", "pressed"]),
+    ];
+    const pressed = (name: string) =>
+      referenceEvidence(name, twoSelects, states, meta)
+        .filter((e) => e.state === "pressed")
+        .map((e) => `${e.component} ${e.what}`);
+    expect(pressed("x/s")).toEqual([
+      "static_select state styles in x/s",
+      "users_select no :active rule for field-1 in x/s",
+    ]);
+    // Only a plain capture reads them at rest.
+    expect(pressed("x/s@open")).toEqual(["static_select state styles in x/s@open"]);
   });
 
   it("tells a scroll container that fits from one that overflows, also after +full widened it", () => {

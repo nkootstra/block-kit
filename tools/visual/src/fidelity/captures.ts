@@ -21,8 +21,20 @@ export interface ReferenceMeta {
   stateStyles?: Record<string, string[]>;
   /** Whether the meta recorded the preview's horizontal scroll containers. */
   scrollers?: boolean;
-  /** Whether any of them overflowed (its content wider than its box, or `+full` had to widen). */
+  /**
+   * Whether the meta measured how wide the content is (its scroll containers, or a `+full`
+   * capture's widening), and whether anything overflowed (content wider than its box, or `+full`
+   * had to widen the preview).
+   */
+  measured?: boolean;
   overflows?: boolean;
+  /** The control addresses snapshot.js gave a data-ref (the controls whose state styles it read). */
+  targets?: string[];
+  /**
+   * Whether the meta recorded its elements' motion (their transitions, animations and cursors),
+   * transitions or not: a reference that recorded none for a component shows it has no motion.
+   */
+  motionFacts?: boolean;
   /** The control that had focus at the snapshot, and whether it was drawn as keyboard focus. */
   focus?: { target: string; visible: boolean; active?: string };
 }
@@ -44,6 +56,8 @@ export function referenceMeta(html: string): ReferenceMeta {
     stateStyles?: Record<string, { target: string; states: Record<string, unknown> }>;
     scrollers?: { scrollWidth?: number; clientWidth?: number }[];
     full?: { widenedBy?: number };
+    targets?: Record<string, unknown>;
+    motion?: Record<string, unknown>;
     focus?: { target: string; visible: boolean; active?: string };
   };
   const out: ReferenceMeta = {};
@@ -51,14 +65,17 @@ export function referenceMeta(html: string): ReferenceMeta {
     out.stateStyles = Object.fromEntries(
       Object.values(meta.stateStyles).map((s) => [s.target, Object.keys(s.states)]),
     );
-  if (meta.scrollers?.length) {
-    out.scrollers = true;
-    // A `+full` capture records them after widening the preview, by what they hid.
+  if (meta.scrollers?.length) out.scrollers = true;
+  if (meta.scrollers?.length || meta.full) {
+    out.measured = true;
+    // A `+full` capture records the scrollers after widening the preview, by what they hid.
     out.overflows =
       (meta.full?.widenedBy ?? 0) > 0 ||
-      meta.scrollers.some((sc) => (sc.scrollWidth ?? 0) > (sc.clientWidth ?? 0) + 1);
+      (meta.scrollers ?? []).some((sc) => (sc.scrollWidth ?? 0) > (sc.clientWidth ?? 0) + 1);
   }
   if (meta.focus) out.focus = meta.focus;
+  if (meta.targets && Object.keys(meta.targets).length > 0) out.targets = Object.keys(meta.targets);
+  if (meta.motion && Object.keys(meta.motion).length > 0) out.motionFacts = true;
   return out;
 }
 
@@ -340,6 +357,15 @@ export function referenceEvidence(
     for (const pseudo of states)
       if (PSEUDO[pseudo]) styles(component, PSEUDO[pseudo], `state styles in ${name}`);
   }
+  // A plain capture reads the state rules of every control it addressed. Pressed can't be held
+  // through a snapshot, so this is the only capture of it: a control with no :active rule there
+  // shows Slack draws no pressed style for it (users, conversations and channels selects, mentions).
+  if (!interaction && !full)
+    for (const address of meta.targets ?? []) {
+      if (meta.stateStyles?.[address]?.includes(":active")) continue;
+      const component = componentAt(payload, address);
+      if (component) styles(component, "pressed", `no :active rule for ${address} in ${name}`);
+    }
   if (meta.scrollers && !full)
     for (const id of withState(payload, components, "scrolled-end"))
       out.push({

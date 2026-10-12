@@ -3,6 +3,7 @@ import { COMPONENTS } from "./components";
 import { buildInventory, type Sources } from "./inventory";
 import {
   capturePlan,
+  fitsAt,
   fitsAtDesktop,
   forecastFocus,
   forecastProbe,
@@ -358,6 +359,31 @@ describe("probes on controls Slack draws only after a click", () => {
     expect(result.unplanned.some((u) => u.reason.includes("contact card"))).toBe(true);
   });
 
+  it("plans no scroll to the end at a width where nothing overflows", () => {
+    const table = {
+      blocks: [{ type: "table", rows: [[{ type: "raw_text", text: "a" }]] }],
+    };
+    const c = pick("table");
+    const payloads = new Map<string, unknown>([["catalog/t", table]]);
+    const names = (fitsMobile: Set<string>) =>
+      capturePlan(
+        buildInventory(c, sources(payloads, ["catalog/t"])),
+        c,
+        payloads,
+        new Set(["catalog/t"]),
+        new Map(),
+        new Set(),
+        new Set(),
+        fitsMobile,
+      )
+        .sessions.flatMap((s) => [...s.automatic, ...s.realInput])
+        .map((i) => i.name);
+    expect(names(new Set())).toContain("catalog/t@scrolled-end+mobile");
+    expect(names(new Set(["catalog/t"])).filter((n) => n.includes("scrolled-end+mobile"))).toEqual(
+      [],
+    );
+  });
+
   it("plans no keyboard focus on the message header, which the Builder draws as plain text", () => {
     const c = pick("message-header");
     const payloads = new Map<string, unknown>([["catalog/select", select]]);
@@ -375,17 +401,17 @@ describe("probes on controls Slack draws only after a click", () => {
   });
 
   it("proposes no sideways scroll of a block that fits the desktop preview", () => {
-    expect(
-      fitsAtDesktop(
-        new Map([
-          ["catalog/table/simple-table@full", { scrollers: true, overflows: false }],
-          ["catalog/table/wide@full", { scrollers: true, overflows: true }],
-          ["catalog/table/wide", { scrollers: true, overflows: false }],
-          ["catalog/table/mobile-only@mobile", { scrollers: true, overflows: true }],
-          ["catalog/table/plain", {}],
-        ]),
-      ),
-    ).toEqual(new Set(["catalog/table/simple-table"]));
+    const refs = new Map([
+      ["catalog/table/simple-table@full", { measured: true, overflows: false }],
+      ["catalog/table/wide@full", { measured: true, overflows: true }],
+      ["catalog/table/wide", { measured: true, overflows: false }],
+      ["catalog/table/mobile-only@mobile", { measured: true, overflows: true }],
+      // A +full capture with nothing to widen, and no scroll container at all.
+      ["catalog/rich-text/kitchen-sink@mobile+full", { measured: true, overflows: false }],
+      ["catalog/table/plain", {}],
+    ]);
+    expect(fitsAtDesktop(refs)).toEqual(new Set(["catalog/table/simple-table"]));
+    expect(fitsAt(refs, "mobile")).toEqual(new Set(["catalog/rich-text/kitchen-sink"]));
     const table = {
       blocks: [
         {

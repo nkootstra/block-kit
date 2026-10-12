@@ -344,6 +344,58 @@ export const FINDINGS: Finding[] = [
     status: "verified",
   },
   {
+    id: "builder-condition-desktop",
+    title: "Block Kit Builder's Mobile preview still renders a condition block's desktop branch",
+    evidence: [
+      'Light mobile session: catalog/condition/client-platforms@mobile shows the client = desktop case ("Desktop branch"), as the desktop preview does. The Builder evaluates conditions as the desktop client at either width.',
+      "Ours does the same on purpose: packages/block-kit/src/blocks/Condition.tsx always matches the desktop client.",
+    ],
+    suspect: [
+      "Not a bug: a Builder limit. The ios, android and mobile branches can't be captured in the Builder; only the real mobile clients show them.",
+    ],
+    next: "Keep the desktop-only evaluation until a real mobile client can be captured; the mobile references of condition fixtures show the desktop branch at 400px.",
+    components: ["condition"],
+    status: "verified",
+  },
+  {
+    id: "mobile-nothing-scrolls",
+    title:
+      "At the mobile width, tables, preformatted rich text and markdown code fit without scrolling",
+    evidence: [
+      'Light mobile session: catalog/rich-text/kitchen-sink, catalog/markdown/code, catalog/table/simple-table and extra/fidelity/table/many-items and /mixed stopped @scrolled-end+mobile with "nothing in the preview scrolls sideways". Their @mobile+full references widened nothing (widenedBy 0); the tables\' scroll containers are 320px wide with 320px of content.',
+      "Ours at a 400px viewport: no horizontal scroll container overflows in any of the five.",
+    ],
+    suspect: ["Not a bug: Slack and ours both wrap or shrink these to the mobile width."],
+    next: "The plan skips @scrolled-end where a fixture's references at that width measured nothing overflowing (plan.ts fitsAt).",
+    components: ["table", "rich_text", "markdown"],
+    status: "verified",
+  },
+  {
+    id: "mobile-carousel-arrow",
+    title: "In the Builder's Mobile preview a click on a carousel's next arrow didn't scroll it",
+    evidence: [
+      "Light mobile session: a real click on catalog/card-and-carousel/carousel's Scroll right arrow left the carousel where it was; a horizontal wheel scroll moved it, and then the Scroll left arrow appeared. On desktop the same click scrolls (carousel@poke-arrow-2). The mobile reference draws both arrows as desktop does (the left one with p-gallery_scroller__arrow--hidden).",
+    ],
+    suspect: [
+      "Unknown: the Builder's Mobile preview may treat the arrows differently (touch-first), or the click missed a hit area. Ours scrolls on an arrow click at any width (blocks/Carousel.tsx).",
+    ],
+    next: "Retry the click at the arrow's centre in the Mobile preview; if it still doesn't scroll, decide whether ours should hide or ignore the arrows at the mobile width.",
+    components: ["carousel"],
+  },
+  {
+    id: "mobile-multi-select-escape",
+    title:
+      "At the mobile width, Escape didn't close an input block's open multi-select list after a pick",
+    evidence: [
+      "Light mobile session, catalog/input/multi-static-select: after a click on an option the list stayed open (as on desktop), and Escape left it open; a click outside closed it.",
+    ],
+    suspect: [
+      "Unknown whether it's the width or the click moving focus out of the field (Escape goes to whatever has focus). Ours closes the list on Escape from the field (elements/useCombobox.ts).",
+    ],
+    next: "A probe (click field-1, click option-1, Escape) at desktop would separate the two; probes record at desktop width only.",
+    components: ["multi_static_select"],
+  },
+  {
     id: "select-space-picks-while-typing",
     title: "A space typed into Slack's open static select picks the highlighted option",
     evidence: [
