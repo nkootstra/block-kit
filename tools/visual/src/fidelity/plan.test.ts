@@ -1,7 +1,18 @@
 import { describe, expect, it } from "bun:test";
 import { COMPONENTS } from "./components";
 import { buildInventory, type Sources } from "./inventory";
-import { capturePlan, forecastProbe, SESSION_SIZE, VERIFY, vary, verifyPlan } from "./plan";
+import {
+  capturePlan,
+  fitsAtDesktop,
+  forecastFocus,
+  forecastProbe,
+  openSteps,
+  revealSteps,
+  SESSION_SIZE,
+  VERIFY,
+  vary,
+  verifyPlan,
+} from "./plan";
 import { readPayloads } from "../lock";
 import { isReferenceName } from "../names";
 import { readProbes } from "../probes";
@@ -210,6 +221,151 @@ describe("proposed probes", () => {
     expect(poke.probe.steps[0]).toEqual({ hover: "field-1" });
     expect(poke.covers).toContain("static_select hover");
     expect(poke.covers).toContain("static_select open");
+  });
+});
+
+describe("probes on controls Slack draws only after a click", () => {
+  const accessory = {
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "Pick" },
+        accessory: {
+          type: "multi_static_select",
+          action_id: "m",
+          placeholder: plain("Select items"),
+          options: [{ text: plain("One"), value: "1" }],
+        },
+      },
+    ],
+  };
+  const plan = {
+    blocks: [
+      {
+        type: "plan",
+        title: "Plan",
+        tasks: [
+          {
+            task_id: "1",
+            title: "One",
+            status: "complete",
+            sources: [{ type: "url", url: "https://example.com/a", text: "A" }],
+          },
+        ],
+      },
+    ],
+  };
+
+  it("opens a section accessory's multi-select through its dialog's field", () => {
+    // The dialog opens with its field at rest; the list opens from the field.
+    expect(openSteps(accessory, "field-1")).toEqual([
+      { click: "field-1" },
+      { click: { role: "combobox", name: "Select items" } },
+    ]);
+    expect(openSteps(select, "field-1")).toEqual([{ click: "field-1" }]);
+    // The arrow keys then move the list's highlight, for the accessory that opened it.
+    expect(
+      forecastFocus([...openSteps(accessory, "field-1"), { key: "ArrowDown" }], accessory),
+    ).toEqual({ target: "field-1", visible: true, active: "option-1" });
+  });
+
+  it("proposes the dialog's field click in a probe that reaches the accessory's options", () => {
+    const c = pick("multi_static_select", "option");
+    const payloads = new Map<string, unknown>([["contexts/m/accessory", accessory]]);
+    const proposals = capturePlan(
+      buildInventory(c, sources(payloads, ["contexts/m/accessory"])),
+      c,
+      payloads,
+      new Set(["contexts/m/accessory"]),
+    ).probeProposals;
+    const reaching = proposals.filter((p) =>
+      p.probe.steps.some((s) => "hover" in s && s.hover === "option-1"),
+    );
+    expect(reaching.length).toBeGreaterThan(0);
+    for (const p of reaching)
+      expect(p.probe.steps.slice(0, 2)).toEqual(openSteps(accessory, "field-1"));
+  });
+
+  it("expands a plan before it hovers a source, and plans no plain capture of one", () => {
+    expect(revealSteps(plan, "source-1")).toEqual([{ click: "pill-1" }]);
+    expect(revealSteps(plan, "pill-1")).toEqual([]);
+    const c = pick("url_source");
+    const payloads = new Map<string, unknown>([["catalog/agents/plan", plan]]);
+    const result = capturePlan(
+      buildInventory(c, sources(payloads, ["catalog/agents/plan"])),
+      c,
+      payloads,
+      new Set(["catalog/agents/plan"]),
+    );
+    const names = result.sessions
+      .flatMap((s) => [...s.automatic, ...s.realInput])
+      .map((i) => i.name);
+    expect(names.filter((n) => /@(hover|focus)-source-/.test(n))).toEqual([]);
+    const poke = result.probeProposals.find((p) => p.name === "catalog/agents/plan@poke-source-1")!;
+    expect(poke.probe.steps[0]).toEqual({ click: "pill-1" });
+    const hover = result.probeProposals.find(
+      (p) => p.name === "catalog/agents/plan@expanded-hover-source-1",
+    )!;
+    expect(hover.probe.steps).toEqual([
+      { click: "pill-1" },
+      { hover: "source-1" },
+      { snapshot: "expanded-hover-source-1" },
+    ]);
+    expect(hover.covers).toContain("url_source hover");
+  });
+
+  it("plans no keyboard focus on the message header, which the Builder draws as plain text", () => {
+    const c = pick("message-header");
+    const payloads = new Map<string, unknown>([["catalog/select", select]]);
+    const result = capturePlan(
+      buildInventory(c, sources(payloads, ["catalog/select"])),
+      c,
+      payloads,
+      new Set(["catalog/select"]),
+    );
+    const names = result.sessions
+      .flatMap((s) => [...s.automatic, ...s.realInput])
+      .map((i) => i.name);
+    expect(names).toContain("catalog/select@hover-sender-1");
+    expect(names.filter((n) => /@focus-(sender|time)-/.test(n))).toEqual([]);
+  });
+
+  it("proposes no sideways scroll of a block that fits the desktop preview", () => {
+    expect(
+      fitsAtDesktop(
+        new Map([
+          ["catalog/table/simple-table@full", { scrollers: true, overflows: false }],
+          ["catalog/table/wide@full", { scrollers: true, overflows: true }],
+          ["catalog/table/wide", { scrollers: true, overflows: false }],
+          ["catalog/table/mobile-only@mobile", { scrollers: true, overflows: true }],
+          ["catalog/table/plain", {}],
+        ]),
+      ),
+    ).toEqual(new Set(["catalog/table/simple-table"]));
+    const table = {
+      blocks: [
+        {
+          type: "table",
+          rows: [[{ type: "raw_text", text: "a" }], [{ type: "raw_text", text: "b" }]],
+        },
+      ],
+    };
+    const c = pick("table");
+    const payloads = new Map<string, unknown>([["catalog/table/simple-table", table]]);
+    const propose = (fits: Set<string>) =>
+      capturePlan(
+        buildInventory(c, sources(payloads, ["catalog/table/simple-table"])),
+        c,
+        payloads,
+        new Set(["catalog/table/simple-table"]),
+        new Map(),
+        new Set(),
+        fits,
+      ).probeProposals.map((p) => p.name);
+    expect(propose(new Set())).toContain("catalog/table/simple-table@scroll-scroller-1");
+    expect(propose(new Set(["catalog/table/simple-table"]))).not.toContain(
+      "catalog/table/simple-table@scroll-scroller-1",
+    );
   });
 });
 

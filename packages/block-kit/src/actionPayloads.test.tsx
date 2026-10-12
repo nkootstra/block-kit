@@ -162,6 +162,16 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
       await new Promise((resolve) => setTimeout(resolve, CHARACTER_DISPATCH_DELAY + 50));
     });
   },
+  "catalog/actions/all-selects@pick": async () => {
+    // The static select (actionId-3), as in all-selects@pick-static.
+    fireEvent.click(screen.getByText("--Select an item--"));
+    await clickAsync(screen.getByText("*plain_text option 1*"));
+  },
+  // The first channel the Builder's workspace lists (redacted to C0000001; PROVIDER).
+  "extra/actions/more-elements@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Pick a channel" }));
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
@@ -254,6 +264,36 @@ function probeTarget(target: ProbeTarget): HTMLElement {
   return el;
 }
 
+/** What a browser's Tab moves the focus through, in document order (tabindex -1 left out). */
+const TABBABLE =
+  'input:not([disabled]):not([type="hidden"]), button:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]';
+
+/**
+ * A key press with the default action a browser adds and jsdom doesn't: Space clicks a focused
+ * checkbox, radio or button, and Tab (Shift+Tab) moves the focus to the next (previous) control in
+ * tab order. Without them a recording made with the keyboard (contexts/checkboxes/actions@space)
+ * replays as a click and nothing else. A handler that prevents the key's default keeps it.
+ */
+async function pressKey(el: HTMLElement, combo: string) {
+  const parts = combo.split("+");
+  const key = parts.at(-1) === "Space" ? " " : parts.at(-1)!;
+  const shiftKey = parts.includes("Shift");
+  let allowed = true;
+  await act(async () => {
+    allowed = fireEvent.keyDown(el, { key, shiftKey });
+  });
+  if (!allowed) return;
+  if (key === " " && el.matches('input[type="checkbox"], input[type="radio"], button'))
+    await clickAsync(el);
+  else if (key === "Tab") {
+    const order = [...document.querySelectorAll<HTMLElement>(TABBABLE)].filter(
+      (e) => e.tabIndex >= 0,
+    );
+    const next = order[order.indexOf(el) + (shiftKey ? -1 : 1)];
+    await act(async () => next?.focus());
+  }
+}
+
 /** Replays a probe's steps, as tools/visual/src/probes.ts does in a browser. */
 function probeInteraction(name: string): (() => Promise<void>) | undefined {
   let steps: ProbeStep[];
@@ -270,8 +310,7 @@ function probeInteraction(name: string): (() => Promise<void>) | undefined {
         el.focus();
         await clickAsync(el);
       } else if ("hover" in step) fireEvent.mouseEnter(probeTarget(step.hover));
-      else if ("key" in step)
-        await keyDownAsync(at(), step.key === "Space" ? " " : step.key.split("+").at(-1)!);
+      else if ("key" in step) await pressKey(at(), step.key);
       else if ("type" in step) {
         const field = at() as HTMLInputElement;
         fireEvent.change(field, { target: { value: `${field.value ?? ""}${step.type}` } });
@@ -315,6 +354,7 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "contexts/users_select/actions@pick": { resolvers: workspace },
   "contexts/conversations_select/actions@pick": { resolvers: workspace },
   "contexts/channels_select/actions@pick": { resolvers: workspace },
+  "extra/actions/more-elements@pick": { resolvers: workspace },
   "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
@@ -328,6 +368,12 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
+  // Slack's users, conversations and channels selects send no placeholder in their action (its
+  // static and multi-static selects do); ours echoes it (fidelity finding
+  // directory-select-placeholder). Removed once that's fixed.
+  "extra/actions/more-elements@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
+  ],
   // Slack's open list starts on its first option, so two ArrowDowns reach the third; ours starts
   // before the first (fidelity finding static-select-keyboard). Removed once that's fixed.
   "contexts/static_select/actions@keyboard": [

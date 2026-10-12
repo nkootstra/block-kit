@@ -21,6 +21,8 @@ export interface ReferenceMeta {
   stateStyles?: Record<string, string[]>;
   /** Whether the meta recorded the preview's horizontal scroll containers. */
   scrollers?: boolean;
+  /** Whether any of them overflowed (its content wider than its box, or `+full` had to widen). */
+  overflows?: boolean;
   /** The control that had focus at the snapshot, and whether it was drawn as keyboard focus. */
   focus?: { target: string; visible: boolean; active?: string };
 }
@@ -40,7 +42,8 @@ export function referenceMeta(html: string): ReferenceMeta {
   if (!json) return {};
   const meta = JSON.parse(json) as {
     stateStyles?: Record<string, { target: string; states: Record<string, unknown> }>;
-    scrollers?: unknown[];
+    scrollers?: { scrollWidth?: number; clientWidth?: number }[];
+    full?: { widenedBy?: number };
     focus?: { target: string; visible: boolean; active?: string };
   };
   const out: ReferenceMeta = {};
@@ -48,7 +51,13 @@ export function referenceMeta(html: string): ReferenceMeta {
     out.stateStyles = Object.fromEntries(
       Object.values(meta.stateStyles).map((s) => [s.target, Object.keys(s.states)]),
     );
-  if (meta.scrollers?.length) out.scrollers = true;
+  if (meta.scrollers?.length) {
+    out.scrollers = true;
+    // A `+full` capture records them after widening the preview, by what they hid.
+    out.overflows =
+      (meta.full?.widenedBy ?? 0) > 0 ||
+      meta.scrollers.some((sc) => (sc.scrollWidth ?? 0) > (sc.clientWidth ?? 0) + 1);
+  }
   if (meta.focus) out.focus = meta.focus;
   return out;
 }
@@ -59,11 +68,28 @@ export function referenceMeta(html: string): ReferenceMeta {
  * and a modal's submit and cancel are its frame.
  */
 export function controlComponents(payload: unknown): Partial<Record<Kind, string[]>> {
-  const out: Partial<Record<Kind, string[]>> = {};
+  return Object.fromEntries(
+    Object.entries(controlNodes(payload)).map(([kind, list]) => [kind, list.map((c) => c.id)]),
+  );
+}
+
+/** A counted control: its component, and the payload object that makes it. */
+export interface ControlNode {
+  id: string;
+  node: Obj;
+  /** The key the object sits under (`accessory`, `sources`…). */
+  key: string | undefined;
+}
+
+/** controlComponents, with the payload object behind each address. */
+export function controlNodes(payload: unknown): Partial<Record<Kind, ControlNode[]>> {
+  const out: Partial<Record<Kind, ControlNode[]>> = {};
+  let o: Obj = {};
+  let key: string | undefined;
   const push = (kind: Kind, id: string, times = 1) => {
-    for (let i = 0; i < times; i++) (out[kind] ??= []).push(id);
+    for (let i = 0; i < times; i++) (out[kind] ??= []).push({ id, node: o, key });
   };
-  for (const [o, key] of objects(payload)) {
+  for ([o, key] of objects(payload)) {
     const type = typeof o.type === "string" ? o.type : "";
     // Links and mentions in rich text, and in mrkdwn and markdown text in the order they appear.
     if (type === "link") push("link", "rich_text.link");
@@ -117,11 +143,40 @@ export function controlComponents(payload: unknown): Partial<Record<Kind, string
     );
   }
   const view = payload as Obj | null;
+  o = view ?? {};
+  key = undefined;
   if (view?.type === "modal") {
     if (view.submit) push("submit", "modal-frame");
     if (view.close) push("cancel", "modal-frame");
   }
   return out;
+}
+
+/** Blocks Slack draws collapsed, showing their insides only after a click on their pill. */
+const COLLAPSED = new Set(["plan", "task_card"]);
+
+/**
+ * The pill to click before a control exists: a plan or a task card starts collapsed in Slack (and
+ * in ours), and draws its tasks, sources and the links in their text only once its pill is
+ * clicked. undefined for a control that's there at rest.
+ */
+export function revealedBy(payload: unknown, address: string): string | undefined {
+  const target = parseTarget(address);
+  if (!target) return undefined;
+  const nodes = controlNodes(payload);
+  const pills = nodes.pill ?? [];
+  // A plan's task headers are counted by kind, not by the payload: they're the first plan's.
+  if (target.kind === "task") {
+    const i = pills.findIndex((p) => p.node.type === "plan");
+    return i >= 0 ? `pill-${i + 1}` : undefined;
+  }
+  if (target.kind === "pill") return undefined;
+  const node = nodes[target.kind]?.[target.index - 1]?.node;
+  if (!node) return undefined;
+  const i = pills.findIndex(
+    (p) => COLLAPSED.has(String(p.node.type)) && [...objects(p.node)].some(([o]) => o === node),
+  );
+  return i >= 0 ? `pill-${i + 1}` : undefined;
 }
 
 const MENTIONS = new Set(["user", "channel", "usergroup", "broadcast"]);

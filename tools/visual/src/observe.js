@@ -27,13 +27,14 @@
       activeOption: ".c-select_options_list__option--active",
       kinds: {
         button:
-          'button.c-button:not([aria-label="More options"]):not(.p-bkb_preview_modal__submit):not(.p-bkb_preview_modal__cancel):not(.c-fieldset > button)',
+          'button.c-button:not([aria-label="More options"]):not(.p-bkb_preview_modal__submit):not(.p-bkb_preview_modal__cancel):not(.c-fieldset > button):not(:has([data-qa="bk-multi_select_input"]))',
         overflow: 'button[aria-label="More options"]',
-        field: '.c-select_input, [role="combobox"], .c-date_picker_input',
+        field:
+          '.c-select_input, [role="combobox"], .c-date_picker_input, button.c-button:has([data-qa="bk-multi_select_input"])',
         checkbox: "input.c-input_checkbox",
         radio: "input.c-input_radio",
         input:
-          'input[class*="p-block_kit_"][class*="_input_element"], textarea[class*="p-block_kit_"]',
+          'input[class*="p-block_kit_"][class*="_input_element"], textarea[class*="p-block_kit_"], input[data-qa="block-kit-number-input-element"], input.c-input_text[type="email"], input.c-input_text[type="url"]',
         submit: ".p-bkb_preview_modal__submit",
         cancel: ".p-bkb_preview_modal__cancel",
         link: "a.c-link.c-link--underline, .p-rich_text_section a.c-link",
@@ -60,8 +61,7 @@
         task: '[class*="taskHeaderCollapsible"]',
         contact: '[data-qa="bk_contact_card_block"]',
         expand: '.c-expandable_trigger[aria-label="image"]',
-        source:
-          '[class*="listitem"] a.c-link:not(.c-link--underline), [class*="taskCard"] a.c-link',
+        source: '[data-qa="source"] a.c-link',
         sender: ".p-bkb_preview__app_name",
         time: ".c-timestamp",
         scroller: "@scroller",

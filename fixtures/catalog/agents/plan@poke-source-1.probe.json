@@ -1,6 +1,9 @@
 {
   "steps": [
     {
+      "click": "pill-1"
+    },
+    {
       "hover": "source-1"
     },
     {

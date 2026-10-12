@@ -4,6 +4,12 @@
       "click": "field-1"
     },
     {
+      "click": {
+        "role": "combobox",
+        "name": "Select channels"
+      }
+    },
+    {
       "key": "ArrowDown"
     },
     {

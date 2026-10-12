@@ -27,6 +27,7 @@ import {
   type CapturePlan,
   capturePlan,
   chunkItems,
+  fitsAtDesktop,
   type PlanItem,
   SESSION_SIZE,
   verifyPlan,
@@ -421,6 +422,7 @@ if (import.meta.main) {
     new Set(sources.references.keys()),
     await readProbes(),
     new Set(sources.behaviour?.keys() ?? []),
+    fitsAtDesktop(sources.references),
   );
   const out = resolve(ROOT, "test-results/fidelity");
   await mkdir(out, { recursive: true });

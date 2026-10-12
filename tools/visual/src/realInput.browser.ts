@@ -12,6 +12,7 @@ import { createHarness, type Harness, settle } from "./interaction/harness";
 import { observeOurs, replay } from "./probes";
 import { diffStateStyles, ourStateStyles } from "./stateStyles";
 import { ourTarget, stateFor } from "./states";
+import { findTarget, parseTarget, SLACK } from "./targets";
 
 setDefaultTimeout(30_000);
 
@@ -1076,5 +1077,275 @@ describe("capture.js real-input fixes from the Builder run", () => {
     // The scrollbar is back afterwards.
     expect(after).toBeLessThan(532);
     await classic.close();
+  });
+});
+
+describe("capture.js fixes from the third Builder run", () => {
+  const ADAPTER = `window.adapter = {
+    load: async () => {}, theme: () => "light", setTheme: async () => {},
+    previewSize: () => "desktop", setPreviewSize: async () => {},
+  };`;
+  const stand = (body: string, script = "") =>
+    `<!doctype html><html><body style="margin:0">
+      <div class="p-bkb_preview__message" style="width:512px;padding:20px">
+        <span class="p-bkb_preview__app_name">Your App</span>
+        ${body}
+      </div>
+      <script>${ADAPTER}${script}</script>
+    </body></html>`;
+  /** A time picker as the Builder draws it: the value in an overlay over the input, a chevron beside. */
+  const TIME_PICKER = `<div class="c-select_input__wrapper" style="position:relative;display:flex;width:220px;height:28px">
+      <div style="position:relative;width:190px">
+        <input class="c-select_input" role="combobox" aria-expanded="false" style="width:190px;height:28px;box-sizing:border-box">
+        <div class="c-select_input__content" style="position:absolute;inset:0;background:#fff">1:37 PM</div>
+      </div>
+      <div class="c-select_input__icon_container" style="width:30px;height:28px">v</div>
+    </div>`;
+
+  /** Starts a run and returns a driver that waits for each instruction. */
+  async function start(html: string, items: unknown[], options: Record<string, unknown> = {}) {
+    const page = await browser.newPage({ viewport: { width: 900, height: 600 } });
+    await page.setContent(html);
+    await page.addScriptTag({
+      content: `window.capture = ${CAPTURE}; window.observe = ${OBSERVE};`,
+    });
+    await page.evaluate(
+      ([list, opts]) => {
+        const w = window as unknown as Record<string, any>;
+        w.capture({
+          items: list,
+          snap: async () => "",
+          observe: w.observe,
+          adapter: w.adapter,
+          settle: 0,
+          timeout: 3000,
+          ...opts,
+        }).then(
+          () => (w.done = "ok"),
+          (e: Error) => (w.done = String(e)),
+        );
+      },
+      [items, options] as const,
+    );
+    let seq: number | undefined;
+    return {
+      page,
+      next: async () => {
+        const got = await page.evaluate(
+          (s) => (window as unknown as Record<string, any>).sbkAwaitInstruction(s, 5000),
+          seq,
+        );
+        seq = got.seq ?? seq;
+        return got;
+      },
+      result: async () => {
+        await page.waitForFunction(() => (window as unknown as Record<string, any>).done);
+        return {
+          done: await page.evaluate(() => (window as unknown as Record<string, any>).done),
+          output: await page.evaluate(
+            () => (window as unknown as Record<string, any>).sbkCaptureOutput,
+          ),
+        };
+      },
+    };
+  }
+
+  it("counts a click on a time picker's overlay or chevron as a click on the field", async () => {
+    for (const where of ["overlay", "chevron"]) {
+      const run = await start(stand(TIME_PICKER), [
+        { name: `x/time@${where}`, payload: {}, probe: { steps: [{ click: "field-1" }] } },
+      ]);
+      const { instruction } = await run.next();
+      expect(instruction).toMatchObject({ do: "click", target: "field-1" });
+      const chevron = (await run.page.locator(".c-select_input__icon_container").boundingBox())!;
+      // The overlay covers the input's middle, so the instruction's own point lands on it.
+      if (where === "overlay") await run.page.mouse.click(instruction.x, instruction.y);
+      else await run.page.mouse.click(chevron.x + 10, chevron.y + 10);
+      expect((await run.result()).done).toBe("ok");
+      await run.page.close();
+    }
+  });
+
+  it("counts a press on a control that re-renders its icon as it's pressed", async () => {
+    const run = await start(
+      stand(
+        `<button data-qa="bk_feedback_button_positive" role="radio" aria-checked="false" style="width:40px;height:40px"><svg width="20" height="20"><rect width="20" height="20"/></svg></button>`,
+        `const b = document.querySelector("button");
+         b.addEventListener("mousedown", () => { b.innerHTML = '<svg width="20" height="20"><circle cx="10" cy="10" r="10"/></svg>'; b.setAttribute("aria-checked", "true"); });`,
+      ),
+      [{ name: "x/feedback@poke", payload: {}, probe: { steps: [{ click: "feedback-1" }] } }],
+    );
+    const { instruction } = await run.next();
+    await run.page.mouse.click(instruction.x, instruction.y);
+    expect((await run.result()).done).toBe("ok");
+    await run.page.close();
+  });
+
+  it("records the first click on a second select, which an open menu's overlay takes", async () => {
+    // Slack's open menu lays an overlay over the page: a click elsewhere only closes it.
+    const run = await start(
+      stand(
+        `<div role="combobox" class="c-select_input" aria-expanded="false" style="width:200px;height:30px">Alpha</div>
+         <div role="combobox" class="c-select_input" aria-expanded="false" style="width:200px;height:30px;margin-top:20px">Choose</div>`,
+        `const [a, b] = document.querySelectorAll('[role="combobox"]');
+         const open = (field) => {
+           field.setAttribute("aria-expanded", "true");
+           const portal = document.createElement("div");
+           portal.className = "ReactModalPortal";
+           portal.innerHTML = '<div class="ReactModal__Overlay" style="position:fixed;inset:0"><div class="ReactModal__Content" role="listbox" style="position:absolute;left:600px;top:20px;width:100px;height:60px;background:#fff"><div role="option">One</div></div></div>';
+           portal.firstChild.addEventListener("click", (e) => {
+             if (e.target !== portal.firstChild) return;
+             field.setAttribute("aria-expanded", "false");
+             portal.remove();
+           });
+           document.body.append(portal);
+         };
+         a.addEventListener("click", () => open(a));
+         b.addEventListener("click", () => open(b));`,
+      ),
+      [
+        {
+          name: "x/selects@outside-click",
+          payload: {},
+          probe: { steps: [{ click: "field-1" }, { click: "field-2" }] },
+        },
+      ],
+    );
+    for (let i = 0; i < 2; i++) {
+      const { instruction } = await run.next();
+      await run.page.mouse.click(instruction.x, instruction.y);
+    }
+    const { done, output } = await run.result();
+    expect(done).toBe("ok");
+    const { observations } = output.behaviour["x/selects@outside-click"];
+    expect(observations[1].controls["field-1"].expanded).toBe("true");
+    expect(observations[2].layers).toEqual([]);
+    expect(observations[2].controls["field-2"].expanded).toBe("false");
+    await run.page.close();
+  });
+
+  it("finishes a typing step that closes the list half way", async () => {
+    // As in Slack's static select: a space picks the highlighted option and closes the list.
+    const run = await start(
+      stand(
+        `<input class="c-select_input" role="combobox" aria-expanded="false" style="width:200px">`,
+        `const f = document.querySelector("input");
+         f.addEventListener("click", () => f.setAttribute("aria-expanded", "true"));
+         f.addEventListener("keydown", (e) => {
+           if (e.key !== " " || f.getAttribute("aria-expanded") !== "true") return;
+           e.preventDefault();
+           f.value = "Option 1";
+           f.setAttribute("aria-expanded", "false");
+         });`,
+      ),
+      [
+        {
+          name: "x/select@typeahead",
+          payload: {},
+          probe: { steps: [{ click: "field-1" }, { type: "Option 3" }] },
+        },
+      ],
+    );
+    const click = await run.next();
+    await run.page.mouse.click(click.instruction.x, click.instruction.y);
+    const type = await run.next();
+    expect(type.instruction).toMatchObject({ do: "type", text: "Option 3" });
+    await run.page.keyboard.type("Option 3");
+    const { done, output } = await run.result();
+    expect(done).toBe("ok");
+    expect(
+      output.behaviour["x/select@typeahead"].observations[2].controls["field-1"],
+    ).toMatchObject({ expanded: "false" });
+    await run.page.close();
+  });
+
+  it("says a control the Builder draws as plain text can't take focus, without asking for a Tab", async () => {
+    const run = await start(stand(""), [{ name: "x/header@focus-sender-1", payload: {} }]);
+    const { done } = await run.result();
+    expect(done).toContain("sender-1 can't take focus in the Builder");
+    await run.page.close();
+  });
+
+  it("waits a moment for a control that renders after the preview settles", async () => {
+    const run = await start(
+      stand(
+        "",
+        `setTimeout(() => {
+           const card = document.createElement("div");
+           card.setAttribute("data-qa", "bk_contact_card_block");
+           card.setAttribute("role", "button");
+           card.tabIndex = 0;
+           card.style.cssText = "width:200px;height:40px";
+           document.querySelector(".p-bkb_preview__message").append(card);
+         }, 800);`,
+      ),
+      [{ name: "x/contact@poke", payload: {}, probe: { steps: [{ click: "contact-1" }] } }],
+    );
+    const { instruction } = await run.next();
+    expect(instruction).toMatchObject({ do: "click", target: "contact-1" });
+    await run.page.mouse.click(instruction.x, instruction.y);
+    expect((await run.result()).done).toBe("ok");
+    await run.page.close();
+  });
+});
+
+describe("Slack's controls by address, in the captured references", () => {
+  const FIXTURES = join(import.meta.dir, "../../../fixtures");
+  /** The `address` control in a reference, as capture.js finds it: its tag, input type and text. */
+  async function control(reference: string, address: string) {
+    const page = await browser.newPage();
+    await page.setContent(await readFile(join(FIXTURES, `${reference}.reference.html`), "utf8"));
+    const { kind, index } = parseTarget(address)!;
+    const el = (
+      await page.evaluateHandle(findTarget, [SLACK[kind], index, ".p-bkb_preview__message"] as [
+        string,
+        number,
+        string,
+      ])
+    ).asElement();
+    const out = el
+      ? await el.evaluate((e) =>
+          [
+            e.tagName.toLowerCase(),
+            e.getAttribute("type") === "button" ? "" : (e.getAttribute("type") ?? ""),
+            e.textContent!.trim(),
+          ]
+            .filter(Boolean)
+            .join(" "),
+        )
+      : null;
+    await page.close();
+    return out;
+  }
+
+  it("counts a section accessory's multi-select as a field, not a button", async () => {
+    expect(await control("contexts/multi_static_select/accessory", "field-1")).toBe(
+      "button Select items",
+    );
+    expect(await control("contexts/multi_static_select/accessory", "button-1")).toBeNull();
+    expect(await control("extra/payloads/accessory-multi-selects", "field-3")).toBe(
+      "button Select users",
+    );
+  });
+
+  it("counts number, email and URL inputs as inputs", async () => {
+    expect(await control("extra/payloads/dispatch-inputs", "input-1")).toBe("input number");
+    expect(await control("extra/payloads/dispatch-inputs", "input-2")).toBe("input url");
+    expect(await control("extra/payloads/dispatch-inputs", "input-3")).toBe("input text");
+    expect(await control("extra/payloads/dispatch-email", "input-1")).toBe("input email");
+    // A date picker's input is text, and a field.
+    expect(await control("contexts/datetimepicker/actions", "input-1")).toBeNull();
+  });
+
+  it("finds an expanded plan's and task card's sources, which a collapsed one doesn't draw", async () => {
+    expect(await control("catalog/agents/plan@expanded", "source-1")).toBe(
+      "a Thinking Steps Documentation",
+    );
+    expect(await control("catalog/agents/task-card@expanded", "source-2")).toBe(
+      "a Task card block",
+    );
+    expect(await control("catalog/agents/plan", "source-1")).toBeNull();
+    expect(await control("catalog/agents/task-card", "link-1")).toBeNull();
+    expect(await control("catalog/agents/task-card@expanded", "link-1")).toBe("a Thinking Steps");
   });
 });

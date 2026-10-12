@@ -76,17 +76,23 @@ export type Kind = (typeof KINDS)[number];
 /** Slack's preview, as Block Kit Builder renders it (class names measured in the references). */
 export const SLACK: Record<Kind, string> = {
   // A modal's footer buttons are c-buttons too; they're `submit` and `cancel`. So is a file input's
-  // button, which sits right in its input block's fieldset; it's `file`.
+  // button, which sits right in its input block's fieldset; it's `file`. So is a section
+  // accessory's multi-select, which opens a selection dialog; it's a `field`, as ours is.
   button:
-    'button.c-button:not([aria-label="More options"]):not(.p-bkb_preview_modal__submit):not(.p-bkb_preview_modal__cancel):not(.c-fieldset > button)',
+    'button.c-button:not([aria-label="More options"]):not(.p-bkb_preview_modal__submit):not(.p-bkb_preview_modal__cancel):not(.c-fieldset > button):not(:has([data-qa="bk-multi_select_input"]))',
   overflow: 'button[aria-label="More options"]',
   // Selects (a combobox button or a typeable input), time lists, date pickers and both halves of a
-  // datetime picker.
-  field: '.c-select_input, [role="combobox"], .c-date_picker_input',
+  // datetime picker. A section accessory's multi-select is a c-button holding the placeholder
+  // (`bk-multi_select_input`), which opens the selection dialog.
+  field:
+    '.c-select_input, [role="combobox"], .c-date_picker_input, button.c-button:has([data-qa="bk-multi_select_input"])',
   checkbox: "input.c-input_checkbox",
   radio: "input.c-input_radio",
-  // Plain text, number, email and URL inputs, single or multiline.
-  input: 'input[class*="p-block_kit_"][class*="_input_element"], textarea[class*="p-block_kit_"]',
+  // Plain text, number, email and URL inputs, single or multiline. Only the plain text input carries
+  // a p-block_kit_ class; the number input has its own data-qa, and the email and URL inputs are bare
+  // c-input_text inputs of their type (a date picker's input is type text).
+  input:
+    'input[class*="p-block_kit_"][class*="_input_element"], textarea[class*="p-block_kit_"], input[data-qa="block-kit-number-input-element"], input.c-input_text[type="email"], input.c-input_text[type="url"]',
   submit: ".p-bkb_preview_modal__submit",
   cancel: ".p-bkb_preview_modal__cancel",
   // A mrkdwn, rich text or markdown link; not an image's link or an icon button drawn as a link.
@@ -125,8 +131,9 @@ export const SLACK: Record<Kind, string> = {
   // An image block's title toggle, which hides and shows the image (a video's title has one too,
   // which ours doesn't draw).
   expand: '.c-expandable_trigger[aria-label="image"]',
-  // A plan's or task card's source link.
-  source: '[class*="listitem"] a.c-link:not(.c-link--underline), [class*="taskCard"] a.c-link',
+  // A plan's or task card's source link. Both draw each source as `[data-qa="source"]`, and only
+  // while expanded: the plan and the task card start collapsed (a click on the pill opens them).
+  source: '[data-qa="source"] a.c-link',
   // The message header: the app's name and the time.
   sender: ".p-bkb_preview__app_name",
   time: ".c-timestamp",
@@ -191,6 +198,13 @@ export const LAYER_KINDS: readonly Kind[] = ["option", "menuitem", "confirm", "d
 
 /** Kinds whose Slack selector no reference has confirmed yet. */
 export const UNVERIFIED: readonly Kind[] = ["more", "action", "tooltip"];
+
+/**
+ * Kinds Block Kit Builder's preview draws as plain text, which takes no keyboard focus: the message
+ * header's app name and time are spans there (the Slack client makes them a button and a link). A
+ * `focus-<kind>-<n>` capture of one can't hold, so the capture plan doesn't ask for it.
+ */
+export const UNFOCUSABLE: readonly Kind[] = ["sender", "time"];
 
 /** Where a kind's controls are counted on our side: the message, or the whole page. */
 export const ourRoot = (kind: Kind): string | null =>

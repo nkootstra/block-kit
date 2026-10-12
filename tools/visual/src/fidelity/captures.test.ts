@@ -1,5 +1,12 @@
 import { describe, expect, it } from "bun:test";
-import { behaviourEvidence, controlComponents, referenceEvidence, referenceMeta } from "./captures";
+import {
+  behaviourEvidence,
+  controlComponents,
+  controlNodes,
+  referenceEvidence,
+  referenceMeta,
+  revealedBy,
+} from "./captures";
 import type { Component } from "./components";
 
 const component = (id: string, states: Component["states"], type = id): Component => ({
@@ -223,8 +230,65 @@ describe("capture evidence", () => {
     expect(referenceMeta(html)).toEqual({
       stateStyles: { "button-1": [":hover", ":active"] },
       scrollers: true,
+      overflows: true,
     });
     expect(referenceMeta("<p></p>")).toEqual({});
+  });
+
+  it("tells a scroll container that fits from one that overflows, also after +full widened it", () => {
+    const meta = (m: object) =>
+      referenceMeta(
+        `<script type="application/json" id="sbk-reference-meta">${JSON.stringify(m)}</script>`,
+      );
+    const fits = [{ ref: "6", scrollWidth: 432, clientWidth: 432, scrollLeft: 0 }];
+    expect(meta({ scrollers: fits, full: { widenedBy: 0, expanded: 0 } }).overflows).toBe(false);
+    // Measured once the preview was widened by what the carousel hid.
+    const widened = [{ ref: "3", scrollWidth: 1408, clientWidth: 1408, scrollLeft: 0 }];
+    expect(meta({ scrollers: widened, full: { widenedBy: 976, expanded: 0 } }).overflows).toBe(
+      true,
+    );
+  });
+
+  it("finds a collapsed plan's and task card's insides behind their pill", () => {
+    const payload = {
+      blocks: [
+        { type: "section", text: { type: "mrkdwn", text: "See <https://example.com|this>" } },
+        {
+          type: "plan",
+          title: "Plan",
+          tasks: [
+            {
+              task_id: "1",
+              title: "One",
+              sources: [{ type: "url", url: "https://example.com/a", text: "A" }],
+            },
+          ],
+        },
+        {
+          type: "task_card",
+          task_id: "2",
+          title: "Card",
+          details: {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [{ type: "link", url: "https://example.com/b", text: "B" }],
+              },
+            ],
+          },
+          sources: [{ type: "url", url: "https://example.com/c", text: "C" }],
+        },
+      ],
+    };
+    // The section's link is there at rest; the task card's is behind the second pill.
+    expect(revealedBy(payload, "link-1")).toBeUndefined();
+    expect(revealedBy(payload, "link-2")).toBe("pill-2");
+    expect(revealedBy(payload, "source-1")).toBe("pill-1");
+    expect(revealedBy(payload, "source-2")).toBe("pill-2");
+    expect(revealedBy(payload, "task-1")).toBe("pill-1");
+    expect(revealedBy(payload, "pill-2")).toBeUndefined();
+    expect(controlNodes(payload).source?.map((c) => c.key)).toEqual(["sources", "sources"]);
   });
 
   it("covers what a probe's snapshot shows: a list opened, an option hovered or picked", () => {

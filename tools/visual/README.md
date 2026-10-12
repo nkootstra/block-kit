@@ -128,9 +128,10 @@ The suffix parts always come in that order (`@open+mobile+full+dark`), so each s
 
 **Control addresses** (`src/targets.ts`) point at one control on both sides: `<kind>-<n>`, the nth
 control of the kind in document order, counting from 1. The kinds are `button`, `overflow`,
-`field` (a select, multi-select, time list, date picker, or either half of a datetime picker),
-`checkbox`, `radio`, `input` (plain text, number, email and URL inputs) and a modal's `submit` and
-`cancel`. Each kind has a selector per side, and where a control matches more than once (a picker's
+`field` (a select, multi-select, time list, date picker, or either half of a datetime picker; a
+section accessory's multi-select too, which Slack draws as a button that opens the selection
+dialog), `checkbox`, `radio`, `input` (plain text, number, email and URL inputs) and a modal's
+`submit` and `cancel`. Each kind has a selector per side, and where a control matches more than once (a picker's
 wrapper and its input) only the outermost match counts. An address counts controls rather than
 naming them by role and accessible name: the payload fixes the number and order of controls on
 both sides, while the names differ (Slack's static select is a combobox named after its
@@ -155,7 +156,7 @@ The other kinds cover what isn't a form control:
 | `icon`, `feedback`   | an icon button; each of a feedback pair, positive first           |
 | `collapse`           | a collapsible container's header                                  |
 | `pill`, `task`       | a plan's or task card's status pill; a plan's task header         |
-| `source`             | a plan's or task card's source link                               |
+| `source`             | a plan's or task card's source link (once expanded)               |
 | `contact`, `expand`  | a contact card; an image block's title toggle                     |
 | `sender`, `time`     | the message header's app name and time                            |
 | `scroller`           | a block that scrolls itself (below)                               |
@@ -179,7 +180,15 @@ alert block has no close button in Block Kit Builder's preview, so its links are
 nothing else of it is addressable. Block Kit Builder shows neither a section's Show more (not
 even for a 980-character section) nor a message hover toolbar, so `more` and `action` can't be
 captured there; their Slack selectors stay guesses (targets.ts `UNVERIFIED`), and ours doesn't draw
-the toolbar yet.
+the toolbar yet. The Builder draws the message header's `sender` and `time` as plain text, which
+takes no focus (targets.ts `UNFOCUSABLE`): a `@focus-sender-1` stops with "can't take focus", and
+the capture plan doesn't ask for one. A plan and a task card start collapsed on both sides, so
+their sources, task headers and the links in their text exist only after a click on the `pill`:
+a probe clicks it first (`{ "click": "pill-1" }`), and the plan proposes
+`@expanded-hover-<target>` probes rather than plain hover or focus captures of them. A section
+accessory's multi-select opens a dialog that takes the focus, with its field at rest; a probe that
+reaches its options clicks the dialog's field next (`{ "click": { "role": "combobox", "name":
+"<placeholder>" } }`), which opens the list.
 
 A probe can fill a required rich text input (`{ "click": "richtext-1" }`, then `{ "type": "…" }`),
 but not a file input, whose button opens the operating system's file chooser, or an external
@@ -342,7 +351,17 @@ actions don't).
 
 A hover counts only once the pointer moves onto the control after the instruction appears (a
 pointer resting there from an earlier item doesn't), and on the control or any wrapper drawing the
-same box (a time picker's value is an overlay beside its input). Every wait leaves out the time the
+same box (a time picker's value is an overlay beside its input). A click counts when the press went
+through the control (as it was when pressed: a feedback button swaps its icon on the press), a
+wrapper drawing its box or the select or picker field around it (a time picker's overlay and
+chevron, a date picker's calendar button), or landed inside the instruction's `box` whatever was on
+top there: an open menu's overlay that takes the click is Slack's behaviour, and the probe records
+it. A `type` step counts once the field reads the text or the keys were typed, so typing that
+closes a list half way (a space picks the highlighted option in Slack's static select) doesn't
+stall the run. A control that renders a moment after the preview settles (a contact card) gets
+`lookup` ms (5000) to appear before a step that addresses it fails. Every wait is bounded: an
+instruction not done within `timeout` (120 s) fails the item, and a preview that doesn't settle
+within 60 s fails it with what it last saw. Every wait leaves out the time the
 tab was hidden, counted from `visibilitychange`, since a hidden tab's timers barely run. A tall
 payload gives the preview pane a scrollbar that takes 8px off the message; it's hidden while the
 preview is frozen, so the message keeps its full width.

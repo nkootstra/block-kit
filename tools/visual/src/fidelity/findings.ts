@@ -267,4 +267,43 @@ export const FINDINGS: Finding[] = [
     components: ["multi_static_select", "radio_buttons"],
     status: "verified",
   },
+  {
+    id: "directory-select-placeholder",
+    title: "Our users, conversations and channels selects send their placeholder; Slack's don't",
+    evidence: [
+      'extra/actions/more-elements@pick (light desktop run): Slack\'s channels_select action has no placeholder; ours echoes {"type":"plain_text","text":"Pick a channel","emoji":true}. Listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.',
+      "The same shows in contexts/users_select, conversations_select and channels_select/actions@pick: their fixtures set a placeholder and Slack's actions have none. Slack's static_select and multi_static_select actions do carry it (catalog/actions/all-selects@pick, extra/payloads/selects@pick-multi).",
+    ],
+    suspect: [
+      "packages/block-kit/src/payloads.ts and the select's action builder (elements/Select.tsx): the placeholder is echoed for every select type.",
+    ],
+    next: "Leave the placeholder out of users, conversations and channels select actions (single and multi, once a multi recording confirms it), then drop the KNOWN_DIFFERENCES entry.",
+    components: ["channels_select", "users_select", "conversations_select"],
+  },
+  {
+    id: "select-space-picks-while-typing",
+    title: "A space typed into Slack's open static select picks the highlighted option",
+    evidence: [
+      'Light desktop real-input run, contexts/static_select/actions@typeahead: typing "Option 3" into the open list closed it with "Option 1" chosen. The space picked the highlighted option before the "3" arrived, so typing text with a space isn\'t a pure typeahead in Slack.',
+      "capture.js then waited for the field to read the typed text and timed out; it now counts the step done once the keys were typed.",
+    ],
+    suspect: [
+      "Not a harness bug: Slack's behaviour. Ours: packages/block-kit/src/elements/useCombobox.ts, whether a space typed into an open list's query picks the highlighted option or types into the query.",
+    ],
+    next: 'The typeahead probe now types "3", which has no space; a probe that types "Option 3" would record the space pick on its own. Replay both on ours (bun tools/visual/src/probes.ts contexts/static_select).',
+    components: ["static_select", "option"],
+  },
+  {
+    id: "outside-click-only-closes",
+    title: "A click on another select while Slack's menu is open only closes the menu",
+    evidence: [
+      "Light desktop real-input run, extra/payloads/selects@outside-click: with field-1's list open, the first real click on field-2 closed the list and didn't open field-2; a second click opened it. Slack's open menu lays an overlay over the page, which takes the click.",
+      "The committed recording (selects@outside-click.behaviour.json) shows field-2 open after step 2 because only the second click counted: capture.js then counted a click only when it reached field-2. It now counts the first, which landed inside field-2's box, so a new recording shows the click that only closes.",
+    ],
+    suspect: [
+      "Not a harness bug: Slack's behaviour. Ours: packages/block-kit/src/elements/Popover.tsx, whether an outside click also reaches the control under it.",
+    ],
+    next: "Re-record extra/payloads/selects@outside-click, then replay it on ours (bun tools/visual/src/probes.ts extra/payloads/selects).",
+    components: ["static_select"],
+  },
 ];

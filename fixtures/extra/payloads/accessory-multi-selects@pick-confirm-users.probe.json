@@ -4,6 +4,12 @@
       "click": "field-3"
     },
     {
+      "click": {
+        "role": "combobox",
+        "name": "Select users"
+      }
+    },
+    {
       "key": "ArrowDown"
     },
     {

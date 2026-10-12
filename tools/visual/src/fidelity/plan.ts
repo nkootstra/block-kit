@@ -16,7 +16,7 @@ import { expectedStates, objects } from "../coverage";
 import { formatReferenceName, parseReferenceName } from "../names";
 import { type Probe, probeSnapshots, type Step } from "../probes";
 import { STATES } from "../states";
-import { KINDS, LAYER_KINDS, parseTarget, UNVERIFIED } from "../targets";
+import { KINDS, LAYER_KINDS, parseTarget, UNFOCUSABLE, UNVERIFIED } from "../targets";
 import {
   type FactKind,
   type PayloadEvent,
@@ -26,7 +26,13 @@ import {
   type Theme,
   type Width,
 } from "./axes";
-import { behaviourEvidence, controlComponents, referenceEvidence } from "./captures";
+import {
+  behaviourEvidence,
+  controlComponents,
+  controlNodes,
+  referenceEvidence,
+  revealedBy,
+} from "./captures";
 import { type Component, surfaceOf } from "./components";
 import {
   type Cell,
@@ -400,7 +406,15 @@ export function forecastFocus(
   const last = steps.findLastIndex((s) => "click" in s || "hover" in s);
   const keys = steps.slice(last + 1).flatMap((s) => ("key" in s ? [s.key] : []));
   if (keys.length === 0) return undefined;
-  const opened = last >= 0 && "click" in steps[last]! ? steps[last]!.click : undefined;
+  let opened = last >= 0 && "click" in steps[last]! ? steps[last]!.click : undefined;
+  // A selection dialog's field, clicked after the accessory that opened the dialog (openSteps):
+  // the list it opens is that accessory's.
+  if (typeof opened === "object" && opened.role === "combobox") {
+    const accessory = steps
+      .slice(0, last)
+      .findLast((s) => "click" in s && typeof s.click === "string");
+    if (accessory && "click" in accessory) opened = accessory.click;
+  }
   const kind = typeof opened === "string" ? parseTarget(opened)?.kind : undefined;
   const tabs =
     keys.filter((k) => k === "Tab").length - keys.filter((k) => k === "Shift+Tab").length;
@@ -426,6 +440,31 @@ export function forecastFocus(
     };
   if (typeof opened === "string") return { target: opened, visible: true };
   return undefined;
+}
+
+/**
+ * The steps that open a control's layer: a click on it. A section accessory's multi-select opens
+ * Slack's selection dialog instead, with its field at rest (the dialog takes the focus), so a click
+ * on the dialog's field follows, which opens the list. The field is a combobox named after the
+ * placeholder on both sides (Slack's aria-label, ours too).
+ */
+export function openSteps(payload: unknown, address: string): Step[] {
+  const t = parseTarget(address);
+  const c = t && controlNodes(payload)[t.kind]?.[t.index - 1];
+  const placeholder = (c?.node.placeholder as Obj | undefined)?.text;
+  if (
+    c?.key === "accessory" &&
+    String(c.node.type).startsWith("multi_") &&
+    typeof placeholder === "string"
+  )
+    return [{ click: address }, { click: { role: "combobox", name: placeholder } }];
+  return [{ click: address }];
+}
+
+/** The click that makes a control exist (a collapsed plan's or task card's pill), if it needs one. */
+export function revealSteps(payload: unknown, address: string): Step[] {
+  const pill = revealedBy(payload, address);
+  return pill ? [{ click: pill }] : [];
 }
 
 /**
@@ -547,8 +586,16 @@ function candidates(
   if (fact === "styles") {
     if (state === "hover" || state === "focus-visible" || state === "pressed")
       for (const [fixture, f] of fit) {
-        // A layer's options and buttons only exist once it's open: probes reach those.
-        const addresses = addressesOf(f.payload, component.id, components, { layers: false });
+        // A layer's options and buttons only exist once it's open, and a collapsed plan's or task
+        // card's insides once it's expanded: probes reach those (snapshotProbes). The Builder draws
+        // the message header as plain text, which takes no focus.
+        const addresses = addressesOf(f.payload, component.id, components, {
+          layers: false,
+        }).filter(
+          (a) =>
+            !revealedBy(f.payload, a) &&
+            !(state === "focus-visible" && UNFOCUSABLE.includes(parseTarget(a)!.kind)),
+        );
         if (addresses.length === 0) continue;
         // Hover and focus are captured with the input held, which also shows what no rule says
         // (a tooltip, the cursor's effect); pressed can't be held through a snapshot, so a plain
@@ -623,6 +670,12 @@ function candidates(
 function unplannedReason(cell: Cell): string {
   const capability = cell.capture!.capability;
   const state = String(cell.state);
+  if (
+    capability === "real-input" &&
+    state === "focus-visible" &&
+    cell.component === "message-header"
+  )
+    return "focus-visible styles of the message header, which the Builder draws as plain text (targets.ts UNFOCUSABLE)";
   if (capability === "real-input")
     return cell.fact === "styles"
       ? `${state} styles of something that isn't a control address (targets.ts kinds)`
@@ -649,6 +702,11 @@ export function capturePlan(
   probes: Map<string, Probe> = new Map(),
   /** Behaviour recordings already made (`<fixture>@<probe>`). */
   recorded: Set<string> = new Set(),
+  /**
+   * Fixtures whose desktop references recorded their scroll containers with none overflowing:
+   * Slack fits the block at desktop width, so a probe can't scroll it (probes record at desktop).
+   */
+  fits: Set<string> = new Set(),
 ): CapturePlan {
   // The inventory's components carry the states the stylesheet discovery added: plan with those.
   const cellStates = new Map<string, Set<string>>();
@@ -904,7 +962,7 @@ export function capturePlan(
   }
 
   const proposals = propose(orphans, byId, where, payloads);
-  const probeProposals = proposeProbes(unplanned, where, components, probes);
+  const probeProposals = proposeProbes(unplanned, where, components, probes, fits);
   const live = items.filter((i) => !maintainer.includes(i) && !(i.fixture in NOT_CAPTURABLE));
   return {
     sessions,
@@ -951,11 +1009,12 @@ export function proposeProbes(
   where: Map<string, Where>,
   components: Component[],
   existing: Map<string, Probe>,
+  fits: Set<string> = new Set(),
 ): ProbeProposal[] {
   const out = new Map(behaviourProbes(cells, where, components, existing).map((p) => [p.name, p]));
   for (const p of [
     ...snapshotProbes(cells, where, components, existing),
-    ...scrollProbes(cells, where, components, existing),
+    ...scrollProbes(cells, where, components, existing, fits),
   ])
     if (!out.has(p.name)) out.set(p.name, p);
   return [...out.values()].toSorted((a, b) => a.name.localeCompare(b.name));
@@ -990,24 +1049,15 @@ function snapshotProbes(
       .filter(([o]) => o.type === "button")
       .findIndex(([o]) => "confirm" in o);
     const specs: [string, Step[]][] = [];
+    const open = opener ? openSteps(payload, `${opener}-1`) : [];
     if (opener) {
       specs.push([
         `open-hover-option-1`,
-        [
-          { click: `${opener}-1` },
-          { hover: "option-1" },
-          { snapshot: "open-hover-option-1" },
-          { key: "Escape" },
-        ],
+        [...open, { hover: "option-1" }, { snapshot: "open-hover-option-1" }, { key: "Escape" }],
       ]);
       specs.push([
         `open-pick-option-1`,
-        [
-          { click: `${opener}-1` },
-          { click: "option-1" },
-          { snapshot: "open-pick-option-1" },
-          { key: "Escape" },
-        ],
+        [...open, { click: "option-1" }, { snapshot: "open-pick-option-1" }, { key: "Escape" }],
       ]);
     }
     if (opener) {
@@ -1015,32 +1065,17 @@ function snapshotProbes(
       if (opener !== "field")
         specs.push([
           `open-focus-menuitem-1`,
-          [
-            { click: `${opener}-1` },
-            { key: "ArrowDown" },
-            { snapshot: "open-focus-menuitem-1" },
-            { key: "Escape" },
-          ],
+          [...open, { key: "ArrowDown" }, { snapshot: "open-focus-menuitem-1" }, { key: "Escape" }],
         ]);
       specs.push([
         `open-focus-option-1`,
-        [
-          { click: `${opener}-1` },
-          { key: "ArrowDown" },
-          { snapshot: "open-focus-option-1" },
-          { key: "Escape" },
-        ],
+        [...open, { key: "ArrowDown" }, { snapshot: "open-focus-option-1" }, { key: "Escape" }],
       ]);
     }
     if ((counted.chip?.length ?? 0) > 0 && opener)
       specs.push([
         `chip-focus-1`,
-        [
-          { click: `${opener}-1` },
-          { key: "Escape" },
-          { key: "ArrowLeft" },
-          { snapshot: "chip-focus-1" },
-        ],
+        [...open, { key: "Escape" }, { key: "ArrowLeft" }, { snapshot: "chip-focus-1" }],
       ]);
     if (confirming >= 0) {
       specs.push([
@@ -1063,6 +1098,21 @@ function snapshotProbes(
         ],
       ]);
     }
+    // A collapsed plan's or task card's insides (its sources, the links in its text, its task
+    // headers), hovered once its pill has expanded it.
+    for (const [kind, list] of [
+      ...Object.entries(counted),
+      ...(counted.pill?.includes("plan") ? [["task", ["plan"]] as const] : []),
+    ])
+      for (let i = 1; i <= (list?.length ?? 0); i++) {
+        const address = `${kind}-${i}`;
+        const reveal = revealSteps(payload, address);
+        if (reveal.length > 0)
+          specs.push([
+            `expanded-hover-${address}`,
+            [...reveal, { hover: address }, { snapshot: `expanded-hover-${address}` }],
+          ]);
+      }
     if (confirming >= 0)
       for (const b of ["confirm", "deny"])
         specs.push([
@@ -1099,12 +1149,16 @@ function snapshotProbes(
   return out;
 }
 
-/** Probes that scroll a block sideways to its end, for the many-items behaviour of wide blocks. */
+/**
+ * Probes that scroll a block sideways to its end, for the many-items behaviour of wide blocks, on a
+ * fixture whose block overflows at desktop width (not one in `fits`: Slack's 432px table fits).
+ */
 function scrollProbes(
   cells: Cell[],
   where: Map<string, Where>,
   components: Component[],
   existing: Map<string, Probe>,
+  fits: Set<string>,
 ): ProbeProposal[] {
   const out: ProbeProposal[] = [];
   for (const id of new Set(
@@ -1114,6 +1168,7 @@ function scrollProbes(
       ([a], [b]) => preference(a) - preference(b) || a.localeCompare(b),
     );
     for (const [fixture, f] of fixtures) {
+      if (fits.has(fixture)) continue;
       const name = `${fixture}@scroll-scroller-1`;
       const probe: Probe = { steps: [{ scroll: "scroller-1", left: "end" }] };
       const covers = forecastProbe(name, probe, f.payload, components)
@@ -1169,10 +1224,18 @@ function behaviourProbes(
         .filter(([o]) => o.type === "button")
         .findIndex(([o]) => "confirm" in o);
       let steps: Step[];
-      if (kind === "link" || kind === "mention") steps = [{ hover: address }, { wait: 1500 }];
+      // A control inside a collapsed plan or task card is there once its pill expands it.
+      const reveal = revealSteps(f.payload, address);
+      if (kind === "link" || kind === "mention")
+        steps = [...reveal, { hover: address }, { wait: 1500 }];
       else if (kind === "option" || kind === "menuitem") {
         if (!opener) continue;
-        steps = [{ click: `${opener}-1` }, { hover: address }, { wait: 800 }, { key: "Escape" }];
+        steps = [
+          ...openSteps(f.payload, `${opener}-1`),
+          { hover: address },
+          { wait: 800 },
+          { key: "Escape" },
+        ];
       } else if (kind === "tooltip") {
         // A tooltip shows after a hover on its control: hover that, wait, snapshot.
         const trigger = (["icon", "feedback", "card", "button"] as const).find(
@@ -1198,6 +1261,7 @@ function behaviourProbes(
         steps = [{ hover: address }, { wait: 1000 }, { click: address }, { type: "a" }];
       else
         steps = [
+          ...reveal,
           { hover: address },
           { wait: 1000 },
           { click: address },
@@ -1216,7 +1280,7 @@ function behaviourProbes(
       if (states.has("many-items") && opener)
         add(`${fixture}@scroll-${opener}-1`, {
           steps: [
-            { click: `${opener}-1` },
+            ...openSteps(f.payload, `${opener}-1`),
             ...Array.from({ length: 12 }, () => ({ key: "ArrowDown" })),
             { key: "Escape" },
           ],
@@ -1225,6 +1289,24 @@ function behaviourProbes(
     }
   }
   return [...out.values()].toSorted((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * The fixtures whose desktop references recorded their scroll containers and none overflowing
+ * (capturePlan's `fits`), from the references' metas (captures.ts referenceMeta). One reference
+ * that overflowed keeps the fixture out.
+ */
+export function fitsAtDesktop(
+  references: Map<string, { scrollers?: boolean; overflows?: boolean }>,
+): Set<string> {
+  const fits = new Set<string>();
+  const overflows = new Set<string>();
+  for (const [name, meta] of references) {
+    const { fixture, mobile } = parseReferenceName(name);
+    if (!meta.scrollers || mobile) continue;
+    (meta.overflows ? overflows : fits).add(fixture);
+  }
+  return new Set([...fits].filter((f) => !overflows.has(f)));
 }
 
 /** Splits a session's items into runs of at most SESSION_SIZE, numbered `#a01`, `#r01`…. */

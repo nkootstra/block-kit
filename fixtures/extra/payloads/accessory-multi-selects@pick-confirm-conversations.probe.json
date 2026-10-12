@@ -4,6 +4,12 @@
       "click": "field-2"
     },
     {
+      "click": {
+        "role": "combobox",
+        "name": "Select conversations"
+      }
+    },
+    {
       "key": "ArrowDown"
     },
     {

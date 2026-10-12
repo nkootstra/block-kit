@@ -28,7 +28,8 @@
 // instruction (`{ name, do: "hover", target, x, y, box }`, viewport CSS pixels; `{ do: "key", key:
 // "Tab" }`). Whoever drives the browser performs it with real input and leaves the pointer where it
 // is; the runner sees the state hold (`:hover`, `:focus-visible`) and continues by itself, and
-// checks it still holds after the snapshot. `submit-errors` presses a modal's submit.
+// checks it still holds after the snapshot. `submit-errors` presses a modal's submit. A control
+// that isn't there yet gets `lookup` ms to appear (a contact card renders late).
 //
 // Behaviour probes. An item with a `probe` (`{ steps, snapshot? }`, probes.ts) runs its steps on the
 // preview, each with real input by default (the same instructions; `real: false` dispatches scripted
@@ -58,6 +59,7 @@ async ({
   reset = false,
   stateStyles = true,
   chipTimeout = 30_000,
+  lookup = 5000,
   settle = 1000,
   timeout = 120_000,
   viewport = 1440,
@@ -120,12 +122,14 @@ async ({
   // address, `<kind>-<n>`, the nth outermost match of the kind's selector.
   const SLACK = {
     button:
-      'button.c-button:not([aria-label="More options"]):not(.p-bkb_preview_modal__submit):not(.p-bkb_preview_modal__cancel):not(.c-fieldset > button)',
+      'button.c-button:not([aria-label="More options"]):not(.p-bkb_preview_modal__submit):not(.p-bkb_preview_modal__cancel):not(.c-fieldset > button):not(:has([data-qa="bk-multi_select_input"]))',
     overflow: 'button[aria-label="More options"]',
-    field: '.c-select_input, [role="combobox"], .c-date_picker_input',
+    field:
+      '.c-select_input, [role="combobox"], .c-date_picker_input, button.c-button:has([data-qa="bk-multi_select_input"])',
     checkbox: "input.c-input_checkbox",
     radio: "input.c-input_radio",
-    input: 'input[class*="p-block_kit_"][class*="_input_element"], textarea[class*="p-block_kit_"]',
+    input:
+      'input[class*="p-block_kit_"][class*="_input_element"], textarea[class*="p-block_kit_"], input[data-qa="block-kit-number-input-element"], input.c-input_text[type="email"], input.c-input_text[type="url"]',
     submit: ".p-bkb_preview_modal__submit",
     cancel: ".p-bkb_preview_modal__cancel",
     link: "a.c-link.c-link--underline, .p-rich_text_section a.c-link",
@@ -151,7 +155,7 @@ async ({
     task: '[class*="taskHeaderCollapsible"]',
     contact: '[data-qa="bk_contact_card_block"]',
     expand: '.c-expandable_trigger[aria-label="image"]',
-    source: '[class*="listitem"] a.c-link:not(.c-link--underline), [class*="taskCard"] a.c-link',
+    source: '[data-qa="source"] a.c-link',
     sender: ".p-bkb_preview__app_name",
     time: ".c-timestamp",
     scroller: "@scroller",
@@ -298,11 +302,13 @@ async ({
     },
   };
 
-  // Waits until the preview's HTML stops changing and its images have loaded.
+  // Waits until the preview's HTML stops changing and its images have loaded. When it gives up it
+  // says what it last saw, so a stuck load can be told from a preview that keeps changing.
   const settled = async (before) => {
     let html = "";
     let since = 0;
     let t0 = performance.now();
+    let why = "there was no preview";
     while (performance.now() - t0 < 60_000) {
       await sleep(Math.min(250, settle || 1));
       // macOS pauses a hidden tab; wait it out rather than time out.
@@ -313,25 +319,36 @@ async ({
       }
       const root = preview();
       const now = root ? root.innerHTML : "";
-      if (!root || now === before || root.innerText.includes("switch")) continue;
+      if (!root) continue;
+      if (now === before) {
+        why = "it still showed the previous payload (the Builder didn't take the new one)";
+        continue;
+      }
+      if (root.innerText.includes("switch")) {
+        why = 'it showed the Builder\'s "switch" notice';
+        continue;
+      }
       if (now !== html) {
         html = now;
         since = performance.now();
+        why = "its HTML kept changing";
         continue;
       }
-      if (
-        performance.now() - since >= settle &&
-        [...root.querySelectorAll("img")].every((i) => i.complete)
-      )
-        return;
+      if (performance.now() - since >= settle) {
+        if ([...root.querySelectorAll("img")].every((i) => i.complete)) return;
+        why = "an image never finished loading";
+      }
     }
-    throw new Error("the preview never settled");
+    throw new Error(`the preview never settled: ${why}`);
   };
 
   const OPENERS = {
     open: '.c-select_input, [role="combobox"], .c-date_picker_input, button[aria-label="More options"]',
     confirm: "button.c-button, .c-button",
-    dialog: '[class*="accessory"] .c-select_input, [class*="accessory"] [role="combobox"]',
+    // As measured: Slack draws a section accessory's multi-select as a c-button holding the
+    // placeholder, which opens the dialog.
+    dialog:
+      '[class*="accessory"] .c-select_input, [class*="accessory"] [role="combobox"], [class*="accessory"] button.c-button:has([data-qa="bk-multi_select_input"])',
   };
   const opened = (interaction) =>
     interaction === "open"
@@ -578,8 +595,12 @@ async ({
       (t) => t.textContent.trim() === label,
     );
     if (!tab || tab.getAttribute("aria-selected") === "true") return;
-    press(tab);
-    await sleep(400);
+    // A scripted press has been missed once in a while; the tab is pressed again until it shows
+    // selected, so a payload isn't written into the other tab's editor.
+    for (let attempt = 0; attempt < 3 && tab.getAttribute("aria-selected") !== "true"; attempt++) {
+      press(tab);
+      await sleep(400);
+    }
     if (doc.activeElement === tab) tab.blur();
   }
 
@@ -650,14 +671,24 @@ async ({
     };
   };
   // Trusted input since the runner started listening: the browser marks real input `isTrusted`.
-  // Pointer moves are many, so only the last one is kept.
+  // Pointer moves are many, so only the last one is kept. Each press keeps the path it took as it
+  // was dispatched: a control can re-render its insides on a press (a feedback button swaps its
+  // icon), which takes the target out of the control before a check looks.
   const trusted = [];
   let lastMove;
   const listen = (event) => {
     if (!event.isTrusted) return;
     if (event.type === "pointermove" || event.type === "pointerover")
       lastMove = { at: performance.now(), target: event.target };
-    else trusted.push(event);
+    else
+      trusted.push({
+        type: event.type,
+        key: event.key,
+        target: event.target,
+        path: event.composedPath(),
+        x: event.clientX,
+        y: event.clientY,
+      });
   };
   const LISTENED = ["pointerdown", "mousedown", "click", "keydown", "pointermove", "pointerover"];
   for (const type of LISTENED) win.addEventListener(type, listen, true);
@@ -678,6 +709,39 @@ async ({
     return chain;
   };
   const hovers = (el) => hoverChain(el).some((c) => c.matches(":hover"));
+  // Whether a press counts as the click an instruction asked for on `el`: it went through the
+  // control, a wrapper drawing its box, or the select or picker field around it (Slack draws a
+  // time picker's value as an overlay beside its input, the chevron beside that, a date picker's
+  // calendar button beside its input), or it landed inside the box the instruction gave, whatever
+  // was on top there. That last is the click the driver made: an open menu's overlay that takes
+  // it, so the control under it never sees it, is Slack's behaviour, and the probe records it.
+  const FIELD_BOX = ".c-select_input__wrapper, .c-date_picker__select_container";
+  const clickArea = (el) => [...hoverChain(el), el.closest?.(FIELD_BOX)].filter(Boolean);
+  const pressed = (since, el, box) => {
+    const area = clickArea(el);
+    return trusted
+      .slice(since)
+      .some(
+        (e) =>
+          (e.type === "click" || e.type === "mousedown") &&
+          (e.path.some((n) => area.includes(n)) ||
+            area.some((a) => a.contains(e.target)) ||
+            (!!box &&
+              e.x >= box.x - 1 &&
+              e.x <= box.x + box.width + 1 &&
+              e.y >= box.y - 1 &&
+              e.y <= box.y + box.height + 1)),
+      );
+  };
+  // Whether trusted key presses since `since` spelled `text` (in order, other keys between them
+  // allowed). Typing into an open list can close it half way (Slack's static select picks the
+  // highlighted option on a space), so the field's value can't be the only sign it was typed.
+  const spelled = (since, text) => {
+    let i = 0;
+    for (const e of trusted.slice(since))
+      if (e.type === "keydown" && i < text.length && e.key === text[i]) i += 1;
+    return i === text.length;
+  };
   // Hover by real input: the pointer has to move onto the control after `since`, so a pointer
   // that happens to rest there from an earlier item doesn't count.
   const movedOnto = (el, since) =>
@@ -715,6 +779,12 @@ async ({
     // snapshot shows hover and focus together.
     if (hovers(el)) await ask(name, { do: "move-away", target: address }, () => !hovers(el));
     focusable(el).focus({ preventScroll: true });
+    // Block Kit Builder draws some controls as plain text (the message header's app name and
+    // time are spans): no Tab makes them focused, so say so rather than ask for one.
+    if (!el.contains(doc.activeElement))
+      throw new Error(
+        `${name}: ${address} can't take focus in the Builder (nothing in it is focusable)`,
+      );
     if (!focusVisible(el)) {
       const since = trusted.length;
       await ask(name, { do: "key", key: "Tab", target: address, ...center(el) }, () =>
@@ -743,6 +813,16 @@ async ({
       .flatMap((scope) => [...scope.querySelectorAll(roleSelector(spec.role))])
       .find((el) => el.getClientRects().length > 0 && text(el) === spec.name);
   };
+  // A control can render a moment after the preview settles (a contact card waits for its member):
+  // a lookup gives it `lookup` ms to appear before the step fails.
+  const found = async (find) => {
+    const t0 = performance.now();
+    for (;;) {
+      const el = find();
+      if (el || performance.now() - t0 >= lookup) return el;
+      await sleep(Math.min(250, lookup));
+    }
+  };
   // A role written down, or the one an element has by its tag (probes.ts IMPLICIT_ROLES).
   const IMPLICIT_ROLES = {
     link: "a[href]",
@@ -770,7 +850,7 @@ async ({
     if (step.wait !== undefined) return sleep(step.wait);
     // A block that scrolls itself, scrolled by script: a scroll needs no trusted input.
     if (step.scroll !== undefined) {
-      const el = resolveStep(step.scroll);
+      const el = await found(() => resolveStep(step.scroll));
       if (!el) throw new Error(`${name}: step ${i + 1} finds no ${describe(step.scroll)}`);
       const to = (value, max) => (value === "end" ? max : value);
       el.scrollTo({
@@ -799,16 +879,19 @@ async ({
       const field = doc.activeElement;
       const before = field?.value ?? field?.textContent ?? "";
       if (!real && field) return typeInto(field, step.type);
+      const since = trusted.length;
       return ask(
         name,
         { ...where, do: "type", text: step.type },
         () =>
           `${doc.activeElement?.value ?? doc.activeElement?.textContent ?? ""}` ===
-            `${before}${step.type}` || win.sbkCaptureReady,
+            `${before}${step.type}` ||
+          spelled(since, step.type) ||
+          win.sbkCaptureReady,
       );
     }
     const spec = step.click ?? step.hover;
-    const el = resolveStep(spec);
+    const el = await found(() => resolveStep(spec));
     if (!el) throw new Error(`${name}: step ${i + 1} finds no ${describe(spec)}`);
     const t = typeof spec === "string" ? target(spec) : undefined;
     if (step.click !== undefined && t?.kind === "button" && urlButtons[t.index - 1] && !allowUrls)
@@ -828,15 +911,11 @@ async ({
     }
     if (!real) return press(el);
     const since = trusted.length;
-    await ask(name, { ...where, do: "click", target: describe(spec), ...center(el) }, () =>
-      // A list option can unmount on mousedown, before the click reaches it.
-      trusted
-        .slice(since)
-        .some(
-          (e) =>
-            (e.type === "click" || e.type === "mousedown") &&
-            (el.contains(e.target) || e.target === el),
-        ),
+    const at = center(el);
+    // A mousedown counts as well as a click: a list option can unmount on mousedown, before the
+    // click reaches it.
+    await ask(name, { ...where, do: "click", target: describe(spec), ...at }, () =>
+      pressed(since, el, at.box),
     );
   };
 
@@ -1171,7 +1250,7 @@ async ({
         }
       } else if (input) {
         const t = target(input[2]);
-        const el = controls(preview(), t.kind)[t.index - 1];
+        const el = await found(() => controls(preview(), t.kind)[t.index - 1]);
         if (!el) throw new Error(`${name}: the preview has no ${input[2]}`);
         holds = await hold(name, input[1], el, input[2]);
         held = { input: input[1], target: input[2] };
@@ -1181,8 +1260,9 @@ async ({
         const html = preview().innerHTML;
         if (real) {
           const since = trusted.length;
-          await ask(name, { do: "click", target: "submit-1", ...center(el) }, () =>
-            trusted.slice(since).some((e) => e.type === "click" && el.contains(e.target)),
+          const at = center(el);
+          await ask(name, { do: "click", target: "submit-1", ...at }, () =>
+            pressed(since, el, at.box),
           );
         } else press(el);
         await sleep(Math.min(600, settle || 1));
