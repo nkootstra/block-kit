@@ -1,0 +1,34 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A message with a legacy attachment"
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "color": "#e01e5a",
+      "pretext": "Pretext above the attachment",
+      "author_name": "Ada Lovelace",
+      "title": "Attachment title",
+      "title_link": "https://example.com",
+      "text": "The attachment's text, with *mrkdwn*.",
+      "fields": [
+        {
+          "title": "Priority",
+          "value": "High",
+          "short": true
+        },
+        {
+          "title": "Status",
+          "value": "Open",
+          "short": true
+        }
+      ],
+      "footer": "Footer text"
+    }
+  ]
+}

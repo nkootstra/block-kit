@@ -1,0 +1,23 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "canvas",
+              "file_id": "F0123456789",
+              "text": "A canvas"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

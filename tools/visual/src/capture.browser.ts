@@ -475,6 +475,74 @@ describe("capture.js against stylesheets the Builder loads during a session", ()
     expect(log).toEqual(["snap", "snap", "snap"]);
   });
 
+  // Rendering a chart on a fresh Builder load brings a sheet that repeats hundreds of the message
+  // chrome's rules. Where nothing in the preview matches them, or the repeat leaves every value as
+  // it was, the cascade is the fresh page's and the capture goes ahead.
+  it("captures when a repeated rule styles nothing in the preview", async () => {
+    const { error, log } = await runDrift(["", ".message-actions { margin: 0 -8px; }"]);
+    expect(error).toBeUndefined();
+    expect(log).toEqual(["snap", "snap"]);
+  });
+
+  it("captures when a repeated rule matches but every value stays the same", async () => {
+    const { error } = await runDrift(["", ".slack-picker { margin: 0; }"]);
+    expect(error).toBeUndefined();
+  });
+
+  it("keeps refusing on the next item, and catches a sheet that arrives during the snapshot", async () => {
+    page = await browser.newPage();
+    await page.setContent(DRIFT_BUILDER);
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const errors = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      const once = async (append: string, snap = w.snap) => {
+        try {
+          await w.capture({
+            items: [{ name: "catalog/section/plain-text", payload: { append } }],
+            snap,
+            adapter: w.adapter,
+            settle: 0,
+          });
+          return "ok";
+        } catch (e) {
+          return String(e);
+        }
+      };
+      const fresh = await once("");
+      const repeated = await once(".picker { margin: 0 -8px; }");
+      const next = await once("");
+      return { fresh, repeated, next };
+    });
+    expect(errors.fresh).toBe("ok");
+    expect(errors.repeated).toMatch(/before the snapshot/);
+    expect(errors.next).toMatch(/before the snapshot/);
+
+    page = await browser.newPage();
+    await page.setContent(DRIFT_BUILDER);
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const during = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      try {
+        await w.capture({
+          items: [{ name: "catalog/section/plain-text", payload: {} }],
+          // The chart's sheet arrives while the preview is being frozen.
+          snap: async () => {
+            const style = document.createElement("style");
+            style.textContent = ".picker { margin: 0 -8px; }";
+            document.head.append(style);
+            return "<html></html>";
+          },
+          adapter: w.adapter,
+          settle: 0,
+        });
+        return "ok";
+      } catch (e) {
+        return String(e);
+      }
+    });
+    expect(during).toMatch(/while it snapshotted/);
+  });
+
   it("refuses to snapshot once a later stylesheet repeats a rule the page already has", async () => {
     const { error, log } = await runDrift(["", ".picker { margin: 0 -8px; }"]);
     expect(error).toMatch(/plain-text-1: .*\.picker \{ margin/);

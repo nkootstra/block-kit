@@ -1,0 +1,33 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_preformatted",
+          "border": 1,
+          "elements": [
+            {
+              "type": "text",
+              "text": "Preformatted with a border"
+            }
+          ]
+        },
+        {
+          "type": "rich_text_preformatted",
+          "elements": [
+            {
+              "type": "text",
+              "text": "Preformatted with "
+            },
+            {
+              "type": "link",
+              "url": "https://example.com",
+              "text": "a link"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

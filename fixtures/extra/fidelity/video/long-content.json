@@ -1,0 +1,24 @@
+{
+  "blocks": [
+    {
+      "type": "video",
+      "title": {
+        "type": "plain_text",
+        "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all",
+        "emoji": true
+      },
+      "title_url": "https://www.youtube.com/watch?v=RRxQQxiM7AA",
+      "description": {
+        "type": "plain_text",
+        "text": "Slack is a new way to communicate with your team.",
+        "emoji": true
+      },
+      "video_url": "https://www.youtube.com/embed/RRxQQxiM7AA?feature=oembed&autoplay=1",
+      "alt_text": "How to use Slack?",
+      "thumbnail_url": "https://cdn.block-kit.dev/samples/video-thumbnail.d894bef5.jpg",
+      "author_name": "Arcado Buendia",
+      "provider_name": "YouTube",
+      "provider_icon_url": "https://cdn.block-kit.dev/samples/play-icon.24cf386c.png"
+    }
+  ]
+}

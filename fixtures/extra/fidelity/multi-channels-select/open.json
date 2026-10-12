@@ -1,0 +1,21 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "channels",
+      "label": {
+        "type": "plain_text",
+        "text": "Channels"
+      },
+      "element": {
+        "type": "multi_channels_select",
+        "action_id": "channels",
+        "initial_channels": ["C0123456789"],
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select channels"
+        }
+      }
+    }
+  ]
+}

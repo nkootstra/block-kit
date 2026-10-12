@@ -1,0 +1,23 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "canvas_message_unfurl",
+              "root_message_ts": "1767261600.000100",
+              "root_message_channel": "C0123456789"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

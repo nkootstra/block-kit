@@ -9,6 +9,11 @@
  *
  * Every difference that remains is listed in KNOWN_DIFFERENCES, so the check fails both on a
  * new difference and on a listed one that no longer happens: a fix removes its entries.
+ *
+ * A recording made by a behaviour probe (`<fixture>@<probe>.probe.json` next to it, see
+ * tools/visual/src/probes.ts) needs no INTERACTIONS entry: its steps are replayed here. Recordings
+ * of a view's events (`view_submission`, `view_closed`) aren't compared until this test renders
+ * views.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readdirSync, readFileSync } from "node:fs";
@@ -162,6 +167,123 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     clickAsync(screen.getByRole("button", { name: "Remove this response" })),
 };
 
+/**
+ * Our controls by kind, as tools/visual/src/targets.ts OURS addresses them (`button-2` is the
+ * second `.sbk-button`, outermost matches only); targets.test.ts keeps the two in step.
+ */
+const OURS: Record<string, string> = {
+  button: ".sbk-button",
+  overflow: ".sbk-overflow__button",
+  field:
+    ".sbk-select__control, .sbk-timepicker__control, .sbk-datepicker__input, .sbk-datetimepicker__control",
+  checkbox: ".sbk-checkboxes__input",
+  radio: ".sbk-radio-buttons__input",
+  input: ".sbk-text-input",
+  submit: ".sbk-modal__button--primary",
+  cancel: ".sbk-modal__button--secondary",
+  link: "a.sbk-link",
+  mention:
+    ".sbk-mention, .sbk-mention--broadcast, .sbk-mention--private, .sbk-mention--unresolved, .sbk-mention--loading",
+  card: ".sbk-card",
+  arrow:
+    '.sbk-carousel button[aria-label="Scroll left"], .sbk-carousel button[aria-label="Scroll right"]',
+  menu: ".sbk-hover-actions--image .sbk-hover-actions__menu-root > .sbk-hover-actions__button, .sbk-hover-actions--chart .sbk-hover-actions__menu-root > .sbk-hover-actions__button",
+  column: ".sbk-data-table__col-header button",
+  page: ".sbk-data-table__pagination button",
+  more: ".sbk-section__toggle",
+  action: ".sbk-message-actions__button",
+  option: '.sbk-popover [role="option"], .sbk-select-dialog [role="option"]',
+  menuitem: '.sbk-popover [role="menuitem"], .sbk-popover [role="menuitemradio"]',
+  confirm: ".sbk-confirm__button:not(.sbk-confirm__button--deny)",
+  deny: ".sbk-confirm__button--deny",
+  richtext: ".sbk-rich-text-input__editor",
+  file: ".sbk-file-input__button",
+  icon: '.sbk-icon-button:not([role="radio"])',
+  feedback: ".sbk-feedback-buttons .sbk-icon-button",
+  collapse: ".sbk-container__header--button",
+  pill: ".sbk-plan__pill, button.sbk-task-card__pill",
+  task: "button.sbk-plan__task-header",
+  contact: ".sbk-contact-card",
+  expand: ".sbk-image__toggle",
+  source: ".sbk-plan__task-source-link, .sbk-task-card__source-link",
+  sender: ".sbk-message__sender",
+  time: ".sbk-message__time",
+  scroller: "@scroller",
+  video: "a.sbk-video__frame",
+  tooltip: ".sbk-tooltip",
+  chip: ".sbk-select__chip",
+};
+
+/** As tools/visual/src/probes.ts IMPLICIT_ROLES: the role an element has by its tag. */
+const IMPLICIT_ROLES: Record<string, string> = {
+  link: "a[href]",
+  button: "button",
+  checkbox: 'input[type="checkbox"]',
+  radio: 'input[type="radio"]',
+  textbox: 'textarea, input:not([type]), input[type="text"]',
+};
+
+type ProbeTarget = string | { role: string; name: string };
+type ProbeStep =
+  | { click: ProbeTarget }
+  | { hover: ProbeTarget }
+  | { key: string }
+  | { type: string }
+  | { wait: number };
+
+function probeTarget(target: ProbeTarget): HTMLElement {
+  if (typeof target === "string") {
+    const [, kind = "", index = "1"] = /^([a-z]+)-(\d+)$/.exec(target) ?? [];
+    // jsdom has no layout, so nothing scrolls (the scroller kind).
+    const selector = OURS[kind] && OURS[kind] !== "@scroller" ? OURS[kind] : ":not(*)";
+    const all = [...document.querySelectorAll<HTMLElement>(selector)];
+    const outer = all.filter((el) => !all.some((o) => o !== el && o.contains(el)));
+    const el = outer[Number(index) - 1];
+    if (!el) throw new Error(`no ${target}`);
+    return el;
+  }
+  const implicit = IMPLICIT_ROLES[target.role];
+  const selector = `[role="${target.role}"]${implicit ? `, ${implicit}` : ""}`;
+  const el = [...document.querySelectorAll<HTMLElement>(selector)].find(
+    (e) =>
+      (e.getAttribute("aria-label") || e.textContent || "").replace(/\s+/g, " ").trim() ===
+      target.name,
+  );
+  if (!el) throw new Error(`no ${target.role} "${target.name}"`);
+  return el;
+}
+
+/** Replays a probe's steps, as tools/visual/src/probes.ts does in a browser. */
+function probeInteraction(name: string): (() => Promise<void>) | undefined {
+  let steps: ProbeStep[];
+  try {
+    steps = JSON.parse(readFileSync(`${FIXTURES}${name}.probe.json`, "utf8")).steps;
+  } catch {
+    return undefined;
+  }
+  return async () => {
+    for (const step of steps) {
+      const at = () => (document.activeElement as HTMLElement | null) ?? document.body;
+      if ("click" in step) {
+        const el = probeTarget(step.click);
+        el.focus();
+        await clickAsync(el);
+      } else if ("hover" in step) fireEvent.mouseEnter(probeTarget(step.hover));
+      else if ("key" in step)
+        await keyDownAsync(at(), step.key === "Space" ? " " : step.key.split("+").at(-1)!);
+      else if ("type" in step) {
+        const field = at() as HTMLInputElement;
+        fireEvent.change(field, { target: { value: `${field.value ?? ""}${step.type}` } });
+      } else
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, step.wait));
+        });
+    }
+  };
+}
+
+const interactionFor = (name: string) => INTERACTIONS[name] ?? probeInteraction(name);
+
 /** Picks options from the "Colours" multi-select in its input block. */
 async function pickColours(...names: string[]) {
   for (const name of names) {
@@ -191,6 +313,14 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
+  // Slack's open list starts on its first option, so two ArrowDowns reach the third; ours starts
+  // before the first (fidelity finding static-select-keyboard). Removed once that's fixed.
+  "contexts/static_select/actions@keyboard": [
+    'actions.0.selected_option.text.text: Slack "Option 3", ours "Option 2"',
+    'actions.0.selected_option.value: Slack "value-3", ours "value-2"',
+    'state.values.<block_id>.static.selected_option.text.text: Slack "Option 3", ours "Option 2"',
+    'state.values.<block_id>.static.selected_option.value: Slack "value-3", ours "value-2"',
+  ],
 };
 
 interface Recording {
@@ -269,10 +399,17 @@ function differences(slack: unknown, ours: unknown, path = ""): string[] {
 }
 
 describe("block_actions payloads match Block Kit Builder's Actions Preview", () => {
-  const all = recordings();
+  const everything = recordings();
+  const all = everything.filter((r) => r.slack.type === "block_actions");
 
   it("has an interaction for every recording", () => {
-    expect(all.map((r) => r.name).filter((name) => !INTERACTIONS[name])).toEqual([]);
+    // Views aren't rendered here yet, so their events are recorded but not compared.
+    expect(
+      everything
+        .filter((r) => !all.includes(r))
+        .filter((r) => !["view_submission", "view_closed"].includes(r.slack.type as string)),
+    ).toEqual([]);
+    expect(all.map((r) => r.name).filter((name) => !interactionFor(name))).toEqual([]);
     expect(Object.keys(KNOWN_DIFFERENCES).filter((n) => !all.some((r) => r.name === n))).toEqual(
       [],
     );
@@ -293,7 +430,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
           <Message blocks={fixtureBlocks(name)} />
         </BlockKitProvider>,
       );
-      await INTERACTIONS[name]!();
+      await interactionFor(name)!();
       expect(payload, "no block_actions payload was dispatched").toBeDefined();
 
       const slackActions = slack.actions as { block_id: string }[];
@@ -323,7 +460,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
           <Message blocks={fixtureBlocks(name)} />
         </BlockKitProvider>,
       );
-      await INTERACTIONS[name]!();
+      await interactionFor(name)!();
       expect(action).toEqual(payload?.actions[0]);
     });
   }

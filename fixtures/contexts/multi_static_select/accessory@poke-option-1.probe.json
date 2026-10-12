@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "hover": "option-1"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

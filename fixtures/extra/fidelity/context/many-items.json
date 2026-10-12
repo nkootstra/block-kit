@@ -1,0 +1,57 @@
+{
+  "blocks": [
+    {
+      "type": "context",
+      "elements": [
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/play-icon.24cf386c.png",
+          "alt_text": "YouTube"
+        },
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+          "alt_text": "Michael"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Michael Scott* and <https://example.com|2 others> reacted :+1::skin-tone-2:"
+        },
+        {
+          "type": "plain_text",
+          "text": "Last updated 5 min ago",
+          "emoji": true
+        },
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/play-icon.24cf386c.png",
+          "alt_text": "YouTube"
+        },
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+          "alt_text": "Michael"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Michael Scott* and <https://example.com|2 others> reacted :+1::skin-tone-2:"
+        },
+        {
+          "type": "plain_text",
+          "text": "Last updated 5 min ago",
+          "emoji": true
+        },
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/play-icon.24cf386c.png",
+          "alt_text": "YouTube"
+        },
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+          "alt_text": "Michael"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A message with an attachment"
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "color": "#2eb886",
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Inside the attachment"
+          }
+        }
+      ]
+    }
+  ]
+}

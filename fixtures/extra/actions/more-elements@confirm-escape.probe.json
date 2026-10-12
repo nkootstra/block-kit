@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "button-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "workflow_button",
+          "action_id": "run_primary",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Run (primary)",
+            "emoji": true
+          },
+          "workflow": {
+            "trigger": {
+              "url": "https://slack.com/shortcuts/Ft0123ABC456/321cba"
+            }
+          }
+        },
+        {
+          "type": "workflow_button",
+          "action_id": "run_danger",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Run (danger)",
+            "emoji": true
+          },
+          "workflow": {
+            "trigger": {
+              "url": "https://slack.com/shortcuts/Ft0123ABC456/321cba"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

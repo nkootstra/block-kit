@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "click": "field-3"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": {
+        "role": "button",
+        "name": "Confirm"
+      }
+    }
+  ]
+}

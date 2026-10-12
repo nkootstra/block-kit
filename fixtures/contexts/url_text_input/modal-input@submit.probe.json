@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "input-1"
+    },
+    {
+      "type": "https://example.com"
+    },
+    {
+      "click": "submit-1"
+    }
+  ]
+}

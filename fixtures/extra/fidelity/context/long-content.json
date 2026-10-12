@@ -1,0 +1,18 @@
+{
+  "blocks": [
+    {
+      "type": "context",
+      "elements": [
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+          "alt_text": "A kitten"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently."
+        }
+      ]
+    }
+  ]
+}

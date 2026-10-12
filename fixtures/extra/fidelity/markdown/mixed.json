@@ -1,0 +1,8 @@
+{
+  "blocks": [
+    {
+      "type": "markdown",
+      "text": "## A heading\n\nSome **bold**, *italic*, ~~struck~~ and `inline code`, with [a link](https://example.com).\n\n- A bullet\n- Another bullet\n\n1. A numbered item\n2. Another one\n\n> A quote\n\n```\nconst answer = 42;\n```\n\n| Name | Amount |\n| --- | ---: |\n| Alpha | 10 |"
+    }
+  ]
+}

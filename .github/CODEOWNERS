@@ -1,9 +1,11 @@
-# Slack's reference snapshots, the visual baselines and the recorded action payloads are the source of truth for the visual
-# comparison; only maintainers may change them (see tools/visual/README.md).
+# Slack's reference snapshots, the visual baselines, the recorded action payloads and the recorded
+# behaviour are the source of truth for the visual comparison; only maintainers may change them
+# (see tools/visual/README.md).
 /fixtures/**/*.reference.html @nkootstra
 /fixtures/references.lock.json @nkootstra
 /fixtures/visual-baseline.*.json @nkootstra
 /fixtures/text-baseline.*.json @nkootstra
 /fixtures/**/*.actions.json @nkootstra
+/fixtures/**/*.behaviour.json @nkootstra
 /tools/visual/ @nkootstra
 /.github/ @nkootstra

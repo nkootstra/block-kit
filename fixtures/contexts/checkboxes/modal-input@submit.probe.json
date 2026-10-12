@@ -1,0 +1,10 @@
+{
+  "steps": [
+    {
+      "click": "checkbox-1"
+    },
+    {
+      "click": "submit-1"
+    }
+  ]
+}

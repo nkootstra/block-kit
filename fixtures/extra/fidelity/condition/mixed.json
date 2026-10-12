@@ -1,0 +1,59 @@
+{
+  "blocks": [
+    {
+      "type": "condition",
+      "cases": [
+        {
+          "conditions": [
+            {
+              "type": "client",
+              "op": "!=",
+              "value": "desktop"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Every client but desktop*"
+              }
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "client",
+              "op": "=",
+              "value": "desktop"
+            },
+            {
+              "type": "client",
+              "op": "!=",
+              "value": "ios"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Desktop, matched by two conditions*"
+              }
+            }
+          ]
+        }
+      ],
+      "default": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*Default branch*"
+          }
+        }
+      ]
+    }
+  ]
+}

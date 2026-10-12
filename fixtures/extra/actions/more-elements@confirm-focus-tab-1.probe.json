@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "button-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "snapshot": "confirm-focus-tab-1"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

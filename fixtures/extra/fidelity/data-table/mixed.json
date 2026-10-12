@@ -1,0 +1,86 @@
+{
+  "blocks": [
+    {
+      "type": "data_table",
+      "caption": "Text, numbers and rich text",
+      "rows": [
+        [
+          {
+            "type": "raw_text",
+            "text": "Name"
+          },
+          {
+            "type": "raw_text",
+            "text": "Amount"
+          },
+          {
+            "type": "raw_text",
+            "text": "Owner"
+          }
+        ],
+        [
+          {
+            "type": "raw_text",
+            "text": "Alpha"
+          },
+          {
+            "type": "raw_number",
+            "value": -12.5,
+            "text": "-12.5"
+          },
+          {
+            "type": "rich_text",
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "user",
+                    "user_id": "U0123456789"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "type": "raw_text",
+            "text": "Bravo"
+          },
+          {
+            "type": "raw_number",
+            "value": 1200,
+            "text": "1,200"
+          },
+          {
+            "type": "rich_text",
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "bold",
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": " and "
+                  },
+                  {
+                    "type": "link",
+                    "url": "https://example.com",
+                    "text": "a link"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  ]
+}

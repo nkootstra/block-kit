@@ -95,7 +95,7 @@ way to read the exact paddings, line heights and colours Slack uses.
 A reference is a fixture captured in one state (`names.ts`):
 
 ```
-<fixture>[@<interaction>][+mobile][+dark]
+<fixture>[@<interaction>][+mobile][+full][+dark]
 ```
 
 - **No suffix:** light theme, desktop width, nothing opened. These are the 123 catalog references.
@@ -106,13 +106,124 @@ A reference is a fixture captured in one state (`names.ts`):
     menu, opened;
   - `@confirm`: the first button, with its confirm dialog open (put the `confirm` on it);
   - `@dialog`: a section accessory's multi-select, with Slack's selection dialog open.
+- **`@hover-<target>`, `@focus-<target>`:** captured while real input holds one control: the
+  pointer resting on it, or keyboard focus (so `:focus-visible` matches). `<target>` is a control
+  address (below), such as `@hover-button-2`.
+- **`@submit-errors`:** a modal submitted with its fields as the payload leaves them. Block Kit
+  Builder doesn't validate a modal: it sends the `view_submission` with required fields empty and
+  shows no errors, so this records the submit's behaviour and payload, not Slack's error styles.
+- **`@scrolled-end`:** the first horizontal scroll container that overflows (a chart's card, a
+  table, a carousel), scrolled fully to the right.
+- A [behaviour probe](#behaviour-probes) with `"snapshot": true` names its reference after itself
+  (`@submit-short`).
 - **`+mobile`:** the Builder's Mobile preview; ours is rendered at that width.
+- **`+full`:** the content its horizontal scroll containers hide, shown in full ([Wide
+  content](#wide-content)).
 - **`+dark`:** the Builder in its dark theme (recorded as `theme` in the reference's meta); ours is
   rendered with `theme="dark"` (`?theme=dark` on the playground's render page), on the reference's
   page background.
 
-The suffix parts always come in that order (`@open+mobile+dark`), so each state has one name;
+The suffix parts always come in that order (`@open+mobile+full+dark`), so each state has one name;
 `import.ts` and `references:check` reject any other spelling.
+
+**Control addresses** (`src/targets.ts`) point at one control on both sides: `<kind>-<n>`, the nth
+control of the kind in document order, counting from 1. The kinds are `button`, `overflow`,
+`field` (a select, multi-select, time list, date picker, or either half of a datetime picker),
+`checkbox`, `radio`, `input` (plain text, number, email and URL inputs) and a modal's `submit` and
+`cancel`. Each kind has a selector per side, and where a control matches more than once (a picker's
+wrapper and its input) only the outermost match counts. An address counts controls rather than
+naming them by role and accessible name: the payload fixes the number and order of controls on
+both sides, while the names differ (Slack's static select is a combobox named after its
+placeholder, ours a button) and texts change with the fixture. It extends `@open`'s "first control
+of the kind" to any control.
+
+The other kinds cover what isn't a form control:
+
+| Kind                 | What                                                              |
+| -------------------- | ----------------------------------------------------------------- |
+| `link`               | a mrkdwn, rich text or markdown link                              |
+| `mention`            | a user, channel, user group or broadcast mention, resolved or not |
+| `card`               | a card (its buttons are `button`s)                                |
+| `arrow`              | a carousel's scroll buttons, left before right                    |
+| `menu`               | the More actions trigger of an image block or a chart             |
+| `column`, `page`     | a data table's sortable column header, and its pagination buttons |
+| `more`               | a section's Show more toggle                                      |
+| `action`             | a button in the message's hover toolbar                           |
+| `option`, `menuitem` | an option of an open list, an item of an open menu                |
+| `confirm`, `deny`    | the buttons of an open confirm dialog                             |
+| `richtext`, `file`   | a rich text input's editor, a file input's button                 |
+| `icon`, `feedback`   | an icon button; each of a feedback pair, positive first           |
+| `collapse`           | a collapsible container's header                                  |
+| `pill`, `task`       | a plan's or task card's status pill; a plan's task header         |
+| `source`             | a plan's or task card's source link                               |
+| `contact`, `expand`  | a contact card; an image block's title toggle                     |
+| `sender`, `time`     | the message header's app name and time                            |
+| `scroller`           | a block that scrolls itself (below)                               |
+| `video`              | a video block's player (the play overlay)                         |
+| `chip`               | a multi-select's chosen option, as a token in the field           |
+| `tooltip`            | a tooltip showing, after a hover; counted in the open layers      |
+
+`scroller` isn't a class: it's any element whose content overflows the way it scrolls
+(`overflow-x` or `-y` `auto` or `scroll`), found by its computed style on both sides, which is what
+a carousel, a data table and a wide table or chart have in common. A file block has no actions in
+either rendering, and legacy attachments' links are `link`s on ours; no reference shows Slack's
+attachments yet.
+
+A tooltip doesn't take the pointer (ours has `pointer-events: none`), so hovering one never
+matches `:hover`: hover its trigger, then address the tooltip (`tooltip-1`) to snapshot or observe
+it. No reference shows Slack's tooltip yet, so its selector is a guess too.
+
+`option`, `menuitem`, `confirm`, `deny` and `tooltip` are counted in the open layers rather than the message,
+in page order: both sides portal them out of the message, and only the open layer has any. An
+alert block has no close button in Block Kit Builder's preview, so its links are `link`s and
+nothing else of it is addressable. Block Kit Builder shows neither a section's Show more (not
+even for a 980-character section) nor a message hover toolbar, so `more` and `action` can't be
+captured there; their Slack selectors stay guesses (targets.ts `UNVERIFIED`), and ours doesn't draw
+the toolbar yet.
+
+A probe can fill a required rich text input (`{ "click": "richtext-1" }`, then `{ "type": "…" }`),
+but not a file input, whose button opens the operating system's file chooser, or an external
+select, whose options come from an app's options URL that Block Kit Builder doesn't have.
+
+**Real input.** `compare.ts` holds the same input on ours: Playwright's pointer rests on the
+control through the screenshot, or the control gets focus the way the capture gave it (a scripted
+focus, after one Tab press when that isn't keyboard focus). A held reference records the input in
+its meta (`input`), its controls' `data-ref`s (`targets`) and, as every snapshot does, its motion.
+
+### Wide content
+
+A data visualization's card is at least 400px wide; in the 320px of the Builder's Mobile preview
+its scroll container (`overflow-x: auto`) shows only the first 320px, and a table or carousel can
+do the same. Three things cover what a frozen snapshot can't scroll to:
+
+- **Scroll facts.** Every snapshot records each horizontal scroll container in the preview, in
+  document order, in the meta's `scrollers`: its `data-ref`, `scrollWidth`, `clientWidth` and
+  `scrollLeft`. `compare.ts` scrolls the reference's frozen copy back to `scrollLeft`, and for a
+  rest reference pairs the containers that overflow with ours, in order, and reports where the
+  content or visible width differs by more than a pixel, or where only one side scrolls, as
+  `scroll` lines (reported, like motion).
+- **`+full`.** `capture.js` widens the preview by the most any of its containers hides, expands any
+  container that still overflows (one with a width of its own) to its content, snapshots, and puts
+  the page back. The meta records the widened width and `full: { widenedBy, expanded }`. Ours is
+  rendered at the reference's width, and any container still overflowing is expanded the same way
+  (`src/scrollers.ts`). The rest of the message lays out at the wider width on both sides, so the
+  two stay comparable. It's a modifier rather than an interaction because it's a layout of the same
+  state, like `+mobile`: `@mobile+full`, `@scrolled-end+mobile+full+dark` are all valid.
+- **`@scrolled-end`** shows where the content ends and what Slack draws at the end (a carousel's
+  arrows).
+
+**State styles.** A rest capture also records, for every control, what its `:hover`, `:active`,
+`:focus` and `:focus-visible` rules change, as resolved values in the meta's `stateStyles` (keyed by
+`data-ref`, with the address). A page script can't make `:active` match, and a pressed button can't
+be held through a snapshot, so `snapshot.js` emulates the states: each rule with a state
+pseudo-class gets a copy right after it in its sheet, with the pseudo-class swapped for an
+attribute of the same weight (`[data-sbk-state~="active"]`), and the attributes go where the
+browser would match (the control and its ancestors for hover and active; focus-within on the
+ancestors for focus). The cascade then resolves as it would in that state, against every competing
+rule; only the properties that change are kept, never Slack's CSS text, and the copies are removed.
+`compare.ts` forces the same states on our control (`CSS.forcePseudoState` over the DevTools
+Protocol, `src/stateStyles.ts`) and reports the differences as `state` lines, like motion: never a
+baseline finding.
 
 **Open states.** `snapshot.js` also freezes every open Slack popover or dialog it finds in the
 Builder's `.ReactModalPortal`, and records each in the meta's `layers` (`kind`, and its box relative
@@ -149,13 +260,24 @@ to the preview):
    snapshots, and closes what it opened. When a scripted click doesn't open a control, or the
    interaction is fixture-specific, it waits: `window.sbkCaptureWaiting` names the item. Perform it
    with a real click and set `window.sbkCaptureReady = true`.
+   The preview must be at its full width (a message 512px, 400px in Mobile): use a 1440px window
+   and the Builder's default split. The Builder remembers the split in `localStorage` `bkb_layout`;
+   with a narrow code pane (`codePaneRatio` 0.32) a desktop message was 660px wide, which `capture.js`
+   refuses. Reset it with `localStorage.setItem("bkb_layout", JSON.stringify({ codePaneRatio: 0.5 }))`
+   and reload.
    Keep the Builder tab visible: macOS pauses a hidden tab and the preview never settles. When the
    run is done, switch the Builder back to light.
    Paste the scripts into a freshly loaded Builder. Late in a long session the Builder can load a
    stylesheet that repeats rules it already has, which reorders the cascade (it once shifted every
    datetime picker 8px). `capture.js` inventories the page's stylesheets on its first call and
-   refuses to snapshot once a later sheet repeats one of their rules: reload the Builder, paste the
-   scripts again and resume from the item it names.
+   keeps every rule a later sheet repeats as a suspect. A repeat only matters where it changes a
+   style, and rendering a chart on a fresh load brings a sheet that repeats hundreds of the message
+   chrome's rules, so before and after each snapshot (also for `+full`) the suspects that match an
+   element in the preview or an open layer are taken out for a moment, and the properties they set
+   are read on those elements without them and with them, transitions off. The capture stops only
+   where a value differs, naming the first changes (`selector { property: fresh -> now }`), and
+   keeps stopping until the Builder is reloaded: reload, paste the scripts again and resume from
+   the item it names. A repeated rule for a pseudo-element (`::before`) isn't checked.
    A fixture that needs a real workspace file (`slack_file`) carries the placeholder file URL
    (`https://files.slack.com/files-pri/T0000001-F0000001/file`). Map it to the file's link in
    `tools/visual/capture.local.json` (`{ "<placeholder>": "<link>" }`, ignored by git) and pass
@@ -164,7 +286,66 @@ to the preview):
    to both sides.
 
 3. Copy the resulting `refs` JSON and write it to `fixtures/` with
-   `pbpaste | bun tools/visual/src/import.ts`.
+   `pbpaste | bun tools/visual/src/import.ts`, or pass `download: "<session>"` and import the file
+   the Builder saves: `bun tools/visual/src/import.ts ~/Downloads/block-kit-refs-<session>.json`. The
+   file holds everything the run recorded (`{ references, actions, behaviour }`, also on
+   `window.sbkCaptureOutput`); a run that stops on an error saves what it has as
+   `block-kit-refs-<session>-partial.json`.
+
+### Captures that need real input
+
+Hover, keyboard focus and probe steps need input a script can't fake. Start the run without
+awaiting it, paste `observe.js` too for probes, and follow `window.sbkCaptureWaiting`:
+
+```js
+window.sbkSnap = /* snapshot.js */;
+window.sbkCapture = /* capture.js */;
+window.sbkObserve = /* observe.js */;
+window.sbkCapture({ items, snap: window.sbkSnap, observe: window.sbkObserve, download: "s1" });
+```
+
+`sbkCaptureWaiting` is an instruction while the run waits, `undefined` otherwise:
+
+| `do`        | What to do                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------------- |
+| `hover`     | Move the pointer to `x`, `y` (viewport CSS pixels; `box` is the control) and leave it there |
+| `move-away` | Move the pointer off the preview                                                            |
+| `key`       | Press `key` once (`Tab` for focus: anywhere, the run focuses the control itself afterwards) |
+| `click`     | Click at `x`, `y`                                                                           |
+| `type`      | Type `text` into what has focus                                                             |
+
+The run sees the input take effect (the control matches `:hover` or `:focus-visible`, a trusted
+click or key press arrives) and continues by itself; no flag to set. It checks a held state still
+holds after the snapshot and stops with an error when it doesn't. A pressed state (`:active`) can't
+be held this way: it's recorded as state styles instead. `real: false` dispatches scripted events
+for clicks, keys and typing instead (a quick run; React's handlers see them, the browser's default
+actions don't).
+
+`capture.js` also reads Block Kit Builder's Actions Preview for every probe step, `@submit-errors`
+and fixture-specific interaction, and records a new payload under the interaction. Actions Preview
+is a tab next to Payload in the right pane (`role="tab"`, matched by its text) that must be selected
+to show; it holds one CodeMirror with only the latest payload (`{}` before the first), updated a
+moment after the interaction. The run selects it before the first step (and gives the focus back),
+selects Payload again before loading the next payload, and polls for a change for up to 2 seconds.
+Actions Preview keeps showing the last payload until the next one, and one can land late, so each
+item first waits for the preview to stop changing and takes that as its baseline: a payload
+counts only when it differs from the text before its step and from that baseline, never the
+previous item's.
+Held states (hover, focus) and `@open`, `@confirm` and `@dialog` never switch tabs. `actions`, a
+function returning the preview's text, replaces the reader.
+
+A runner that calls `sbkCapture` once per item gets everything kept across the calls in
+`window.sbkCaptureOutput` (`window.sbkCaptureReset()` starts over; the old `reset: true` option
+refuses, so a runner can't drop its output by passing it on every call), and `window.sbkCaptureJson()` returns it as
+pure-ASCII JSON to copy through the clipboard (`navigator.clipboard.writeText(sbkCaptureJson())`,
+then `pbpaste | bun tools/visual/src/import.ts`). A hidden tab pauses the waits' timeouts as it
+pauses the preview.
+
+Nothing the run clicks may navigate: in the Builder a button or link with a `url` opens a new tab.
+During a run `window.open` does nothing and a click on a link in the preview or a layer has its
+default prevented; the link's handlers still run, so Actions Preview still gets its payload. A
+probe step that clicks a button the payload gives a `url` stops the run unless `allowUrls: true`:
+holding `window.open` off only works where the scripts run in the page's own world.
 
 ## The Builder workspace stays out of git
 
@@ -204,9 +385,12 @@ are left out.
 ## Coverage
 
 `bun run coverage:visual` prints how far the references go: for every fixture, which of the states
-it should be compared in have a reference (light, `+mobile`, `+dark`, and `@open`, `@confirm` or
-`@dialog` in both themes where its controls have them), and which interactive fixtures have a
-payload recording. CI adds it to the `check` job's summary; it reports and doesn't fail yet.
+it should be compared in have a reference (light, `+mobile`, `+dark`, `+mobile+dark`, `@open`,
+`@confirm` or `@dialog` in both themes where its controls have them; `@mobile+full` and `@scrolled-end+mobile` for a message with a chart,
+a table or a carousel, `@full` for such a modal or App Home), and which interactive fixtures have a
+payload recording. Real-input states are counted on their own (`@hover-<kind>-1` and
+`@focus-<kind>-1` for the first control of each kind), as are behaviour probes without a
+recording. CI adds it to the `check` job's summary; it reports and doesn't fail yet.
 
 `snapshot.js` inlines each element's computed styles, with a few corrections so the frozen copy
 lays out like the live page:
@@ -242,6 +426,107 @@ within 0.5px of where it was live. `src/snapshot.browser.ts` holds the small rep
 Snapshots are normalized (`normalize.ts`) so timestamps, avatars and generated ids don't produce
 noise. After adding a normalize rule, run `bun tools/visual/src/renormalize.ts` to rewrite the
 committed references.
+
+## Fidelity inventory
+
+`bun tools/visual/src/fidelity/generate.ts` goes further than the coverage report: it lists every
+fact about Slack that the package has to match, and what already records each one. A fact is a
+cell:
+
+```
+<component> × <state> × <theme> × <width> × <fact kind>
+```
+
+- **Components** (`src/fidelity/components.ts`): every block, element and composition object in
+  Slack's Block Kit reference, the blocks Block Kit Builder's catalog adds, the surface chrome (the
+  message header, a modal's frame, App Home) and the client UI the package draws like Slack's
+  (tooltips, Show more, the selection dialog). Each entry says how to find it in a fixture payload,
+  where the package implements it and what the Builder can't show of it.
+- **States** (`src/fidelity/axes.ts`): only those a component has, from `default`, `hover`,
+  `focus-visible` and `pressed` to `open`, `validation-error` and `many-items`.
+- **Themes and widths:** light and dark, desktop and mobile. Only styles vary by them, and only
+  components that go in a message have a mobile width.
+- **Horizontal overflow:** blocks whose content can be wider than the preview (charts, tables,
+  data tables, carousels, markdown, preformatted rich text) also have `full-content` (captured
+  unclipped, `+full`) and `scrolled-end` (scrolled sideways to the end, `@scrolled-end`), whose
+  behaviour cells (does it scroll, from what minimum width) have a width too.
+- **Fact kinds:** `styles`, `motion`, `behaviour` and `payload`, whose cells name the payload type
+  (`block_actions`, `view_submission`…) instead of a state.
+
+A cell is covered by a reference that shows the component in that state (the payload states, such
+as an initial value, read from the fixture; `@open` only for the fixture's first control that
+opens), by the motion in a reference's meta, by a payload recording of the element's action, or by
+an interaction test. `src/fidelity/interactionTests.ts` maps each group of interaction tests to the
+facts it asserts against Slack; the generator and `inventory.test.ts` fail when that mapping and the
+test file's groups drift apart, and the test fails when the package renders a type the inventory
+doesn't list.
+
+Every uncovered cell says how Block Kit Builder could capture it: **a**, the existing flow (a
+reference, a fixture-specific state, Actions Preview); **b**, a capture capability that doesn't
+exist yet (real hover, focus and press, behaviour probes, style facts from Slack's stylesheets,
+validation probes; `src/fidelity/extensions.ts` sketches each); or **c**, not observable in the
+Builder, with the reason. It also says when a fixture payload has to be written first.
+
+It writes `test-results/fidelity/inventory.json` (every cell, with its evidence) and
+`inventory.md`: totals by fact kind, state, theme, width and kind, the components Slack documents
+that the package doesn't implement or no fixture shows, and the uncovered cells grouped into capture
+batches, most valuable first. The output is derived from the repository, so it isn't committed. It
+reports; it doesn't fail.
+
+`--discovery <discovery.json>` adds a second discovery source: the rules of Block Kit Builder's
+stylesheets, as `[{ selector, pseudo, properties, direct, media?, keyframes? }]` with property names
+only (`src/fidelity/stylesheet.ts` refuses a rule that could carry a value). Each rule's classes map
+to components by their BEM block (`c-select_input`, `c-menu_item`, `p-rich_text_list`…), and its
+pseudo-classes, state modifiers (`--highlighted`, `--disabled`, `--loading`) and attributes name the
+state, so states Slack's classes have and the docs don't mention become cells with origin
+`builder-css`. A rule that styles a Block Kit class inside other client UI (a date field in a List's
+row) is out of scope. The report lists the families no component maps, for review, and the
+out-of-scope ones with the reason. The discovery is read from the Builder and stays out of the
+repository: pass it from wherever it was saved.
+
+It also writes `test-results/fidelity/capture-plan.json`, with a section in `inventory.md`: every
+capture the harness can make that covers an uncovered cell, each as its name for `capture.js` and its
+fixture path, chosen so each covers as many uncovered cells as possible. There is one session per
+surface, theme and width, holding every kind of capture: plain references (which also record
+their controls' state styles and scroll containers), `@open`, `@confirm`, `@dialog`, `+full`,
+`@scrolled-end`, then, marked as needing real input, `@hover-<target>`, `@focus-<target>`,
+`@submit-errors`, fixture-specific states and behaviour probes (`<fixture>@<probe>.probe.json`,
+which also record the Actions Preview payload). New captures come before recaptures of existing
+references. The references `coverage:visual` expects and doesn't find are in the plan too. Cells
+no fixture can show get a proposed fixture path under `fixtures/extra/fidelity/`, and cells no
+capture kind reaches yet are listed with the reason. Behaviour cells no probe reaches get a
+proposed probe spec (`probeProposals`: hover, click and Escape on the component's first control
+address, or open a layer first, or scroll a long list), to write next to the fixture and re-plan.
+Nothing is written to `fixtures/`.
+
+`test-results/fidelity/verify-plan.json` is a short session to run first: one capture of each
+kind (plain, `@open`, `@scrolled-end`, `+full`, `+mobile+dark`, `@hover-…`, `@focus-…`, the two
+unverified selectors, probes with a payload, `@submit-errors`, a modal submit), in the order to run,
+real input last, each with what to check. Its `items` are capture.js items as they are.
+
+`fixtures/extra/fidelity/<component>/<state>.json` holds the fixtures written for the inventory:
+each exists to show that component in that state (`static-select/many-items`,
+`rich-text-user/mixed`), and the inventory counts its references for that state even where the
+payload heuristics can't read it. The `rich-text-*` fixtures for the elements in Slack's reference
+that the package doesn't render yet (`citation`, `canvas`, `tag`…) render nothing in ours until
+they're implemented; their references record what Slack shows.
+
+`src/fidelity/limits.ts` holds Slack's documented payload limits (an option's text is at most 75
+characters, a placeholder 150…). Block Kit Builder refuses a payload past one and keeps showing the
+previous payload, so `limits.test.ts` checks every fixture against them before it reaches a capture
+session. Each limit names the fixtures the Builder was seen to refuse, and the ones it accepted
+past the limit, as evidence.
+
+Package bugs and harness gaps noticed while gathering facts go in `src/fidelity/findings.ts` and
+show in `inventory.md` under "Findings (to fix later)": every fact is gathered before anything is
+fixed.
+
+Disabled states are not applicable (Block Kit can't disable an element) except a modal's
+`submit_disabled` and a chart menu's Copy as image; they're left out of the totals.
+
+`+mobile+dark` cells are captured like any other reference: the Builder's theme toggle and its
+Desktop/Mobile select are independent. They keep a `verify` flag until the first such capture
+confirms the Mobile preview follows the dark theme.
 
 ## Keeping references factual
 
@@ -334,6 +619,63 @@ don't have.
 
 CI runs them in the `render-diff` job, whose Playwright image has all three browsers.
 
+## Behaviour probes
+
+A probe records what Slack does when a control is driven: where focus goes, what opens and closes,
+which option is highlighted, how far a list scrolls. It's `fixtures/<fixture>@<probe>.probe.json`,
+next to its fixture, written like a fixture payload (`src/probes.ts`):
+
+```json
+{ "steps": [{ "click": "field-1" }, { "key": "ArrowDown" }, { "key": "Enter" }] }
+```
+
+A step is `{ "click": <target> }`, `{ "hover": <target> }`, `{ "key": "Shift+Tab" }` (Playwright's
+key names), `{ "type": "text" }`, `{ "wait": 300 }`, `{ "scroll": "scroller-1", "left": "end" }`
+(pixels or `"end"`, `left` and/or `top`, scripted on both sides since a scroll needs no trusted
+input) or `{ "snapshot": "<label>" }`; a target is a control address or
+`{ "role": "option", "name": "Bravo" }` for something in an open layer. `"snapshot": true` also
+captures a reference after the last step, named after the probe, and a `snapshot` step captures
+one at that point, named `<fixture>@<label>` with the item's theme and width; a hover right before
+either is held through it. That's how a state that takes more than one interaction becomes a
+reference: open a list, hover its second option, snapshot (`@open-hover-green`); compare.ts replays
+the steps before it. A step in the name (`@open-field-1+hover-option-2`) would have needed a second
+interaction grammar in names.ts, compare.ts, import.ts and the inventory, and still couldn't say
+"after typing" or "after two arrow presses"; a probe already says all of that, so the label only
+names the result.
+
+A probe item named in another theme or width (`<fixture>@<probe>+dark`, `+mobile`), or with
+`snapshotOnly: true`, only takes its snapshots, in that theme and width: behaviour and payloads
+don't depend on them, so they're recorded once, from the light desktop run. Every snapshot's meta
+records the control that had focus and whether it was drawn as keyboard focus (`focus: { target,
+visible }`), so a probe that reaches an option or a dialog button with the keyboard
+(`{ "key": "ArrowDown" }`, `{ "key": "Tab" }`) shows what it focused. A list driven by
+`aria-activedescendant` keeps focus on its field while the arrow keys move the highlight; the
+highlighted option is recorded too (`focus.active`). Block Kit Builder doesn't validate a
+modal, so a probe that fills a field wrongly and submits records what's sent, not error styles.
+
+`bun tools/visual/src/bundle.ts` lists the probes ready to pass as capture items. In the Builder,
+`capture.js` performs each step with real input (above) and records what `observe.js` sees before
+the first step and after each: the focused element (its address, role, accessible name, and whether
+it's in the preview, a layer or elsewhere), the open layers (popover or dialog, role, scroll
+offset), the highlighted option, a tooltip that's showing, whether anything is loading
+(`aria-busy`, a spinner), and the states controls report (expanded, checked, value, pressed,
+current page, selected, disabled, a column's sort, a Show more toggle's label). A recording counts
+for the fidelity inventory's behaviour cells (`src/fidelity/captures.ts`): hover when a step hovers
+(a tooltip with `{ "wait": … }` steps around it shows its delay), pressed when one clicks, open,
+selected, loading, many items (a list that scrolled) and toggled (a control whose state changed)
+when the observations show them. Names that
+show a workspace member or channel are recorded as `<member>` or `<channel>`. `import.ts` writes
+`fixtures/<fixture>@<probe>.behaviour.json`, maintainer-owned like the payload recordings, and the
+last Actions Preview payload the probe produced to `<fixture>@<probe>.actions.json`.
+`@submit-errors` records its behaviour the same way: the focus after the press, and whether a
+`view_submission` went through.
+
+With the playground running, `bun tools/visual/src/probes.ts [prefix...] [--check]` replays every
+recording on our rendering with Playwright's real pointer and keyboard, observes it with the same
+`observe.js`, and lists each difference
+(`after step 2 (key ArrowDown): activeOption: Slack "Bravo", ours "Alpha"`). `--check` fails when
+any recording differs.
+
 ## Action payloads
 
 `fixtures/<fixture>@<interaction>.actions.json` records the `block_actions` payload Block Kit
@@ -350,8 +692,13 @@ block-kit builds: `type`, `enterprise`, `is_enterprise_install`, `actions` and `
 - Every remaining difference is listed in the test's `KNOWN_DIFFERENCES`. The test fails on a new
   difference and on a listed one that no longer happens, so a fix removes its entries.
 
-To record one, load the fixture in Block Kit Builder, perform the interaction, open Actions Preview
-and copy the payload. Replace the identity before saving: `user` becomes
+`capture.js` records them during a run (above), and `import.ts` redacts them (`src/recordings.ts`)
+and refuses one that still shows the workspace; `references:check` checks every recording and probe
+names a fixture and shows nothing of the workspace. A recording made by a probe needs no
+`INTERACTIONS` entry: the test replays the probe's steps. A `view_submission` or `view_closed` recording isn't compared until the test renders views.
+
+To record one by hand, load the fixture in Block Kit Builder, perform the interaction, open Actions
+Preview and copy the payload. Replace the identity before saving: `user` becomes
 `{ "id": "U00000000", "username": "user", "name": "user", "team_id": "T00000000" }`, `team`
 becomes `{ "id": "T00000000", "domain": "workspace" }`, `api_app_id`, `token`, `trigger_id`,
 `response_url` and each `action_ts` become `"<field name>"`, and a block id Slack generated

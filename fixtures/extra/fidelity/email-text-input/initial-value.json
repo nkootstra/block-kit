@@ -1,0 +1,25 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "email",
+      "label": {
+        "type": "plain_text",
+        "text": "Email address"
+      },
+      "element": {
+        "type": "email_text_input",
+        "action_id": "email_input",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "name@example.com"
+        },
+        "initial_value": "name@example.com"
+      },
+      "hint": {
+        "type": "plain_text",
+        "text": "We'll only use this for receipts."
+      }
+    }
+  ]
+}

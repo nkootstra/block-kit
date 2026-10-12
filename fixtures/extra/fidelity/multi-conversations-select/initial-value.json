@@ -1,0 +1,21 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Pick conversations"
+      },
+      "accessory": {
+        "type": "multi_conversations_select",
+        "action_id": "conversations",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select conversations",
+          "emoji": true
+        },
+        "initial_conversations": ["C0123456789"]
+      }
+    }
+  ]
+}

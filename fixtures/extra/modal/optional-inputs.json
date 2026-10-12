@@ -1,0 +1,107 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "Optional"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Submit"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "External"
+      },
+      "element": {
+        "type": "external_select",
+        "action_id": "external",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Search"
+        },
+        "min_query_length": 1
+      },
+      "optional": true
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "External, multi"
+      },
+      "element": {
+        "type": "multi_external_select",
+        "action_id": "external_multi",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Search"
+        },
+        "min_query_length": 1
+      },
+      "optional": true
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Channels"
+      },
+      "element": {
+        "type": "multi_channels_select",
+        "action_id": "channels",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select channels"
+        }
+      },
+      "optional": true
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Conversations"
+      },
+      "element": {
+        "type": "multi_conversations_select",
+        "action_id": "conversations",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select conversations"
+        }
+      },
+      "optional": true
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Notes"
+      },
+      "element": {
+        "type": "rich_text_input",
+        "action_id": "notes"
+      },
+      "optional": true
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Attachment"
+      },
+      "element": {
+        "type": "file_input",
+        "action_id": "file"
+      },
+      "optional": true
+    }
+  ]
+}

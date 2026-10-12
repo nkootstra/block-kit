@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "button-1"
+    },
+    {
+      "hover": "confirm-1"
+    },
+    {
+      "snapshot": "confirm-hover-confirm-1"
+    },
+    {
+      "click": "deny-1"
+    }
+  ]
+}

@@ -3,13 +3,18 @@
  * `ours` clicks through our rendering the way the reference was clicked through in Block Kit
  * Builder; `reference` restores what a DOM snapshot can't record, such as a scroll offset.
  */
-import type { Page } from "playwright";
-import { parseReferenceName } from "./names";
+import type { ElementHandle, Page } from "playwright";
+import { type InputState, parseInputState, parseReferenceName } from "./names";
+import { type Probe, probeSnapshots, runSteps } from "./probes";
+import { scrollOursToEnd } from "./scrollers";
+import { findTarget, OURS, ourRoot, type Target } from "./targets";
 
 export interface State {
   /** `reference` is the reference's page, open on its own when the state has a popover. */
   ours: (page: Page, reference?: Page) => Promise<void>;
   reference?: (page: Page) => Promise<void>;
+  /** The state is the pointer resting on a control: don't move it away before the screenshot. */
+  keepPointer?: boolean;
 }
 
 /** States captured for one fixture, keyed `<fixture>@<interaction>`. */
@@ -98,10 +103,80 @@ export const OPEN_STATES: Record<keyof typeof OPENERS, State> = {
   dialog: { ours: (p) => p.locator(OPENERS.dialog).first().click() },
 };
 
-/** The replay for a reference, whatever theme and width it was captured at, or undefined. */
-export function stateFor(name: string): State | undefined {
+/** Our control at a target address (targets.ts), in the message or view, or in an open layer. */
+export async function ourTarget(page: Page, { kind, index }: Target): Promise<ElementHandle> {
+  const handle = await page.evaluateHandle(findTarget, [OURS[kind], index, ourRoot(kind)] as [
+    string,
+    number,
+    string | null,
+  ]);
+  const el = handle.asElement();
+  if (!el) throw new Error(`our rendering has no ${kind}-${index}`);
+  return el as ElementHandle;
+}
+
+/** Whether keyboard focus, as `:focus-visible` matches it, is on the element or inside it. */
+const keyboardFocused = (el: ElementHandle) =>
+  el.evaluate((node) => {
+    const active = document.activeElement;
+    return !!active && node.contains(active) && active.matches(":focus-visible");
+  });
+
+/**
+ * Holds real input on our control, as capture.js holds it on Slack's: the pointer resting on it,
+ * or keyboard focus. Focus goes where a scripted focus puts it (the control, or its first focusable
+ * descendant); after a Tab press, as in the Builder, a scripted focus matches `:focus-visible`.
+ */
+export function inputState({ input, target }: InputState): State {
+  if (input === "hover")
+    return { keepPointer: true, ours: async (p) => (await ourTarget(p, target)).hover() };
+  return {
+    ours: async (p) => {
+      const el = await ourTarget(p, target);
+      const focus = () =>
+        el.evaluate((node) => {
+          const FOCUSABLE =
+            'input, textarea, select, button, a[href], [tabindex], [contenteditable="true"]';
+          const el = node as Element;
+          const into = el.matches(FOCUSABLE) ? el : (el.querySelector(FOCUSABLE) ?? el);
+          (into as HTMLElement).focus({ preventScroll: true });
+        });
+      await focus();
+      if (await keyboardFocused(el)) return;
+      await p.keyboard.press("Tab");
+      await focus();
+      if (!(await keyboardFocused(el)))
+        throw new Error(`our ${target.kind}-${target.index} took focus without :focus-visible`);
+    },
+  };
+}
+
+/** Presses a modal's submit with its fields as the payload leaves them. */
+export const SUBMIT_ERRORS: State = {
+  ours: async (p) => (await ourTarget(p, { kind: "submit", index: 1 })).click(),
+};
+
+/** Scrolls the first horizontal scroll container that overflows fully to the right. */
+export const SCROLLED_END: State = { ours: scrollOursToEnd };
+
+/**
+ * The replay for a reference, whatever theme and width it was captured at, or undefined. `probes`
+ * are the behaviour probes (probes.ts); one with `snapshot` replays its steps.
+ */
+export function stateFor(name: string, probes?: Map<string, Probe>): State | undefined {
   const { fixture, interaction } = parseReferenceName(name);
   if (!interaction) return undefined;
+  const input = parseInputState(interaction);
+  if (input) return inputState(input);
+  if (interaction === "submit-errors") return SUBMIT_ERRORS;
+  if (interaction === "scrolled-end") return SCROLLED_END;
+  const steps = probes && probeSnapshots(probes).get(`${fixture}@${interaction}`);
+  if (steps)
+    return {
+      ours: (p) => runSteps(p, steps),
+      // A hover just before the snapshot is part of the state.
+      keepPointer: !!steps.at(-1) && "hover" in steps.at(-1)!,
+    };
   return (
     STATES[`${fixture}@${interaction}`] ??
     (interaction in OPEN_STATES ? OPEN_STATES[interaction as keyof typeof OPENERS] : undefined)

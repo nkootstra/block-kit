@@ -1,0 +1,44 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "colours",
+      "dispatch_action": true,
+      "label": {
+        "type": "plain_text",
+        "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently."
+      },
+      "element": {
+        "type": "multi_static_select",
+        "action_id": "multi",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Pick some"
+        },
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Red"
+            },
+            "value": "red"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Green"
+            },
+            "value": "green"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Blue"
+            },
+            "value": "blue"
+          }
+        ]
+      }
+    }
+  ]
+}

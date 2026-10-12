@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "button-1"
+    },
+    {
+      "hover": "confirm-1"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "deny-1"
+    }
+  ]
+}

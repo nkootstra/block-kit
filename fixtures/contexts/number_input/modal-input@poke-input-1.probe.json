@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "hover": "input-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "input-1"
+    },
+    {
+      "type": "a"
+    }
+  ]
+}

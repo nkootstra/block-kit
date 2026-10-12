@@ -1,0 +1,73 @@
+{
+  "blocks": [
+    {
+      "type": "data_visualization",
+      "title": "Share by platform",
+      "chart": {
+        "type": "pie",
+        "segments": [
+          {
+            "label": "Desktop",
+            "value": 55
+          },
+          {
+            "label": "iOS",
+            "value": 25
+          },
+          {
+            "label": "Android",
+            "value": 20
+          }
+        ]
+      }
+    },
+    {
+      "type": "data_visualization",
+      "title": "Change by week",
+      "chart": {
+        "type": "area",
+        "series": [
+          {
+            "name": "Net",
+            "data": [
+              {
+                "label": "W1",
+                "value": 12
+              },
+              {
+                "label": "W2",
+                "value": -8
+              },
+              {
+                "label": "W3",
+                "value": 5
+              }
+            ]
+          },
+          {
+            "name": "Gross",
+            "data": [
+              {
+                "label": "W1",
+                "value": 30
+              },
+              {
+                "label": "W2",
+                "value": 14
+              },
+              {
+                "label": "W3",
+                "value": 22
+              }
+            ]
+          }
+        ],
+        "axis_config": {
+          "categories": ["W1", "W2", "W3"],
+          "x_label": "Week",
+          "y_label": "Change"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "when",
+      "elements": [
+        {
+          "type": "timepicker",
+          "action_id": "time"
+        },
+        {
+          "type": "datetimepicker",
+          "action_id": "moment",
+          "initial_date_time": 1767261600
+        }
+      ]
+    }
+  ]
+}

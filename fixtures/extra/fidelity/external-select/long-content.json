@@ -1,0 +1,21 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "block_id": "fruit",
+      "text": {
+        "type": "mrkdwn",
+        "text": "External select: type a letter to load options."
+      },
+      "accessory": {
+        "type": "external_select",
+        "action_id": "demo_fruit",
+        "min_query_length": 1,
+        "placeholder": {
+          "type": "plain_text",
+          "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the"
+        }
+      }
+    }
+  ]
+}

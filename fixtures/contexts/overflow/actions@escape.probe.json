@@ -1,0 +1,10 @@
+{
+  "steps": [
+    {
+      "click": "overflow-1"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

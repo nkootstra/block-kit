@@ -17,7 +17,7 @@ import { join } from "node:path";
 /** A real Slack ID: a type letter, `0`, and at least eight more characters. Placeholders are shorter. */
 // Slack's own system users (USLACKBOT, USLACKSECURITY) aren't shaped like a member's ID, but they
 // key avatar URLs and list options the same way.
-const SLACK_ID = /\b(?:[TUCWBF]0[A-Z0-9]{8,}|USLACK[A-Z]+)\b/g;
+export const SLACK_ID = /\b(?:[TUCWBF]0[A-Z0-9]{8,}|USLACK[A-Z]+)\b/g;
 const AVATAR = /https:\/\/(?:ca|avatars)\.slack-edge\.com\/[^"'()\s&<]*/g;
 const PROFILE_LINK =
   /https?:\/\/(?:[a-z0-9-]+\.slack\.com\/team\/|app\.slack\.com\/client\/)[^"'\s<]*/g;
@@ -329,9 +329,11 @@ export function redact(html: string, mapping: Record<string, string> = {}): stri
   );
 }
 
-/** What of the workspace a reference still shows; empty once it's redacted. */
-export function leaks(html: string): string[] {
-  const own = fixtureIds(html);
+/**
+ * What of the workspace a reference still shows; empty once it's redacted. `own` are the IDs the
+ * fixture itself uses, read from a reference's meta when not given (a payload recording has none).
+ */
+export function leaks(html: string, own: Set<string> = fixtureIds(html)): string[] {
   const found = new Set<string>();
   outsideDataUris(html, (part) => {
     for (const [id] of part.matchAll(SLACK_ID)) if (!own.has(id)) found.add(`Slack ID ${id}`);

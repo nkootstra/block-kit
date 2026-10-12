@@ -1,0 +1,17 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Email"
+      },
+      "element": {
+        "type": "email_text_input",
+        "action_id": "email"
+      },
+      "dispatch_action": true,
+      "block_id": "email"
+    }
+  ]
+}

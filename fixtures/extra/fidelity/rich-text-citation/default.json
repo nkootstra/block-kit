@@ -1,0 +1,30 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "citation",
+              "url": "https://example.com/source",
+              "text": "Source",
+              "index": 1,
+              "details": {
+                "citation_type": "web",
+                "display_name": "example.com",
+                "title": "A cited page",
+                "snippet": "A snippet of the page"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

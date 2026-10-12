@@ -1,0 +1,3 @@
+{
+  "steps": [{ "click": "richtext-1" }, { "type": "Hello" }, { "click": "submit-1" }]
+}

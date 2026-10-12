@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": "submit-1"
+    }
+  ]
+}

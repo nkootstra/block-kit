@@ -1,0 +1,48 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "selects",
+      "elements": [
+        {
+          "type": "static_select",
+          "action_id": "single",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the"
+          },
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "Alpha"
+            },
+            "value": "alpha"
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Alpha"
+              },
+              "value": "alpha"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Bravo"
+              },
+              "value": "bravo"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Charlie"
+              },
+              "value": "charlie"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

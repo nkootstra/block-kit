@@ -1,0 +1,22 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "canvas_user_mention",
+              "user_id": "U0123456789"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

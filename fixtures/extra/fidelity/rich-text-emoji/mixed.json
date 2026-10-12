@@ -1,0 +1,43 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "emoji",
+              "name": "wave"
+            },
+            {
+              "type": "emoji",
+              "name": "wave",
+              "unicode": "1f44b-1f3fd"
+            },
+            {
+              "type": "emoji",
+              "name": "thumbsup",
+              "unicode": "1f44d"
+            },
+            {
+              "type": "text",
+              "text": " by name, with a skin-tone unicode, and inline in "
+            },
+            {
+              "type": "text",
+              "text": "bold ",
+              "style": {
+                "bold": true
+              }
+            },
+            {
+              "type": "emoji",
+              "name": "tada"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

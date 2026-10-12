@@ -1,0 +1,25 @@
+{
+  "steps": [
+    {
+      "click": "field-3"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click": "field-4"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click": "submit-1"
+    }
+  ]
+}

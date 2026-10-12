@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "pill-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "pill-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

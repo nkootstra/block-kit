@@ -1,0 +1,46 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Icon buttons with different icons"
+      }
+    },
+    {
+      "type": "context_actions",
+      "elements": [
+        {
+          "type": "icon_button",
+          "action_id": "trash",
+          "icon": "trash",
+          "text": {
+            "type": "plain_text",
+            "text": "Remove",
+            "emoji": true
+          }
+        },
+        {
+          "type": "icon_button",
+          "action_id": "calendar",
+          "icon": "calendar",
+          "text": {
+            "type": "plain_text",
+            "text": "Schedule",
+            "emoji": true
+          }
+        },
+        {
+          "type": "icon_button",
+          "action_id": "link",
+          "icon": "link",
+          "text": {
+            "type": "plain_text",
+            "text": "Open link",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -48,12 +48,19 @@ export function payloadName(reference: string): string {
 }
 
 /**
+ * JSON files that sit next to a fixture without being one: `<fixture>@<interaction>.actions.json`,
+ * payloads recorded in Block Kit Builder's Actions Preview; `<fixture>@<probe>.probe.json`, a
+ * behaviour probe's steps; `<fixture>@<probe>.behaviour.json`, what Slack did (probes.ts).
+ */
+export const SIDECARS = [".actions.json", ".probe.json", ".behaviour.json"];
+
+/**
  * Whether a JSON file under fixtures/ (its path relative to it) is a fixture payload. Files at the
- * top of fixtures/ are bookkeeping (the lock and the baselines), and `<fixture>@<interaction>.actions.json`
- * files are payloads recorded in Block Kit Builder's Actions Preview, not blocks to render.
+ * top of fixtures/ are bookkeeping (the lock and the baselines), and SIDECARS aren't blocks to
+ * render.
  */
 export function isFixturePayload(path: string): boolean {
-  return path.includes("/") && path.endsWith(".json") && !path.endsWith(".actions.json");
+  return path.includes("/") && path.endsWith(".json") && !SIDECARS.some((s) => path.endsWith(s));
 }
 
 /** Fixture payloads by name; JSON files at the top of fixtures/ are bookkeeping, not fixtures. */

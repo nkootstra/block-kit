@@ -1,0 +1,23 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "message_mention",
+              "channel_id": "C0123456789",
+              "message_ts": "1767261600.000100"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
