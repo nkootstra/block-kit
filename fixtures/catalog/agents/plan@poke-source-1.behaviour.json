@@ -1,0 +1,223 @@
+{
+  "steps": [
+    {
+      "click": "pill-1"
+    },
+    {
+      "hover": "source-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "source-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "false",
+          "disabled": "false"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Plan Block Features...",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Plan Block Features...",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Plan Block Features...",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "source-1",
+        "role": "link",
+        "name": "Thinking Steps Documentation",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "source-1",
+        "role": "link",
+        "name": "Thinking Steps Documentation",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "source-1",
+        "role": "link",
+        "name": "Thinking Steps Documentation",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    }
+  ]
+}

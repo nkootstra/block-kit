@@ -75,19 +75,13 @@
     },
     {
       "focus": {
-        "target": "field-2",
+        "target": "field-1",
         "role": "combobox",
-        "name": "Choose",
+        "name": "Pick one",
         "where": "preview"
       },
-      "layers": [
-        {
-          "kind": "popover",
-          "role": "listbox",
-          "scrollTop": 0
-        }
-      ],
-      "activeOption": "One",
+      "layers": [],
+      "activeOption": null,
       "tooltip": null,
       "busy": false,
       "controls": {
@@ -96,19 +90,13 @@
           "value": "Alpha"
         },
         "field-2": {
-          "expanded": "true",
+          "expanded": "false",
           "value": "Choose"
         },
         "field-3": {
           "expanded": "false",
           "value": "",
           "disabled": "false"
-        },
-        "option-1": {
-          "selected": "false"
-        },
-        "option-2": {
-          "selected": "false"
         }
       },
       "action": null

@@ -1,0 +1,125 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "1:37 PM"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select time",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "1:37 PM"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select time",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "1:37 PM"
+        }
+      },
+      "action": null
+    }
+  ]
+}

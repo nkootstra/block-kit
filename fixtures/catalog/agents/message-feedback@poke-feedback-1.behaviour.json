@@ -1,0 +1,113 @@
+{
+  "steps": [
+    {
+      "hover": "feedback-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "feedback-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Good Response",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Good Response",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "feedback-1",
+        "role": "radio",
+        "name": "Good Response",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Good Response",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "feedback-1",
+        "role": "radio",
+        "name": "Good Response",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Good Response",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "feedback-1",
+        "role": "radio",
+        "name": "Good Response",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}
