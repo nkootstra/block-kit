@@ -28,6 +28,7 @@ import {
   capturePlan,
   chunkItems,
   fitsAt,
+  pickedTypes,
   type PlanItem,
   SESSION_SIZE,
   verifyPlan,
@@ -424,6 +425,7 @@ if (import.meta.main) {
     new Set(sources.behaviour?.keys() ?? []),
     fitsAt(sources.references, "desktop"),
     fitsAt(sources.references, "mobile"),
+    pickedTypes(sources.recordings),
   );
   const out = resolve(ROOT, "test-results/fidelity");
   await mkdir(out, { recursive: true });

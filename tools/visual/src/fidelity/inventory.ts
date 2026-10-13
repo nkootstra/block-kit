@@ -241,6 +241,10 @@ function referenceStates(
   hits: Hit[],
   fixture: string,
   opener: string | undefined,
+  /** For `@pick`: the element type its payload recording says was picked. */
+  picked?: string,
+  /** For `@menu`: the fixture's first block with a More actions menu. */
+  menu?: string,
 ): StateId[] {
   const mine = hits.filter((h) => h.fixture === fixture);
   if (mine.length === 0) return [];
@@ -257,6 +261,11 @@ function referenceStates(
     return opener === component.id || (component.id === "option_group" && opener) ? ["open"] : [];
   if (interaction === "confirm") return component.id === "confirm" ? ["open"] : [];
   if (interaction === "dialog") return component.id === "select-dialog" ? ["open"] : [];
+  // A real pick (fixtureInteraction): which element was picked is in its payload recording, as
+  // the person may pick any of the fixture's. Without a recording, nothing is credited.
+  if (interaction === "pick") return picked === component.id ? ["selected"] : [];
+  // A More actions menu held open: the fixture's first image, data table or chart.
+  if (interaction === "menu") return menu === component.id ? ["open"] : [];
   // Fixture-specific (states.ts STATES): a disclosure in its other position.
   const toggles = TOGGLES[interaction];
   if (toggles && !toggles.includes(component.id)) return [];
@@ -273,6 +282,12 @@ const TOGGLES: Record<string, string[]> = {
   "page-2": ["data_table"],
   scrolled: ["carousel"],
 };
+
+/** The element type a payload recording's first action reports, e.g. "timepicker". */
+function pickedIn(recording: unknown): string | undefined {
+  const type = (recording as { actions?: { type?: unknown }[] } | undefined)?.actions?.[0]?.type;
+  return typeof type === "string" ? type : undefined;
+}
 
 /** The type of the first control `@open` opens in a payload, in document order (states.ts). */
 export function firstOpener(payload: unknown): string | undefined {
@@ -339,6 +354,12 @@ function evidence(components: Component[], sources: Sources, hits: Map<string, H
   const openers = new Map(
     [...sources.payloads].map(([name, payload]) => [name, firstOpener(payload)]),
   );
+  const menus = new Map(
+    [...sources.payloads].map(([name, payload]) => [
+      name,
+      [...objects(payload)].map(([o]) => String(o.type)).find((t) => MENUS.has(t)),
+    ]),
+  );
 
   // References: styles in the state, theme and width they show; motion recorded in their meta.
   for (const [name, { motion, ...meta }] of sources.references) {
@@ -366,6 +387,8 @@ function evidence(components: Component[], sources: Sources, hits: Map<string, H
         hits.get(c.id)!,
         fixture,
         openers.get(fixture),
+        pickedIn(sources.recordings.get(`${fixture}@pick`)),
+        menus.get(fixture),
       );
       for (const state of states) {
         if (!c.states.includes(state)) continue;

@@ -244,6 +244,8 @@ describe("capture evidence", () => {
     })}</script>`;
     const meta = referenceMeta(html);
     expect(meta).toMatchObject({ targets: ["field-1", "field-2"], motionFacts: true });
+    // It recorded no scroll container, so nothing scrolls sideways at its width.
+    expect(meta).toMatchObject({ measured: true, overflows: false });
     const twoSelects = {
       blocks: [
         {

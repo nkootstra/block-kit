@@ -89,6 +89,20 @@ export const FINDINGS: Finding[] = [
     status: "verified",
   },
   {
+    id: "chart-menu-mobile-clipped",
+    title:
+      "On mobile, Slack's chart More actions button sits outside the message, clipped and unclickable",
+    evidence: [
+      "Dark mobile sitting: in the 400px Mobile preview, catalog/data-visualization/area-multi-series's More actions button (menu-1) is laid out at about CSS x 732, past the message's right edge, so it's clipped and a click can't reach it. area-multi-series@menu+mobile and @menu+mobile+dark both timed out for that reason. The hover state (hover-menu-1 at the card's top-right) was reachable in the light mobile sitting.",
+      "The chart card keeps its 400px minimum width inside a scroller (finding chart-mobile-scroll), so its top-right corner, where the menu sits, is off screen until scrolled.",
+    ],
+    suspect: [
+      "Not a harness bug: Slack's (or the Builder's) layout. Ours: packages/block-kit/src/blocks/DataVisualization.tsx and DataVisualization.css place the menu on the card too; decide whether to match Slack (menu out of reach on mobile) or keep it reachable.",
+    ],
+    next: "The plan no longer asks for @menu+mobile on charts. Compare our mobile render's menu position with Slack's @mobile references and decide.",
+    components: ["data_visualization"],
+  },
+  {
     id: "markdown-list-spacing",
     title: "Markdown ordered lists sit further in, and blocks after a list sit higher",
     evidence: [

@@ -8,6 +8,7 @@ import {
   forecastFocus,
   forecastProbe,
   openSteps,
+  pickedTypes,
   revealSteps,
   SESSION_SIZE,
   VERIFY,
@@ -382,6 +383,63 @@ describe("probes on controls Slack draws only after a click", () => {
     expect(names(new Set(["catalog/t"])).filter((n) => n.includes("scrolled-end+mobile"))).toEqual(
       [],
     );
+  });
+
+  it("forecasts a confirm dialog's Tab order: Close, then Cancel, then the confirm button", () => {
+    const payload = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [{ type: "button", text: plain("Go"), confirm: {} }],
+        },
+      ],
+    };
+    const tabs = (n: number) =>
+      forecastFocus(
+        [{ click: "button-1" }, ...Array.from({ length: n }, () => ({ key: "Tab" }))],
+        payload,
+      );
+    expect(tabs(1)).toBeUndefined();
+    expect(tabs(2)).toEqual({ target: "deny-1", visible: true });
+    expect(tabs(3)).toEqual({ target: "confirm-1", visible: true });
+  });
+
+  it("plans @pick only for the element the fixture's recording picked", () => {
+    expect(
+      pickedTypes(
+        new Map([
+          ["x/selects@pick", { actions: [{ type: "datepicker" }] }],
+          ["x/selects@pick-15th", { actions: [{ type: "static_select" }] }],
+        ]),
+      ),
+    ).toEqual(new Map([["x/selects", "datepicker"]]));
+    const two = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            { type: "static_select", action_id: "s", placeholder: plain("P"), options: [] },
+            { type: "datepicker", action_id: "d" },
+          ],
+        },
+      ],
+    };
+    const c = pick("static_select", "datepicker");
+    const payloads = new Map<string, unknown>([["x/selects", two]]);
+    const items = capturePlan(
+      buildInventory(c, sources(payloads, ["x/selects"])),
+      c,
+      payloads,
+      new Set(["x/selects"]),
+      new Map(),
+      new Set(),
+      new Set(),
+      new Set(),
+      new Map([["x/selects", "datepicker"]]),
+    ).sessions.flatMap((s) => [...s.automatic, ...s.realInput]);
+    const picks = items.filter((i) => i.name.startsWith("x/selects@pick"));
+    expect(picks.length).toBeGreaterThan(0);
+    expect(picks.flatMap((i) => i.covers).every((c) => c.startsWith("datepicker "))).toBe(true);
   });
 
   it("plans no keyboard focus on the message header, which the Builder draws as plain text", () => {

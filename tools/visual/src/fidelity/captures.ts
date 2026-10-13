@@ -66,7 +66,9 @@ export function referenceMeta(html: string): ReferenceMeta {
       Object.values(meta.stateStyles).map((s) => [s.target, Object.keys(s.states)]),
     );
   if (meta.scrollers?.length) out.scrollers = true;
-  if (meta.scrollers?.length || meta.full) {
+  // snapshot.js records every horizontal scroll container in the same captures that record the
+  // controls' addresses (`targets`), so a meta with targets and no scrollers measured none.
+  if (meta.scrollers?.length || meta.full || meta.targets) {
     out.measured = true;
     // A `+full` capture records the scrollers after widening the preview, by what they hid.
     out.overflows =

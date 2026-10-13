@@ -306,6 +306,37 @@ describe("buildInventory", () => {
     ).toEqual(['interaction test "theme colours"']);
   });
 
+  it("credits a @pick reference to the element its payload recording picked, and @menu to the first menu", () => {
+    const inv = buildInventory(
+      [byId("static_select"), byId("datepicker"), byId("image")],
+      sources({
+        payloads: new Map<string, unknown>([
+          ["x/selects", selects],
+          [
+            "x/image",
+            { blocks: [{ type: "image", image_url: "https://example.com/a.png", alt_text: "A" }] },
+          ],
+        ]),
+        references: new Map([
+          ["x/selects@pick+mobile", { motion: false }],
+          ["x/image@menu+mobile", { motion: false }],
+        ]),
+        recordings: new Map([["x/selects@pick", { actions: [{ type: "datepicker" }] }]]),
+      }),
+    );
+    const at = (component: string, state: string) =>
+      cell(inv, {
+        component,
+        state: state as never,
+        width: "mobile",
+        theme: "light",
+        fact: "styles",
+      })?.covered;
+    expect(at("datepicker", "selected")).toBe(true);
+    expect(at("static_select", "selected")).toBe(false);
+    expect(at("image", "open")).toBe(true);
+  });
+
   it("reports what isn't implemented and what no fixture shows", () => {
     expect(inventory.gaps.notImplemented).toEqual(["datepicker", "confirm"]);
     expect(inventory.gaps.noFixture).toEqual([]);

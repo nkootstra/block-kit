@@ -418,8 +418,11 @@ export function forecastFocus(
   const kind = typeof opened === "string" ? parseTarget(opened)?.kind : undefined;
   const tabs =
     keys.filter((k) => k === "Tab").length - keys.filter((k) => k === "Shift+Tab").length;
+  // Slack's confirm dialog takes the focus itself; Tab then reaches its Close button (no address),
+  // then Cancel (deny-1), then the confirm button (extra/actions/more-elements@confirm-focus-tab-1:
+  // the first Tab focused "Close").
   if (kind === "button" && tabs > 0)
-    return { target: tabs === 1 ? "confirm-1" : "deny-1", visible: true };
+    return tabs === 1 ? undefined : { target: tabs === 2 ? "deny-1" : "confirm-1", visible: true };
   if (keys.at(-1) === "ArrowLeft") {
     const chips = controlComponents(payload).chip?.length ?? 0;
     if (chips > 0) return { target: `chip-${chips}`, visible: true };
@@ -459,6 +462,17 @@ export function openSteps(payload: unknown, address: string): Step[] {
   )
     return [{ click: address }, { click: { role: "combobox", name: placeholder } }];
   return [{ click: address }];
+}
+
+/** The element type each fixture's `@pick` payload recording reports (capturePlan's `picked`). */
+export function pickedTypes(recordings: Map<string, unknown>): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const [name, recording] of recordings) {
+    const [fixture, interaction] = name.split("@");
+    const type = (recording as { actions?: { type?: unknown }[] } | undefined)?.actions?.[0]?.type;
+    if (interaction === "pick" && typeof type === "string") out.set(fixture!, type);
+  }
+  return out;
 }
 
 /**
@@ -728,6 +742,11 @@ export function capturePlan(
   fits: Set<string> = new Set(),
   /** The same at the mobile width: nothing scrolls sideways, so `@scrolled-end+mobile` can't. */
   fitsMobile: Set<string> = new Set(),
+  /**
+   * The element type each fixture's `@pick` payload recording picked (pickedTypes): a `@pick`
+   * reference shows that element selected, so it's planned only for that element's cells.
+   */
+  picked: Map<string, string> = new Map(),
 ): CapturePlan {
   // The inventory's components carry the states the stylesheet discovery added: plan with those.
   const cellStates = new Map<string, Set<string>>();
@@ -815,7 +834,20 @@ export function capturePlan(
       snapshots,
     ).filter(
       (c) =>
-        c.kind !== "scrolled-end" || !(cell.width === "mobile" ? fitsMobile : fits).has(c.fixture),
+        (c.kind !== "scrolled-end" ||
+          !(cell.width === "mobile" ? fitsMobile : fits).has(c.fixture)) &&
+        !(
+          c.interaction === "pick" &&
+          picked.has(c.fixture) &&
+          picked.get(c.fixture) !== cell.component
+        ) &&
+        // A chart's More actions button sits outside the 400px mobile message, clipped, so no
+        // click reaches it (finding chart-menu-mobile-clipped).
+        !(
+          c.interaction === "menu" &&
+          cell.width === "mobile" &&
+          cell.component === "data_visualization"
+        ),
     );
     if (found.length === 0) {
       const fixtureFirst =
@@ -1107,27 +1139,19 @@ function snapshotProbes(
         `chip-focus-1`,
         [...open, { key: "Escape" }, { key: "ArrowLeft" }, { snapshot: "chip-focus-1" }],
       ]);
-    if (confirming >= 0) {
-      specs.push([
-        `confirm-focus-tab-1`,
-        [
-          { click: `button-${confirming + 1}` },
-          { key: "Tab" },
-          { snapshot: "confirm-focus-tab-1" },
-          { key: "Escape" },
-        ],
-      ]);
-      specs.push([
-        `confirm-focus-tab-2`,
-        [
-          { click: `button-${confirming + 1}` },
-          { key: "Tab" },
-          { key: "Tab" },
-          { snapshot: "confirm-focus-tab-2" },
-          { key: "Escape" },
-        ],
-      ]);
-    }
+    // Keyboard focus on a confirm dialog's buttons: the first Tab reaches its Close button, the
+    // second Cancel, the third the confirm button (forecastFocus).
+    if (confirming >= 0)
+      for (const tabs of [2, 3])
+        specs.push([
+          `confirm-focus-tab-${tabs}`,
+          [
+            { click: `button-${confirming + 1}` },
+            ...Array.from({ length: tabs }, () => ({ key: "Tab" })),
+            { snapshot: `confirm-focus-tab-${tabs}` },
+            { key: "Escape" },
+          ],
+        ]);
     // A collapsed plan's or task card's insides (its sources, the links in its text, its task
     // headers), hovered once its pill has expanded it.
     for (const [kind, list] of [
