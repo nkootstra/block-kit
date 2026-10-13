@@ -61,9 +61,10 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   "catalog/actions/radio-buttons@pick": () => clickAsync(screen.getAllByRole("radio")[1]!),
   "catalog/actions/checkboxes@check-first": () => clickAsync(screen.getAllByRole("checkbox")[0]!),
+  // Re-recorded in the dark mobile sitting, picking the second item ("option 1").
   "catalog/section/overflow@pick": async () => {
     fireEvent.click(screen.getByRole("button", { name: "More options" }));
-    await clickAsync(screen.getByText("*plain_text option 2*"));
+    await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   // Slack opens a "Select options" dialog and dispatches on Confirm; block-kit's menu is inline.
   "catalog/section/multi-static-select@pick-confirm": async () => {
