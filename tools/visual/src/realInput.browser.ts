@@ -1380,3 +1380,174 @@ describe("Slack's controls by address, in the captured references", () => {
     expect(await control("catalog/agents/task-card@expanded", "link-1")).toBe("a Thinking Steps");
   });
 });
+
+describe("capture.js keeping what it captured in IndexedDB", () => {
+  const ORIGIN = "https://builder.test/";
+  /** A stand-in Builder served from a real origin, which IndexedDB needs. */
+  async function builderTab(
+    context: Awaited<ReturnType<Browser["newContext"]>>,
+    script = "",
+  ): Promise<Page> {
+    const page = await context.newPage();
+    await page.route(`${ORIGIN}**`, (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: `<!doctype html><html><body>
+          <div class="p-bkb_preview__message" style="width:512px">
+            <button class="c-button" type="button">Go</button>
+          </div>
+          <script>window.adapter = {
+            load: async () => {}, theme: () => "light", setTheme: async () => {},
+            previewSize: () => "desktop", setPreviewSize: async () => {},
+          };${script}</script></body></html>`,
+      }),
+    );
+    await page.goto(ORIGIN);
+    await page.addScriptTag({
+      content: `window.capture = ${CAPTURE}; window.snap = ${SNAPSHOT}; window.observe = ${OBSERVE};`,
+    });
+    return page;
+  }
+  const run = (page: Page, items: unknown[]) =>
+    page.evaluate(async (list) => {
+      const w = window as unknown as Record<string, any>;
+      await w.capture({
+        items: list,
+        snap: async () => "<p>frozen</p>",
+        observe: w.observe,
+        adapter: w.adapter,
+        settle: 0,
+        stateStyles: false,
+      });
+      return w.sbkCapturePersistError as string | undefined;
+    }, items);
+
+  it("restores every item a closed tab captured, in a fresh tab", async () => {
+    const context = await browser.newContext();
+    const first = await builderTab(context);
+    expect(await run(first, [{ name: "x/one", payload: {} }])).toBeUndefined();
+    // A probe's behaviour is persisted as its own record too.
+    expect(
+      await run(first, [
+        { name: "x/two@poke", payload: {}, probe: { steps: [{ wait: 1 }] }, real: false },
+      ]),
+    ).toBeUndefined();
+    await first.close();
+    const fresh = await builderTab(context);
+    const restored = await fresh.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      await w.capture({ items: [] });
+      return JSON.parse(w.sbkCaptureJson());
+    });
+    expect(Object.keys(restored.references)).toEqual(["x/one"]);
+    expect(restored.references["x/one"]).toContain("frozen");
+    expect(Object.keys(restored.behaviour)).toEqual(["x/two@poke"]);
+    await context.close();
+  });
+
+  it("keeps the items done before the tab is reloaded mid-run", async () => {
+    const context = await browser.newContext();
+    const page = await builderTab(context);
+    // The second item waits for a real hover that never comes: the tab goes away meanwhile.
+    await page.evaluate(() => {
+      const w = window as unknown as Record<string, any>;
+      w.capture({
+        items: [
+          { name: "x/one", payload: {} },
+          { name: "x/one@hover-button-1", payload: {} },
+        ],
+        snap: async () => "<p>frozen</p>",
+        adapter: w.adapter,
+        settle: 0,
+        stateStyles: false,
+      }).catch(() => {});
+    });
+    await page.waitForFunction(
+      () => (window as unknown as Record<string, any>).sbkCaptureWaiting?.do === "hover",
+    );
+    await page.reload();
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const restored = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      await w.capture({ items: [] });
+      return Object.keys(JSON.parse(w.sbkCaptureJson()).references);
+    });
+    expect(restored).toEqual(["x/one"]);
+    await context.close();
+  });
+
+  it("creates its store in a database an earlier run left at version 1 without one", async () => {
+    const context = await browser.newContext();
+    const page = await builderTab(context);
+    // As the Builder run found it: sbk-capture v1 with no object store at all.
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          const r = indexedDB.open("sbk-capture", 1);
+          r.onsuccess = () => {
+            r.result.close();
+            resolve();
+          };
+        }),
+    );
+    expect(await run(page, [{ name: "x/one", payload: {} }])).toBeUndefined();
+    await page.reload();
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const restored = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      await w.capture({ items: [] });
+      return Object.keys(w.sbkCaptureOutput.references);
+    });
+    expect(restored).toEqual(["x/one"]);
+    await context.close();
+  });
+
+  it("moves the earlier single-record output into one record per entry", async () => {
+    const context = await browser.newContext();
+    const page = await builderTab(context);
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          const r = indexedDB.open("sbk-capture", 1);
+          r.onupgradeneeded = () => r.result.createObjectStore("output");
+          r.onsuccess = () => {
+            const tx = r.result.transaction("output", "readwrite");
+            tx.objectStore("output").put(
+              { references: { "x/old": "<p>old</p>" }, actions: {}, behaviour: {} },
+              "output",
+            );
+            tx.oncomplete = () => {
+              r.result.close();
+              resolve();
+            };
+          };
+        }),
+    );
+    const counts = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      await w.capture({ items: [] });
+      return w.sbkCaptureRestore();
+    });
+    expect(counts).toEqual({ references: 1, actions: 0, behaviour: 0 });
+    await context.close();
+  });
+
+  it("says when a write fails instead of dropping it silently", async () => {
+    const context = await browser.newContext();
+    // IndexedDB refuses every write, as a full or blocked store would.
+    const page = await builderTab(
+      context,
+      `IDBObjectStore.prototype.put = function () { throw new DOMException("no room", "QuotaExceededError"); };`,
+    );
+    const error = await run(page, [{ name: "x/one", payload: {} }]);
+    expect(error).toContain("references/x/one");
+    expect(error).toContain("QuotaExceededError");
+    // The window's copy still has it.
+    expect(
+      await page.evaluate(() =>
+        Object.keys((window as unknown as Record<string, any>).sbkCaptureOutput.references),
+      ),
+    ).toEqual(["x/one"]);
+    await context.close();
+  });
+});

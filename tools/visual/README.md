@@ -276,8 +276,13 @@ to the preview):
    loading checks what the preview shows against what the payload sets: multi-select chips, text
    input values, checked boxes and radios. A difference is retried once through the neutral payload;
    then the run stops: reload the Builder and resume. What was captured is kept: besides
-   `window.sbkCaptureOutput` it's stored in the page's IndexedDB (`sbk-capture`) after every item, and
-   the first call after a reload picks it up again (`sbkCaptureReset()` clears both).
+   `window.sbkCaptureOutput`, each reference, payload and behaviour recording is written to the
+   page's IndexedDB (database `sbk-capture`, store `records`, one record each) as it's recorded, and
+   the item's writes are awaited before the next item starts. The first call after a reload picks it
+   all up again; in a fresh tab, `await sbkCapture({ items: [] })` (or `sbkCaptureRestore()` once
+   capture.js has been called) restores it, and `sbkCaptureJson()` returns it. A failed write sets
+   `window.sbkCapturePersistError` and is logged in the console: check it during a long run.
+   `sbkCaptureReset()` clears both copies.
    `references:check` fails on a reference that shows chips or input values its payload doesn't set
    (`stale.ts` `foreignState`), for the rest state and the generic states (`@open`, `@confirm`,
    `@dialog`, held input, `@scrolled-end`); a section accessory's multi-select counts its choices on a

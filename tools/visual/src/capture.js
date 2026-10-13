@@ -47,6 +47,8 @@
 // `{ references, actions, behaviour }`, is kept on `window.sbkCaptureOutput`, and with
 // `download: "<session>"` saved as `block-kit-refs-<session>.json` (`-partial` when the run stopped
 // on an error) for `bun tools/visual/src/import.ts <file>`.
+// Each entry is also written to IndexedDB as it's recorded; a call with no items in a fresh tab
+// restores them (below).
 async ({
   items,
   snap,
@@ -117,6 +119,131 @@ async ({
     win.sbkCaptureError = message;
     throw new Error(message);
   };
+
+  // What was captured survives the Builder tab: besides the window's copy, every reference,
+  // payload and behaviour recording is written to this origin's IndexedDB (database
+  // `sbk-capture`, store `records`, one record per `<section>/<name>`, its JSON) as soon as it's
+  // recorded, so a write stays small and a crash loses at most the item in progress. A database
+  // left without the store (an earlier version, or one created at version 1 with no store, as a
+  // Builder run found) is upgraded until it has it; the old single-record `output` store is moved
+  // into records. A failed write sets `window.sbkCapturePersistError` and is logged. In a fresh tab,
+  // `await sbkCaptureRestore()` (or a capture call with no items) loads it all again, and
+  // `sbkCaptureJson()` returns it.
+  const DB = "sbk-capture";
+  const STORE = "records";
+  const SECTIONS = ["references", "actions", "behaviour"];
+  const openDb = (version) =>
+    new Promise((resolve, reject) => {
+      const request =
+        version === undefined ? win.indexedDB.open(DB) : win.indexedDB.open(DB, version);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+        if (!db.objectStoreNames.contains("output")) return;
+        // The earlier format: everything in one record.
+        const tx = request.transaction;
+        const old = tx.objectStore("output").get("output");
+        old.onsuccess = () => {
+          const value = old.result;
+          for (const section of SECTIONS)
+            for (const [name, entry] of Object.entries(value?.[section] ?? {}))
+              tx.objectStore(STORE).put(JSON.stringify(entry), `${section}/${name}`);
+          db.deleteObjectStore("output");
+        };
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+      request.onblocked = () => reject(new Error(`${DB} is open in another tab; close it`));
+    });
+  let dbPromise;
+  const idb = () =>
+    (dbPromise ??= (async () => {
+      let db = await openDb();
+      if (!db.objectStoreNames.contains(STORE)) {
+        const next = db.version + 1;
+        db.close();
+        db = await openDb(next);
+      }
+      // Another tab upgrading the database closes this connection; open it again next time.
+      db.onversionchange = () => {
+        db.close();
+        dbPromise = undefined;
+      };
+      return db;
+    })().catch((error) => {
+      dbPromise = undefined;
+      throw error;
+    }));
+  const request = (mode, act) =>
+    idb().then(
+      (db) =>
+        new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE, mode);
+          const req = act(tx.objectStore(STORE));
+          tx.oncomplete = () => resolve(req?.result);
+          tx.onerror = () => reject(tx.error ?? req?.error);
+          tx.onabort = () => reject(tx.error ?? new Error("the write was aborted"));
+        }),
+    );
+  const persistFailed = (what, error) => {
+    win.sbkCapturePersistError = `${what}: ${error?.name ?? ""} ${error?.message ?? error}`.trim();
+    console.error("capture.js couldn't persist", what, error);
+  };
+  const pending = [];
+  /** Records an entry on the window and writes it to IndexedDB (awaited by `flush`). */
+  const record = (section, name, value) => {
+    win.sbkCaptureOutput[section][name] = value;
+    let json;
+    try {
+      json = JSON.stringify(value);
+    } catch (error) {
+      persistFailed(`${section}/${name}`, error);
+      return;
+    }
+    pending.push(
+      request("readwrite", (store) => store.put(json, `${section}/${name}`)).catch((error) =>
+        persistFailed(`${section}/${name}`, error),
+      ),
+    );
+  };
+  const flush = () => Promise.all(pending.splice(0));
+  win.sbkCaptureRestore = async () => {
+    const out = { references: {}, actions: {}, behaviour: {} };
+    try {
+      const [keys, values] = await Promise.all([
+        request("readonly", (store) => store.getAllKeys()),
+        request("readonly", (store) => store.getAll()),
+      ]);
+      keys.forEach((key, i) => {
+        const at = key.indexOf("/");
+        const section = key.slice(0, at);
+        if (out[section]) out[section][key.slice(at + 1)] = JSON.parse(values[i]);
+      });
+    } catch (error) {
+      persistFailed("restore", error);
+    }
+    win.sbkCaptureOutput = out;
+    return Object.fromEntries(SECTIONS.map((s) => [s, Object.keys(out[s]).length]));
+  };
+  win.sbkCaptureReset = async () => {
+    win.sbkCaptureOutput = { references: {}, actions: {}, behaviour: {} };
+    await request("readwrite", (store) => store.clear()).catch((error) =>
+      persistFailed("reset", error),
+    );
+  };
+  // The clipboard has turned non-ASCII into "?" before; this JSON is pure ASCII.
+  win.sbkCaptureJson = () =>
+    JSON.stringify(win.sbkCaptureOutput).replace(
+      /[\u0080-\uffff]/g,
+      (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`,
+    );
+  // A tab that hasn't recorded anything yet picks up what an earlier tab persisted.
+  if (!win.sbkCaptureOutput) await win.sbkCaptureRestore();
+  // No items: only restore.
+  if (!items?.length) {
+    win.sbkCaptureRunning = false;
+    return {};
+  }
 
   // targets.ts, inlined (targets.test.ts keeps the selectors in step): the preview's controls by
   // address, `<kind>-<n>`, the nth outermost match of the kind's selector.
@@ -1015,7 +1142,7 @@ async ({
         );
     }
     references[refName] = html;
-    recorded.references[refName] = html;
+    record("references", refName, html);
   };
 
   // Closes what an interaction opened, so the next item starts closed.
@@ -1095,30 +1222,6 @@ async ({
     return out;
   };
 
-  // What was captured survives a reload of the Builder: it's kept in this origin's IndexedDB as
-  // well as on the window, and a call after a reload picks it up again.
-  const idb = () =>
-    new Promise((resolve, reject) => {
-      const request = win.indexedDB.open("sbk-capture", 1);
-      request.onupgradeneeded = () => request.result.createObjectStore("output");
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  const stored = async (value) => {
-    try {
-      const db = await idb();
-      return await new Promise((resolve, reject) => {
-        const tx = db.transaction("output", value === undefined ? "readonly" : "readwrite");
-        const store = tx.objectStore("output");
-        const request = value === undefined ? store.get("output") : store.put(value, "output");
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    } catch {
-      return undefined; // No IndexedDB (a private window): the window's copy is all there is.
-    }
-  };
-
   // Which of the payload's buttons, in document order (as `button-<n>` counts them), have a url.
   const buttonsWithUrls = (value, out = []) => {
     if (Array.isArray(value)) for (const v of value) buttonsWithUrls(v, out);
@@ -1132,22 +1235,7 @@ async ({
 
   const references = {};
   if (reset) refuse("capture.js no longer takes reset: true; call window.sbkCaptureReset() first");
-  win.sbkCaptureReset = () => {
-    win.sbkCaptureOutput = { references: {}, actions: {}, behaviour: {} };
-    stored(win.sbkCaptureOutput);
-  };
-  if (!win.sbkCaptureOutput) {
-    const kept = await stored();
-    if (kept?.references) win.sbkCaptureOutput = kept;
-    else win.sbkCaptureReset();
-  }
   const recorded = win.sbkCaptureOutput;
-  // The clipboard has turned non-ASCII into "?" before; this JSON is pure ASCII.
-  win.sbkCaptureJson = () =>
-    JSON.stringify(win.sbkCaptureOutput).replace(
-      /[\u0080-\uffff]/g,
-      (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`,
-    );
   let failed = false;
   try {
     let previous = "";
@@ -1254,7 +1342,7 @@ async ({
           const action = snapshotOnly ? null : await newAction(before);
           observations.push({ ...observe(win, { side: "slack" }), action });
         }
-        if (!snapshotOnly) recorded.behaviour[actionKey] = { steps, observations };
+        if (!snapshotOnly) record("behaviour", actionKey, { steps, observations });
         // A probe that ends on a hover holds it through its snapshot.
         if (probe.snapshot && hovered) {
           const el = hovered;
@@ -1280,11 +1368,11 @@ async ({
         } else press(el);
         await sleep(Math.min(600, settle || 1));
         const action = await newAction(actionsBefore);
-        recorded.behaviour[actionKey] = {
+        record("behaviour", actionKey, {
           steps: [{ click: "submit-1" }],
           observations: observe ? [{ ...observe(win, { side: "slack" }), action }] : [{ action }],
           changed: preview()?.innerHTML !== html,
-        };
+        });
         held = { input: "submit", target: "submit-1" };
       } else if (want.interaction === "scrolled-end") {
         // The first horizontal scroll container that overflows, scrolled fully right.
@@ -1337,11 +1425,11 @@ async ({
       win.sbkCaptureWaiting = undefined;
       if (sends && !probe && want.interaction !== "submit-errors") {
         const action = await newAction(actionsBefore);
-        if (action) recorded.actions[actionKey] = action;
+        if (action) record("actions", actionKey, action);
       }
       if (probe && !probe.snapshot) {
         await dismissAll();
-        await stored(recorded);
+        await flush();
         continue;
       }
       await freezeAs(name, { want, held, holds });
@@ -1349,13 +1437,15 @@ async ({
 
       if (want.interaction) await dismissAll();
       if (input?.[1] === "focus") doc.activeElement?.blur?.();
-      await stored(recorded);
+      await flush();
     }
   } catch (error) {
     failed = true;
     win.sbkCaptureError = String(error);
     throw error;
   } finally {
+    // What a failed item recorded before it failed (a mid-probe reference) is kept too.
+    await flush();
     win.sbkCaptureRunning = false;
     win.open = open;
     win.removeEventListener("click", noNavigation, true);
