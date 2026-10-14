@@ -4289,6 +4289,16 @@
     "reference": "6960b804b05bcf5d3e68b73c6776def5b13f34d6e67d354071b07c517380289f",
     "captured": "2026-10-13"
   },
+  "contexts/datetimepicker/actions@pick": {
+    "payload": "bf0d11b69273acc23582ed86e09190fc1807d2975c0e83890b232f090903e90d",
+    "reference": "7cc3e664477bfad510c0b8139f022ce1c2394b70a7f1cc0f3698b01e9c702610",
+    "captured": "2026-10-14"
+  },
+  "contexts/datetimepicker/actions@pick+dark": {
+    "payload": "bf0d11b69273acc23582ed86e09190fc1807d2975c0e83890b232f090903e90d",
+    "reference": "c5c45502f08343636ed566755eb3cca34193e826832a2cbf9c5a787e0b1a5072",
+    "captured": "2026-10-14"
+  },
   "contexts/datetimepicker/modal-input": {
     "payload": "fa5e4b7b9d75520d34f687a057d10e9156e3e6dbbcc118c23de2f2c3fdc54d62",
     "reference": "a592ae0edbfb011a1d03e51a90adf03ebfc53b491c2f65f4c349444ef930d9d8",
@@ -4536,7 +4546,7 @@
   },
   "contexts/multi_static_select/accessory@open-focus-option-1+dark": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
-    "reference": "3145b6a4cd76558f6c56f5d0a51e6e50ab2f37d77f388dc596a5a5d769806128",
+    "reference": "268c3e19ae8b415368f8ce5749727f95695d8aafc517f50d660a72ce07ce10a7",
     "captured": "2026-10-14"
   },
   "contexts/multi_static_select/accessory@open-focus-option-1+mobile": {
@@ -4568,6 +4578,16 @@
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
     "reference": "cea957418cccdd88ded92f84e22f8c7a4e3188f57da23ec4084bd820c2f9d27d",
     "captured": "2026-10-13"
+  },
+  "contexts/multi_static_select/accessory@pick+mobile": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "fb0609be53ab2daa7251f2ad92208651f9dc222c6e804d602ec660056c4eb292",
+    "captured": "2026-10-14"
+  },
+  "contexts/multi_static_select/accessory@pick+mobile+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "d77c812fbbe7f55c7cf85807e8f2923f001df5e5803c5cfbe67ecdf808129868",
+    "captured": "2026-10-14"
   },
   "contexts/multi_static_select/modal-input": {
     "payload": "d5730726b87fa5dc719cb90e6e41fc9604726460eabe0c87f92e35367a83fdbd",
@@ -6333,6 +6353,16 @@
     "payload": "7540d5ae9fb690c0e28a8619d123b30d096d785d3e969227bf6cbf0f588c73c9",
     "reference": "50b2dee72095de0316c6e7f266ffee72b1cecac1aec4ff6ea18e4bc4be639eab",
     "captured": "2026-10-13"
+  },
+  "extra/fidelity/multi-channels-select/empty@pick": {
+    "payload": "7540d5ae9fb690c0e28a8619d123b30d096d785d3e969227bf6cbf0f588c73c9",
+    "reference": "a70ad9720ef7caa3ce044a95e8bf06d0862d1ca62b6c046ddc0bfc13e61f49d2",
+    "captured": "2026-10-14"
+  },
+  "extra/fidelity/multi-channels-select/empty@pick+dark": {
+    "payload": "7540d5ae9fb690c0e28a8619d123b30d096d785d3e969227bf6cbf0f588c73c9",
+    "reference": "d09c757d27acee1539b305d380e8b228afe74a6478dd0a76f711d2255798dc37",
+    "captured": "2026-10-14"
   },
   "extra/fidelity/multi-channels-select/long-content": {
     "payload": "806ed7bb7123df226f596d77fe5934e25e9a001a33d4487de77a96f01fedc863",
