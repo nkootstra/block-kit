@@ -491,16 +491,19 @@ export const FINDINGS: Finding[] = [
   },
   {
     id: "modal-frame-long-content-refused",
-    title: "Block Kit Builder refused extra/fidelity/modal-frame/long-content",
+    title:
+      "Block Kit Builder refused extra/fidelity/modal-frame/long-content and extra/fidelity/home-tab/long-content",
     evidence: [
       'Modal light sitting: loading it twice left the previous payload in the preview ("the Builder didn\'t take the new one"); the reference was left out rather than committed stale.',
+      "Modal dark sitting: a third try, light and dark, reported success, but references:check found both captures still showed the previous fixture; they were left out.",
+      "App Home sitting: extra/fidelity/home-tab/long-content was refused the same way in light and dark (references:check: the Builder kept the previous payload), so its @poke-more-1 probe found nothing to poke.",
       "The payload breaks no limit we know of (limits.ts passes): a 12-character title, Submit and Cancel, 14 mrkdwn sections of about 330 characters (Slack allows 3000 each and 100 blocks in a modal). It's 5.7 KB of JSON, 8.3 KB URL-encoded in the Builder's address; larger message payloads were accepted (extra/fidelity/carousel/many-items, 11.3 KB encoded). extra/fidelity/home-tab/long-content (7.0 KB encoded) has no reference yet either.",
     ],
     suspect: [
       "Unknown: possibly a size limit on the modal (and Home tab) preview, or something in the Builder's modal handling of many sections.",
     ],
     next: "Bisect in the Builder: load the fixture with 7 sections, then 10, to find the limit, and record it in limits.ts with the fixture as evidence. The fixture is unchanged.",
-    components: ["modal-frame"],
+    components: ["modal-frame", "home-tab"],
   },
   {
     id: "select-space-picks-while-typing",
