@@ -449,6 +449,11 @@
     "reference": "b9a7b82ef980a57f1e307f051ad323152af4d2e7e4d975b1cd265a865429afae",
     "captured": "2026-10-13"
   },
+  "catalog/actions/radio-buttons@pick+dark": {
+    "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
+    "reference": "9b23f6dd5294ed22d9babe86aef8a523167d38ee8c9f77e06dad8737998a3b57",
+    "captured": "2026-10-14"
+  },
   "catalog/actions/radio-buttons@pick+mobile": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
     "reference": "903f0e06a37f55e5b45d3925a5ce89bcd21aee5f6340c749fd0931c1c1401b63",
