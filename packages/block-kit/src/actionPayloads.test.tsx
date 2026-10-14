@@ -264,6 +264,11 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   "contexts/multi_users_select/accessory@pick": () => dialogPick("Select users", /Slackbot/),
   "catalog/section/multi-conversations-select@pick": () =>
     dialogPick("Select conversations", /Slackbot/),
+  // Option 1 in the Required modal's first ("Static") multi-select.
+  "extra/modal/required-multi-selects@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: "Option 1" }));
+  },
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
@@ -497,8 +502,8 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "catalog/section/users-select@pick": { resolvers: slackbot },
   "contexts/multi_users_select/accessory@pick": { resolvers: slackbot },
   "catalog/section/multi-conversations-select@pick": { resolvers: slackbot },
-  "contexts/users_select/actions@pick": { resolvers: workspace },
-  "contexts/conversations_select/actions@pick": { resolvers: workspace },
+  "contexts/users_select/actions@pick": { resolvers: slackbot },
+  "contexts/conversations_select/actions@pick": { resolvers: slackbot },
   "contexts/channels_select/actions@pick": { resolvers: workspace },
   "extra/actions/more-elements@pick": { resolvers: workspace },
   "extra/fidelity/channels-select/long-content@pick": { resolvers: workspace },
@@ -521,9 +526,9 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
           : [],
     },
   },
-  "extra/payloads/accessory-multi-selects@pick-confirm-users": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick-confirm-users": { resolvers: slackbot },
   "extra/payloads/accessory-multi-selects@pick-confirm-channels": { resolvers: workspace },
-  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": { resolvers: slackbot },
   "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
@@ -572,11 +577,12 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
   ],
   // Our selection dialog lists no workspace members or channels (only typed IDs), so a pick from
-  // its list confirms nothing (fidelity finding select-dialog-directory).
+  // its list confirms nothing, and where the probe types "slackbot" first, Enter adds the typed
+  // text as an ID (fidelity finding select-dialog-directory).
   "extra/payloads/accessory-multi-selects@pick-confirm-users": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
-    'actions.0.selected_users.0: Slack "U0000001", ours missing',
-    'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours missing',
+    'actions.0.selected_users.0: Slack "U0000001", ours "slackbot"',
+    'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours "slackbot"',
   ],
   "contexts/multi_users_select/accessory@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
@@ -598,10 +604,12 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'actions.0.selected_channels.0: Slack "C0000001", ours missing',
     'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
   ],
+  // The probe types "slackbot" first; our dialog lists no one, so Enter adds the typed text as
+  // an ID (fidelity finding select-dialog-directory).
   "extra/payloads/accessory-multi-selects@pick-confirm-conversations": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
-    'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
-    'state.values.<block_id>.conversations.selected_conversations.0: Slack "U0000001", ours missing',
+    'actions.0.selected_conversations.0: Slack "U0000001", ours "slackbot"',
+    'state.values.<block_id>.conversations.selected_conversations.0: Slack "U0000001", ours "slackbot"',
   ],
   "extra/actions/more-elements@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
@@ -632,6 +640,10 @@ const KNOWN_UNSENT: Record<string, string> = {
   "catalog/container/data-entry-form@pick": "an input block without dispatch_action sends nothing",
   "catalog/input/static-select@pick": "an input block without dispatch_action sends nothing",
   "catalog/input/multi-static-select@pick": "an input block without dispatch_action sends nothing",
+  // The same in a modal's input blocks: the Builder dispatched block_actions there too.
+  "extra/modal/required-multi-selects@pick": "an input block without dispatch_action sends nothing",
+  "contexts/multi_static_select/modal-input@add-remove":
+    "an input block without dispatch_action sends nothing",
 };
 
 interface Recording {
