@@ -281,6 +281,17 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
     await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
   },
+  // January 14th, 2026 in the calendar, keeping the initial 11:00 AM.
+  "contexts/datetimepicker/actions@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: /January 1st, 2026/ }));
+    await clickAsync(screen.getByRole("button", { name: /January 14th, 2026/ }));
+  },
+  "contexts/multi_static_select/accessory@pick": () => dialogPick("Select items", /^Option 1$/),
+  // The first channel (redacted to C0000001; PROVIDER).
+  "extra/fidelity/multi-channels-select/empty@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
   // Option 1 in the Required modal's first ("Static") multi-select.
   "extra/modal/required-multi-selects@pick": async () => {
     fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
@@ -548,6 +559,8 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "extra/payloads/accessory-multi-selects@pick-confirm-users": { resolvers: slackbot },
   "extra/payloads/accessory-multi-selects@pick-confirm-channels": { resolvers: workspace },
   "extra/payloads/accessory-multi-selects@pick-confirm-conversations": { resolvers: slackbot },
+  "contexts/datetimepicker/actions@pick": { timeZone: "Europe/Amsterdam" },
+  "extra/fidelity/multi-channels-select/empty@pick": { resolvers: workspace },
   "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
@@ -663,6 +676,8 @@ const KNOWN_UNSENT: Record<string, string> = {
   "extra/modal/required-multi-selects@pick": "an input block without dispatch_action sends nothing",
   "extra/input/more-selects@pick": "an input block without dispatch_action sends nothing",
   "catalog/input/multi-users-select@pick": "an input block without dispatch_action sends nothing",
+  "extra/fidelity/multi-channels-select/empty@pick":
+    "an input block without dispatch_action sends nothing",
   "contexts/multi_static_select/modal-input@add-remove":
     "an input block without dispatch_action sends nothing",
 };
