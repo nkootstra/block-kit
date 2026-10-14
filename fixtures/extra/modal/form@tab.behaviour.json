@@ -1,0 +1,281 @@
+{
+  "steps": [
+    {
+      "click": "input-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Shift+Tab"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "input-1",
+        "role": "textbox",
+        "name": "Title",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "button",
+        "name": "Input with plain_text_input block options",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Priority",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "button",
+        "name": "Input with static_select block options",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Click for options",
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "input-2",
+        "role": "textbox",
+        "name": "Details(optional)",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "button",
+        "name": "Input with plain_text_input block options",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Click for options",
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "input-2",
+        "role": "textbox",
+        "name": "Details(optional)",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Medium"
+        },
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "input-1": {
+          "value": ""
+        },
+        "input-2": {
+          "value": ""
+        }
+      },
+      "action": null
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "steps": [
+    {
+      "hover": "input-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "input-1"
+    },
+    {
+      "type": "a"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "input-1",
+        "role": "textbox",
+        "name": "Label",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "input-1",
+        "role": "textbox",
+        "name": "Label",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": "a"
+        }
+      },
+      "action": null
+    }
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click": "submit-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select users",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select users",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "<member>",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "true"
+        }
+      },
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {
+            "<block_id>": {
+              "multi_users": {
+                "type": "multi_users_select",
+                "selected_users": ["U0000001"]
+              }
+            }
+          }
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "multi_users_select",
+            "block_id": "<block_id>",
+            "action_id": "multi_users",
+            "selected_users": ["U0000001"],
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select users",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "<member>",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "submit-1",
+        "role": "button",
+        "name": "Submit",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "<member>",
+          "disabled": "false"
+        }
+      },
+      "action": {
+        "type": "view_submission",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "trigger_id": "<trigger_id>",
+        "view": {
+          "id": "<view_id>",
+          "team_id": "T00000000",
+          "type": "modal",
+          "blocks": [
+            {
+              "type": "input",
+              "block_id": "<block_id>",
+              "label": {
+                "type": "plain_text",
+                "text": "Label",
+                "emoji": true
+              },
+              "optional": false,
+              "dispatch_action": false,
+              "element": {
+                "type": "multi_users_select",
+                "action_id": "multi_users",
+                "placeholder": {
+                  "type": "plain_text",
+                  "text": "Select users",
+                  "emoji": true
+                }
+              }
+            }
+          ],
+          "private_metadata": "",
+          "callback_id": "",
+          "state": {
+            "values": {
+              "<block_id>": {
+                "multi_users": {
+                  "type": "multi_users_select",
+                  "selected_users": ["U0000001"]
+                }
+              }
+            }
+          },
+          "hash": "<hash>",
+          "title": {
+            "type": "plain_text",
+            "text": "Context",
+            "emoji": true
+          },
+          "clear_on_close": false,
+          "notify_on_close": false,
+          "close": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": true
+          },
+          "submit": {
+            "type": "plain_text",
+            "text": "Submit",
+            "emoji": true
+          },
+          "previous_view_id": null,
+          "root_view_id": "<root_view_id>",
+          "app_id": "<app_id>",
+          "external_id": "<external_id>",
+          "app_installed_team_id": "<app_installed_team_id>",
+          "bot_id": "<bot_id>"
+        },
+        "response_urls": [],
+        "is_enterprise_install": false,
+        "enterprise": null
+      }
+    }
+  ]
+}

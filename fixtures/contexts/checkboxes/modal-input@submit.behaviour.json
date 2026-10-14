@@ -1,0 +1,243 @@
+{
+  "steps": [
+    {
+      "click": "checkbox-1"
+    },
+    {
+      "click": "submit-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": true
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        }
+      },
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {
+            "<block_id>": {
+              "checkboxes": {
+                "type": "checkboxes",
+                "selected_options": [
+                  {
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Option 1",
+                      "emoji": true
+                    },
+                    "value": "value-1"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "checkboxes",
+            "block_id": "<block_id>",
+            "action_id": "checkboxes",
+            "selected_options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Option 1",
+                  "emoji": true
+                },
+                "value": "value-1"
+              }
+            ],
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    },
+    {
+      "focus": {
+        "target": "submit-1",
+        "role": "button",
+        "name": "Submit",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": true
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        }
+      },
+      "action": {
+        "type": "view_submission",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "trigger_id": "<trigger_id>",
+        "view": {
+          "id": "<view_id>",
+          "team_id": "T00000000",
+          "type": "modal",
+          "blocks": [
+            {
+              "type": "input",
+              "block_id": "<block_id>",
+              "label": {
+                "type": "plain_text",
+                "text": "Label",
+                "emoji": true
+              },
+              "optional": false,
+              "dispatch_action": false,
+              "element": {
+                "type": "checkboxes",
+                "action_id": "checkboxes",
+                "options": [
+                  {
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Option 1",
+                      "emoji": true
+                    },
+                    "value": "value-1"
+                  },
+                  {
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Option 2",
+                      "emoji": true
+                    },
+                    "value": "value-2"
+                  },
+                  {
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Option 3",
+                      "emoji": true
+                    },
+                    "value": "value-3"
+                  }
+                ]
+              }
+            }
+          ],
+          "private_metadata": "",
+          "callback_id": "",
+          "state": {
+            "values": {
+              "<block_id>": {
+                "checkboxes": {
+                  "type": "checkboxes",
+                  "selected_options": [
+                    {
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Option 1",
+                        "emoji": true
+                      },
+                      "value": "value-1"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "hash": "<hash>",
+          "title": {
+            "type": "plain_text",
+            "text": "Context",
+            "emoji": true
+          },
+          "clear_on_close": false,
+          "notify_on_close": false,
+          "close": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": true
+          },
+          "submit": {
+            "type": "plain_text",
+            "text": "Submit",
+            "emoji": true
+          },
+          "previous_view_id": null,
+          "root_view_id": "<root_view_id>",
+          "app_id": "<app_id>",
+          "external_id": "<external_id>",
+          "app_installed_team_id": "<app_installed_team_id>",
+          "bot_id": "<bot_id>"
+        },
+        "response_urls": [],
+        "is_enterprise_install": false,
+        "enterprise": null
+      }
+    }
+  ]
+}

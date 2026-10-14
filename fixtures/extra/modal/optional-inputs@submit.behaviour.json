@@ -1,0 +1,441 @@
+{
+  "steps": [
+    {
+      "click": "field-3"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click": "field-4"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click": "submit-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "expanded": "false",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "scroller-1",
+        "role": "combobox",
+        "name": "Select channels",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "scroller-1": {
+          "expanded": "true",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "scroller-1",
+        "role": "combobox",
+        "name": "Select channels",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "scroller-1": {
+          "expanded": "true",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "scroller-1",
+        "role": "combobox",
+        "name": "Select channels",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "expanded": "false",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "scroller-1",
+        "role": "combobox",
+        "name": "Select conversations",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "scroller-1": {
+          "expanded": "false",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "scroller-1",
+        "role": "combobox",
+        "name": "Select conversations",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "scroller-1": {
+          "expanded": "false",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "scroller-1",
+        "role": "combobox",
+        "name": "Select conversations",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "expanded": "false",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "submit-1",
+        "role": "button",
+        "name": "Submit",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "value": "",
+          "disabled": "false"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "field-4": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "expanded": "false",
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        }
+      },
+      "action": null
+    }
+  ]
+}

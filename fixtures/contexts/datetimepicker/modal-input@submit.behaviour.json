@@ -1,0 +1,432 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": "field-2"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": "submit-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-2",
+        "role": "combobox",
+        "name": "Label Time",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 96
+        }
+      ],
+      "activeOption": "11:00 AM",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "expanded": "true",
+          "value": "11:00 AM"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "true"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        },
+        "option-20": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-2",
+        "role": "combobox",
+        "name": "Label Time",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 124
+        }
+      ],
+      "activeOption": "12:00 PM",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "expanded": "true",
+          "value": "11:00 AM"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "true"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        },
+        "option-20": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-2",
+        "role": "combobox",
+        "name": "Label Time",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": "12:00 PM"
+        }
+      },
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {
+            "<block_id>": {
+              "datetime": {
+                "type": "datetimepicker",
+                "selected_date_time": 1767265200
+              }
+            }
+          }
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "datetimepicker",
+            "block_id": "<block_id>",
+            "action_id": "datetime",
+            "selected_date_time": 1767265200,
+            "initial_date_time": 1767261600,
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    },
+    {
+      "focus": {
+        "target": "submit-1",
+        "role": "button",
+        "name": "Submit",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "January 1st, 2026"
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": "12:00 PM"
+        }
+      },
+      "action": {
+        "type": "view_submission",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "trigger_id": "<trigger_id>",
+        "view": {
+          "id": "<view_id>",
+          "team_id": "T00000000",
+          "type": "modal",
+          "blocks": [
+            {
+              "type": "input",
+              "block_id": "<block_id>",
+              "label": {
+                "type": "plain_text",
+                "text": "Label",
+                "emoji": true
+              },
+              "optional": false,
+              "dispatch_action": false,
+              "element": {
+                "type": "datetimepicker",
+                "action_id": "datetime",
+                "initial_date_time": 1767261600
+              }
+            }
+          ],
+          "private_metadata": "",
+          "callback_id": "",
+          "state": {
+            "values": {
+              "<block_id>": {
+                "datetime": {
+                  "type": "datetimepicker",
+                  "selected_date_time": 1767265200
+                }
+              }
+            }
+          },
+          "hash": "<hash>",
+          "title": {
+            "type": "plain_text",
+            "text": "Context",
+            "emoji": true
+          },
+          "clear_on_close": false,
+          "notify_on_close": false,
+          "close": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": true
+          },
+          "submit": {
+            "type": "plain_text",
+            "text": "Submit",
+            "emoji": true
+          },
+          "previous_view_id": null,
+          "root_view_id": "<root_view_id>",
+          "app_id": "<app_id>",
+          "external_id": "<external_id>",
+          "app_installed_team_id": "<app_installed_team_id>",
+          "bot_id": "<bot_id>"
+        },
+        "response_urls": [],
+        "is_enterprise_install": false,
+        "enterprise": null
+      }
+    }
+  ]
+}
