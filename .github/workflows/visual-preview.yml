@@ -71,7 +71,7 @@ jobs:
       # The renders come from the pull request, so they land outside the workspace, where they can't
       # replace a file this job runs. publish.ts refuses symlinks and anything that isn't a render.
       - if: steps.pr.outputs.number
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: render-diff
           path: ${{ runner.temp }}/render-diff
