@@ -264,6 +264,23 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   "contexts/multi_users_select/accessory@pick": () => dialogPick("Select users", /Slackbot/),
   "catalog/section/multi-conversations-select@pick": () =>
     dialogPick("Select conversations", /Slackbot/),
+  // The long first option of the overflow menu.
+  "extra/fidelity/option/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    await clickAsync(screen.getByText(/^This sentence is here/));
+  },
+  "catalog/section/multi-static-select@pick": () =>
+    dialogPick("Select options", /plain_text option 0/),
+  // Slackbot, redacted to U0000001 (PROVIDER), in the conversations select.
+  "extra/input/more-selects@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Select a conversation" }));
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
+  // Slackbot, redacted to U0000001 (PROVIDER).
+  "catalog/input/multi-users-select@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
   // Option 1 in the Required modal's first ("Static") multi-select.
   "extra/modal/required-multi-selects@pick": async () => {
     fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
@@ -502,6 +519,8 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "catalog/section/users-select@pick": { resolvers: slackbot },
   "contexts/multi_users_select/accessory@pick": { resolvers: slackbot },
   "catalog/section/multi-conversations-select@pick": { resolvers: slackbot },
+  "extra/input/more-selects@pick": { resolvers: slackbot },
+  "catalog/input/multi-users-select@pick": { resolvers: slackbot },
   "contexts/users_select/actions@pick": { resolvers: slackbot },
   "contexts/conversations_select/actions@pick": { resolvers: slackbot },
   "contexts/channels_select/actions@pick": { resolvers: workspace },
@@ -642,6 +661,8 @@ const KNOWN_UNSENT: Record<string, string> = {
   "catalog/input/multi-static-select@pick": "an input block without dispatch_action sends nothing",
   // The same in a modal's input blocks: the Builder dispatched block_actions there too.
   "extra/modal/required-multi-selects@pick": "an input block without dispatch_action sends nothing",
+  "extra/input/more-selects@pick": "an input block without dispatch_action sends nothing",
+  "catalog/input/multi-users-select@pick": "an input block without dispatch_action sends nothing",
   "contexts/multi_static_select/modal-input@add-remove":
     "an input block without dispatch_action sends nothing",
 };
