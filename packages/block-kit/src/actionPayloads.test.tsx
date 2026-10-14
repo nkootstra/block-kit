@@ -19,14 +19,17 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type Resolvers, type StateValues } from "./context";
 import { CHARACTER_DISPATCH_DELAY } from "./elements/characterDispatch";
 import { clickAsync, keyDownAsync } from "./elements/test-utils";
 import { Message } from "./Message";
 import type { BlockActionsPayload } from "./payloads";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 /** The repository's fixtures/ folder: the nearest one above where the tests run. */
 function fixturesDir(): string {
@@ -238,6 +241,29 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await keyDownAsync(field, "ArrowDown");
     await keyDownAsync(field, "Enter");
   },
+  "catalog/actions/datepickers@pick": async () => {
+    fireEvent.click(screen.getAllByPlaceholderText("Select a date")[0]!);
+    await clickAsync(screen.getByRole("button", { name: /April 15th, 1990/ }));
+  },
+  // "Tomorrow" in the calendar, the day after the recording (NOW); Slack fills the empty time
+  // with the current one.
+  "extra/fidelity/datetimepicker/empty@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: /Select a date/ }));
+    await clickAsync(screen.getByRole("button", { name: /October 15th, 2026/ }));
+  },
+  // The first private conversation (redacted to C0000001; PROVIDER).
+  "catalog/actions/filtered-conversations-select@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Select private conversation" }));
+    await clickAsync(screen.getByRole("option", { name: /private-one/ }));
+  },
+  // Slackbot, redacted to U0000001 (PROVIDER).
+  "catalog/section/users-select@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Select a user" }));
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
+  "contexts/multi_users_select/accessory@pick": () => dialogPick("Select users", /Slackbot/),
+  "catalog/section/multi-conversations-select@pick": () =>
+    dialogPick("Select conversations", /Slackbot/),
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
@@ -408,6 +434,17 @@ function probeInteraction(name: string): (() => Promise<void>) | undefined {
 
 const interactionFor = (name: string) => INTERACTIONS[name] ?? probeInteraction(name);
 
+/** Picks `option` in a section accessory multi-select's dialog, then confirms. */
+async function dialogPick(placeholder: string, option: RegExp) {
+  fireEvent.click(screen.getByRole("button", { name: placeholder }));
+  fireEvent.click(within(screen.getByRole("dialog")).getByRole("combobox"));
+  // Our dialog lists no directory entries yet (finding select-dialog-directory): Confirm sends
+  // what's picked, which is then nothing.
+  const row = screen.queryByRole("option", { name: option });
+  if (row) await clickAsync(row);
+  await clickAsync(screen.getByRole("button", { name: "Confirm" }));
+}
+
 /** Picks options from the "Colours" multi-select in its input block. */
 async function pickColours(...names: string[]) {
   for (const name of names) {
@@ -434,7 +471,32 @@ const workspace: Resolvers = {
       : [{ type: "user", id: "U0000001", name: "User One" }],
 };
 
+/** The clock a recording depends on: the moment it was made (a relative date, an empty time). */
+const NOW: Record<string, string> = {
+  "extra/fidelity/datetimepicker/empty@pick": "2026-10-14T10:09:00Z",
+};
+/** Fakes Date (only Date: the tests' timers stay real) at the recording's moment. */
+function freeze(name: string) {
+  const now = NOW[name];
+  if (!now) return;
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date(now));
+}
+
+const slackbot: Resolvers = {
+  directory: () => [{ type: "user", id: "U0000001", name: "Slackbot" }],
+};
+
 const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
+  "extra/fidelity/datetimepicker/empty@pick": { timeZone: "Europe/Amsterdam" },
+  "catalog/actions/filtered-conversations-select@pick": {
+    resolvers: {
+      directory: () => [{ type: "channel", id: "C0000001", name: "private-one", private: true }],
+    },
+  },
+  "catalog/section/users-select@pick": { resolvers: slackbot },
+  "contexts/multi_users_select/accessory@pick": { resolvers: slackbot },
+  "catalog/section/multi-conversations-select@pick": { resolvers: slackbot },
   "contexts/users_select/actions@pick": { resolvers: workspace },
   "contexts/conversations_select/actions@pick": { resolvers: workspace },
   "contexts/channels_select/actions@pick": { resolvers: workspace },
@@ -484,6 +546,12 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'actions.0.initial_channel: Slack "C12345678", ours missing',
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
   ],
+  "catalog/actions/filtered-conversations-select@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select private conversation","emoji":true}',
+  ],
+  "catalog/section/users-select@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a user","emoji":true}',
+  ],
   "extra/fidelity/confirm/long-content@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
   ],
@@ -509,6 +577,16 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
     'actions.0.selected_users.0: Slack "U0000001", ours missing',
     'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours missing',
+  ],
+  "contexts/multi_users_select/accessory@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
+    'actions.0.selected_users.0: Slack "U0000001", ours missing',
+    'state.values.<block_id>.multi_users.selected_users.0: Slack "U0000001", ours missing',
+  ],
+  "catalog/section/multi-conversations-select@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
+    'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
+    'state.values.<block_id>.multi_conversations_select-action.selected_conversations.0: Slack "U0000001", ours missing',
   ],
   "extra/payloads/accessory-multi-selects@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
@@ -652,6 +730,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
   for (const name of Object.keys(KNOWN_UNSENT))
     it(`${name} still sends nothing: ${KNOWN_UNSENT[name]}`, async () => {
       let payload: BlockActionsPayload | undefined;
+      freeze(name);
       render(
         <BlockKitProvider {...PROVIDER[name]} onPayload={(p) => (payload = p)}>
           <Message blocks={fixtureBlocks(name)} />
@@ -665,6 +744,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
     it(`${name} sends what Slack sends`, async () => {
       let payload: BlockActionsPayload | undefined;
       let initial: StateValues = {};
+      freeze(name);
       render(
         <BlockKitProvider
           {...PROVIDER[name]}
@@ -697,6 +777,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
     it(`${name} hands onAction the action the payload sends`, async () => {
       let payload: BlockActionsPayload | undefined;
       let action: unknown;
+      freeze(name);
       render(
         <BlockKitProvider
           {...PROVIDER[name]}

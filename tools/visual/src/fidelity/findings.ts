@@ -289,6 +289,7 @@ export const FINDINGS: Finding[] = [
       'extra/actions/more-elements@pick, contexts/{users,conversations,channels}_select/actions@pick and extra/fidelity/channels-select/long-content@pick: Slack\'s action has no placeholder; ours echoes it (e.g. {"type":"plain_text","text":"Pick a channel","emoji":true}). Slack\'s static_select and multi_static_select actions do carry it (catalog/actions/all-selects@pick, extra/payloads/selects@pick-multi).',
       'catalog/actions/selects-with-initial-options@pick: Slack\'s channels_select action echoes initial_channel "C12345678"; ours leaves it out (Select.tsx echoes only a static select\'s initial_option). extra/fidelity/users-select/long-content@pick (dark desktop session) shows the same for a users_select\'s initial_user "U12345678".',
       "extra/fidelity/confirm/long-content@pick and users-select/long-content@pick add two more placeholders Slack doesn't send.",
+      "Mobile pick sitting: catalog/actions/filtered-conversations-select@pick and catalog/section/users-select@pick show it again.",
       "All listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
     ],
     suspect: [
@@ -303,6 +304,7 @@ export const FINDINGS: Finding[] = [
     evidence: [
       "extra/payloads/accessory-multi-selects@pick-confirm-{users,channels,conversations} (light desktop retry): in Slack the dialog's field opens a list of the workspace's members or channels, ArrowDown and Enter pick the first, Confirm sends it (selected_users [\"U0000001\"] and so on).",
       "Ours, replayed in Chromium with a directory resolver: the dialog's list opens empty, so nothing is picked and Confirm sends an empty selection. Listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
+      "Mobile pick sitting: contexts/multi_users_select/accessory@pick and catalog/section/multi-conversations-select@pick (Slackbot through the dialog) show the same.",
     ],
     suspect: [
       "packages/block-kit/src/elements/Select.tsx passes the SelectDialog `options={directory ? [] : allOptions(element)}`: a directory select only gets `addTyped`, never the resolver's entries.",
