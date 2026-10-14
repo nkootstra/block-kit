@@ -1297,6 +1297,48 @@ describe("capture.js fixes from the third Builder run", () => {
     await run.page.close();
   });
 
+  it("keeps the operating system's file picker from opening during a run, and restores it after", async () => {
+    const run = await start(
+      stand(
+        `<button class="c-button" type="button">Upload</button>
+         <label id="pick">Choose<input type="file" style="display:none"></label>`,
+        `document.querySelector(".c-button").addEventListener("click", () => {
+           const input = document.querySelector('input[type="file"]');
+           input.click();
+           try { input.showPicker(); } catch {}
+           document.getElementById("pick").click();
+         });`,
+      ),
+      [{ name: "x/file@poke", payload: {}, probe: { steps: [{ click: "button-1" }] } }],
+    );
+    let opened = 0;
+    run.page.on("filechooser", () => opened++);
+    const { instruction } = await run.next();
+    await run.page.mouse.click(instruction.x, instruction.y);
+    expect((await run.result()).done).toBe("ok");
+    await run.page.waitForTimeout(300);
+    expect(opened).toBe(0);
+    // The page's own input.click is back once the run is over.
+    expect(
+      await run.page.evaluate(() => HTMLInputElement.prototype.click.toString().includes("native")),
+    ).toBe(true);
+    await run.page.close();
+  });
+
+  it("reads an option's text without what's hidden from assistive technology", async () => {
+    const page = await browser.newPage();
+    await page.setContent(`<div id="sbk-render"></div>
+      <div class="sbk-popover"><div role="listbox">
+        <div role="option" data-active="true">Option 1<span aria-hidden="true">Enter</span></div>
+      </div></div>`);
+    await page.addScriptTag({ content: `window.observe = ${OBSERVE};` });
+    const seen = await page.evaluate(() =>
+      (window as unknown as Record<string, any>).observe(window, { side: "ours" }),
+    );
+    expect(seen.activeOption).toBe("Option 1");
+    await page.close();
+  });
+
   it("waits a moment for a control that renders after the preview settles", async () => {
     const run = await start(
       stand(

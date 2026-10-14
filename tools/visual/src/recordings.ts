@@ -17,7 +17,9 @@ import { join } from "node:path";
 import { Glob } from "bun";
 import { payloadName } from "./lock";
 import { isReferenceName, parseReferenceName } from "./names";
-import { type Behaviour, parseProbe } from "./probes";
+import { controlComponents } from "./fidelity/captures";
+import { type Behaviour, parseProbe, type Probe } from "./probes";
+import { parseTarget } from "./targets";
 import { leaks, SLACK_ID } from "./redact";
 
 export interface CaptureFile {
@@ -183,6 +185,48 @@ export function lastAction(recording: Behaviour): unknown {
   return recording.observations.findLast((o) => o.action)?.action;
 }
 
+/** Selects whose list holds the Builder workspace's people, the signed-in person first. */
+const MEMBER_LISTS = /^(multi_)?(users|conversations)_select$/;
+
+/**
+ * Why a probe would pick a real workspace member, or undefined: it opens a users or conversations
+ * select (its field, and for a section accessory's dialog the dialog's field too) and picks from
+ * the list (Enter, Space or a click on an option) without typing a filter first. The list's first
+ * entry is the person signed in to the Builder, so a capture would record them. Type a filter
+ * such as "slackbot" after opening it.
+ */
+export function unfilteredMemberPick(probe: Probe, payload: unknown): string | undefined {
+  const fields = controlComponents(payload).field ?? [];
+  let open: string | undefined;
+  let filtered = false;
+  for (const step of probe.steps) {
+    if ("type" in step) {
+      if (open) filtered = true;
+      continue;
+    }
+    const picks =
+      ("key" in step && (step.key === "Enter" || step.key === "Space")) ||
+      ("click" in step &&
+        (typeof step.click === "string"
+          ? parseTarget(step.click)?.kind === "option"
+          : step.click.role === "option"));
+    if (picks && open && !filtered)
+      return `picks from ${open}'s member list without typing a filter first; its first entry is the signed-in person (add { "type": "slackbot" } after opening it)`;
+    if (!("click" in step)) continue;
+    if (typeof step.click !== "string") {
+      // A selection dialog's field keeps the accessory's list; anything else closes it.
+      if (step.click.role !== "combobox" && step.click.role !== "option") open = undefined;
+      continue;
+    }
+    const target = parseTarget(step.click);
+    if (target?.kind === "option") continue;
+    const type = target?.kind === "field" ? fields[target.index - 1] : undefined;
+    open = type && MEMBER_LISTS.test(type) ? step.click : undefined;
+    filtered = false;
+  }
+  return undefined;
+}
+
 /**
  * What references:check finds wrong with the recordings and probes next to the fixtures: a name
  * that isn't `<fixture>@<interaction>`, a missing fixture, a probe that doesn't parse, or a
@@ -208,7 +252,8 @@ export async function checkRecordings(
     const text = await Bun.file(join(root, path)).text();
     if (kind === "probe") {
       try {
-        parseProbe(JSON.parse(text));
+        const unfiltered = unfilteredMemberPick(parseProbe(JSON.parse(text)), fixture);
+        if (unfiltered) problems.push({ name: label, message: unfiltered });
       } catch (err) {
         problems.push({ name: label, message: (err as Error).message });
       }

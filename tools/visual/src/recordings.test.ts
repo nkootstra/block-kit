@@ -3,6 +3,7 @@ import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  unfilteredMemberPick,
   checkRecordings,
   isRecordingName,
   lastAction,
@@ -153,5 +154,51 @@ describe("payload recordings", () => {
       "a/select@bad (probe)",
       "a/select@leak (actions)",
     ]);
+  });
+});
+
+describe("probes that pick from a member list", () => {
+  const plain = (text: string) => ({ type: "plain_text", text });
+  const payload = {
+    blocks: [
+      {
+        type: "actions",
+        elements: [
+          { type: "static_select", action_id: "s", placeholder: plain("P"), options: [] },
+          { type: "users_select", action_id: "u", placeholder: plain("Pick someone") },
+        ],
+      },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: "x" },
+        accessory: {
+          type: "multi_conversations_select",
+          action_id: "c",
+          placeholder: plain("Select conversations"),
+        },
+      },
+    ],
+  };
+  const check = (steps: unknown[]) => unfilteredMemberPick({ steps } as never, payload);
+
+  it("refuses a pick from a users or conversations list without a typed filter", () => {
+    // The first entry is the person signed in to the Builder.
+    expect(check([{ click: "field-2" }, { key: "Enter" }])).toContain("field-2's member list");
+    expect(check([{ click: "field-2" }, { click: "option-1" }])).toContain("field-2");
+    expect(
+      check([
+        { click: "field-3" },
+        { click: { role: "combobox", name: "Select conversations" } },
+        { key: "ArrowDown" },
+        { key: "Enter" },
+      ]),
+    ).toContain("field-3");
+  });
+
+  it("allows it after a typed filter, and any pick from another select", () => {
+    expect(check([{ click: "field-2" }, { type: "slackbot" }, { key: "Enter" }])).toBeUndefined();
+    expect(check([{ click: "field-1" }, { key: "Enter" }])).toBeUndefined();
+    // Another click closes the list first.
+    expect(check([{ click: "field-2" }, { click: "submit-1" }, { key: "Enter" }])).toBeUndefined();
   });
 });

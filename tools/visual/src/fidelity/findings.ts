@@ -323,6 +323,7 @@ export const FINDINGS: Finding[] = [
       "Block Kit Builder sends block_actions from an input block's element without dispatch_action",
     evidence: [
       'catalog/input/radio-buttons@pick and catalog/container/data-entry-form@pick (light desktop retry), catalog/input/static-select@pick (dark desktop session): picking a radio or a static select option in an input block without dispatch_action made Actions Preview show a block_actions payload (selected "*plain_text option 1*", "High").',
+      "Modal light sitting: the same in a modal's input blocks (extra/modal/required-multi-selects@pick, contexts/multi_static_select/modal-input@add-remove), so it isn't specific to messages.",
       "Ours sends nothing there, on purpose: Slack's docs say an input block's element dispatches only with dispatch_action (context.tsx, blocks/Input.tsx). Listed in actionPayloads.test.tsx KNOWN_UNSENT.",
     ],
     suspect: [
@@ -338,6 +339,7 @@ export const FINDINGS: Finding[] = [
     evidence: [
       "contexts/datetimepicker/actions@keyboard (light desktop retry): after a click on the date field, ArrowRight then Enter left Slack's calendar open, focus on the date textbox and the date January 1st, 2026; the final payload's selected_date_time keeps that date.",
       "Ours, replayed in Chromium: the click moves focus into the calendar grid, ArrowRight moves to January 2nd and Enter picks it, so our payload would carry a day later. The jsdom replay in actionPayloads.test.tsx doesn't reproduce our focus move and passes, so no KNOWN_DIFFERENCES entry shows it.",
+      'Modal light sitting (contexts/datetimepicker/modal-input@submit and datepicker/modal-input@submit, replayed with probes.ts): Slack\'s calendar is a popover with role grid and focus stays on the date input; ours opens a dialog (role "dialog") and moves focus into it.',
     ],
     suspect: [
       "packages/block-kit/src/elements/DatePicker.tsx and calendar/Calendar.tsx: focus moves into the grid on open, where Slack keeps it on the input.",
@@ -410,6 +412,95 @@ export const FINDINGS: Finding[] = [
     ],
     next: "A probe (click field-1, click option-1, Escape) at desktop would separate the two; probes record at desktop width only.",
     components: ["multi_static_select"],
+  },
+  {
+    id: "input-block-label-name",
+    title: "Our controls in an input block aren't named by the block's label",
+    evidence: [
+      'Modal light sitting, the 28 behaviour recordings replayed on ours (bun tools/visual/src/probes.ts): a control focused in an input block is named after the block\'s label in Slack ("Label", "Title", "Priority"); ours is named after its action_id or type ("email", "rich", "title_input", "details_input", "Time", "--Select an item--"). Seen in every */modal-input@poke-input-1, @poke-richtext-1 and @submit, and in extra/modal/form@tab.',
+    ],
+    suspect: [
+      "packages/block-kit/src/blocks/Input.tsx and the elements' aria-label: the label isn't tied to the control (aria-labelledby / <label for>), and an aria-label from the action_id wins.",
+    ],
+    next: "Label each input block's control by the block's label (Slack's aria-labelledby points at it), then replay the modal recordings again.",
+    components: ["input", "plain_text_input", "email_text_input", "rich_text_input"],
+  },
+  {
+    id: "builder-modal-block-options",
+    title: "Block Kit Builder's modal preview puts a block options button in the Tab order",
+    evidence: [
+      'Modal light sitting, extra/modal/form@tab: in Slack every other Tab lands on a Builder button named "Input with plain_text_input block options" (tooltip "Click for options"), between the controls. It is the Builder\'s editing chrome, not Slack\'s modal.',
+    ],
+    suspect: [
+      "Not a package or harness bug: the Builder preview. Keyboard order in a Builder modal can't be compared one to one with ours.",
+    ],
+    next: 'Compare Tab order ignoring focus targets named "… block options" (observe.js could leave them out), or capture Tab order from a real modal.',
+    components: ["modal-frame", "input"],
+    status: "verified",
+  },
+  {
+    id: "file-input-slack-dialog",
+    title:
+      "Slack's file input opens its own Add file dialog and shows a sharing tooltip; ours focuses a native file input",
+    evidence: [
+      'Modal light sitting, contexts/file_input/modal-input@poke-file-1: hovering the button shows a tooltip ("The people who can edit this automation will also have access to any files share…"), and the click opens Slack\'s "Add file" dialog (focus moves to role dialog, outside the preview). Ours shows no tooltip and focuses its file input ("Upload File").',
+      "capture.js now keeps the operating system's file picker from opening during a run (a real click on a file input or its label, input.click(), showPicker()).",
+    ],
+    suspect: [
+      "packages/block-kit/src/elements/FileInput.tsx: ours opens the browser's file picker. The tooltip's wording comes from workflow-builder context, so it may be the Builder's.",
+    ],
+    next: "Decide whether ours should offer a dialog like Slack's or keep the native picker; record what a real modal does.",
+    components: ["file_input"],
+  },
+  {
+    id: "multi-select-modal-keyboard",
+    title:
+      "In a modal, Slack's multi-select field is a typeable combobox; ours is a button whose Enter closes the list",
+    evidence: [
+      "Modal light sitting, contexts/multi_static_select/modal-input@add-remove (click field-1, Enter, ArrowDown, Enter, Escape, Backspace): Slack's field is a combobox; Enter right after opening keeps the list open with nothing highlighted, ArrowDown highlights Option 1, Enter picks it and the list stays open, Escape closes it, and Backspace then removes nothing. Ours is a button: Enter after opening toggles the list shut, and the steps after it land elsewhere.",
+    ],
+    suspect: [
+      "packages/block-kit/src/elements/Select.tsx: the multi-select's trigger is a button (toggleFromTrigger), where Slack's is a typeable field.",
+    ],
+    next: "Replay the recording on ours after a change (bun tools/visual/src/probes.ts contexts/multi_static_select/modal-input).",
+    components: ["multi_static_select"],
+  },
+  {
+    id: "builder-modal-focus-on-load",
+    title:
+      "Block Kit Builder's modal preview didn't honour focus_on_load; ours focuses the element",
+    evidence: [
+      "Modal light sitting, extra/modal/dispatch-rich-text@type: the rich text input has focus_on_load: true. In the Builder nothing had focus before the first step; ours focuses richtext-1 on load.",
+    ],
+    suspect: [
+      "Probably the Builder (its preview isn't a real modal opening), so not a package bug; Slack's docs say the element is focused when the view opens.",
+    ],
+    next: "Check a real modal with focus_on_load before changing ours.",
+    components: ["rich_text_input"],
+  },
+  {
+    id: "replay-observation-noise",
+    title: "Modal replays: differences that are how the two sides are observed, not behaviour",
+    evidence: [
+      'Modal light sitting replay: Slack\'s typeable fields report disabled "false" and no expanded state at rest, ours the reverse; a typeable field\'s value is "" in Slack where ours reports its placeholder ("Select items", "Search"); Slack\'s virtualised time list renders fewer options than ours (option-20…24 missing on Slack\'s side); the modal\'s scroll container is 508px in the Builder against 516 in ours (the Builder\'s modal body keeps an 8px scrollbar).',
+      'Our typed-highlight "Enter" keycap made the active option read "Option 1 Enter"; observe.js now leaves aria-hidden text out.',
+    ],
+    suspect: ["tools/visual/src/observe.js: how each side's state is read."],
+    next: "Normalize these in observe.js or diffObservations when they start hiding real differences.",
+    components: ["multi_static_select", "timepicker", "modal-frame"],
+  },
+  {
+    id: "modal-frame-long-content-refused",
+    title: "Block Kit Builder refused extra/fidelity/modal-frame/long-content",
+    evidence: [
+      'Modal light sitting: loading it twice left the previous payload in the preview ("the Builder didn\'t take the new one"); the reference was left out rather than committed stale.',
+      "The payload breaks no limit we know of (limits.ts passes): a 12-character title, Submit and Cancel, 14 mrkdwn sections of about 330 characters (Slack allows 3000 each and 100 blocks in a modal). It's 5.7 KB of JSON, 8.3 KB URL-encoded in the Builder's address; larger message payloads were accepted (extra/fidelity/carousel/many-items, 11.3 KB encoded). extra/fidelity/home-tab/long-content (7.0 KB encoded) has no reference yet either.",
+    ],
+    suspect: [
+      "Unknown: possibly a size limit on the modal (and Home tab) preview, or something in the Builder's modal handling of many sections.",
+    ],
+    next: "Bisect in the Builder: load the fixture with 7 sections, then 10, to find the limit, and record it in limits.ts with the fixture as evidence. The fixture is unchanged.",
+    components: ["modal-frame"],
   },
   {
     id: "select-space-picks-while-typing",

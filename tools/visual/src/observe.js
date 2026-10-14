@@ -138,6 +138,13 @@
   const text = (el) => {
     for (const [selector, placeholder] of PRIVATE)
       if (el.matches(selector) || el.querySelector(selector)) return placeholder;
+    // What's hidden from assistive technology isn't the option's text (our typed-highlight
+    // "Enter" keycap).
+    if (el.querySelector('[aria-hidden="true"]')) {
+      const copy = el.cloneNode(true);
+      for (const hidden of copy.querySelectorAll('[aria-hidden="true"]')) hidden.remove();
+      return clean(copy.textContent);
+    }
     return clean(el.innerText ?? el.textContent);
   };
   const IMPLICIT = { button: "button", textarea: "textbox", select: "combobox", a: "link" };

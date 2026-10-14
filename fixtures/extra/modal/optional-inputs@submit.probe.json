@@ -13,6 +13,9 @@
       "click": "field-4"
     },
     {
+      "type": "slackbot"
+    },
+    {
       "key": "Enter"
     },
     {

@@ -190,6 +190,12 @@ accessory's multi-select opens a dialog that takes the focus, with its field at 
 reaches its options clicks the dialog's field next (`{ "click": { "role": "combobox", "name":
 "<placeholder>" } }`), which opens the list.
 
+A probe that picks from a users or conversations select types a filter first (`{ "type":
+"slackbot" }` after opening it): the list's first entry is the person signed in to the Builder,
+and `references:check` refuses a probe that would pick it. During a run `capture.js` keeps the
+operating system's file picker from opening (a click on a file input or its label,
+`input.click()`, `showPicker()`); Slack's file input opens its own "Add file" dialog instead.
+
 A probe can fill a required rich text input (`{ "click": "richtext-1" }`, then `{ "type": "…" }`),
 but not a file input, whose button opens the operating system's file chooser, or an external
 select, whose options come from an app's options URL that Block Kit Builder doesn't have.

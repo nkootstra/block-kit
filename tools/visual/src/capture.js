@@ -745,6 +745,30 @@ async ({
       event.preventDefault();
   };
   win.addEventListener("click", noNavigation, true);
+  // Nor may anything open the operating system's file picker, which a real click on a file input
+  // (or its label) or a script's input.click() / showPicker() would, and which leaves the run
+  // waiting on a dialog outside the page. In the Builder a file input's button opens Slack's own
+  // "Add file" dialog, which is left alone.
+  const blockFilePicker = (event) => {
+    const t = event.target;
+    const input = t?.matches?.('input[type="file"]') ? t : t?.control;
+    if (input?.type === "file") {
+      event.preventDefault();
+      console.log("capture.js kept the file picker from opening");
+    }
+  };
+  win.addEventListener("click", blockFilePicker, true);
+  const inputProto = win.HTMLInputElement.prototype;
+  const { click: inputClick, showPicker: inputShowPicker } = inputProto;
+  inputProto.click = function click() {
+    if (this.type === "file") return console.log("capture.js kept the file picker from opening");
+    return inputClick.call(this);
+  };
+  if (inputShowPicker)
+    inputProto.showPicker = function showPicker() {
+      if (this.type === "file") return console.log("capture.js kept the file picker from opening");
+      return inputShowPicker.call(this);
+    };
 
   // `+full`: widens the preview by the most any horizontal scroll container hides, then expands
   // any container that still overflows (one with a width of its own) to its content, through one
@@ -1449,6 +1473,9 @@ async ({
     win.sbkCaptureRunning = false;
     win.open = open;
     win.removeEventListener("click", noNavigation, true);
+    win.removeEventListener("click", blockFilePicker, true);
+    inputProto.click = inputClick;
+    if (inputShowPicker) inputProto.showPicker = inputShowPicker;
     for (const type of LISTENED) win.removeEventListener(type, listen, true);
     win.sbkCaptureWaiting = undefined;
     const count =
