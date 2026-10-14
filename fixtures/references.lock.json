@@ -6464,6 +6464,16 @@
     "reference": "7e2dc09207a4b2442e23f5444e1d2386b8616020f5082b8974496935310d6f5e",
     "captured": "2026-10-13"
   },
+  "extra/fidelity/multi-conversations-select/initial-value@pick+mobile": {
+    "payload": "e7ff642d3739bcc7b65603d9d9006bc7189c44fe73c39c60322426bb4a6d645f",
+    "reference": "0f133ea3c64e454044b8d2a2632c14bbbc3eba1e17623f205d37c2bec5da32b7",
+    "captured": "2026-10-14"
+  },
+  "extra/fidelity/multi-conversations-select/initial-value@pick+mobile+dark": {
+    "payload": "e7ff642d3739bcc7b65603d9d9006bc7189c44fe73c39c60322426bb4a6d645f",
+    "reference": "620eda55d879ad127af85e17ac9a26afc183124aff044cab38fbe9627595f421",
+    "captured": "2026-10-14"
+  },
   "extra/fidelity/multi-conversations-select/long-content": {
     "payload": "d273c78c961fde73908ac650c43ef53703cafb8dfd379e942b5a8d0c09b9ae44",
     "reference": "24606063b441a2bec0afca0e892ec3d207da19343bafaa6f2b3637b484e5c8df",
