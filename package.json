@@ -30,7 +30,8 @@
     "oxlint": "1.85.0",
     "turbo": "2.11.4",
     "typescript": "6.0.3",
-    "vitest": "5.0.2"
+    "vitest": "5.0.2",
+    "wrangler": "4.148.0"
   },
   "overrides": {
     "@scalar/json-magic>undici": "7.29.1",

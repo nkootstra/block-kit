@@ -111,7 +111,7 @@ Blume's page script gives every `.prose pre` a "Copy code" button when the page 
 The docs deploy with releases, never on a plain push to `main`, so they don't describe a package npm doesn't have yet:
 
 1. After publishing, the Release workflow runs [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) on the new `vX.Y.Z` tag with `deploy`. The `check` job builds the whole workspace, docs included (its changelog now shows the release), and uploads `apps/docs/dist` as an artifact.
-2. Once every check passes, the `deploy-docs` job asks [`scripts/deploy-guard.ts`](../scripts/deploy-guard.ts) whether to deploy: only the latest release's tag does, so re-running an older release's CI can't replace newer docs. It then downloads that build, installs the dependencies the Worker bundles, and runs `wrangler deploy` in `apps/docs`.
+2. Once every check passes, the `deploy-docs` job asks [`scripts/deploy-guard.ts`](../scripts/deploy-guard.ts) whether to deploy: only the latest release's tag does, so re-running an older release's CI can't replace newer docs. It then downloads that build, installs the dependencies the Worker bundles and the Wrangler version `bun.lock` pins (a root dev dependency, used by every deploy and preview), and runs `wrangler deploy` in `apps/docs`.
 
 For a docs-only fix between releases, run Actions → CI → Run workflow on `main` with `deploy` checked. The guard deploys only `main`'s head, and refuses when `packages/block-kit` changed since the latest release: release those changes instead, which deploys the docs too.
 
@@ -154,7 +154,7 @@ To deploy by hand from a local build instead, log in once with `bunx wrangler lo
 
 ```sh
 bunx turbo run build --filter=@nkootstra/block-kit-docs
-cd apps/docs && bunx wrangler@4 deploy
+cd apps/docs && bunx wrangler deploy
 ```
 
 ## Visual previews
