@@ -23,7 +23,7 @@ bun run compare
   combined with `--check` or `--update-baseline`.
 - `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
 - `--shard=2/4` compares one slice of the fixtures: every fourth one, starting from the second.
-  CI checks a pull request in four slices at once; a slice can't update the baseline.
+  CI checks a pull request in eight slices at once; a slice can't update the baseline.
 - `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`
   and the flagged text runs in `fixtures/text-baseline.<platform>.json` ([Text runs](#text-runs));
   `--update-baseline=lower` only adds new fixtures and lowers improved ones.
@@ -634,9 +634,10 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
 - A pull request is compared only when it touches something the comparison renders: the package,
   the playground, `fixtures/`, `tools/visual/` or the dependencies. Otherwise the comparison is
   skipped, which counts as passing.
-- A pull request's fixtures are compared in four parallel `compare-shard` jobs (`--shard`), about 13
-  minutes each instead of about 50 in one. The `compare` job, the check the ruleset requires, passes
-  when all four did and fails when one failed. A run superseded by a newer push or label is
+- A pull request's fixtures are compared in eight parallel `compare-shard` jobs (`--shard`), about 7
+  minutes each instead of about 50 in one; each spends a few minutes installing and starting the
+  playground, so more slices save less. The `compare` job, the check the ruleset requires, passes
+  when all eight did and fails when one failed. A run superseded by a newer push or label is
   cancelled, and its `compare` is skipped rather than failed; the newer run reports the check. A
   label other than `visual-baseline-increase` compares nothing and doesn't cancel the comparison
   in progress. `main` and a manual run compare every fixture in one job, since they rewrite the

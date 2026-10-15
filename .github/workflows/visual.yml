@@ -88,14 +88,14 @@ jobs:
       (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
       github.event.label.name == 'visual-baseline-increase')
     runs-on: ubuntu-latest
-    # A pull request compares the fixtures in four slices at once (compare.ts --shard), about 13
+    # A pull request compares the fixtures in eight slices at once (compare.ts --shard), about 7
     # minutes each. main and a manual run rewrite the baseline, which takes every fixture in one
     # job, about 50 minutes. A hang fails fast instead of holding a runner for six hours.
     timeout-minutes: 75
     strategy:
       fail-fast: false
       matrix:
-        shard: ${{ fromJSON(github.event_name == 'pull_request' && '["1/4","2/4","3/4","4/4"]' || '["all"]') }}
+        shard: ${{ fromJSON(github.event_name == 'pull_request' && '["1/8","2/8","3/8","4/8","5/8","6/8","7/8","8/8"]' || '["all"]') }}
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     permissions:
       contents: read
