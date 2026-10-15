@@ -82,8 +82,9 @@ jobs:
       (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
       github.event.label.name == 'visual-baseline-increase')
     runs-on: ubuntu-latest
-    # A run takes about 15 minutes; a hang fails fast instead of holding a runner for six hours.
-    timeout-minutes: 45
+    # A run of the 1,700 references takes about 50 minutes; a hang fails fast instead of holding a
+    # runner for six hours.
+    timeout-minutes: 75
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     permissions:
       contents: read
