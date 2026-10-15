@@ -22,6 +22,8 @@ bun run compare
   page's comparison (`apps/site/src/assets/proof`). Baselines are recorded at 1x, so it can't be
   combined with `--check` or `--update-baseline`.
 - `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
+- `--shard=2/4` compares one slice of the fixtures: every fourth one, starting from the second.
+  CI checks a pull request in four slices at once; a slice can't update the baseline.
 - `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`
   and the flagged text runs in `fixtures/text-baseline.<platform>.json` ([Text runs](#text-runs));
   `--update-baseline=lower` only adds new fixtures and lowers improved ones.
@@ -620,8 +622,12 @@ references in Block Kit Builder.
 The Visual workflow keeps the Linux baseline without anyone editing it by hand:
 
 - A pull request is compared only when it touches something the comparison renders: the package,
-  the playground, `fixtures/`, `tools/visual/` or the dependencies. Otherwise the `compare` job is
+  the playground, `fixtures/`, `tools/visual/` or the dependencies. Otherwise the comparison is
   skipped, which counts as passing.
+- A pull request's fixtures are compared in four parallel `compare-shard` jobs (`--shard`), about 13
+  minutes each instead of about 50 in one. The `compare` job, the check the ruleset requires, passes
+  when all four did. `main` and a manual run compare every fixture in one job, since they rewrite
+  the baseline.
 - A pull request is checked against the **base branch's** baseline, so it can't loosen its own
   check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
   regression with the `visual-baseline-increase` label.

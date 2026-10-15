@@ -74,7 +74,8 @@ jobs:
             echo "visual=false" >> "$GITHUB_OUTPUT"
           fi
 
-  compare:
+  compare-shard:
+    name: compare (${{ matrix.shard }})
     needs: changes
     # Of the label events, only this workflow's label changes the outcome.
     if: >-
@@ -82,9 +83,14 @@ jobs:
       (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
       github.event.label.name == 'visual-baseline-increase')
     runs-on: ubuntu-latest
-    # A run of the 1,700 references takes about 50 minutes; a hang fails fast instead of holding a
-    # runner for six hours.
+    # A pull request compares the fixtures in four slices at once (compare.ts --shard), about 13
+    # minutes each. main and a manual run rewrite the baseline, which takes every fixture in one
+    # job, about 50 minutes. A hang fails fast instead of holding a runner for six hours.
     timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(github.event_name == 'pull_request' && '["1/4","2/4","3/4","4/4"]' || '["all"]') }}
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     permissions:
       contents: read
@@ -126,7 +132,7 @@ jobs:
         env:
           ALLOW_INCREASE: ${{ contains(github.event.pull_request.labels.*.name, 'visual-baseline-increase') && '--allow-increase' || '' }}
         run: >-
-          bun tools/visual/src/compare.ts --check
+          bun tools/visual/src/compare.ts --check --shard=${{ matrix.shard }}
           --baseline=base/fixtures/visual-baseline.linux.json
           --text-baseline=base/fixtures/text-baseline.linux.json
           $ALLOW_INCREASE
@@ -174,12 +180,26 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: visual
+          # One artifact per slice; a single run uploads the only one.
+          name: visual-${{ strategy.job-index }}
           path: |
             test-results/visual/
             fixtures/visual-baseline.linux.json
             fixtures/text-baseline.linux.json
           if-no-files-found: ignore
+
+  # The check the main ruleset requires: it passes when every slice passed, or when the comparison
+  # was skipped because nothing it renders changed.
+  compare:
+    needs: compare-shard
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          RESULT: ${{ needs.compare-shard.result }}
+        run: |
+          echo "The comparison's slices: $RESULT"
+          [ "$RESULT" = success ] || [ "$RESULT" = skipped ]
 
   render-diff:
     name: Render changed fixtures

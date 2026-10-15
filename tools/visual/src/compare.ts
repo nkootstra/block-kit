@@ -4,7 +4,7 @@
  *
  *   bun tools/visual/src/compare.ts [fixture-prefix...] [--base=http://localhost:5180]
  *     [--check [--tolerance=0.5] [--baseline=<file>] [--text-baseline=<file>] [--allow-increase]]
- *     [--update-baseline[=lower]] [--scale=2]
+ *     [--update-baseline[=lower]] [--scale=2] [--shard=<index>/<count>]
  *
  * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
  * expanded, a table sorted, a select opened); states.ts replays the same interaction on our
@@ -19,6 +19,9 @@
  * --update-baseline records each fixture's mismatch in fixtures/visual-baseline.<platform>.json;
  * --update-baseline=lower only adds new fixtures and lowers the ones that improved beyond the
  * tolerance, so it can't hide a regression.
+ * --shard runs one slice of the fixtures (shard.ts), so CI can compare them in parallel jobs; each
+ * slice checks its own fixtures against the baseline. It can't update the baseline, which a full run
+ * rewrites.
  * --scale renders both sides at that device pixel ratio (default 1), for sharp images such as the
  * landing page's comparison. Baselines are recorded at 1, so don't combine it with --check or
  * --update-baseline.
@@ -64,6 +67,7 @@ import { parseReferenceName } from "./names";
 import { type Image, loadImage, routeSamples } from "./samples";
 import { readProbes } from "./probes";
 import { diffScrollers, expandOurs, ourScrollers, restoreScroll, type Scroller } from "./scrollers";
+import { shard } from "./shard";
 import { compareStateStyles, type StateStyles } from "./stateStyles";
 import { stateFor } from "./states";
 import {
@@ -91,6 +95,10 @@ if (scale !== 1 && (check || updateBaseline)) {
   throw new Error(
     "--scale renders at a different size than the baselines; drop --check/--update-baseline",
   );
+}
+const shardSpec = args.find((a) => a.startsWith("--shard="))?.slice(8);
+if (shardSpec && updateBaseline) {
+  throw new Error("--shard runs part of the fixtures; drop it to update the baseline");
 }
 const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? 0.5);
 const BASELINE = join(FIXTURES, `visual-baseline.${process.platform}.json`);
@@ -137,6 +145,7 @@ for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
   if (prefixes.length === 0 || prefixes.some((p) => name.startsWith(p))) names.push(name);
 }
 names.sort();
+names.splice(0, names.length, ...shard(names, shardSpec));
 
 // The references were laid out on macOS, which places glyphs at fractional advances, and inline
 // those widths (a sender name is `width: 61.8594px`). Linux Chromium hints fonts by default, which
