@@ -25,7 +25,7 @@ describe("<Carousel>", () => {
     expect(screen.getByRole("button", { name: "Scroll right" })).toBeTruthy();
   });
 
-  it("hides the arrow for whichever end the row is scrolled to", () => {
+  it("hides the arrow for whichever end the row is scrolled to, leaving it focusable", () => {
     const block = { type: "carousel", elements: [] };
     const { container } = render(<Carousel block={block as never} blockId="b1" index={0} />);
     const scroller = container.querySelector(".sbk-carousel__scroller") as HTMLDivElement;
@@ -36,14 +36,14 @@ describe("<Carousel>", () => {
 
     fireEvent.scroll(scroller);
     expect(left.classList.contains("sbk-carousel__arrow--hidden")).toBe(true);
-    expect((left as HTMLButtonElement).disabled).toBe(true);
+    expect((left as HTMLButtonElement).disabled).toBe(false);
     expect(right.classList.contains("sbk-carousel__arrow--hidden")).toBe(false);
 
     scroller.scrollLeft = 524;
     fireEvent.scroll(scroller);
     expect(left.classList.contains("sbk-carousel__arrow--hidden")).toBe(false);
     expect(right.classList.contains("sbk-carousel__arrow--hidden")).toBe(true);
-    expect((right as HTMLButtonElement).disabled).toBe(true);
+    expect((right as HTMLButtonElement).disabled).toBe(false);
   });
 
   it("scrolls the row when an arrow is clicked", () => {

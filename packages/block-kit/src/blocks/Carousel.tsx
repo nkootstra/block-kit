@@ -24,6 +24,7 @@ export function Carousel({ block }: BlockProps) {
     scrollerRef.current?.scrollBy({ left: dx, behavior: "smooth" });
   };
 
+  // A faded arrow stays enabled and in the tab order, as Slack's does; it scrolls nowhere.
   const arrowClass = (side: "left" | "right", hidden: boolean) =>
     `sbk-carousel__arrow sbk-carousel__arrow--${side}${hidden ? " sbk-carousel__arrow--hidden" : ""}`;
 
@@ -44,7 +45,6 @@ export function Carousel({ block }: BlockProps) {
         type="button"
         className={arrowClass("left", edges.start)}
         aria-label="Scroll left"
-        disabled={edges.start}
         onClick={() => scrollBy(-356)}
       >
         <CaretIcon direction="left" size={20} />
@@ -53,7 +53,6 @@ export function Carousel({ block }: BlockProps) {
         type="button"
         className={arrowClass("right", edges.end)}
         aria-label="Scroll right"
-        disabled={edges.end}
         onClick={() => scrollBy(356)}
       >
         <CaretIcon direction="right" size={20} />
