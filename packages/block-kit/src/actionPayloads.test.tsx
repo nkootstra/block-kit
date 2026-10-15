@@ -292,6 +292,9 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
     await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
   },
+  // Slackbot (redacted to U0000001; PROVIDER) added next to the initial conversation.
+  "extra/fidelity/multi-conversations-select/initial-value@pick": () =>
+    dialogPick(/1 selected/, /Slackbot/),
   // Option 1 in the Required modal's first ("Static") multi-select.
   "extra/modal/required-multi-selects@pick": async () => {
     fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
@@ -467,8 +470,11 @@ function probeInteraction(name: string): (() => Promise<void>) | undefined {
 
 const interactionFor = (name: string) => INTERACTIONS[name] ?? probeInteraction(name);
 
-/** Picks `option` in a section accessory multi-select's dialog, then confirms. */
-async function dialogPick(placeholder: string, option: RegExp) {
+/**
+ * Picks `option` in a section accessory multi-select's dialog, opened from its button (the
+ * placeholder, or the "N selected" count once something is picked), then confirms.
+ */
+async function dialogPick(placeholder: string | RegExp, option: RegExp) {
   fireEvent.click(screen.getByRole("button", { name: placeholder }));
   fireEvent.click(within(screen.getByRole("dialog")).getByRole("combobox"));
   // Our dialog lists no directory entries yet (finding select-dialog-directory): Confirm sends
@@ -530,6 +536,7 @@ const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
   "catalog/section/users-select@pick": { resolvers: slackbot },
   "contexts/multi_users_select/accessory@pick": { resolvers: slackbot },
   "catalog/section/multi-conversations-select@pick": { resolvers: slackbot },
+  "extra/fidelity/multi-conversations-select/initial-value@pick": { resolvers: slackbot },
   "extra/input/more-selects@pick": { resolvers: slackbot },
   "catalog/input/multi-users-select@pick": { resolvers: slackbot },
   "contexts/users_select/actions@pick": { resolvers: slackbot },
@@ -625,6 +632,13 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
     'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
     'state.values.<block_id>.multi_conversations_select-action.selected_conversations.0: Slack "U0000001", ours missing',
+  ],
+  // Also echoes its initial_conversations (fidelity finding directory-select-placeholder).
+  "extra/fidelity/multi-conversations-select/initial-value@pick": [
+    'actions.0.initial_conversations: Slack ["C0123456789"], ours missing',
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
+    'actions.0.selected_conversations.1: Slack "U0000001", ours missing',
+    'state.values.<block_id>.conversations.selected_conversations.1: Slack "U0000001", ours missing',
   ],
   "extra/payloads/accessory-multi-selects@pick": [
     'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
