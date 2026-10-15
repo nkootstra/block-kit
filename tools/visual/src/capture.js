@@ -1447,6 +1447,12 @@ async ({
         await waitFor(name, () => win.sbkCaptureReady);
       }
       win.sbkCaptureWaiting = undefined;
+      // A rest capture shows no focus: the Builder can leave a control focused when a payload
+      // loads (a static select's focus ring was once captured as its rest state).
+      if (!probe && !input && !want.interaction && preview()?.contains(doc.activeElement)) {
+        doc.activeElement.blur();
+        await sleep(Math.min(600, settle || 1));
+      }
       if (sends && !probe && want.interaction !== "submit-errors") {
         const action = await newAction(actionsBefore);
         if (action) record("actions", actionKey, action);
