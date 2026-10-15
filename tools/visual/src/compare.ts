@@ -21,7 +21,7 @@
  * tolerance, so it can't hide a regression.
  * --shard runs one slice of the fixtures (shard.ts), so CI can compare them in parallel jobs; each
  * slice checks its own fixtures against the baseline. It can't update the baseline, which a full run
- * rewrites.
+ * rewrites; merge-baseline.ts records it from every slice's report.json instead.
  * --scale renders both sides at that device pixel ratio (default 1), for sharp images such as the
  * landing page's comparison. Baselines are recorded at 1, so don't combine it with --check or
  * --update-baseline.

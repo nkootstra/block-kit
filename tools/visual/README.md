@@ -639,22 +639,30 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
 - A pull request is compared only when it touches something the comparison renders: the package,
   the playground, `fixtures/`, `tools/visual/` or the dependencies. Otherwise the comparison is
   skipped, which counts as passing.
-- A pull request's fixtures are compared in eight parallel `compare-shard` jobs (`--shard`), about 7
+- The fixtures are compared in eight parallel `compare-shard` jobs (`--shard`), about 7
   minutes each instead of about 50 in one; each spends a few minutes installing and starting the
   playground, so more slices save less. The `compare` job, the check the ruleset requires, passes
   when all eight did and fails when one failed. A run superseded by a newer push or label is
   cancelled, and its `compare` is skipped rather than failed; the newer run reports the check. A
   label other than `visual-baseline-increase` compares nothing and doesn't cancel the comparison
-  in progress. `main` and a manual run compare every fixture in one job, since they rewrite the
-  baseline.
+  in progress. A manual run compares every fixture in one job.
 - A pull request is checked against the **base branch's** baseline, so it can't loosen its own
   check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
   regression with the `visual-baseline-increase` label.
 - After a merge, the workflow records the new numbers on `main` and commits them: new fixtures and
-  improvements beyond the tolerance always, increases only when the merged PR carried the label.
-  It pushes with the `VISUAL_DEPLOY_KEY` deploy key, which the `protect main` ruleset lets bypass
-  the pull request requirement. CI runs on that commit, so a release can be cut from it; the Visual
-  workflow ignores it, since only the baseline changed.
+  improvements beyond the tolerance always, increases only when a PR merged since the last
+  recorded run carried the label. The slices only measure and upload their `report.json`; once all
+  eight succeeded, the `record` job merges them with `merge-baseline.ts`, which refuses unless they
+  cover every reference, then commits both baselines in one commit. If a slice fails, nothing is
+  recorded and the next push records it. `record` pushes with the `VISUAL_DEPLOY_KEY` deploy key,
+  which the `protect main` ruleset lets bypass the pull request requirement. CI runs on that
+  commit, so a release can be cut from it; the Visual workflow ignores it, since only the baseline
+  changed.
+- Runs on `main` queue up and are never cancelled once they start. While one runs, a newer push
+  replaces a run that is still waiting, so that run's PR is never measured on its own. That is why
+  `record` looks for the label on every PR merged since the last successful run on `main` (up to
+  100 merges), not only the one it measures: an increase accepted in a replaced or failed run is
+  still recorded.
 - Running the workflow manually with `update_baseline` regenerates the whole file as an artifact.
 
 `visual-baseline.darwin.json` is for local runs only; keep it current with
