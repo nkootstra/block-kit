@@ -415,6 +415,15 @@ describe("capture evidence", () => {
     });
   });
 
+  it("credits the highlighted option when the focused field is no target (a select's dialog)", () => {
+    const withOption = [...COMPONENTS, component("option", ["default", "focus-visible"], "x")];
+    expect(
+      referenceEvidence("x/m@open-focus-option-1", message, withOption, {
+        focus: { visible: true, active: "option-1" },
+      }).map((e) => `${e.component} ${e.state}`),
+    ).toEqual(["option focus-visible"]);
+  });
+
   it("credits the option the arrow keys highlighted while focus stayed on the field", () => {
     const withOption = [...COMPONENTS, component("option", ["default", "focus-visible"], "x")];
     expect(

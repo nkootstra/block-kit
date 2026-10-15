@@ -512,9 +512,8 @@ export const MENUS = new Set(["image", "data_table", "data_visualization"]);
 export function fixtureInteraction(c: Component, state: StateId): string | undefined {
   if (state === "toggled") return TOGGLE[c.id];
   if (state === "selected")
-    return /select$|picker$|^(checkboxes|radio_buttons|overflow|feedback_buttons|select-dialog)$/.test(
-      c.id,
-    )
+    // Not select-dialog: a @pick reference is taken after Confirm, with the dialog closed.
+    return /select$|picker$|^(checkboxes|radio_buttons|overflow|feedback_buttons)$/.test(c.id)
       ? "pick"
       : undefined;
   if (state === "open") return MENUS.has(c.id) ? "menu" : undefined;
@@ -682,6 +681,13 @@ function classifyCell(
       method: "a",
       capability: "reference",
       how: "@open (make it the fixture's first control that opens)",
+      needsFixture,
+    };
+  if (state === "selected" && c.id === "select-dialog")
+    return {
+      method: "b",
+      capability: "real-input",
+      how: "A probe that opens the dialog, picks an option and snapshots before Confirm (a @pick reference is taken after Confirm, with the dialog closed)",
       needsFixture,
     };
   const interaction = fixtureInteraction(c, state as StateId);

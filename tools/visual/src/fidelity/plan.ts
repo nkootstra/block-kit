@@ -886,7 +886,9 @@ export function capturePlan(
 
   // Greedy cover: the capture whose still-uncovered cells are worth most, until none is left.
   // Recapturing an existing reference (for the state styles it didn't record) comes last: it
-  // replaces a maintainer-owned reference, so every new capture is tried first.
+  // replaces a maintainer-owned reference, so every new capture is tried first. A probe outside
+  // light desktop is only snapshotted (item's snapshotOnly) and records no state styles, so
+  // recapturing it would add nothing and be planned again on every run.
   const done = new Set<string>();
   const items: PlanItem[] = [];
   for (const recapture of [false, true])
@@ -894,6 +896,7 @@ export function capturePlan(
       let best: [string, number, Cell[]] | undefined;
       for (const [name, n] of byName) {
         if (references.has(name) !== recapture) continue;
+        if (recapture && snapshotOnly(n)) continue;
         const left = n.cells.filter((c) => !done.has(cellKey(c)));
         const value = left.reduce((v, c) => v + c.value, 0);
         if (left.length > 0 && (!best || value > best[1] || (value === best[1] && name < best[0])))
@@ -1409,6 +1412,10 @@ export function chunkItems(
   });
 }
 
+/** A probe outside light desktop: capture.js snapshots it without reading its state styles. */
+const snapshotOnly = (n: Candidate & { theme: Theme; width: Width }) =>
+  n.kind === "probe" && (n.theme !== "light" || n.width !== "desktop");
+
 function item(
   name: string,
   n: Candidate & { theme: Theme; width: Width },
@@ -1426,9 +1433,7 @@ function item(
     fixture: n.fixture,
     path: `fixtures/${n.fixture}.json`,
     ...(n.kind === "probe" ? { probe: `fixtures/${n.fixture}@${n.interaction}.probe.json` } : {}),
-    ...(n.kind === "probe" && (n.theme !== "light" || n.width !== "desktop")
-      ? { snapshotOnly: true }
-      : {}),
+    ...(snapshotOnly(n) ? { snapshotOnly: true } : {}),
     surface: surfaceOf(payloads.get(n.fixture) as Obj),
     theme: n.theme,
     width: n.width,

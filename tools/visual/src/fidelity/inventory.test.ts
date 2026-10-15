@@ -12,6 +12,7 @@ import {
   classify,
   fidelityState,
   findComponents,
+  fixtureInteraction,
   payloadStates,
   type Sources,
   summarize,
@@ -378,6 +379,15 @@ describe("classify", () => {
     expect(
       classify(select, { state: "open", fact: "styles", theme: "dark", width: "desktop" }, hits),
     ).toMatchObject({ method: "a", how: expect.stringContaining("@open") });
+  });
+  it("leaves a select dialog's selected state to a probe: @pick is taken after Confirm", () => {
+    const dialog = byId("select-dialog");
+    expect(fixtureInteraction(dialog, "selected")).toBeUndefined();
+    expect(
+      classify(dialog, { state: "selected", fact: "styles", theme: "dark", width: "mobile" }, [
+        { fixture: "f", node: { type: "multi_users_select" }, surface: "message" as const },
+      ]),
+    ).toMatchObject({ method: "b", how: expect.stringContaining("before Confirm") });
   });
   it("asks for a fixture when none shows the state", () => {
     expect(

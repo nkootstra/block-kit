@@ -36,7 +36,7 @@ export interface ReferenceMeta {
    */
   motionFacts?: boolean;
   /** The control that had focus at the snapshot, and whether it was drawn as keyboard focus. */
-  focus?: { target: string; visible: boolean; active?: string };
+  focus?: { target?: string; visible: boolean; active?: string };
 }
 
 export interface Evidence {
@@ -58,7 +58,7 @@ export function referenceMeta(html: string): ReferenceMeta {
     full?: { widenedBy?: number };
     targets?: Record<string, unknown>;
     motion?: Record<string, unknown>;
-    focus?: { target: string; visible: boolean; active?: string };
+    focus?: { target?: string; visible: boolean; active?: string };
   };
   const out: ReferenceMeta = {};
   if (meta.stateStyles)
@@ -346,7 +346,7 @@ export function referenceEvidence(
   // Keyboard focus at the snapshot (snapshot.js records the focused control): what a probe's
   // arrow keys or Tab reached, an option in an open list, a confirm dialog's button, a chip.
   if (meta.focus?.visible) {
-    const id = componentAt(payload, meta.focus.target);
+    const id = meta.focus.target && componentAt(payload, meta.focus.target);
     if (id) styles(id, "focus-visible", `keyboard focus in ${name}`);
     // The option the arrow keys highlighted while focus stayed on the field.
     const active = meta.focus.active && componentAt(payload, meta.focus.active);

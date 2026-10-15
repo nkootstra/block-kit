@@ -623,10 +623,12 @@ async (win = window, options = {}) => {
       const lit =
         highlighted &&
         (options.targets ?? []).find(({ el }) => el === highlighted || el.contains(highlighted));
-      return hit
+      // The field itself may be no target: a select's dialog has its own combobox, and only its
+      // highlighted option is addressed.
+      return hit || lit
         ? {
             focus: {
-              target: hit.address,
+              ...(hit && { target: hit.address }),
               visible: active.matches(":focus-visible"),
               ...(lit && { active: lit.address }),
             },
