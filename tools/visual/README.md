@@ -679,7 +679,8 @@ the library draws them from a fixed, version-pinned set, so a payload can't choo
 
 `bun run --cwd tools/visual test:browser` runs the tests that need a browser, including the
 interaction tests below (`bunx playwright install chromium firefox webkit`); `bun run test` runs the
-rest.
+rest. In CI they run in the `Browser tests` jobs, one per engine, next to the `render-diff` job
+rather than before it; none of them is a required check.
 
 ## Interaction styles
 
@@ -700,7 +701,9 @@ don't have.
   than 2px to whole CSS pixels at any scale, so only WebKit on a 2x screen (Safari on a Retina
   display) paints a checkbox's 1.5px border; the declared width is checked in every engine.
 
-CI runs them in the `render-diff` job, whose Playwright image has all three browsers.
+`SBK_ENGINES=firefox,webkit` runs only those engines (`bun run test:interaction` runs this file
+alone). CI runs each engine in its own `Browser tests (<engine>)` job, in the Playwright image that
+has all three browsers: Chromium runs every browser test, Firefox and WebKit only these.
 
 ## Behaviour probes
 

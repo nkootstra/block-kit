@@ -4,7 +4,8 @@
 // How controls look while they're hovered, pressed, focused or animating, checked in all three
 // engines. jsdom doesn't load the stylesheet, so this is where interaction styles get tested.
 // Expected values are Slack's, from its Block Kit stylesheet; where an engine legitimately paints
-// something differently, the case says so.
+// something differently, the case says so. SBK_ENGINES=firefox,webkit runs only those engines, so
+// CI can run each in its own job.
 import { afterAll, afterEach, beforeAll, describe, expect, it, setDefaultTimeout } from "bun:test";
 import { join, resolve } from "node:path";
 import type { Page } from "playwright";
@@ -130,7 +131,12 @@ const hints = (theme: "light" | "dark"): Mount => ({
   ],
 });
 
-describe.each(Object.keys(ENGINES) as Engine[])("%s", (engine) => {
+const engines = (process.env.SBK_ENGINES?.split(",") ?? Object.keys(ENGINES)) as Engine[];
+for (const engine of engines) {
+  if (!(engine in ENGINES)) throw new Error(`SBK_ENGINES: no engine "${engine}"`);
+}
+
+describe.each(engines)("%s", (engine) => {
   let harness: Harness;
   beforeAll(async () => {
     harness = await createHarness(engine);
