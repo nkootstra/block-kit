@@ -23,9 +23,11 @@ export function HomeTab({ view: viewProp }: HomeTabProps) {
         </span>
       </div>
       <div className="sbk-home__content">
-        <SurfaceScope container={{ type: "view", view }}>
-          <Blocks blocks={view.blocks} />
-        </SurfaceScope>
+        <div className="sbk-home__blocks">
+          <SurfaceScope container={{ type: "view", view }}>
+            <Blocks blocks={view.blocks} />
+          </SurfaceScope>
+        </div>
       </div>
     </div>
   );

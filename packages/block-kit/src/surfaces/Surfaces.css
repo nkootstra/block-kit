@@ -242,6 +242,16 @@
   padding: 25px;
 }
 
+/* Slack insets the blocks 8px and pads them, keeping the full width so they run 8px into the
+   right padding: 12px on three sides, and 36px plus a clear 4px border on the right. */
+.sbk-home__blocks {
+  box-sizing: border-box;
+  width: 100%;
+  margin-left: 8px;
+  padding: 12px 36px 12px 12px;
+  border-right: 4px solid transparent;
+}
+
 /* Modals opened through `views` sit centred on a dimmed, full-viewport overlay, as in Slack. The
    dim is a pseudo-element, like Slack's `.c-sk-overlay::before`, so it can fade in on its own
    (80ms, linear) while the modal above it stays opaque. */
