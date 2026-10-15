@@ -636,8 +636,11 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
   skipped, which counts as passing.
 - A pull request's fixtures are compared in four parallel `compare-shard` jobs (`--shard`), about 13
   minutes each instead of about 50 in one. The `compare` job, the check the ruleset requires, passes
-  when all four did. `main` and a manual run compare every fixture in one job, since they rewrite
-  the baseline.
+  when all four did and fails when one failed. A run superseded by a newer push or label is
+  cancelled, and its `compare` is skipped rather than failed; the newer run reports the check. A
+  label other than `visual-baseline-increase` compares nothing and doesn't cancel the comparison
+  in progress. `main` and a manual run compare every fixture in one job, since they rewrite the
+  baseline.
 - A pull request is checked against the **base branch's** baseline, so it can't loosen its own
   check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
   regression with the `visual-baseline-increase` label.

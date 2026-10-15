@@ -38,8 +38,13 @@ permissions:
   contents: read
 
 concurrency:
-  # Baseline commits to main queue up; a pull request only needs its latest run.
-  group: visual-${{ github.event_name == 'push' && 'main' || github.ref }}
+  # Baseline commits to main queue up; a pull request only needs its latest run. A label other than
+  # visual-baseline-increase compares nothing, so its run gets a group of its own rather than
+  # cancelling the pull request's comparison.
+  group: >-
+    visual-${{ github.event_name == 'push' && 'main' || github.ref }}${{
+    contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
+    github.event.label.name != 'visual-baseline-increase' && '-other-label' || '' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -189,10 +194,12 @@ jobs:
           if-no-files-found: ignore
 
   # The check the main ruleset requires: it passes when every slice passed, or when the comparison
-  # was skipped because nothing it renders changed.
+  # was skipped because nothing it renders changed, and fails when a slice failed. A run that was
+  # cancelled (a newer push or label superseded it) skips it instead of failing it: the newer run
+  # reports the check.
   compare:
     needs: compare-shard
-    if: always()
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - env:
