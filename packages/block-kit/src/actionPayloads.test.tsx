@@ -477,10 +477,7 @@ const interactionFor = (name: string) => INTERACTIONS[name] ?? probeInteraction(
 async function dialogPick(placeholder: string | RegExp, option: RegExp) {
   fireEvent.click(screen.getByRole("button", { name: placeholder }));
   fireEvent.click(within(screen.getByRole("dialog")).getByRole("combobox"));
-  // Our dialog lists no directory entries yet (finding select-dialog-directory): Confirm sends
-  // what's picked, which is then nothing.
-  const row = screen.queryByRole("option", { name: option });
-  if (row) await clickAsync(row);
+  await clickAsync(screen.getByRole("option", { name: option }));
   await clickAsync(screen.getByRole("button", { name: "Confirm" }));
 }
 
@@ -582,39 +579,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
-  // Our selection dialog lists no workspace members or channels (only typed IDs), so a pick from
-  // its list confirms nothing, and where the probe types "slackbot" first, Enter adds the typed
-  // text as an ID (fidelity finding select-dialog-directory).
-  "extra/payloads/accessory-multi-selects@pick-confirm-users": [
-    'actions.0.selected_users.0: Slack "U0000001", ours "slackbot"',
-    'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours "slackbot"',
-  ],
-  "contexts/multi_users_select/accessory@pick": [
-    'actions.0.selected_users.0: Slack "U0000001", ours missing',
-    'state.values.<block_id>.multi_users.selected_users.0: Slack "U0000001", ours missing',
-  ],
-  "catalog/section/multi-conversations-select@pick": [
-    'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
-    'state.values.<block_id>.multi_conversations_select-action.selected_conversations.0: Slack "U0000001", ours missing',
-  ],
-  "extra/fidelity/multi-conversations-select/initial-value@pick": [
-    'actions.0.selected_conversations.1: Slack "U0000001", ours missing',
-    'state.values.<block_id>.conversations.selected_conversations.1: Slack "U0000001", ours missing',
-  ],
-  "extra/payloads/accessory-multi-selects@pick": [
-    'actions.0.selected_channels.0: Slack "C0000001", ours missing',
-    'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
-  ],
-  "extra/payloads/accessory-multi-selects@pick-confirm-channels": [
-    'actions.0.selected_channels.0: Slack "C0000001", ours missing',
-    'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
-  ],
-  // The probe types "slackbot" first; our dialog lists no one, so Enter adds the typed text as
-  // an ID (fidelity finding select-dialog-directory).
-  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": [
-    'actions.0.selected_conversations.0: Slack "U0000001", ours "slackbot"',
-    'state.values.<block_id>.conversations.selected_conversations.0: Slack "U0000001", ours "slackbot"',
-  ],
   // Slack's open list starts on its first option, so two ArrowDowns reach the third; ours starts
   // before the first (fidelity finding static-select-keyboard). Removed once that's fixed.
   "contexts/static_select/actions@keyboard": [

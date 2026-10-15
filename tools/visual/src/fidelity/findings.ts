@@ -281,25 +281,6 @@ export const FINDINGS: Finding[] = [
     status: "verified",
   },
   {
-    id: "select-dialog-directory",
-    title: "Our accessory multi-select dialog lists no members or channels for a directory select",
-    evidence: [
-      "extra/payloads/accessory-multi-selects@pick-confirm-{users,channels,conversations} (light desktop retry): in Slack the dialog's field opens a list of the workspace's members or channels, ArrowDown and Enter pick the first, Confirm sends it (selected_users [\"U0000001\"] and so on).",
-      "Ours, replayed in Chromium with a directory resolver: the dialog's list opens empty, so nothing is picked and Confirm sends an empty selection. Listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
-      "Mobile pick sitting: contexts/multi_users_select/accessory@pick and catalog/section/multi-conversations-select@pick (Slackbot through the dialog) show the same.",
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.tsx passes the SelectDialog `options={directory ? [] : allOptions(element)}`: a directory select only gets `addTyped`, never the resolver's entries.",
-    ],
-    next: "List resolvers.directory entries in the dialog (as the inline users, conversations and channels selects do), then drop the KNOWN_DIFFERENCES entries.",
-    components: [
-      "select-dialog",
-      "multi_users_select",
-      "multi_channels_select",
-      "multi_conversations_select",
-    ],
-  },
-  {
     id: "input-block-dispatch",
     title:
       "Block Kit Builder sends block_actions from an input block's element without dispatch_action",

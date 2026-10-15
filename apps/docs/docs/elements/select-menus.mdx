@@ -202,10 +202,11 @@ keyboard focus; either way the action fires with the remaining `selected_options
 
 As a section accessory, a multi-select (static, users, conversations or channels) is a small
 button, as in Slack: it reads the placeholder ("Select options"), then "2 selected" once options are
-chosen. Clicking it opens a dialog titled with the placeholder, with the field and its chips. In a
-users, conversations or channels select, you type an id and press Enter to add it. In a static one,
-the option list stays open while you pick,
-and nothing is sent until **Confirm**, which fires one action with every `selected_options` (and the
+chosen. Clicking it opens a dialog titled with the placeholder, with the field and its chips. Its
+list holds the options, or for a users, conversations or channels select the `resolvers.directory`
+entries; typing filters it, and in a directory select Enter adds a typed id that no entry matches.
+The list stays open while you pick, and nothing is sent until **Confirm**, which fires one action
+with every pick (`selected_options`, `selected_users` and so on; a static select adds its
 `placeholder`). **Cancel**, the close button and Escape discard the picks. As in Slack, focus moves
 to the dialog itself, so its field opens without a focus ring; Tab reaches the close button and then
 the field. Focus returns to the button when the dialog closes.

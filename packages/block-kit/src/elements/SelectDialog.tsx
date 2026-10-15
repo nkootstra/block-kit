@@ -13,8 +13,8 @@ const optionId = (option: PlainTextOption) => option.value ?? option.text.text;
  * Slack's selection dialog, which a multi-select in a section accessory opens instead of an inline
  * menu, titled with the select's placeholder. Picks are a draft: the option list stays open while
  * choosing, and nothing is sent until Confirm. Cancel, the close button and Escape discard the
- * draft. A users, conversations or channels select has no options to list; `addTyped` turns what's
- * typed into one on Enter.
+ * draft. A users, conversations or channels select lists its `resolvers.directory` entries, and
+ * `addTyped` turns a typed id no entry matches into a chip on Enter.
  */
 export function SelectDialog({
   options,
@@ -27,7 +27,7 @@ export function SelectDialog({
   options: PlainTextOption[];
   initial: PlainTextOption[];
   placeholder: string;
-  /** Turns a typed id into a chip on Enter, for a select with no options to list. */
+  /** Turns a typed id into a chip on Enter when no listed option matches it. */
   addTyped?: (typed: string) => PlainTextOption;
   onConfirm: (selected: PlainTextOption[]) => void;
   onCancel: () => void;
