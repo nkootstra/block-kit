@@ -430,6 +430,12 @@ element at the real name's width, so redaction also releases the width, `flex-ba
 and `min-width` on a placeholder's own element and on a wrapper holding only it; the placeholder
 lays out at its own width, and whatever follows it (a presence dot) moves with it.
 
+The Builder lists members and channels by the workspace's recent activity, and redaction numbers
+them in the order they appear, so the order of an open list, and which of its channels are
+private, differ between capture sessions. The comparison reads both from the reference's open list
+(`directoryOrder.ts`) and passes them to the render page as `&directory=User One,channel-one:private,…`,
+which lists its placeholder directory the same way.
+
 `references:check` fails on a reference that still contains a member, channel or workspace name,
 an avatar URL, a profile link, a file URL, the workspace's subdomain, or a Slack ID its fixture
 doesn't use.

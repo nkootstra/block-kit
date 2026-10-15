@@ -116,21 +116,47 @@ const channel = (n: number, isPrivate: boolean): DirectoryEntry => ({
   private: isPrivate,
 });
 
-const BUILDER_RESOLVERS: Resolvers = {
-  ...BUILDER_SAMPLE_FILES,
-  directory: (source) =>
-    source === "users"
-      ? BUILDER_USERS
-      : source === "channels"
-        ? [1, 2, 3].map((n) => channel(n, false))
-        : [...BUILDER_USERS, ...[1, 2, 3, 4, 5, 6, 7].map((n) => channel(n, n <= 4))],
-};
+const builderDirectory = (source: string): DirectoryEntry[] =>
+  source === "users"
+    ? BUILDER_USERS
+    : source === "channels"
+      ? [1, 2, 3].map((n) => channel(n, false))
+      : [...BUILDER_USERS, ...[1, 2, 3, 4, 5, 6, 7].map((n) => channel(n, n <= 4))];
+
+/**
+ * The Builder lists members and channels by the workspace's recent activity, and redaction numbers
+ * them as they appear, so the order and which channels are private differ between capture
+ * sessions. `&directory=User One,channel-one:private,…` (what a reference's open list shows, read
+ * by the comparison) lists the placeholders in that order, with those channels private; names it
+ * leaves out follow, as above.
+ */
+function builderResolvers(listed: string[]): Resolvers {
+  const order = listed.map((entry) => entry.split(":")[0]!);
+  const rank = (entry: DirectoryEntry) => {
+    const at = order.indexOf(entry.name);
+    return at === -1 ? order.length : at;
+  };
+  const shown = (entry: DirectoryEntry): DirectoryEntry =>
+    entry.type === "channel" && order.includes(entry.name)
+      ? { ...entry, private: listed.includes(`${entry.name}:private`) }
+      : entry;
+  return {
+    ...BUILDER_SAMPLE_FILES,
+    directory: (source) =>
+      listed.length === 0
+        ? builderDirectory(source)
+        : builderDirectory(source)
+            .map(shown)
+            .toSorted((a, b) => rank(a) - rank(b)),
+  };
+}
 
 export function RenderOnly({ params }: { params: URLSearchParams }) {
   const name = params.get("render") ?? "";
   // Left unset for light, so the existing references render exactly as before.
   const theme = params.get("theme") === "dark" ? ("dark" as const) : undefined;
   const fixture = fixtures.find((f) => f.name === name);
+  const resolvers = builderResolvers(params.get("directory")?.split(",") ?? []);
   if (!fixture) return <p>Unknown fixture {name}</p>;
 
   let raw: unknown;
@@ -150,7 +176,7 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
         timeZone="Europe/Amsterdam"
         surface={viewType}
         theme={theme}
-        resolvers={BUILDER_RESOLVERS}
+        resolvers={resolvers}
       >
         <div id="sbk-render" style={{ width }}>
           <View view={view} icon={params.get("icon") ?? undefined} />
@@ -165,7 +191,7 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
   const width = Number(params.get("width")) - 36 || undefined;
   return (
     // References were captured in Europe/Amsterdam; their message time was pinned to 12:00 PM.
-    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme} resolvers={BUILDER_RESOLVERS}>
+    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme} resolvers={resolvers}>
       <div id="sbk-render" style={{ width }}>
         <Message
           blocks={result.blocks}
