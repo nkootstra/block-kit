@@ -582,83 +582,38 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
-  // Slack's users, conversations and channels selects send no placeholder in their action (its
-  // static and multi-static selects do), and echo their initial_user, initial_conversation or
-  // initial_channel; ours does the opposite (fidelity finding directory-select-placeholder).
-  // Removed once that's fixed.
-  "catalog/actions/selects-with-initial-options@pick": [
-    'actions.0.initial_channel: Slack "C12345678", ours missing',
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
-  ],
-  "catalog/actions/filtered-conversations-select@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select private conversation","emoji":true}',
-  ],
-  "catalog/section/users-select@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a user","emoji":true}',
-  ],
-  "extra/fidelity/confirm/long-content@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
-  ],
-  "extra/fidelity/users-select/long-content@pick": [
-    'actions.0.initial_user: Slack "U12345678", ours missing',
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
-  ],
-  "contexts/channels_select/actions@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
-  ],
-  "contexts/conversations_select/actions@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a conversation","emoji":true}',
-  ],
-  "contexts/users_select/actions@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a user","emoji":true}',
-  ],
-  "extra/fidelity/channels-select/long-content@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
-  ],
   // Our selection dialog lists no workspace members or channels (only typed IDs), so a pick from
   // its list confirms nothing, and where the probe types "slackbot" first, Enter adds the typed
   // text as an ID (fidelity finding select-dialog-directory).
   "extra/payloads/accessory-multi-selects@pick-confirm-users": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
     'actions.0.selected_users.0: Slack "U0000001", ours "slackbot"',
     'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours "slackbot"',
   ],
   "contexts/multi_users_select/accessory@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
     'actions.0.selected_users.0: Slack "U0000001", ours missing',
     'state.values.<block_id>.multi_users.selected_users.0: Slack "U0000001", ours missing',
   ],
   "catalog/section/multi-conversations-select@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
     'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
     'state.values.<block_id>.multi_conversations_select-action.selected_conversations.0: Slack "U0000001", ours missing',
   ],
-  // Also echoes its initial_conversations (fidelity finding directory-select-placeholder).
   "extra/fidelity/multi-conversations-select/initial-value@pick": [
-    'actions.0.initial_conversations: Slack ["C0123456789"], ours missing',
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
     'actions.0.selected_conversations.1: Slack "U0000001", ours missing',
     'state.values.<block_id>.conversations.selected_conversations.1: Slack "U0000001", ours missing',
   ],
   "extra/payloads/accessory-multi-selects@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
     'actions.0.selected_channels.0: Slack "C0000001", ours missing',
     'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
   ],
   "extra/payloads/accessory-multi-selects@pick-confirm-channels": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
     'actions.0.selected_channels.0: Slack "C0000001", ours missing',
     'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
   ],
   // The probe types "slackbot" first; our dialog lists no one, so Enter adds the typed text as
   // an ID (fidelity finding select-dialog-directory).
   "extra/payloads/accessory-multi-selects@pick-confirm-conversations": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
     'actions.0.selected_conversations.0: Slack "U0000001", ours "slackbot"',
     'state.values.<block_id>.conversations.selected_conversations.0: Slack "U0000001", ours "slackbot"',
-  ],
-  "extra/actions/more-elements@pick": [
-    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
   ],
   // Slack's open list starts on its first option, so two ArrowDowns reach the third; ours starts
   // before the first (fidelity finding static-select-keyboard). Removed once that's fixed.
