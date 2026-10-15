@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { type Baselines, type Result, updateBaselines } from "./baseline";
+import { type Baselines, mergeReports, type Result, updateBaselines } from "./baseline";
+import { shard } from "./shard";
 
 const result = (
   name: string,
@@ -66,5 +67,45 @@ describe("updateBaselines", () => {
       visual: { a: 1, b: 5, c: 3, removed: 4 },
       text: { a: ["x|a|0"], b: ["q|b|0"], c: [], removed: ["w|r|0"] },
     });
+  });
+});
+
+describe("mergeReports", () => {
+  const references = ["a", "b", "c", "d", "e"];
+  const slices = (count: number) =>
+    Array.from({ length: count }, (_, i) =>
+      shard(references, `${i + 1}/${count}`).map((name) => result(name, 1)),
+    );
+
+  it("joins the slices of a sharded run into one full run's results", () => {
+    expect(mergeReports(slices(3), references).map((r) => r.name)).toEqual(references);
+  });
+
+  it("counts a fixture that failed to render as covered", () => {
+    const [first, ...rest] = slices(2);
+    const failed = first!.map((r) => result(r.name, 100, [], "render failed"));
+    expect(mergeReports([failed, ...rest], references)).toHaveLength(references.length);
+  });
+
+  it("fails when a slice is missing", () => {
+    expect(() => mergeReports(slices(3).slice(1), references)).toThrow("no result for 2: a, d");
+  });
+
+  it("fails on results for a fixture without a reference", () => {
+    expect(() => mergeReports([...slices(2), [result("gone", 1)]], references)).toThrow(
+      "results without a reference: gone",
+    );
+  });
+
+  it("fails when two slices ran the same fixture", () => {
+    const [first] = slices(2);
+    expect(() => mergeReports([...slices(2), first!], references)).toThrow(
+      "more than one result: a, c, e",
+    );
+  });
+
+  it("shortens a long list", () => {
+    const many = Array.from({ length: 12 }, (_, i) => `f${String(i).padStart(2, "0")}`);
+    expect(() => mergeReports([], many)).toThrow("f09 and 2 more");
   });
 });

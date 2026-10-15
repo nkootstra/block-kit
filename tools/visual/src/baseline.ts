@@ -68,3 +68,37 @@ export function updateBaselines(
     text: updateTextBaseline(before.text, textFindingsOf(results), { full, lowerOnly }),
   };
 }
+
+/**
+ * The results of a sharded run's slices, as one full run's. Throws unless they cover every
+ * reference exactly once: a slice that is missing, or ran another commit's fixtures, would
+ * otherwise drop fixtures from a full rewrite of the baselines.
+ */
+export function mergeReports(
+  reports: readonly Result[][],
+  references: readonly string[],
+): Result[] {
+  const merged = reports.flat();
+  const seen = new Set<string>();
+  const duplicated = new Set<string>();
+  for (const r of merged) (seen.has(r.name) ? duplicated : seen).add(r.name);
+  const expected = new Set(references);
+  const missing = references.filter((name) => !seen.has(name));
+  const unknown = [...seen].filter((name) => !expected.has(name));
+  const problems = [
+    ...(missing.length > 0 ? [`no result for ${missing.length}: ${list(missing)}`] : []),
+    ...(unknown.length > 0 ? [`results without a reference: ${list(unknown)}`] : []),
+    ...(duplicated.size > 0 ? [`more than one result: ${list([...duplicated])}`] : []),
+  ];
+  if (problems.length > 0) {
+    throw new Error(
+      `The reports don't cover the references once each:\n  ${problems.join("\n  ")}`,
+    );
+  }
+  return merged.toSorted((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+}
+
+const list = (names: readonly string[]) =>
+  names.length > 10
+    ? `${names.slice(0, 10).join(", ")} and ${names.length - 10} more`
+    : names.join(", ");

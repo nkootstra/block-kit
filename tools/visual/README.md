@@ -27,6 +27,11 @@ bun run compare
 - `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`
   and the flagged text runs in `fixtures/text-baseline.<platform>.json` ([Text runs](#text-runs));
   `--update-baseline=lower` only adds new fixtures and lowers improved ones.
+- `bun tools/visual/src/merge-baseline.ts --update-baseline[=lower] <report.json>...` records the
+  baselines from the `test-results/visual/report.json` of every slice of a sharded run, as one full
+  `--update-baseline` run would. It fails and writes nothing unless the reports hold exactly one
+  result for every reference, so a missing slice can't drop fixtures from the baselines.
+  `--platform=linux` picks the baselines to write when the slices ran on another platform.
 
 Open `test-results/visual/index.html` for side-by-side reference / ours / diff images.
 
