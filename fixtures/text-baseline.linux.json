@@ -1914,10 +1914,28 @@
   ],
   "contexts/static_select/actions@open": [],
   "contexts/static_select/actions@open+dark": [],
-  "contexts/static_select/home": [],
-  "contexts/static_select/home@dark": [],
-  "contexts/static_select/home@open": [],
-  "contexts/static_select/home@open+dark": [],
+  "contexts/static_select/home": [
+    "extra|--Select an item--|0"
+  ],
+  "contexts/static_select/home@dark": [
+    "extra|--Select an item--|0"
+  ],
+  "contexts/static_select/home@open": [
+    "y|Option 1|0",
+    "color|Option 1|0",
+    "y|Option 2|0",
+    "y|Option 3|0",
+    "extra|--Select an item--|0",
+    "extra|--Select an item--|1"
+  ],
+  "contexts/static_select/home@open+dark": [
+    "y|Option 1|0",
+    "color|Option 1|0",
+    "y|Option 2|0",
+    "y|Option 3|0",
+    "extra|--Select an item--|0",
+    "extra|--Select an item--|1"
+  ],
   "contexts/static_select/modal-input": [],
   "contexts/static_select/modal-input@dark": [],
   "contexts/static_select/modal-input@open": [],
