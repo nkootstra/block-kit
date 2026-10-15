@@ -59,6 +59,14 @@ import { Glob } from "bun";
 import pixelmatch from "pixelmatch";
 import { chromium, type Page } from "playwright";
 import { PNG } from "pngjs";
+import {
+  type Baseline,
+  percent,
+  referenceNames,
+  type Result,
+  textFindingsOf,
+  updateBaselines,
+} from "./baseline";
 import { collectTextRuns } from "./collectTextRuns";
 import { directoryOrder } from "./directoryOrder";
 import { SLACK_FILE_PLACEHOLDER } from "./redact";
@@ -77,7 +85,6 @@ import {
   type TextBaseline,
   type TextRun,
   type TextRunReport,
-  updateTextBaseline,
 } from "./textRuns";
 
 const ROOT = resolve(import.meta.dir, "../../..");
@@ -124,29 +131,12 @@ interface Meta {
 const OUR_POPOVERS = ".sbk-popover > *";
 const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog";
 
-export interface Result {
-  name: string;
-  reference: { width: number; height: number };
-  actual: { width: number; height: number };
-  mismatch: number;
-  ratio: number;
-  /** Set when our side failed to render; the fixture then counts as a 100% mismatch. */
-  error?: string;
-  /** The text-run comparison; absent when our side failed to render. */
-  text?: TextRunReport;
-  /** Where our controls' state styles differ from Slack's (stateStyles.ts); reported only. */
-  stateStyles?: string[];
-  /** Where our scroll containers differ from Slack's (scrollers.ts); reported only. */
-  scrollers?: string[];
-}
-
-const names: string[] = [];
-for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
-  const name = path.replace(/\.reference\.html$/, "");
-  if (prefixes.length === 0 || prefixes.some((p) => name.startsWith(p))) names.push(name);
-}
-names.sort();
-names.splice(0, names.length, ...shard(names, shardSpec));
+const names = shard(
+  (await referenceNames(FIXTURES)).filter(
+    (name) => prefixes.length === 0 || prefixes.some((p) => name.startsWith(p)),
+  ),
+  shardSpec,
+);
 
 // The references were laid out on macOS, which places glyphs at fractional advances, and inline
 // those widths (a sender name is `width: 61.8594px`). Linux Chromium hints fonts by default, which
@@ -480,33 +470,22 @@ const mean = results.reduce((s, r) => s + r.ratio, 0) / Math.max(results.length,
 console.log(`\n${results.length} fixtures, mean mismatch ${(mean * 100).toFixed(2)}%`);
 if (prefixes.length === 0) console.log(`report: ${join(OUT, "index.html")}`);
 
-const percent = (r: Result) => Math.round(r.ratio * 10_000) / 100;
-const readBaseline = async (file: string): Promise<Record<string, number>> =>
+const readBaseline = async (file: string): Promise<Baseline> =>
   existsSync(file) ? await Bun.file(file).json() : {};
 const readTextBaseline = async (file: string): Promise<TextBaseline> =>
   existsSync(file) ? await Bun.file(file).json() : {};
-const textFindings: TextBaseline = Object.fromEntries(
-  results.flatMap((r) => (r.text ? [[r.name, r.text.findings] as const] : [])),
-);
+const textFindings = textFindingsOf(results);
 
 if (updateBaseline) {
   // A filtered run only updates the fixtures it ran, and only a full run drops removed fixtures.
-  const before = await readBaseline(BASELINE);
-  const next = prefixes.length === 0 && !lowerOnly ? {} : { ...before };
-  for (const r of results) {
-    if (r.error) continue;
-    const previous = before[r.name];
-    if (lowerOnly && previous !== undefined && percent(r) >= previous - tolerance) continue;
-    next[r.name] = percent(r);
-  }
-  const sorted = Object.fromEntries(Object.entries(next).sort(([a], [b]) => a.localeCompare(b)));
-  await writeFile(BASELINE, `${JSON.stringify(sorted, null, 2)}\n`);
+  const next = updateBaselines(
+    { visual: await readBaseline(BASELINE), text: await readTextBaseline(TEXT_BASELINE) },
+    results,
+    { full: prefixes.length === 0, lowerOnly, tolerance },
+  );
+  await writeFile(BASELINE, `${JSON.stringify(next.visual, null, 2)}\n`);
   console.log(`baseline: ${BASELINE}`);
-  const nextText = updateTextBaseline(await readTextBaseline(TEXT_BASELINE), textFindings, {
-    full: prefixes.length === 0,
-    lowerOnly,
-  });
-  await writeFile(TEXT_BASELINE, `${JSON.stringify(nextText, null, 2)}\n`);
+  await writeFile(TEXT_BASELINE, `${JSON.stringify(next.text, null, 2)}\n`);
   console.log(`text baseline: ${TEXT_BASELINE}`);
 }
 
