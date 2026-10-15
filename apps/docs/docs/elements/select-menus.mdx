@@ -649,8 +649,10 @@ the id string.
 }
 ```
 
-A select with a `placeholder` sends it back in the action too, and a single select with an
-`initial_option` echoes that as well, as Slack does.
+A static select with a `placeholder` sends it back in the action too, and a single one with an
+`initial_option` echoes that as well. A users, conversations or channels select sends no
+placeholder; it echoes its `initial_user`, `initial_conversation` or `initial_channel` (or the
+plural for a multi-select) instead. Both are what Slack sends.
 
 `state.values.assign.priority` holds the same `selected_option` shape, tagged with `type`:
 

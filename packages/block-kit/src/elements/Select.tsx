@@ -297,10 +297,26 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       action_id: actionId,
       block_id: blockId,
       ...fields,
-      // Slack echoes a single select's initial_option and its placeholder back in the action.
+      ...echoed(),
+    });
+  }
+
+  /**
+   * What Slack echoes back in the action besides the value. A static select sends its placeholder
+   * and a single one its initial_option; a users, conversations or channels select sends its
+   * initial_user, initial_conversations and so on, and no placeholder.
+   */
+  function echoed() {
+    if (source === "users" || source === "conversations" || source === "channels") {
+      const one = { users: "user", conversations: "conversation", channels: "channel" }[source];
+      const key = `initial_${one}${multi ? "s" : ""}`;
+      const initial = element[key as keyof SelectElement];
+      return initial === undefined ? {} : { [key]: initial };
+    }
+    return {
       ...(!multi && element.initial_option ? { initial_option: element.initial_option } : {}),
       ...(element.placeholder ? { placeholder: element.placeholder } : {}),
-    });
+    };
   }
 
   function buildStateFor(next: Item[]) {

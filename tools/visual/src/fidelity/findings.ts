@@ -281,23 +281,6 @@ export const FINDINGS: Finding[] = [
     status: "verified",
   },
   {
-    id: "directory-select-placeholder",
-    title:
-      "Our users, conversations and channels selects send their placeholder and not their initial value; Slack's do the opposite",
-    evidence: [
-      'extra/actions/more-elements@pick, contexts/{users,conversations,channels}_select/actions@pick and extra/fidelity/channels-select/long-content@pick: Slack\'s action has no placeholder; ours echoes it (e.g. {"type":"plain_text","text":"Pick a channel","emoji":true}). Slack\'s static_select and multi_static_select actions do carry it (catalog/actions/all-selects@pick, extra/payloads/selects@pick-multi).',
-      'catalog/actions/selects-with-initial-options@pick: Slack\'s channels_select action echoes initial_channel "C12345678"; ours leaves it out (Select.tsx echoes only a static select\'s initial_option). extra/fidelity/users-select/long-content@pick (dark desktop session) shows the same for a users_select\'s initial_user "U12345678".',
-      "extra/fidelity/confirm/long-content@pick and users-select/long-content@pick add two more placeholders Slack doesn't send.",
-      "Mobile pick sitting: catalog/actions/filtered-conversations-select@pick and catalog/section/users-select@pick show it again.",
-      "All listed in actionPayloads.test.tsx KNOWN_DIFFERENCES.",
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.tsx, where the action echoes the placeholder and initial_option for every select type.",
-    ],
-    next: "For users, conversations and channels selects, leave the placeholder out and echo initial_user / initial_conversation / initial_channel (multi variants once a recording with initial values shows them), then drop the KNOWN_DIFFERENCES entries.",
-    components: ["channels_select", "users_select", "conversations_select"],
-  },
-  {
     id: "select-dialog-directory",
     title: "Our accessory multi-select dialog lists no members or channels for a directory select",
     evidence: [
