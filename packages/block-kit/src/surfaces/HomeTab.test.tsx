@@ -29,6 +29,20 @@ describe("<HomeTab>", () => {
     expect(screen.getByText("Home")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Your tickets" })).toBeTruthy();
   });
+
+  it("insets the blocks in their own wrapper, as Slack's App Home does", () => {
+    const view = loadView<HomeTabView>("home/dashboard");
+    render(
+      <BlockKitProvider surface="home">
+        <HomeTab view={view} />
+      </BlockKitProvider>,
+    );
+
+    const heading = screen.getByRole("heading", { name: "Your tickets" });
+    expect(heading.closest(".sbk-home__blocks")?.parentElement?.className).toBe(
+      "sbk-home__content",
+    );
+  });
 });
 
 describe("<View>", () => {

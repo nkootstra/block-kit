@@ -60,6 +60,7 @@ import pixelmatch from "pixelmatch";
 import { chromium, type Page } from "playwright";
 import { PNG } from "pngjs";
 import { collectTextRuns } from "./collectTextRuns";
+import { directoryOrder } from "./directoryOrder";
 import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
 import { pad, parseRgb } from "./pad";
@@ -366,6 +367,15 @@ for (const name of names) {
   url.searchParams.set("width", String(meta.width));
   if (parsed.theme === "dark") url.searchParams.set("theme", "dark");
   if (icon) url.searchParams.set("icon", icon.replace(/&amp;/g, "&"));
+  const listed = directoryOrder(
+    await refPage.evaluate(() =>
+      [...document.querySelectorAll('[role="option"]')].map((o) => ({
+        text: o.textContent ?? "",
+        locked: !!o.querySelector('[data-qa="lock"]'),
+      })),
+    ),
+  );
+  if (listed.length > 0) url.searchParams.set("directory", listed.join(","));
   const room = roomFor(layers);
   const errors: string[] = [];
   const onError = (err: Error) => errors.push(err.message);
