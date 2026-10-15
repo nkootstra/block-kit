@@ -68,8 +68,11 @@ export const OPENERS = {
     ".sbk-datetimepicker button",
     ".sbk-overflow button",
   ].join(", "),
-  /** The first button: put the `confirm` on it. */
-  confirm: ".sbk-button",
+  /**
+   * The first button or icon button with a `confirm`. Slack's capture clicks its first `c-button`,
+   * which an icon button without one isn't; ours tries each in order until a dialog opens.
+   */
+  confirm: ".sbk-button, .sbk-icon-button",
   /** A section accessory's multi-select, which opens Slack's selection dialog. */
   dialog: ".sbk-section__accessory .sbk-select__control",
 } as const;
@@ -99,7 +102,18 @@ export const OPEN_STATES: Record<keyof typeof OPENERS, State> = {
           await p.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
     },
   },
-  confirm: { ours: (p) => p.locator(OPENERS.confirm).first().click() },
+  confirm: {
+    ours: async (p) => {
+      const dialog = p.locator('[role="alertdialog"]');
+      for (const button of await p.locator(OPENERS.confirm).all()) {
+        await button.click();
+        if (await dialog.isVisible()) return;
+        await dialog.waitFor({ timeout: 500 }).catch(() => {});
+        if (await dialog.isVisible()) return;
+      }
+      throw new Error("no button of ours opens a confirm dialog");
+    },
+  },
   dialog: { ours: (p) => p.locator(OPENERS.dialog).first().click() },
 };
 
@@ -129,7 +143,16 @@ const keyboardFocused = (el: ElementHandle) =>
  */
 export function inputState({ input, target }: InputState): State {
   if (input === "hover")
-    return { keepPointer: true, ours: async (p) => (await ourTarget(p, target)).hover() };
+    return {
+      keepPointer: true,
+      ours: async (p) => {
+        const el = await ourTarget(p, target);
+        // An image's or chart's menu button takes the pointer only once its host is hovered, so the
+        // first move, past the actionability checks, hovers the host and the second the button.
+        await el.hover({ force: true });
+        await el.hover();
+      },
+    };
   return {
     ours: async (p) => {
       const el = await ourTarget(p, target);
