@@ -116,9 +116,29 @@ function shownStrings(value: unknown, out: string[] = []): string[] {
   return out;
 }
 
+/**
+ * The HTML outside its script elements (the reference's meta), cut out with a plain loop: each
+ * `<script` up to the end of its closing tag, or to the end when it never closes.
+ */
+function withoutScripts(html: string): string {
+  const lower = html.toLowerCase();
+  let out = "";
+  let i = 0;
+  for (;;) {
+    const start = lower.indexOf("<script", i);
+    if (start === -1) return out + html.slice(i);
+    out += html.slice(i, start);
+    const end = lower.indexOf("</script", start);
+    if (end === -1) return out;
+    const close = html.indexOf(">", end);
+    if (close === -1) return out;
+    i = close + 1;
+  }
+}
+
 /** Text a reference shows in attributes: a field's placeholder, a control's accessible name. */
 function attributeText(html: string): string[] {
-  const body = html.replace(/<script[\s\S]*?<\/script>/gi, "");
+  const body = withoutScripts(html);
   return [...body.matchAll(/\s(?:placeholder|aria-label|title|alt)="([^"]*)"/g)].map((m) => m[1]!);
 }
 

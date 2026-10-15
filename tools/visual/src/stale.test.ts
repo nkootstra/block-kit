@@ -104,6 +104,15 @@ describe("missingText", () => {
     expect(missingText(reference(payload, "<p>Something else</p>"))).toEqual([
       "Pick the channel to post into",
     ]);
+    // An attribute inside a script element isn't shown, however its end tag is spelled.
+    expect(
+      missingText(
+        reference(
+          payload,
+          '<script>"<b placeholder="Pick the channel to post into">"</script ><p>x</p>',
+        ),
+      ),
+    ).toEqual(["Pick the channel to post into"]);
   });
 
   it("ignores what shows only later or in another form: overflow options, date fallbacks, citation details", () => {
