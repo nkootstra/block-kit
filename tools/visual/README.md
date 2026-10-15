@@ -645,7 +645,9 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
   when all eight did and fails when one failed. A run superseded by a newer push or label is
   cancelled, and its `compare` is skipped rather than failed; the newer run reports the check. A
   label other than `visual-baseline-increase` compares nothing and doesn't cancel the comparison
-  in progress. A manual run compares every fixture in one job.
+  in progress. Its run names the aggregator `compare (label only, not a verdict)` instead, so it
+  never reports a `compare` check: the ruleset reads the latest check of that name, and a passing
+  one from a label would hide a failed comparison. A manual run compares every fixture in one job.
 - A pull request is checked against the **base branch's** baseline, so it can't loosen its own
   check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
   regression with the `visual-baseline-increase` label.

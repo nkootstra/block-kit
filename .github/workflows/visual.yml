@@ -246,14 +246,31 @@ jobs:
   # was skipped because nothing it renders changed, and fails when a slice failed. A run that was
   # cancelled (a newer push or label superseded it) skips it instead of failing it: the newer run
   # reports the check.
+  #
+  # A label other than visual-baseline-increase compares nothing, so its run must not report
+  # `compare` at all: even a skipped job posts a passing check, and the latest check run of a name
+  # is the one the ruleset reads, so adding any label after a failure would turn the check green.
+  # That run names this job differently (the name is the check's name), which leaves the head
+  # commit's `compare` as the last comparison reported it.
   compare:
+    name: >-
+      ${{ contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
+      github.event.label.name != 'visual-baseline-increase' && 'compare (label only, not a verdict)' ||
+      'compare' }}
     needs: compare-shard
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - env:
           RESULT: ${{ needs.compare-shard.result }}
+          OTHER_LABEL: >-
+            ${{ contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
+            github.event.label.name != 'visual-baseline-increase' }}
         run: |
+          if [ "$OTHER_LABEL" = true ]; then
+            echo "This label doesn't change the comparison; the compare check stays as it was."
+            exit 0
+          fi
           echo "The comparison's slices: $RESULT"
           [ "$RESULT" = success ] || [ "$RESULT" = skipped ]
 
