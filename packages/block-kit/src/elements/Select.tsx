@@ -604,7 +604,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         </button>
         {dialogOpen && (
           <SelectDialog
-            options={directory ? [] : allOptions(element)}
+            options={
+              directory
+                ? entries.map((e) => ({ text: { type: "plain_text", text: e.name }, value: e.id }))
+                : allOptions(element)
+            }
             initial={items.map(itemToOption)}
             placeholder={placeholder}
             addTyped={
