@@ -1,0 +1,89 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U00000000",
+    "username": "user",
+    "name": "user",
+    "team_id": "T00000000"
+  },
+  "api_app_id": "<api_app_id>",
+  "token": "<token>",
+  "container": {
+    "type": "message",
+    "text": "The contents of the original message where the action originated"
+  },
+  "trigger_id": "<trigger_id>",
+  "team": {
+    "id": "T00000000",
+    "domain": "workspace"
+  },
+  "enterprise": null,
+  "is_enterprise_install": false,
+  "state": {
+    "values": {
+      "<block_id>": {
+        "static": {
+          "type": "multi_static_select",
+          "selected_options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Option 1",
+                "emoji": true
+              },
+              "value": "value-1"
+            }
+          ]
+        }
+      },
+      "<block_id_2>": {
+        "users": {
+          "type": "multi_users_select",
+          "selected_users": []
+        }
+      },
+      "<block_id_3>": {
+        "conversations": {
+          "type": "multi_conversations_select",
+          "selected_conversations": []
+        }
+      },
+      "<block_id_4>": {
+        "channels": {
+          "type": "multi_channels_select",
+          "selected_channels": []
+        }
+      },
+      "<block_id_5>": {
+        "external": {
+          "type": "multi_external_select",
+          "selected_options": []
+        }
+      }
+    }
+  },
+  "response_url": "<response_url>",
+  "actions": [
+    {
+      "type": "multi_static_select",
+      "block_id": "<block_id>",
+      "action_id": "static",
+      "selected_options": [
+        {
+          "text": {
+            "type": "plain_text",
+            "text": "Option 1",
+            "emoji": true
+          },
+          "value": "value-1"
+        }
+      ],
+      "placeholder": {
+        "type": "plain_text",
+        "text": "Select options",
+        "emoji": true
+      },
+      "action_ts": "<action_ts>"
+    }
+  ]
+}

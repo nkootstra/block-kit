@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "collapse-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "collapse-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

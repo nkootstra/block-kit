@@ -1,0 +1,26 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "My App"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Submit"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "alert",
+      "text": {
+        "type": "mrkdwn",
+        "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all.",
+        "verbatim": false
+      },
+      "level": "info"
+    }
+  ]
+}

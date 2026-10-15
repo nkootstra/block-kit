@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "feedback-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "feedback-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

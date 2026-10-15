@@ -1,0 +1,28 @@
+{
+  "steps": [
+    {
+      "click": "field-3"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select users"
+      }
+    },
+    {
+      "type": "slackbot"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": {
+        "role": "button",
+        "name": "Confirm"
+      }
+    }
+  ]
+}

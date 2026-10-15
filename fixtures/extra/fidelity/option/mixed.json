@@ -1,0 +1,78 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Options with descriptions"
+      },
+      "accessory": {
+        "type": "checkboxes",
+        "action_id": "described",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "With a description",
+              "emoji": true
+            },
+            "value": "a",
+            "description": {
+              "type": "plain_text",
+              "text": "A plain text description",
+              "emoji": true
+            }
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "With a mrkdwn description",
+              "emoji": true
+            },
+            "value": "b",
+            "description": {
+              "type": "mrkdwn",
+              "text": "*Bold* description"
+            }
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Without",
+              "emoji": true
+            },
+            "value": "c"
+          }
+        ]
+      }
+    },
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "overflow",
+          "action_id": "links",
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Open the docs",
+                "emoji": true
+              },
+              "value": "docs",
+              "url": "https://example.com/docs"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Plain",
+                "emoji": true
+              },
+              "value": "plain"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

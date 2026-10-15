@@ -1,0 +1,22 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select items"
+      }
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "snapshot": "open-focus-option-1"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

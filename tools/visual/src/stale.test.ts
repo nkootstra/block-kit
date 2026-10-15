@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { foreignText, missingText } from "./stale";
+import { foreignState, foreignText, missingText } from "./stale";
 
 const reference = (payload: unknown, body: string) =>
   `<script type="application/json" id="sbk-reference-meta">${JSON.stringify({ payload })}</script>` +
@@ -84,6 +84,79 @@ describe("missingText", () => {
     expect(missingText(html)).toEqual([]);
   });
 
+  it("reads a placeholder or an accessible name, which Slack writes as an attribute", () => {
+    const payload = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "channels_select",
+              placeholder: { type: "plain_text", text: "Pick the channel to post into" },
+            },
+          ],
+        },
+      ],
+    };
+    expect(
+      missingText(reference(payload, '<input placeholder="Pick the channel to post into">')),
+    ).toEqual([]);
+    expect(missingText(reference(payload, "<p>Something else</p>"))).toEqual([
+      "Pick the channel to post into",
+    ]);
+    // An attribute inside a script element isn't shown, however its end tag is spelled.
+    expect(
+      missingText(
+        reference(
+          payload,
+          '<script>"<b placeholder="Pick the channel to post into">"</script ><p>x</p>',
+        ),
+      ),
+    ).toEqual(["Pick the channel to post into"]);
+  });
+
+  it("ignores what shows only later or in another form: overflow options, date fallbacks, citation details", () => {
+    const payload = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "overflow",
+              options: [
+                { text: { type: "plain_text", text: "An option nobody sees yet" }, value: "a" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: [
+                {
+                  type: "date",
+                  timestamp: 1,
+                  format: "{date}",
+                  fallback: "a fallback for the date",
+                },
+                {
+                  type: "citation",
+                  url: "u",
+                  text: "1",
+                  index: 1,
+                  details: { snippet: "a snippet of the page" },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    expect(missingText(reference(payload, "<span>January 1st</span>"))).toEqual([]);
+  });
+
   it("ignores a payload without a sentence to look for", () => {
     const html = reference({ blocks: [{ type: "divider" }] }, "<hr>");
     expect(missingText(html)).toEqual([]);
@@ -105,5 +178,52 @@ describe("missingText", () => {
       ],
     };
     expect(missingText(reference(payload, "<button>Go</button>"))).toEqual([]);
+  });
+});
+
+describe("foreignState", () => {
+  const multi = (initial: number, key: "elements" | "accessory" = "elements") => {
+    const element = {
+      type: "multi_static_select",
+      action_id: "m",
+      initial_options: Array.from({ length: initial }, (_, i) => ({ value: `v${i}` })),
+    };
+    return key === "accessory"
+      ? { blocks: [{ type: "section", accessory: element }] }
+      : { blocks: [{ type: "actions", elements: [element] }] };
+  };
+  const chip = '<span class="c-token token__x">Red</span>';
+
+  it("flags chips and input values the payload doesn't set", () => {
+    expect(foreignState(`<div>${chip}</div>`, multi(0))).toEqual(["chips: 1, expected 0"]);
+    expect(foreignState(`<div>${chip}</div>`, multi(1))).toEqual([]);
+    const input = (value: string) =>
+      `<input class="c-input_text p-block_kit_plain_text_input_element" value="${value}">`;
+    const payload = {
+      blocks: [{ type: "input", element: { type: "plain_text_input", action_id: "t" } }],
+    };
+    expect(foreignState(input("hello"), payload)).toEqual(['input 1: "hello", expected ""']);
+    expect(foreignState(input(""), payload)).toEqual([]);
+  });
+
+  it("expects no chips on an accessory multi-select or inside an open dialog", () => {
+    expect(foreignState("<div></div>", multi(1, "accessory"))).toEqual([]);
+    expect(foreignState(`<div></div><div data-sbk-layer="dialog">${chip}</div>`, multi(0))).toEqual(
+      [],
+    );
+  });
+
+  it("counts a user chip once, not its avatar's c-token--member class", () => {
+    const users = {
+      blocks: [
+        {
+          type: "input",
+          element: { type: "multi_users_select", action_id: "u", initial_users: ["U0123456789"] },
+        },
+      ],
+    };
+    const chip =
+      '<span class="c-token c-token--medium"><div class="c-token--member c-token__avatar c-member"></div></span>';
+    expect(foreignState(`<div>${chip}</div>`, users)).toEqual([]);
   });
 });

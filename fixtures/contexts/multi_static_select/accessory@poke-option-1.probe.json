@@ -1,0 +1,22 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select items"
+      }
+    },
+    {
+      "hover": "option-1"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

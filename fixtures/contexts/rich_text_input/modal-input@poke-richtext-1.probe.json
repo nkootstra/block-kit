@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "richtext-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "richtext-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

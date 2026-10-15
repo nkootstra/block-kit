@@ -91,12 +91,55 @@ export function foreignText(html: string, sentences: Set<string>): string[] {
   return [...found];
 }
 
-/** The strings a payload shows before anything is clicked: a confirm dialog's text waits for one. */
+/**
+ * Keys whose strings a reference doesn't show at rest: a confirm dialog's text waits for a click,
+ * as do an overflow menu's options; a date's fallback and a citation's details stand in for what
+ * Slack renders instead.
+ */
+const HIDDEN = new Set(["confirm", "fallback", "details"]);
+
+/** The strings a payload shows before anything is clicked. */
 function shownStrings(value: unknown, out: string[] = []): string[] {
   if (typeof value === "string") out.push(value);
-  else if (value && typeof value === "object")
-    for (const [key, item] of Object.entries(value)) if (key !== "confirm") shownStrings(item, out);
+  else if (value && typeof value === "object") {
+    const overflow = (value as { type?: unknown }).type === "overflow";
+    // A field holding a value hides its placeholder, at least once its list opens.
+    const filled = Object.keys(value).some((k) => k.startsWith("initial_"));
+    for (const [key, item] of Object.entries(value))
+      if (
+        !HIDDEN.has(key) &&
+        !(overflow && key === "options") &&
+        !(filled && key === "placeholder")
+      )
+        shownStrings(item, out);
+  }
   return out;
+}
+
+/**
+ * The HTML outside its script elements (the reference's meta), cut out with a plain loop: each
+ * `<script` up to the end of its closing tag, or to the end when it never closes.
+ */
+function withoutScripts(html: string): string {
+  const lower = html.toLowerCase();
+  let out = "";
+  let i = 0;
+  for (;;) {
+    const start = lower.indexOf("<script", i);
+    if (start === -1) return out + html.slice(i);
+    out += html.slice(i, start);
+    const end = lower.indexOf("</script", start);
+    if (end === -1) return out;
+    const close = html.indexOf(">", end);
+    if (close === -1) return out;
+    i = close + 1;
+  }
+}
+
+/** Text a reference shows in attributes: a field's placeholder, a control's accessible name. */
+function attributeText(html: string): string[] {
+  const body = withoutScripts(html);
+  return [...body.matchAll(/\s(?:placeholder|aria-label|title|alt)="([^"]*)"/g)].map((m) => m[1]!);
 }
 
 const words = (text: string) => text.toLowerCase().match(/[a-z]{4,}/g) ?? [];
@@ -105,11 +148,65 @@ const words = (text: string) => text.toLowerCase().match(/[a-z]{4,}/g) ?? [];
  * The payload's sentences, when the reference shows not one of their words. A refused payload can
  * leave a render that no other fixture's sentence gives away (a modal's datetime picker in place
  * of a section with one), but it still lacks every word its own payload writes. Words rather than
- * whole sentences, since mrkdwn, links and emoji change how a sentence reads on screen.
+ * whole sentences, since mrkdwn, links and emoji change how a sentence reads on screen. A field's
+ * placeholder and a control's accessible name are attributes, not text, so they count too.
  */
 export function missingText(html: string): string[] {
   const payload = JSON.parse(html.match(META)?.[1] ?? "{}").payload ?? null;
   const sentences = [...fixtureSentences([shownStrings(payload)])];
-  const shown = new Set(words(textNodes(html).map(unescapeHtml).join(" ")));
+  const shown = new Set(
+    words([...textNodes(html), ...attributeText(html)].map(unescapeHtml).join(" ")),
+  );
   return sentences.some((s) => words(s).some((w) => shown.has(w))) ? [] : sentences;
+}
+
+const TEXT_INPUTS = /^(plain_text_input|number_input|email_text_input|url_text_input)$/;
+const INITIAL = ["initial_options", "initial_users", "initial_conversations", "initial_channels"];
+
+/** Every interactive element in a payload (an object with an `action_id`), in document order. */
+function elementsOf(value: unknown, out: Record<string, unknown>[] = [], key?: string) {
+  if (Array.isArray(value)) for (const v of value) elementsOf(v, out, key);
+  else if (value && typeof value === "object") {
+    const o = value as Record<string, unknown>;
+    if (typeof o.type === "string" && typeof o.action_id === "string")
+      out.push(key === "accessory" ? { ...o, accessory: true } : o);
+    for (const [k, v] of Object.entries(o)) if (v && typeof v === "object") elementsOf(v, out, k);
+  }
+  return out;
+}
+
+/**
+ * State a reference shows that its own payload doesn't set: Block Kit Builder keeps an element's
+ * chips and values across payloads with the same block and action ids, so a capture can show an
+ * earlier item's choice. Read from the frozen message only (an open dialog shows chips of its own):
+ * multi-select chips and text input values. Empty when the reference shows what its payload sets.
+ */
+export function foreignState(html: string, payload: unknown): string[] {
+  const message = html.split("data-sbk-layer")[0] ?? html;
+  const els = elementsOf(payload);
+  const out: string[] = [];
+  // A section accessory's multi-select is a button that counts its choices; it shows no chips.
+  const chips = els
+    .filter((e) => (e.type as string).startsWith("multi_") && !e.accessory)
+    .reduce(
+      (n, e) => n + INITIAL.reduce((m, f) => m + ((e[f] as unknown[] | undefined)?.length ?? 0), 0),
+      0,
+    );
+  // The chip itself, `c-token`, not its parts (`c-token--member c-token__avatar`): `\b` alone would
+  // also match `c-token--member`, which a user chip's avatar carries.
+  const shownChips = [...message.matchAll(/class="(?:[^"]*\s)?c-token(?=[\s"])/g)].length;
+  if (shownChips !== chips) out.push(`chips: ${shownChips}, expected ${chips}`);
+  const values = els
+    .filter((e) => TEXT_INPUTS.test(e.type as string))
+    .map((e) => `${e.initial_value ?? ""}`);
+  const shown = [
+    ...message.matchAll(
+      /<(?:input|textarea)\b[^>]*class="[^"]*p-block_kit_[^"]*_input_element[^"]*"[^>]*>/g,
+    ),
+  ].map(([tag]) => unescapeHtml(/\bvalue="([^"]*)"/.exec(tag)?.[1] ?? ""));
+  if (shown.length === values.length)
+    shown.forEach((v, i) => {
+      if (v !== values[i]) out.push(`input ${i + 1}: "${v}", expected "${values[i]}"`);
+    });
+  return out;
 }

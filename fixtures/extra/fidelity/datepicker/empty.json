@@ -1,0 +1,16 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "block_id": "date",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A date as an accessory"
+      },
+      "accessory": {
+        "type": "datepicker",
+        "action_id": "day"
+      }
+    }
+  ]
+}

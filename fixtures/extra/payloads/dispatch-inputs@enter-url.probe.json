@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "input-2"
+    },
+    {
+      "type": "https://example.com"
+    },
+    {
+      "key": "Enter"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "steps": [
+    {
+      "click": "field-2"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select conversations"
+      }
+    },
+    {
+      "type": "slackbot"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": {
+        "role": "button",
+        "name": "Confirm"
+      }
+    }
+  ]
+}

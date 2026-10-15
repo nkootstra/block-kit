@@ -8,19 +8,28 @@
  * and `container`/`message`/`channel`, which the Builder only simulates.
  *
  * Every difference that remains is listed in KNOWN_DIFFERENCES, so the check fails both on a
- * new difference and on a listed one that no longer happens: a fix removes its entries.
+ * new difference and on a listed one that no longer happens: a fix removes its entries. A
+ * recording block-kit sends nothing for yet is listed in KNOWN_UNSENT, the same way.
+ *
+ * A recording made by a behaviour probe (`<fixture>@<probe>.probe.json` next to it, see
+ * tools/visual/src/probes.ts) needs no INTERACTIONS entry: its steps are replayed here. Recordings
+ * of a view's events (`view_submission`, `view_closed`) aren't compared until this test renders
+ * views.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
-import { BlockKitProvider, type StateValues } from "./context";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BlockKitProvider, type Resolvers, type StateValues } from "./context";
 import { CHARACTER_DISPATCH_DELAY } from "./elements/characterDispatch";
 import { clickAsync, keyDownAsync } from "./elements/test-utils";
 import { Message } from "./Message";
 import type { BlockActionsPayload } from "./payloads";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 /** The repository's fixtures/ folder: the nearest one above where the tests run. */
 function fixturesDir(): string {
@@ -55,9 +64,10 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   "catalog/actions/radio-buttons@pick": () => clickAsync(screen.getAllByRole("radio")[1]!),
   "catalog/actions/checkboxes@check-first": () => clickAsync(screen.getAllByRole("checkbox")[0]!),
+  // Re-recorded in the dark mobile sitting, picking the second item ("option 1").
   "catalog/section/overflow@pick": async () => {
     fireEvent.click(screen.getByRole("button", { name: "More options" }));
-    await clickAsync(screen.getByText("*plain_text option 2*"));
+    await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   // Slack opens a "Select options" dialog and dispatches on Confirm; block-kit's menu is inline.
   "catalog/section/multi-static-select@pick-confirm": async () => {
@@ -156,11 +166,323 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
       await new Promise((resolve) => setTimeout(resolve, CHARACTER_DISPATCH_DELAY + 50));
     });
   },
+  "catalog/actions/all-selects@pick": async () => {
+    // The static select (actionId-3), as in all-selects@pick-static.
+    fireEvent.click(screen.getByText("--Select an item--"));
+    await clickAsync(screen.getByText("*plain_text option 1*"));
+  },
+  // The first channel the Builder's workspace lists (redacted to C0000001; PROVIDER).
+  "extra/actions/more-elements@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Pick a channel" }));
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
+  // The channels select's second row, "channel-two" (redacted to C0000001; PROVIDER), under
+  // its initial channel.
+  "catalog/actions/selects-with-initial-options@pick": async () => {
+    fireEvent.click(screen.getAllByRole("combobox")[2]!);
+    await clickAsync(screen.getByRole("option", { name: /channel-two/ }));
+  },
+  "catalog/container/data-entry-form@pick": async () => {
+    fireEvent.click(screen.getByText("--Select priority--"));
+    await clickAsync(screen.getByRole("option", { name: "High" }));
+  },
+  "catalog/input/radio-buttons@pick": () =>
+    clickAsync(screen.getByRole("radio", { name: "*plain_text option 1*" })),
+  "extra/fidelity/channels-select/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: /^This sentence is here/ }));
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
+  // ArrowDown from 1:37 PM, which isn't a list entry, then Enter.
+  "catalog/actions/timepicker@pick": async () => {
+    const field = screen.getByDisplayValue("1:37 PM");
+    field.focus();
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+  },
+  "catalog/input/static-select@pick": async () => {
+    fireEvent.click(screen.getByText("--Select an item--"));
+    await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
+  },
+  "catalog/section/radio-buttons@pick": () =>
+    clickAsync(screen.getByRole("radio", { name: "*plain_text option 1*" })),
+  // The long first checkbox; SMS is checked from the start.
+  "extra/fidelity/checkboxes/long-content@pick": () =>
+    clickAsync(screen.getAllByRole("checkbox")[0]!),
+  "extra/fidelity/confirm/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Pick a channel" }));
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
+  // Slackbot, redacted to U0000001 (PROVIDER), in the users select.
+  "extra/fidelity/users-select/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: /^This sentence is here/ }));
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
+  "catalog/agents/message-feedback@pick": () => clickAsync(screen.getAllByRole("radio")[0]!),
+  "catalog/input/multi-static-select@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
+  },
+  // The first channel (redacted to C0000001; PROVIDER) in the "Select channels" dialog.
+  "extra/payloads/accessory-multi-selects@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Select channels" }));
+    const field = within(screen.getByRole("dialog")).getByRole("combobox");
+    field.focus();
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+    await clickAsync(screen.getByRole("button", { name: "Confirm" }));
+  },
+  // ArrowDown from 1:37 PM, which isn't a list entry, then Enter.
+  "extra/payloads/pickers@pick": async () => {
+    const field = screen.getByDisplayValue("1:37 PM");
+    field.focus();
+    fireEvent.click(field);
+    await keyDownAsync(field, "ArrowDown");
+    await keyDownAsync(field, "Enter");
+  },
+  "catalog/actions/datepickers@pick": async () => {
+    fireEvent.click(screen.getAllByPlaceholderText("Select a date")[0]!);
+    await clickAsync(screen.getByRole("button", { name: /April 15th, 1990/ }));
+  },
+  // "Tomorrow" in the calendar, the day after the recording (NOW); Slack fills the empty time
+  // with the current one.
+  "extra/fidelity/datetimepicker/empty@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: /Select a date/ }));
+    await clickAsync(screen.getByRole("button", { name: /October 15th, 2026/ }));
+  },
+  // The first private conversation (redacted to C0000001; PROVIDER).
+  "catalog/actions/filtered-conversations-select@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Select private conversation" }));
+    await clickAsync(screen.getByRole("option", { name: /private-one/ }));
+  },
+  // Slackbot, redacted to U0000001 (PROVIDER).
+  "catalog/section/users-select@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Select a user" }));
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
+  "contexts/multi_users_select/accessory@pick": () => dialogPick("Select users", /Slackbot/),
+  "catalog/section/multi-conversations-select@pick": () =>
+    dialogPick("Select conversations", /Slackbot/),
+  // The long first option of the overflow menu.
+  "extra/fidelity/option/long-content@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+    await clickAsync(screen.getByText(/^This sentence is here/));
+  },
+  "catalog/section/multi-static-select@pick": () =>
+    dialogPick("Select options", /plain_text option 0/),
+  // Slackbot, redacted to U0000001 (PROVIDER), in the conversations select.
+  "extra/input/more-selects@pick": async () => {
+    fireEvent.click(screen.getByRole("combobox", { name: "Select a conversation" }));
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
+  // Slackbot, redacted to U0000001 (PROVIDER).
+  "catalog/input/multi-users-select@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
+  },
+  // January 14th, 2026 in the calendar, keeping the initial 11:00 AM.
+  "contexts/datetimepicker/actions@pick": async () => {
+    fireEvent.click(screen.getByRole("button", { name: /January 1st, 2026/ }));
+    await clickAsync(screen.getByRole("button", { name: /January 14th, 2026/ }));
+  },
+  "contexts/multi_static_select/accessory@pick": () => dialogPick("Select items", /^Option 1$/),
+  // The first channel (redacted to C0000001; PROVIDER).
+  "extra/fidelity/multi-channels-select/empty@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
+  },
+  // Slackbot (redacted to U0000001; PROVIDER) added next to the initial conversation.
+  "extra/fidelity/multi-conversations-select/initial-value@pick": () =>
+    dialogPick(/1 selected/, /Slackbot/),
+  // Option 1 in the Required modal's first ("Static") multi-select.
+  "extra/modal/required-multi-selects@pick": async () => {
+    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    await clickAsync(screen.getByRole("option", { name: "Option 1" }));
+  },
   "extra/context-actions/feedback-row@pick-positive": () =>
     clickAsync(screen.getByRole("radio", { name: "Good response" })),
   "extra/context-actions/feedback-row@click-icon": () =>
     clickAsync(screen.getByRole("button", { name: "Remove this response" })),
 };
+
+/**
+ * Our controls by kind, as tools/visual/src/targets.ts OURS addresses them (`button-2` is the
+ * second `.sbk-button`, outermost matches only); targets.test.ts keeps the two in step.
+ */
+const OURS: Record<string, string> = {
+  button: ".sbk-button",
+  overflow: ".sbk-overflow__button",
+  field:
+    ".sbk-select__control, .sbk-timepicker__control, .sbk-datepicker__input, .sbk-datetimepicker__control",
+  checkbox: ".sbk-checkboxes__input",
+  radio: ".sbk-radio-buttons__input",
+  input: ".sbk-text-input",
+  submit: ".sbk-modal__button--primary",
+  cancel: ".sbk-modal__button--secondary",
+  link: "a.sbk-link",
+  mention:
+    ".sbk-mention, .sbk-mention--broadcast, .sbk-mention--private, .sbk-mention--unresolved, .sbk-mention--loading",
+  card: ".sbk-card",
+  arrow:
+    '.sbk-carousel button[aria-label="Scroll left"], .sbk-carousel button[aria-label="Scroll right"]',
+  menu: ".sbk-hover-actions--image .sbk-hover-actions__menu-root > .sbk-hover-actions__button, .sbk-hover-actions--chart .sbk-hover-actions__menu-root > .sbk-hover-actions__button",
+  column: ".sbk-data-table__col-header button",
+  page: ".sbk-data-table__pagination button",
+  more: ".sbk-section__toggle",
+  action: ".sbk-message-actions__button",
+  option: '.sbk-popover [role="option"], .sbk-select-dialog [role="option"]',
+  menuitem: '.sbk-popover [role="menuitem"], .sbk-popover [role="menuitemradio"]',
+  confirm: ".sbk-confirm__button:not(.sbk-confirm__button--deny)",
+  deny: ".sbk-confirm__button--deny",
+  richtext: ".sbk-rich-text-input__editor",
+  file: ".sbk-file-input__button",
+  icon: '.sbk-icon-button:not([role="radio"])',
+  feedback: ".sbk-feedback-buttons .sbk-icon-button",
+  collapse: ".sbk-container__header--button",
+  pill: ".sbk-plan__pill, button.sbk-task-card__pill",
+  task: "button.sbk-plan__task-header",
+  contact: ".sbk-contact-card",
+  expand: ".sbk-image__toggle",
+  source: ".sbk-plan__task-source-link, .sbk-task-card__source-link",
+  sender: ".sbk-message__sender",
+  time: ".sbk-message__time",
+  scroller: "@scroller",
+  video: "a.sbk-video__frame",
+  tooltip: ".sbk-tooltip",
+  chip: ".sbk-select__chip",
+};
+
+/** As tools/visual/src/probes.ts IMPLICIT_ROLES: the role an element has by its tag. */
+const IMPLICIT_ROLES: Record<string, string> = {
+  link: "a[href]",
+  button: "button",
+  checkbox: 'input[type="checkbox"]',
+  radio: 'input[type="radio"]',
+  textbox: 'textarea, input:not([type]), input[type="text"]',
+};
+
+type ProbeTarget = string | { role: string; name: string };
+type ProbeStep =
+  | { click: ProbeTarget }
+  | { hover: ProbeTarget }
+  | { key: string }
+  | { type: string }
+  | { wait: number };
+
+function probeTarget(target: ProbeTarget): HTMLElement {
+  if (typeof target === "string") {
+    const [, kind = "", index = "1"] = /^([a-z]+)-(\d+)$/.exec(target) ?? [];
+    // jsdom has no layout, so nothing scrolls (the scroller kind).
+    const selector = OURS[kind] && OURS[kind] !== "@scroller" ? OURS[kind] : ":not(*)";
+    const all = [...document.querySelectorAll<HTMLElement>(selector)];
+    const outer = all.filter((el) => !all.some((o) => o !== el && o.contains(el)));
+    const el = outer[Number(index) - 1];
+    if (!el) throw new Error(`no ${target}`);
+    return el;
+  }
+  const implicit = IMPLICIT_ROLES[target.role];
+  const selector = `[role="${target.role}"]${implicit ? `, ${implicit}` : ""}`;
+  const el = [...document.querySelectorAll<HTMLElement>(selector)].find(
+    (e) =>
+      (e.getAttribute("aria-label") || e.textContent || "").replace(/\s+/g, " ").trim() ===
+      target.name,
+  );
+  if (!el) throw new Error(`no ${target.role} "${target.name}"`);
+  return el;
+}
+
+/** What a browser's Tab moves the focus through, in document order (tabindex -1 left out). */
+const TABBABLE =
+  'input:not([disabled]):not([type="hidden"]), button:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]';
+
+/**
+ * A key press with the default action a browser adds and jsdom doesn't: Space clicks a focused
+ * checkbox, radio or button, Tab (Shift+Tab) moves the focus to the next (previous) control in
+ * tab order, and an arrow key moves a radio group's choice to the next (previous) radio. Without them a recording made with the keyboard (contexts/checkboxes/actions@space)
+ * replays as a click and nothing else. A handler that prevents the key's default keeps it.
+ */
+async function pressKey(el: HTMLElement, combo: string) {
+  const parts = combo.split("+");
+  const key = parts.at(-1) === "Space" ? " " : parts.at(-1)!;
+  const shiftKey = parts.includes("Shift");
+  let allowed = true;
+  await act(async () => {
+    allowed = fireEvent.keyDown(el, { key, shiftKey });
+  });
+  if (!allowed) return;
+  if (key === " " && el.matches('input[type="checkbox"], input[type="radio"], button'))
+    await clickAsync(el);
+  else if (/^Arrow(Up|Down|Left|Right)$/.test(key) && el.matches('input[type="radio"]')) {
+    const group = [
+      ...document.querySelectorAll<HTMLInputElement>(
+        `input[type="radio"][name="${(el as HTMLInputElement).name}"]`,
+      ),
+    ];
+    const step = key === "ArrowDown" || key === "ArrowRight" ? 1 : -1;
+    const next =
+      group[(group.indexOf(el as HTMLInputElement) + step + group.length) % group.length];
+    if (next) {
+      await act(async () => next.focus());
+      await clickAsync(next);
+    }
+  } else if (key === "Tab") {
+    const order = [...document.querySelectorAll<HTMLElement>(TABBABLE)].filter(
+      (e) => e.tabIndex >= 0,
+    );
+    const next = order[order.indexOf(el) + (shiftKey ? -1 : 1)];
+    await act(async () => next?.focus());
+  }
+}
+
+/** Replays a probe's steps, as tools/visual/src/probes.ts does in a browser. */
+function probeInteraction(name: string): (() => Promise<void>) | undefined {
+  let steps: ProbeStep[];
+  try {
+    steps = JSON.parse(readFileSync(`${FIXTURES}${name}.probe.json`, "utf8")).steps;
+  } catch {
+    return undefined;
+  }
+  return async () => {
+    for (const step of steps) {
+      const at = () => (document.activeElement as HTMLElement | null) ?? document.body;
+      if ("click" in step) {
+        const el = probeTarget(step.click);
+        // A click focuses what it lands on, or a label's control (ours wraps a time picker's
+        // input in its label); jsdom does neither.
+        const focusable = el.matches(TABBABLE)
+          ? el
+          : (el.querySelector<HTMLElement>(TABBABLE) ?? el);
+        focusable.focus();
+        await clickAsync(el);
+      } else if ("hover" in step) fireEvent.mouseEnter(probeTarget(step.hover));
+      else if ("key" in step) await pressKey(at(), step.key);
+      else if ("type" in step) {
+        const field = at() as HTMLInputElement;
+        fireEvent.change(field, { target: { value: `${field.value ?? ""}${step.type}` } });
+      } else
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, step.wait));
+        });
+    }
+  };
+}
+
+const interactionFor = (name: string) => INTERACTIONS[name] ?? probeInteraction(name);
+
+/**
+ * Picks `option` in a section accessory multi-select's dialog, opened from its button (the
+ * placeholder, or the "N selected" count once something is picked), then confirms.
+ */
+async function dialogPick(placeholder: string | RegExp, option: RegExp) {
+  fireEvent.click(screen.getByRole("button", { name: placeholder }));
+  fireEvent.click(within(screen.getByRole("dialog")).getByRole("combobox"));
+  // Our dialog lists no directory entries yet (finding select-dialog-directory): Confirm sends
+  // what's picked, which is then nothing.
+  const row = screen.queryByRole("option", { name: option });
+  if (row) await clickAsync(row);
+  await clickAsync(screen.getByRole("button", { name: "Confirm" }));
+}
 
 /** Picks options from the "Colours" multi-select in its input block. */
 async function pickColours(...names: string[]) {
@@ -177,10 +499,79 @@ async function pickColours(...names: string[]) {
  * Provider settings a recording depends on. The Builder that recorded the date and time pickers
  * ran in Europe/Amsterdam, which `selected_date_time` is computed in.
  */
-const PROVIDER: Record<string, { timeZone?: string }> = {
+/**
+ * The Builder workspace's members and channels, as the recordings redact them (U0000001, the
+ * first member; C0000001, the first channel), for the directory selects' probes.
+ */
+const workspace: Resolvers = {
+  directory: (source) =>
+    source === "channels"
+      ? [{ type: "channel", id: "C0000001", name: "channel-one" }]
+      : [{ type: "user", id: "U0000001", name: "User One" }],
+};
+
+/** The clock a recording depends on: the moment it was made (a relative date, an empty time). */
+const NOW: Record<string, string> = {
+  "extra/fidelity/datetimepicker/empty@pick": "2026-10-14T10:09:00Z",
+};
+/** Fakes Date (only Date: the tests' timers stay real) at the recording's moment. */
+function freeze(name: string) {
+  const now = NOW[name];
+  if (!now) return;
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date(now));
+}
+
+const slackbot: Resolvers = {
+  directory: () => [{ type: "user", id: "U0000001", name: "Slackbot" }],
+};
+
+const PROVIDER: Record<string, { timeZone?: string; resolvers?: Resolvers }> = {
+  "extra/fidelity/datetimepicker/empty@pick": { timeZone: "Europe/Amsterdam" },
+  "catalog/actions/filtered-conversations-select@pick": {
+    resolvers: {
+      directory: () => [{ type: "channel", id: "C0000001", name: "private-one", private: true }],
+    },
+  },
+  "catalog/section/users-select@pick": { resolvers: slackbot },
+  "contexts/multi_users_select/accessory@pick": { resolvers: slackbot },
+  "catalog/section/multi-conversations-select@pick": { resolvers: slackbot },
+  "extra/fidelity/multi-conversations-select/initial-value@pick": { resolvers: slackbot },
+  "extra/input/more-selects@pick": { resolvers: slackbot },
+  "catalog/input/multi-users-select@pick": { resolvers: slackbot },
+  "contexts/users_select/actions@pick": { resolvers: slackbot },
+  "contexts/conversations_select/actions@pick": { resolvers: slackbot },
+  "contexts/channels_select/actions@pick": { resolvers: workspace },
+  "extra/actions/more-elements@pick": { resolvers: workspace },
+  "extra/fidelity/channels-select/long-content@pick": { resolvers: workspace },
+  "extra/fidelity/confirm/long-content@pick": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick": { resolvers: workspace },
+  "extra/fidelity/users-select/long-content@pick": {
+    resolvers: {
+      directory: (source) =>
+        source === "users" ? [{ type: "user", id: "U0000001", name: "Slackbot" }] : [],
+    },
+  },
+  "catalog/actions/selects-with-initial-options@pick": {
+    resolvers: {
+      directory: (source) =>
+        source === "channels"
+          ? [
+              { type: "channel", id: "C12345678", name: "general" },
+              { type: "channel", id: "C0000001", name: "channel-two" },
+            ]
+          : [],
+    },
+  },
+  "extra/payloads/accessory-multi-selects@pick-confirm-users": { resolvers: slackbot },
+  "extra/payloads/accessory-multi-selects@pick-confirm-channels": { resolvers: workspace },
+  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": { resolvers: slackbot },
+  "contexts/datetimepicker/actions@pick": { timeZone: "Europe/Amsterdam" },
+  "extra/fidelity/multi-channels-select/empty@pick": { resolvers: workspace },
   "extra/payloads/pickers@pick-datetime-date": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@pick-datetime-time": { timeZone: "Europe/Amsterdam" },
   "extra/payloads/pickers@clear-datetime": { timeZone: "Europe/Amsterdam" },
+  "contexts/datetimepicker/actions@keyboard": { timeZone: "Europe/Amsterdam" },
 };
 
 /**
@@ -191,6 +582,118 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
+  // Slack's users, conversations and channels selects send no placeholder in their action (its
+  // static and multi-static selects do), and echo their initial_user, initial_conversation or
+  // initial_channel; ours does the opposite (fidelity finding directory-select-placeholder).
+  // Removed once that's fixed.
+  "catalog/actions/selects-with-initial-options@pick": [
+    'actions.0.initial_channel: Slack "C12345678", ours missing',
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
+  ],
+  "catalog/actions/filtered-conversations-select@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select private conversation","emoji":true}',
+  ],
+  "catalog/section/users-select@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a user","emoji":true}',
+  ],
+  "extra/fidelity/confirm/long-content@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
+  ],
+  "extra/fidelity/users-select/long-content@pick": [
+    'actions.0.initial_user: Slack "U12345678", ours missing',
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
+  ],
+  "contexts/channels_select/actions@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a channel","emoji":true}',
+  ],
+  "contexts/conversations_select/actions@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a conversation","emoji":true}',
+  ],
+  "contexts/users_select/actions@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select a user","emoji":true}',
+  ],
+  "extra/fidelity/channels-select/long-content@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the","emoji":true}',
+  ],
+  // Our selection dialog lists no workspace members or channels (only typed IDs), so a pick from
+  // its list confirms nothing, and where the probe types "slackbot" first, Enter adds the typed
+  // text as an ID (fidelity finding select-dialog-directory).
+  "extra/payloads/accessory-multi-selects@pick-confirm-users": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
+    'actions.0.selected_users.0: Slack "U0000001", ours "slackbot"',
+    'state.values.<block_id>.users.selected_users.0: Slack "U0000001", ours "slackbot"',
+  ],
+  "contexts/multi_users_select/accessory@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select users","emoji":true}',
+    'actions.0.selected_users.0: Slack "U0000001", ours missing',
+    'state.values.<block_id>.multi_users.selected_users.0: Slack "U0000001", ours missing',
+  ],
+  "catalog/section/multi-conversations-select@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
+    'actions.0.selected_conversations.0: Slack "U0000001", ours missing',
+    'state.values.<block_id>.multi_conversations_select-action.selected_conversations.0: Slack "U0000001", ours missing',
+  ],
+  // Also echoes its initial_conversations (fidelity finding directory-select-placeholder).
+  "extra/fidelity/multi-conversations-select/initial-value@pick": [
+    'actions.0.initial_conversations: Slack ["C0123456789"], ours missing',
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
+    'actions.0.selected_conversations.1: Slack "U0000001", ours missing',
+    'state.values.<block_id>.conversations.selected_conversations.1: Slack "U0000001", ours missing',
+  ],
+  "extra/payloads/accessory-multi-selects@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
+    'actions.0.selected_channels.0: Slack "C0000001", ours missing',
+    'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
+  ],
+  "extra/payloads/accessory-multi-selects@pick-confirm-channels": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select channels","emoji":true}',
+    'actions.0.selected_channels.0: Slack "C0000001", ours missing',
+    'state.values.<block_id>.channels.selected_channels.0: Slack "C0000001", ours missing',
+  ],
+  // The probe types "slackbot" first; our dialog lists no one, so Enter adds the typed text as
+  // an ID (fidelity finding select-dialog-directory).
+  "extra/payloads/accessory-multi-selects@pick-confirm-conversations": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Select conversations","emoji":true}',
+    'actions.0.selected_conversations.0: Slack "U0000001", ours "slackbot"',
+    'state.values.<block_id>.conversations.selected_conversations.0: Slack "U0000001", ours "slackbot"',
+  ],
+  "extra/actions/more-elements@pick": [
+    'actions.0.placeholder: Slack missing, ours {"type":"plain_text","text":"Pick a channel","emoji":true}',
+  ],
+  // Slack's open list starts on its first option, so two ArrowDowns reach the third; ours starts
+  // before the first (fidelity finding static-select-keyboard). Removed once that's fixed.
+  "contexts/static_select/actions@keyboard": [
+    'actions.0.selected_option.text.text: Slack "Option 3", ours "Option 2"',
+    'actions.0.selected_option.value: Slack "value-3", ours "value-2"',
+    'state.values.<block_id>.static.selected_option.text.text: Slack "Option 3", ours "Option 2"',
+    'state.values.<block_id>.static.selected_option.value: Slack "value-3", ours "value-2"',
+  ],
+};
+
+/**
+ * Recordings block-kit sends nothing for yet, with why. The test fails once it does send, so a fix
+ * moves the recording back to a full comparison.
+ */
+const KNOWN_UNSENT: Record<string, string> = {
+  // Slack's open static list starts on its first option, so Enter (here after a "3" that matches
+  // no option's start) picks it; ours starts on the placeholder row (fidelity finding
+  // static-select-keyboard). The users, conversations and channels selects already pick.
+  "contexts/static_select/actions@typeahead": "Enter on a just-opened list picks nothing",
+  // Block Kit Builder sends block_actions from an input block's element without
+  // `dispatch_action`; ours follows Slack's docs and doesn't (fidelity finding
+  // input-block-dispatch).
+  "catalog/input/radio-buttons@pick": "an input block without dispatch_action sends nothing",
+  "catalog/container/data-entry-form@pick": "an input block without dispatch_action sends nothing",
+  "catalog/input/static-select@pick": "an input block without dispatch_action sends nothing",
+  "catalog/input/multi-static-select@pick": "an input block without dispatch_action sends nothing",
+  // The same in a modal's input blocks: the Builder dispatched block_actions there too.
+  "extra/modal/required-multi-selects@pick": "an input block without dispatch_action sends nothing",
+  "extra/input/more-selects@pick": "an input block without dispatch_action sends nothing",
+  "catalog/input/multi-users-select@pick": "an input block without dispatch_action sends nothing",
+  "extra/fidelity/multi-channels-select/empty@pick":
+    "an input block without dispatch_action sends nothing",
+  "contexts/multi_static_select/modal-input@add-remove":
+    "an input block without dispatch_action sends nothing",
 };
 
 interface Recording {
@@ -269,19 +772,41 @@ function differences(slack: unknown, ours: unknown, path = ""): string[] {
 }
 
 describe("block_actions payloads match Block Kit Builder's Actions Preview", () => {
-  const all = recordings();
+  const everything = recordings();
+  const all = everything.filter((r) => r.slack.type === "block_actions");
 
   it("has an interaction for every recording", () => {
-    expect(all.map((r) => r.name).filter((name) => !INTERACTIONS[name])).toEqual([]);
+    // Views aren't rendered here yet, so their events are recorded but not compared.
+    expect(
+      everything
+        .filter((r) => !all.includes(r))
+        .filter((r) => !["view_submission", "view_closed"].includes(r.slack.type as string)),
+    ).toEqual([]);
+    expect(all.map((r) => r.name).filter((name) => !interactionFor(name))).toEqual([]);
     expect(Object.keys(KNOWN_DIFFERENCES).filter((n) => !all.some((r) => r.name === n))).toEqual(
       [],
     );
+    expect(Object.keys(KNOWN_UNSENT).filter((n) => !all.some((r) => r.name === n))).toEqual([]);
   });
 
-  for (const { name, slack } of all) {
+  for (const name of Object.keys(KNOWN_UNSENT))
+    it(`${name} still sends nothing: ${KNOWN_UNSENT[name]}`, async () => {
+      let payload: BlockActionsPayload | undefined;
+      freeze(name);
+      render(
+        <BlockKitProvider {...PROVIDER[name]} onPayload={(p) => (payload = p)}>
+          <Message blocks={fixtureBlocks(name)} />
+        </BlockKitProvider>,
+      );
+      await interactionFor(name)!();
+      expect(payload).toBeUndefined();
+    });
+
+  for (const { name, slack } of all.filter((r) => !(r.name in KNOWN_UNSENT))) {
     it(`${name} sends what Slack sends`, async () => {
       let payload: BlockActionsPayload | undefined;
       let initial: StateValues = {};
+      freeze(name);
       render(
         <BlockKitProvider
           {...PROVIDER[name]}
@@ -293,7 +818,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
           <Message blocks={fixtureBlocks(name)} />
         </BlockKitProvider>,
       );
-      await INTERACTIONS[name]!();
+      await interactionFor(name)!();
       expect(payload, "no block_actions payload was dispatched").toBeDefined();
 
       const slackActions = slack.actions as { block_id: string }[];
@@ -314,6 +839,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
     it(`${name} hands onAction the action the payload sends`, async () => {
       let payload: BlockActionsPayload | undefined;
       let action: unknown;
+      freeze(name);
       render(
         <BlockKitProvider
           {...PROVIDER[name]}
@@ -323,7 +849,7 @@ describe("block_actions payloads match Block Kit Builder's Actions Preview", () 
           <Message blocks={fixtureBlocks(name)} />
         </BlockKitProvider>,
       );
-      await INTERACTIONS[name]!();
+      await interactionFor(name)!();
       expect(action).toEqual(payload?.actions[0]);
     });
   }

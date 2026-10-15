@@ -120,6 +120,8 @@ describe("isFixturePayload", () => {
 
   it("rejects action payloads recorded in Block Kit Builder", () => {
     expect(isFixturePayload("catalog/actions/button@click.actions.json")).toBe(false);
+    expect(isFixturePayload("catalog/actions/button@arrows.probe.json")).toBe(false);
+    expect(isFixturePayload("catalog/actions/button@arrows.behaviour.json")).toBe(false);
   });
 });
 

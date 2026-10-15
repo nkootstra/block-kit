@@ -5,6 +5,7 @@
     "bun.lock",
     "tsconfig.base.json",
     "fixtures/**/*.actions.json",
+    "fixtures/**/*.probe.json",
     "fixtures/assets/samples/**"
   ],
   "tasks": {

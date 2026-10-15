@@ -1,0 +1,113 @@
+{
+  "steps": [
+    {
+      "hover": "button-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {}
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "button",
+            "block_id": "<block_id>",
+            "action_id": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Click me",
+              "emoji": true
+            },
+            "value": "click",
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "decision--actions-many-items",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "demo_approve_1--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_2--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_3--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_4--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_5--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_6--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_7--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_8--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_9--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_10--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_11--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_12--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_13--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_14--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_15--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_16--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_17--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_18--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_19--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_20--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_21--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_22--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny_23--actions-many-items",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss_24--actions-many-items",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "demo_approve_25--actions-many-items",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "value": "approve"
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { join } from "node:path";
 import { Glob } from "bun";
 import { allowed, CONTEXTS, ELEMENTS, fixtureFor } from "./contexts";
-import { FIXTURES } from "./lock";
+import { FIXTURES, isFixturePayload } from "./lock";
 
 describe("context fixtures", () => {
   it("follows where Slack allows each element", () => {
@@ -76,8 +76,10 @@ describe("context fixtures", () => {
         if (allowed(element, context))
           expected.set(`contexts/${element}/${context}`, fixtureFor(element, context));
     const onDisk = new Map<string, unknown>();
+    // Probes and recordings sit next to the fixtures; they're not fixtures (lock.ts SIDECARS).
     for await (const path of new Glob("contexts/**/*.json").scan(FIXTURES))
-      onDisk.set(path.replace(/\.json$/, ""), await Bun.file(join(FIXTURES, path)).json());
+      if (isFixturePayload(path))
+        onDisk.set(path.replace(/\.json$/, ""), await Bun.file(join(FIXTURES, path)).json());
     expect([...onDisk.keys()].sort()).toEqual([...expected.keys()].sort());
     for (const [name, payload] of expected)
       expect({ name, payload: onDisk.get(name) }).toEqual({ name, payload });

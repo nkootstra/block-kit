@@ -1,0 +1,104 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "type": "a"
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false",
+          "disabled": "true"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Type a minimum of 3 characters to see options.",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "a"
+        },
+        "option-1": {
+          "selected": "false",
+          "disabled": "true"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "a"
+        }
+      },
+      "action": null
+    }
+  ]
+}

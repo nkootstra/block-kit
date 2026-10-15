@@ -1,0 +1,23 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "attachment_mention",
+              "url": "https://example.com/attachment",
+              "text": "An attachment"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

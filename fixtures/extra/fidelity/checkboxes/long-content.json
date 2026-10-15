@@ -1,0 +1,82 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "choices",
+      "elements": [
+        {
+          "type": "checkboxes",
+          "action_id": "boxes",
+          "initial_options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "SMS"
+              },
+              "value": "sms",
+              "description": {
+                "type": "plain_text",
+                "text": "Text messages"
+              }
+            }
+          ],
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "This sentence is here to make the text long enough to wrap onto several lin",
+                "emoji": true
+              },
+              "value": "value-1"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "SMS"
+              },
+              "value": "sms",
+              "description": {
+                "type": "plain_text",
+                "text": "Text messages"
+              }
+            }
+          ]
+        },
+        {
+          "type": "radio_buttons",
+          "action_id": "level",
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "Medium"
+            },
+            "value": "medium"
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Low"
+              },
+              "value": "low"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Medium"
+              },
+              "value": "medium"
+            },
+            {
+              "text": {
+                "type": "mrkdwn",
+                "text": "*High*"
+              },
+              "value": "high"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,17 @@
 // which avoids its CSP blocking eval) and resolving to the HTML string.
 // Every element gets the computed styles that differ from its tag's defaults inlined, so the
 // snapshot renders the same without Slack's stylesheets.
-async (win = window) => {
+//
+// capture.js passes `options`:
+// - `targets`: `[{ address, el }]`, the preview's controls by address (targets.ts). Each gets a
+//   `data-ref`, listed in the meta's `targets`.
+// - `stateStyles`: also record what each target's `:hover`, `:active`, `:focus` and
+//   `:focus-visible` rules change (stateFacts below), in the meta's `stateStyles`.
+// - `input`: the real input held during the snapshot (`{ input: "hover", target: "button-1" }`),
+//   recorded as the meta's `input`.
+// - `full`: for a `+full` capture, what capture.js widened (`{ widenedBy, expanded }`), recorded as
+//   the meta's `full`.
+async (win = window, options = {}) => {
   const doc = win.document;
   const FIXED_TIME = "12:00 PM";
   // The Builder previews each surface in its own container.
@@ -265,6 +275,14 @@ async (win = window) => {
 
   const pseudoRules = [];
   let refs = 0;
+  const targetOf = new Map((options.targets ?? []).map(({ address, el }) => [el, address]));
+  const targetRefs = {};
+  // Every horizontal scroll container in the preview, in document order, with how wide its content
+  // is, how wide it shows and how far it's scrolled: a frozen copy can't scroll, and these say
+  // whether ours has the same minimum width and scrolls the same way. compare.ts also scrolls the
+  // reference's copy back to `scrollLeft`.
+  const scrollers = [];
+  let inPreview = true;
   // A page without a base URL (about:blank) can't resolve a relative URL; keep it as written.
   const abs = (url) => {
     try {
@@ -302,7 +320,11 @@ async (win = window) => {
     if (src === doc.activeElement && src.selectionStart !== src.selectionEnd)
       el.setAttribute("data-sbk-selection", `${src.selectionStart} ${src.selectionEnd}`);
     const base = defaultsFor(src, cs.fontSize, parent?.fontSize);
-    el.setAttribute("style", diff(cs, base, parent, true, sizeOverrides(src, cs, parent)));
+    const overrides = sizeOverrides(src, cs, parent);
+    // Chrome reports a line-clamped `display: -webkit-box` as `flow-root`, which doesn't clamp when
+    // written back; keep the box the clamp needs.
+    if (cs.getPropertyValue("-webkit-line-clamp") !== "none") overrides.display = "-webkit-box";
+    el.setAttribute("style", diff(cs, base, parent, true, overrides));
     // The Builder's draggable block wrapper transitions its selection highlight; that's the
     // Builder's motion, not Slack's.
     const builderChrome = [...src.classList].some((c) => /^(dragWrapper|blockContent)/.test(c));
@@ -310,6 +332,19 @@ async (win = window) => {
     if (Object.keys(moves).length > 0) {
       el.setAttribute("data-ref", String(++refs));
       motion[el.getAttribute("data-ref")] = moves;
+    }
+    if (targetOf.has(src)) {
+      if (!el.hasAttribute("data-ref")) el.setAttribute("data-ref", String(++refs));
+      targetRefs[targetOf.get(src)] = el.getAttribute("data-ref");
+    }
+    if (inPreview && /^(auto|scroll)$/.test(cs.overflowX)) {
+      if (!el.hasAttribute("data-ref")) el.setAttribute("data-ref", String(++refs));
+      scrollers.push({
+        ref: el.getAttribute("data-ref"),
+        scrollWidth: src.scrollWidth,
+        clientWidth: src.clientWidth,
+        scrollLeft: Math.round(src.scrollLeft),
+      });
     }
 
     for (const pseudo of ["::before", "::after"]) {
@@ -339,6 +374,119 @@ async (win = window) => {
   // The root replays inside a bare #sbk-reference, not inside Slack's app, so what it inherits
   // (Slack's font) is compared with the defaults, not with its parent, and written down.
   const frozen = freeze(root, null);
+  inPreview = false;
+
+  // What a control's state rules change, for the states real input can't hold through a snapshot
+  // (a pressed button) and as facts beside the ones it can. A page script can't make `:active`
+  // match, so the state is emulated: every rule whose selector has a state pseudo-class gets a
+  // copy right after it, with the pseudo-class swapped for an attribute (`.c-button:active` ->
+  // `.c-button[data-sbk-state~="active"]`). An attribute selector weighs what a pseudo-class does
+  // and the copy sits where the rule does, so the cascade resolves as it would in that state,
+  // against every competing rule. The attributes go where the browser would match: hover and
+  // active on the control and its ancestors, focus and focus-visible on the control and
+  // focus-within on its ancestors. The control's computed style is read with its transitions off
+  // (through one more rule, so its style attribute isn't touched), and only the properties that
+  // change are kept: resolved values, never Slack's CSS text. The
+  // copies are removed and the page is left as it was.
+  const STATES = {
+    ":hover": [["hover"], ["hover"]],
+    ":active": [
+      ["hover", "active"],
+      ["hover", "active"],
+    ],
+    ":focus": [["focus"], ["focus-within"]],
+    ":focus-visible": [["focus", "focus-visible"], ["focus-within"]],
+  };
+  const STATE_PSEUDO = /:(hover|active|focus-visible|focus-within|focus)(?![\w-])/g;
+  const stateFacts = (targets) => {
+    const copies = [];
+    const walk = (container) => {
+      let rules;
+      try {
+        rules = container.cssRules;
+      } catch {
+        return; // A cross-origin sheet can't be read.
+      }
+      for (let i = 0; i < rules.length; i++) {
+        const rule = rules[i];
+        if (rule.selectorText === undefined) {
+          if (rule.cssRules && rule.insertRule) walk(rule);
+          continue;
+        }
+        STATE_PSEUDO.lastIndex = 0;
+        if (!STATE_PSEUDO.test(rule.selectorText)) continue;
+        const selector = rule.selectorText.replace(
+          STATE_PSEUDO,
+          (_, state) => `[data-sbk-state~="${state}"]`,
+        );
+        copies.push({ container, index: i, text: `${selector}{${rule.style.cssText}}` });
+      }
+    };
+    for (const sheet of doc.styleSheets) walk(sheet);
+    // Last first, so the indices of the rules still to copy don't move.
+    const inserted = [];
+    for (const { container, index, text } of copies.toReversed()) {
+      try {
+        container.insertRule(text, index + 1);
+        inserted.push([container, container.cssRules[index + 1]]);
+      } catch {
+        // A selector the copy can't parse; that rule goes unrecorded.
+      }
+    }
+    const read = (el) => {
+      const cs = win.getComputedStyle(el);
+      const out = {};
+      for (let i = 0; i < cs.length; i++)
+        if (!SKIP.test(cs[i])) out[cs[i]] = cs.getPropertyValue(cs[i]);
+      return out;
+    };
+    // Transitions off on the control without touching its style attribute, which the page owns.
+    const still = doc.createElement("style");
+    still.textContent =
+      "[data-sbk-still][data-sbk-still][data-sbk-still]{transition:none!important}";
+    doc.head.append(still);
+    const facts = new Map();
+    try {
+      for (const el of targets) {
+        el.setAttribute("data-sbk-still", "");
+        const base = read(el);
+        const ancestors = [];
+        for (let a = el.parentElement; a; a = a.parentElement) ancestors.push(a);
+        const states = {};
+        for (const [state, [own, chain]] of Object.entries(STATES)) {
+          el.setAttribute("data-sbk-state", own.join(" "));
+          for (const a of ancestors) a.setAttribute("data-sbk-state", chain.join(" "));
+          const now = read(el);
+          const changed = {};
+          for (const [prop, value] of Object.entries(now))
+            if (value !== base[prop]) changed[prop] = value;
+          if (Object.keys(changed).length > 0) states[state] = changed;
+          el.removeAttribute("data-sbk-state");
+          for (const a of ancestors) a.removeAttribute("data-sbk-state");
+        }
+        read(el); // Settle the state off before the transition comes back.
+        el.removeAttribute("data-sbk-still");
+        facts.set(el, states);
+      }
+    } finally {
+      still.remove();
+      for (const [container, rule] of inserted) {
+        const index = [...container.cssRules].indexOf(rule);
+        if (index >= 0) container.deleteRule(index);
+      }
+    }
+    return facts;
+  };
+  const stateStyles = {};
+  if (options.stateStyles && options.targets?.length) {
+    const facts = stateFacts(options.targets.map((t) => t.el));
+    for (const { address, el } of options.targets) {
+      const ref = targetRefs[address];
+      const states = facts.get(el);
+      if (ref && states && Object.keys(states).length > 0)
+        stateStyles[ref] = { target: address, states };
+    }
+  }
 
   // An open menu, calendar or dialog: Slack mounts them in a .ReactModalPortal at the end of the
   // page, outside the preview. Each is frozen too, as a layer: a popover (anchored to a field) is
@@ -461,6 +609,36 @@ async (win = window) => {
         ? "dark"
         : "light",
     layers: layers.map(({ el, ...box }) => box),
+    ...(Object.keys(targetRefs).length > 0 && { targets: targetRefs }),
+    ...(scrollers.length > 0 && { scrollers }),
+    ...(options.full && { full: options.full }),
+    ...(Object.keys(stateStyles).length > 0 && { stateStyles }),
+    ...(options.input && { input: options.input }),
+    // The control that has focus, and whether the browser draws it as keyboard focus.
+    ...(() => {
+      const active = doc.activeElement;
+      const hit = (options.targets ?? []).find(
+        ({ el }) => active && active !== doc.body && (el === active || el.contains(active)),
+      );
+      // A list driven by aria-activedescendant keeps DOM focus on its field while the arrow keys
+      // move the highlight: the highlighted option is recorded as `active`.
+      const id = active?.getAttribute?.("aria-activedescendant");
+      const highlighted = id && doc.getElementById(id);
+      const lit =
+        highlighted &&
+        (options.targets ?? []).find(({ el }) => el === highlighted || el.contains(highlighted));
+      // The field itself may be no target: a select's dialog has its own combobox, and only its
+      // highlighted option is addressed.
+      return hit || lit
+        ? {
+            focus: {
+              ...(hit && { target: hit.address }),
+              visible: active.matches(":focus-visible"),
+              ...(lit && { active: lit.address }),
+            },
+          }
+        : {};
+    })(),
   };
 
   // The page behind the message: the first background around the preview. In the Builder's dark

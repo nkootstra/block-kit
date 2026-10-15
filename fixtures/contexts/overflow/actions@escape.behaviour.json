@@ -1,0 +1,49 @@
+{
+  "steps": [
+    {
+      "click": "overflow-1"
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "Option 1 Option 2 Option 3",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

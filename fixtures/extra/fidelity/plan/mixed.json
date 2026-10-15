@@ -1,0 +1,31 @@
+{
+  "blocks": [
+    {
+      "type": "plan",
+      "plan_id": "plan_statuses",
+      "title": "Every task status",
+      "tasks": [
+        {
+          "task_id": "t1",
+          "title": "Complete",
+          "status": "complete"
+        },
+        {
+          "task_id": "t2",
+          "title": "In progress",
+          "status": "in_progress"
+        },
+        {
+          "task_id": "t3",
+          "title": "Pending",
+          "status": "pending"
+        },
+        {
+          "task_id": "t4",
+          "title": "Error",
+          "status": "error"
+        }
+      ]
+    }
+  ]
+}

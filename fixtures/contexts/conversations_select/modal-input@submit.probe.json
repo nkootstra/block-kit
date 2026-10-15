@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "type": "slackbot"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": "submit-1"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "rocket"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "Card with every part"
+      },
+      "subtitle": {
+        "type": "mrkdwn",
+        "text": "An icon, a hero image, a body and two actions"
+      },
+      "hero_image": {
+        "type": "image",
+        "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+        "alt_text": "A mountain lake"
+      },
+      "body": {
+        "type": "mrkdwn",
+        "text": "The body sits between the hero image and the actions, in *mrkdwn*."
+      },
+      "actions": [
+        {
+          "type": "button",
+          "action_id": "primary",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve",
+            "emoji": true
+          }
+        },
+        {
+          "type": "button",
+          "action_id": "secondary",
+          "text": {
+            "type": "plain_text",
+            "text": "Details",
+            "emoji": true
+          }
+        }
+      ]
+    }
+  ]
+}

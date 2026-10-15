@@ -30,6 +30,18 @@
  * Baselines are per platform because font rasterization differs between operating systems; a
  * platform without one is reported, not failed.
  *
+ * A `@hover-<target>` or `@focus-<target>` reference was captured holding real input on one control
+ * (names.ts, targets.ts); ours gets the same input from Playwright's pointer and keyboard, and the
+ * pointer stays on a hovered control for the screenshot. A rest reference with state styles
+ * (snapshot.js `stateStyles`) also has each control's forced `:hover`, `:active`, `:focus` and
+ * `:focus-visible` styles compared with ours (stateStyles.ts), reported like motion.
+ *
+ * A `+full` reference was captured with the preview widened by what its horizontal scroll
+ * containers hide and those containers expanded (names.ts); ours renders at the reference's width
+ * and expands its own the same way (scrollers.ts). Every reference's scroll containers are
+ * scrolled back to Slack's offsets, and a rest reference's overflowing ones are compared with ours
+ * by content and visible width, reported as `scroll` lines.
+ *
  * Every fixture also gets a text-run check (textRuns.ts): its text runs are matched with the
  * reference's and compared by position, width, font and painted colour, which the pixel diff is
  * too coarse to see. fixtures/text-baseline.<platform>.json records each fixture's findings
@@ -50,6 +62,9 @@ import { type Box, cropBox, type Layer, roomFor } from "./layout";
 import { pad, parseRgb } from "./pad";
 import { parseReferenceName } from "./names";
 import { type Image, loadImage, routeSamples } from "./samples";
+import { readProbes } from "./probes";
+import { diffScrollers, expandOurs, ourScrollers, restoreScroll, type Scroller } from "./scrollers";
+import { compareStateStyles, type StateStyles } from "./stateStyles";
 import { stateFor } from "./states";
 import {
   checkTextBaseline,
@@ -90,6 +105,10 @@ interface Meta {
   height: number;
   /** Open popovers and dialogs frozen with the preview (snapshot.js); absent in older captures. */
   layers?: Layer[];
+  /** What each control's state rules change (snapshot.js); absent in older captures. */
+  stateStyles?: StateStyles;
+  /** The preview's horizontal scroll containers (snapshot.js); absent in older captures. */
+  scrollers?: Scroller[];
 }
 
 /** Where our open menus and dialogs render: portalled to <body>, outside #sbk-render. */
@@ -106,6 +125,10 @@ export interface Result {
   error?: string;
   /** The text-run comparison; absent when our side failed to render. */
   text?: TextRunReport;
+  /** Where our controls' state styles differ from Slack's (stateStyles.ts); reported only. */
+  stateStyles?: string[];
+  /** Where our scroll containers differ from Slack's (scrollers.ts); reported only. */
+  scrollers?: string[];
 }
 
 const names: string[] = [];
@@ -207,9 +230,12 @@ await context.route(SLACK_FILE_PLACEHOLDER, (route) =>
   }),
 );
 
-/** Lets transitions and smooth scrolling started by a state's clicks finish before the screenshot. */
-async function afterInteraction(page: Page) {
-  await page.mouse.move(0, 0);
+/**
+ * Lets transitions and smooth scrolling started by a state's clicks finish before the screenshot,
+ * with the pointer out of the way unless the state is the pointer resting on a control.
+ */
+async function afterInteraction(page: Page, keepPointer = false) {
+  if (!keepPointer) await page.mouse.move(0, 0);
   await page.waitForTimeout(600);
 }
 
@@ -274,6 +300,7 @@ const fontFaces = [...faces.values()].join("\n");
 
 const results: Result[] = [];
 const page = await context.newPage();
+const probes = await readProbes();
 
 for (const name of names) {
   const html = await Bun.file(join(FIXTURES, `${name}.reference.html`)).text();
@@ -307,7 +334,8 @@ for (const name of names) {
   await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
   await settle(page);
   await restoreSelection(page);
-  const state = stateFor(name);
+  await restoreScroll(page, meta.scrollers ?? []);
+  const state = stateFor(name, probes);
   if (parsed.interaction && !state)
     console.warn(`  no STATES entry for ${name}; comparing its initial state`);
   if (state?.reference) await state.reference(page);
@@ -318,6 +346,7 @@ for (const name of names) {
     await refPage.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
     await settle(refPage);
     await restoreSelection(refPage);
+    await restoreScroll(refPage, meta.scrollers ?? []);
   }
   const refBoxes = popovers ? await boxesOf(refPage, refTarget) : [];
   let reference = popovers ? undefined : await shot(page, refTarget);
@@ -334,6 +363,8 @@ for (const name of names) {
   page.on("pageerror", onError);
   let actual: PNG;
   let ourRuns: TextRun[];
+  let stateStyles: string[] | undefined;
+  let scrollers: string[] | undefined;
   try {
     await page.goto(url.href, { waitUntil: "load" });
     await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
@@ -345,10 +376,13 @@ for (const name of names) {
       });
     await page.waitForSelector("#sbk-render > *", { timeout: 10_000 });
     await settle(page);
+    if (!parsed.full && !state && meta.scrollers)
+      scrollers = diffScrollers(meta.scrollers, await ourScrollers(page));
     if (state) {
       await state.ours(page, popovers ? refPage : undefined);
-      await afterInteraction(page);
+      await afterInteraction(page, state.keepPointer);
     }
+    if (parsed.full) await expandOurs(page);
     if (popovers) {
       const box = cropBox(refBoxes, await boxesOf(page, ourTarget));
       reference = await shotBox(refPage, refTarget, box);
@@ -357,6 +391,7 @@ for (const name of names) {
       actual = await shot(page, ourTarget);
     }
     ourRuns = await page.evaluate(collectTextRuns, ourTarget);
+    if (meta.stateStyles && !state) stateStyles = await compareStateStyles(page, meta.stateStyles);
   } catch (err) {
     const error = errors[0] ?? (err as Error).message.split("\n")[0];
     const failed = reference ?? { width: meta.width, height: meta.height };
@@ -399,15 +434,20 @@ for (const name of names) {
     mismatch,
     ratio: mismatch / (width * height),
     text: compareTextRuns(referenceRuns, ourRuns),
+    ...(stateStyles && { stateStyles }),
+    ...(scrollers && { scrollers }),
   };
   results.push(result);
   const text = result.text as TextRunReport;
   console.log(
-    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged${text.motion.length > 0 ? `, ${text.motion.length} moving differently` : ""}`,
+    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged${text.motion.length > 0 ? `, ${text.motion.length} moving differently` : ""}${stateStyles?.length ? `, ${stateStyles.length} state styles differ` : ""}${scrollers?.length ? `, ${scrollers.length} scroll differences` : ""}`,
   );
   // A filtered run is for iterating on a few fixtures, so it lists what the text check flagged.
-  if (prefixes.length > 0)
+  if (prefixes.length > 0) {
     for (const line of describeTextRuns(text)) console.log(`         ${line}`);
+    for (const line of stateStyles ?? []) console.log(`         state ${line}`);
+    for (const line of scrollers ?? []) console.log(`         scroll ${line}`);
+  }
 }
 
 await browser.close();

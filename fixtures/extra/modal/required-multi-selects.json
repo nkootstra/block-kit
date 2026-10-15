@@ -1,0 +1,116 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "Required"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Submit"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Static"
+      },
+      "element": {
+        "type": "multi_static_select",
+        "action_id": "static",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select options"
+        },
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Option 1"
+            },
+            "value": "value-1"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Option 2"
+            },
+            "value": "value-2"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Option 3"
+            },
+            "value": "value-3"
+          }
+        ]
+      }
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Users"
+      },
+      "element": {
+        "type": "multi_users_select",
+        "action_id": "users",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select users"
+        }
+      }
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Conversations"
+      },
+      "element": {
+        "type": "multi_conversations_select",
+        "action_id": "conversations",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select conversations"
+        }
+      }
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Channels"
+      },
+      "element": {
+        "type": "multi_channels_select",
+        "action_id": "channels",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select channels"
+        }
+      }
+    },
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "External"
+      },
+      "element": {
+        "type": "multi_external_select",
+        "action_id": "external",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Search"
+        },
+        "min_query_length": 1
+      }
+    }
+  ]
+}

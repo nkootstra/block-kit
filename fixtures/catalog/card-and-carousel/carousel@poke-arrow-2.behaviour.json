@@ -1,0 +1,131 @@
+{
+  "steps": [
+    {
+      "hover": "arrow-2"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "arrow-2"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 1408,
+          "clientWidth": 432
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 1408,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 1408,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "arrow-2",
+        "role": "button",
+        "name": "Scroll right",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 356,
+          "scrollTop": 0,
+          "scrollWidth": 1408,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "arrow-2",
+        "role": "button",
+        "name": "Scroll right",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 356,
+          "scrollTop": 0,
+          "scrollWidth": 1408,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "arrow-2",
+        "role": "button",
+        "name": "Scroll right",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 356,
+          "scrollTop": 0,
+          "scrollWidth": 1408,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    }
+  ]
+}

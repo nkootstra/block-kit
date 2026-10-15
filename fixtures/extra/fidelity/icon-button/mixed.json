@@ -1,0 +1,53 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Icon buttons, plain and with a confirm"
+      }
+    },
+    {
+      "type": "context_actions",
+      "elements": [
+        {
+          "type": "icon_button",
+          "action_id": "remove--icon-button-mixed",
+          "icon": "trash",
+          "text": {
+            "type": "plain_text",
+            "text": "Remove"
+          }
+        },
+        {
+          "type": "icon_button",
+          "action_id": "remove_confirmed--icon-button-mixed",
+          "icon": "trash",
+          "text": {
+            "type": "plain_text",
+            "text": "Remove with a confirm"
+          },
+          "accessibility_label": "Remove this, after confirming",
+          "confirm": {
+            "title": {
+              "type": "plain_text",
+              "text": "Remove it?"
+            },
+            "text": {
+              "type": "plain_text",
+              "text": "This can't be undone."
+            },
+            "confirm": {
+              "type": "plain_text",
+              "text": "Remove"
+            },
+            "deny": {
+              "type": "plain_text",
+              "text": "Keep"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

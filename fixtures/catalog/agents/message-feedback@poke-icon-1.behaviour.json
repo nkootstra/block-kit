@@ -1,0 +1,113 @@
+{
+  "steps": [
+    {
+      "hover": "icon-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "icon-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "icon-1",
+        "role": "button",
+        "name": "Remove",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "icon-1",
+        "role": "button",
+        "name": "Remove",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Remove",
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "icon-1",
+        "role": "button",
+        "name": "Remove",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

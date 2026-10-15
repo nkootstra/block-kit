@@ -1,0 +1,25 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "work_object_mention",
+              "entity_id": "E0123456789",
+              "app_id": "A0123456789",
+              "text": "A work object",
+              "url": "https://example.com/work-object"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

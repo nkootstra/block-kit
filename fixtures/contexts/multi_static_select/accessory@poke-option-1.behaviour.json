@@ -1,0 +1,192 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select items"
+      }
+    },
+    {
+      "hover": "option-1"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select items"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "dialog",
+        "name": "Select items",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select items"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "combobox",
+        "name": "Select items",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        },
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select items"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "combobox",
+        "name": "Select items",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        },
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select items"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "combobox",
+        "name": "Select items",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        },
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select items"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "button",
+        "name": "Select items",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select items"
+        }
+      },
+      "action": null
+    }
+  ]
+}

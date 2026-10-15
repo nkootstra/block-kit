@@ -1,0 +1,101 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "choices--radio-buttons-mixed",
+      "elements": [
+        {
+          "type": "checkboxes",
+          "action_id": "boxes--radio-buttons-mixed",
+          "initial_options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Email"
+              },
+              "value": "email"
+            }
+          ],
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Email"
+              },
+              "value": "email"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "SMS"
+              },
+              "value": "sms",
+              "description": {
+                "type": "plain_text",
+                "text": "Text messages"
+              }
+            }
+          ]
+        },
+        {
+          "type": "radio_buttons",
+          "action_id": "level--radio-buttons-mixed",
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "Option 1",
+              "emoji": true
+            },
+            "value": "value-1",
+            "description": {
+              "type": "plain_text",
+              "text": "Description 1",
+              "emoji": true
+            }
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Option 1",
+                "emoji": true
+              },
+              "value": "value-1",
+              "description": {
+                "type": "plain_text",
+                "text": "Description 1",
+                "emoji": true
+              }
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Option 2",
+                "emoji": true
+              },
+              "value": "value-2",
+              "description": {
+                "type": "plain_text",
+                "text": "Description 2",
+                "emoji": true
+              }
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Option 3",
+                "emoji": true
+              },
+              "value": "value-3",
+              "description": {
+                "type": "plain_text",
+                "text": "Description 3",
+                "emoji": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

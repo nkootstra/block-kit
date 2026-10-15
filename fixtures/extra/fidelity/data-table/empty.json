@@ -1,0 +1,20 @@
+{
+  "blocks": [
+    {
+      "type": "data_table",
+      "caption": "A table with only its header",
+      "rows": [
+        [
+          {
+            "type": "raw_text",
+            "text": "Name"
+          },
+          {
+            "type": "raw_text",
+            "text": "Amount"
+          }
+        ]
+      ]
+    }
+  ]
+}

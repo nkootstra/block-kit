@@ -1,0 +1,38 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "decision",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "demo_approve",
+          "style": "primary",
+          "text": {
+            "type": "plain_text",
+            "text": "This sentence is here to make the text long enough to wrap onto several lin"
+          },
+          "value": "approve"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_deny",
+          "style": "danger",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "value": "deny"
+        },
+        {
+          "type": "button",
+          "action_id": "demo_dismiss",
+          "text": {
+            "type": "plain_text",
+            "text": "Dismiss"
+          }
+        }
+      ]
+    }
+  ]
+}

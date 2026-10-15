@@ -1,0 +1,70 @@
+{
+  "blocks": [
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "rocket"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "The rocket icon"
+      }
+    },
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "calendar"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "The calendar icon"
+      }
+    },
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "bug"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "The bug icon"
+      }
+    },
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "lightbulb"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "The lightbulb icon"
+      }
+    },
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "star-filled"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "The star-filled icon"
+      }
+    },
+    {
+      "type": "card",
+      "slack_icon": {
+        "type": "icon",
+        "name": "warning"
+      },
+      "title": {
+        "type": "mrkdwn",
+        "text": "The warning icon"
+      }
+    }
+  ]
+}

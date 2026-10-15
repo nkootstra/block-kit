@@ -1,0 +1,105 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "click": "field-2"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Alpha"
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": "Choose"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Pick one",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Alpha",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "Alpha"
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": "Choose"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "true"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Pick one",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "Alpha"
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": "Choose"
+        },
+        "field-3": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    }
+  ]
+}

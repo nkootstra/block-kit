@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "ArrowRight"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    }
+  ]
+}

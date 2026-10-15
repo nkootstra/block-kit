@@ -1,0 +1,24 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "workflow_mention",
+              "workflow_id": "Wf0123456789",
+              "function_trigger_id": "Ft0123456789",
+              "text": "Run the workflow"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

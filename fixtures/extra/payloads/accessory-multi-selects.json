@@ -1,0 +1,49 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Pick channels"
+      },
+      "accessory": {
+        "type": "multi_channels_select",
+        "action_id": "channels",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select channels"
+        }
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Pick conversations"
+      },
+      "accessory": {
+        "type": "multi_conversations_select",
+        "action_id": "conversations",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select conversations"
+        }
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Pick users"
+      },
+      "accessory": {
+        "type": "multi_users_select",
+        "action_id": "users",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Select users"
+        }
+      }
+    }
+  ]
+}

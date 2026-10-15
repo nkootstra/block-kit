@@ -1,0 +1,264 @@
+{
+  "steps": [
+    {
+      "click": "field-3"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select users"
+      }
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": {
+        "role": "button",
+        "name": "Confirm"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select channels"
+        },
+        "field-2": {
+          "value": "Select conversations"
+        },
+        "field-3": {
+          "value": "Select users"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "dialog",
+        "name": "Select users",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select channels"
+        },
+        "field-2": {
+          "value": "Select conversations"
+        },
+        "field-3": {
+          "value": "Select users"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "combobox",
+        "name": "Select users",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        },
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select channels"
+        },
+        "field-2": {
+          "value": "Select conversations"
+        },
+        "field-3": {
+          "value": "Select users"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "combobox",
+        "name": "Select users",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        },
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "<member>",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select channels"
+        },
+        "field-2": {
+          "value": "Select conversations"
+        },
+        "field-3": {
+          "value": "Select users"
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "combobox",
+        "name": "Select users",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select channels"
+        },
+        "field-2": {
+          "value": "Select conversations"
+        },
+        "field-3": {
+          "value": "1 selected"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-3",
+        "role": "button",
+        "name": "1 selected",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "Select channels"
+        },
+        "field-2": {
+          "value": "Select conversations"
+        },
+        "field-3": {
+          "value": "1 selected"
+        }
+      },
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {
+            "<block_id>": {
+              "users": {
+                "type": "multi_users_select",
+                "selected_users": ["U0000001"]
+              }
+            }
+          }
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "multi_users_select",
+            "block_id": "<block_id>",
+            "action_id": "users",
+            "selected_users": ["U0000001"],
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    }
+  ]
+}

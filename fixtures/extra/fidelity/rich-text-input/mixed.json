@@ -1,0 +1,104 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "Rich text",
+    "emoji": true
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Submit",
+    "emoji": true
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel",
+    "emoji": true
+  },
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Summary",
+        "emoji": true
+      },
+      "element": {
+        "type": "rich_text_input",
+        "action_id": "summary--rich-text-input-mixed",
+        "initial_value": {
+          "type": "rich_text",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "Bold",
+                  "style": {
+                    "bold": true
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": ", "
+                },
+                {
+                  "type": "text",
+                  "text": "italic",
+                  "style": {
+                    "italic": true
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": ", "
+                },
+                {
+                  "type": "text",
+                  "text": "code",
+                  "style": {
+                    "code": true
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": " and "
+                },
+                {
+                  "type": "link",
+                  "url": "https://example.com",
+                  "text": "a link"
+                }
+              ]
+            },
+            {
+              "type": "rich_text_list",
+              "style": "bullet",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "A bullet"
+                    }
+                  ]
+                },
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "Another bullet"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

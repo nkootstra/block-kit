@@ -1,0 +1,27 @@
+{
+  "blocks": [
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "external_select",
+          "action_id": "external",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Search fruit",
+            "emoji": true
+          },
+          "min_query_length": 1,
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "Mango",
+              "emoji": true
+            },
+            "value": "mango"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "file-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "file-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

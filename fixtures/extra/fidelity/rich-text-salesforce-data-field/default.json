@@ -1,0 +1,24 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "See "
+            },
+            {
+              "type": "salesforce_data_field",
+              "salesforce_record_id": "001000000000001",
+              "salesforce_field_label": "Amount",
+              "salesforce_include_field_label": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

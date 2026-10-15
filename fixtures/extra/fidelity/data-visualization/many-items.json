@@ -1,0 +1,124 @@
+{
+  "blocks": [
+    {
+      "type": "data_visualization",
+      "title": "Twenty categories",
+      "chart": {
+        "type": "bar",
+        "series": [
+          {
+            "name": "Requests",
+            "data": [
+              {
+                "label": "D1",
+                "value": 50
+              },
+              {
+                "label": "D2",
+                "value": 87
+              },
+              {
+                "label": "D3",
+                "value": 124
+              },
+              {
+                "label": "D4",
+                "value": 71
+              },
+              {
+                "label": "D5",
+                "value": 108
+              },
+              {
+                "label": "D6",
+                "value": 55
+              },
+              {
+                "label": "D7",
+                "value": 92
+              },
+              {
+                "label": "D8",
+                "value": 129
+              },
+              {
+                "label": "D9",
+                "value": 76
+              },
+              {
+                "label": "D10",
+                "value": 113
+              },
+              {
+                "label": "D11",
+                "value": 60
+              },
+              {
+                "label": "D12",
+                "value": 97
+              },
+              {
+                "label": "D13",
+                "value": 134
+              },
+              {
+                "label": "D14",
+                "value": 81
+              },
+              {
+                "label": "D15",
+                "value": 118
+              },
+              {
+                "label": "D16",
+                "value": 65
+              },
+              {
+                "label": "D17",
+                "value": 102
+              },
+              {
+                "label": "D18",
+                "value": 139
+              },
+              {
+                "label": "D19",
+                "value": 86
+              },
+              {
+                "label": "D20",
+                "value": 123
+              }
+            ]
+          }
+        ],
+        "axis_config": {
+          "categories": [
+            "D1",
+            "D2",
+            "D3",
+            "D4",
+            "D5",
+            "D6",
+            "D7",
+            "D8",
+            "D9",
+            "D10",
+            "D11",
+            "D12",
+            "D13",
+            "D14",
+            "D15",
+            "D16",
+            "D17",
+            "D18",
+            "D19",
+            "D20"
+          ],
+          "x_label": "Day",
+          "y_label": "Requests"
+        }
+      }
+    }
+  ]
+}

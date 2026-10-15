@@ -1,0 +1,80 @@
+{
+  "steps": [
+    {
+      "hover": "mention-1"
+    },
+    {
+      "wait": 1500
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Private user info",
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Private user info",
+      "busy": true,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    }
+  ]
+}

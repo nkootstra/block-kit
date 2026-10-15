@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "pill-1"
+    },
+    {
+      "hover": "source-1"
+    },
+    {
+      "snapshot": "expanded-hover-source-1"
+    }
+  ]
+}

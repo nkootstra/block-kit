@@ -1,0 +1,126 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "ArrowRight"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "04/28/1990"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "04/28/1990"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "04/28/1990"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "04/28/1990"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "04/28/1990"
+        }
+      },
+      "action": null
+    }
+  ]
+}

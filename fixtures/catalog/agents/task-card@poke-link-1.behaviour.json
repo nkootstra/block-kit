@@ -1,0 +1,97 @@
+{
+  "steps": [
+    {
+      "click": "pill-1"
+    },
+    {
+      "hover": "link-1"
+    },
+    {
+      "wait": 1500
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "false",
+          "disabled": "false"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Task Card Block Features...",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Task Card Block Features...",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Task Card Block Features...",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": true,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    }
+  ]
+}

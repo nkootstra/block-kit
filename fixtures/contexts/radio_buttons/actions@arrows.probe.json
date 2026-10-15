@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "radio-1"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "blocks": [
+    {
+      "type": "contact_card",
+      "contact_user_id": "U0123456789"
+    },
+    {
+      "type": "contact_card",
+      "contact_user_id": "U0123456780"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "steps": [
+    {
+      "click": "button-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": ""
+        },
+        "field-3": {
+          "value": "January 1st, 2026"
+        },
+        "field-4": {
+          "value": "11:00 AM"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "dialog",
+        "name": "Are you sure?",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": ""
+        },
+        "field-3": {
+          "value": "January 1st, 2026"
+        },
+        "field-4": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "button",
+        "name": "Close",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": ""
+        },
+        "field-3": {
+          "value": "January 1st, 2026"
+        },
+        "field-4": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "button-1",
+        "role": "button",
+        "name": "Delete",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": ""
+        },
+        "field-2": {
+          "expanded": "false",
+          "value": ""
+        },
+        "field-3": {
+          "value": "January 1st, 2026"
+        },
+        "field-4": {
+          "value": "11:00 AM"
+        }
+      },
+      "action": null
+    }
+  ]
+}

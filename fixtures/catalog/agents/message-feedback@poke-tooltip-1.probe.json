@@ -1,0 +1,3 @@
+{
+  "steps": [{ "hover": "icon-1" }, { "wait": 1200 }, { "snapshot": "tooltip-over-icon-1" }]
+}

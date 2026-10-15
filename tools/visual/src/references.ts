@@ -3,11 +3,14 @@
  *
  *   bun tools/visual/src/references.ts [--check]
  *
- * --check exits non-zero when a reference is stale, edited by hand, or untracked, or when a fixture,
+ * --check exits non-zero when a reference is stale, edited by hand, or untracked, when a payload or
+ * behaviour recording or a probe is misnamed, has no fixture or shows the Builder's workspace
+ * (recordings.ts), or when a fixture,
  * doc, site or playground source or package test shows an image that isn't one of our samples on
  * cdn.block-kit.dev with a committed copy (samples.ts).
  */
-import { readLock, readPayloads, readReferences, verify } from "./lock";
+import { FIXTURES, readLock, readPayloads, readReferences, verify } from "./lock";
+import { checkRecordings } from "./recordings";
 import { checkSampleImages, readSampleSources } from "./samples";
 
 const check = process.argv.includes("--check");
@@ -18,6 +21,7 @@ const [lock, references, payloads, sources] = await Promise.all([
   readSampleSources(),
 ]);
 const { problems, uncaptured } = verify(lock, references, payloads);
+const recordings = await checkRecordings(FIXTURES, payloads);
 
 console.log(`${references.size} reference snapshots, ${payloads.size} fixtures`);
 if (uncaptured.length > 0) {
@@ -34,6 +38,14 @@ if (problems.length > 0) {
   console.log("\nEvery reference matches its fixture.");
 }
 
+if (recordings.length > 0) {
+  console.error(
+    `\nRecordings and probes to fix:\n  ${recordings.map((p) => `${p.name}: ${p.message}`).join("\n  ")}`,
+  );
+} else {
+  console.log("Every payload recording, behaviour recording and probe names a fixture.");
+}
+
 const images = checkSampleImages(sources);
 if (images.length > 0) {
   console.error(
@@ -46,4 +58,4 @@ if (images.length > 0) {
   console.log(`Every image in ${sources.size} sources is a committed sample or a placeholder.`);
 }
 
-if (check && (problems.length > 0 || images.length > 0)) process.exit(1);
+if (check && (problems.length > 0 || recordings.length > 0 || images.length > 0)) process.exit(1);

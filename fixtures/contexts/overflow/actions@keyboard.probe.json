@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "overflow-1"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Enter"
+    }
+  ]
+}

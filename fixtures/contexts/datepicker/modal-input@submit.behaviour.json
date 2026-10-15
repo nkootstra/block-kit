@@ -1,0 +1,99 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "Enter"
+    },
+    {
+      "click": "submit-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "April 28th, 1990"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "April 28th, 1990"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "textbox",
+        "name": "Date",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "April 28th, 1990"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": null,
+        "name": "April 1990 Su Mo Tu We Th Fr Sa 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 ",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "grid",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "April 28th, 1990"
+        }
+      },
+      "action": null
+    }
+  ]
+}

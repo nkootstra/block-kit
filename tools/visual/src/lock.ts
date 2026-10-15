@@ -6,9 +6,9 @@
  */
 import { join, resolve } from "node:path";
 import { Glob } from "bun";
-import { isReferenceName } from "./names";
+import { isReferenceName, parseReferenceName } from "./names";
 import { leaks } from "./redact";
-import { fixtureSentences, foreignText, missingText } from "./stale";
+import { fixtureSentences, foreignState, foreignText, missingText } from "./stale";
 
 export const FIXTURES = resolve(import.meta.dir, "../../../fixtures");
 export const LOCK = join(FIXTURES, "references.lock.json");
@@ -48,12 +48,19 @@ export function payloadName(reference: string): string {
 }
 
 /**
+ * JSON files that sit next to a fixture without being one: `<fixture>@<interaction>.actions.json`,
+ * payloads recorded in Block Kit Builder's Actions Preview; `<fixture>@<probe>.probe.json`, a
+ * behaviour probe's steps; `<fixture>@<probe>.behaviour.json`, what Slack did (probes.ts).
+ */
+export const SIDECARS = [".actions.json", ".probe.json", ".behaviour.json"];
+
+/**
  * Whether a JSON file under fixtures/ (its path relative to it) is a fixture payload. Files at the
- * top of fixtures/ are bookkeeping (the lock and the baselines), and `<fixture>@<interaction>.actions.json`
- * files are payloads recorded in Block Kit Builder's Actions Preview, not blocks to render.
+ * top of fixtures/ are bookkeeping (the lock and the baselines), and SIDECARS aren't blocks to
+ * render.
  */
 export function isFixturePayload(path: string): boolean {
-  return path.includes("/") && path.endsWith(".json") && !path.endsWith(".actions.json");
+  return path.includes("/") && path.endsWith(".json") && !SIDECARS.some((s) => path.endsWith(s));
 }
 
 /** Fixture payloads by name; JSON files at the top of fixtures/ are bookkeeping, not fixtures. */
@@ -98,6 +105,16 @@ export interface Verification {
   uncaptured: string[];
 }
 
+/**
+ * References whose capture didn't change any element's state: the rest state, the generic open,
+ * confirm and dialog states, real input held on a control, a scrolled block. A fixture-specific
+ * state or a probe's snapshot can have picked or typed something.
+ */
+function keepsState(name: string): boolean {
+  const { interaction } = parseReferenceName(name);
+  return !interaction || /^(open|confirm|dialog|scrolled-end|hover-.+|focus-.+)$/.test(interaction);
+}
+
 export function verify(
   lock: Lock,
   references: Map<string, string>,
@@ -139,6 +156,11 @@ export function verify(
       problems.push({
         name,
         message: `shows none of its own text ("${missingText(html)[0]}"): the Builder refused this payload and kept the previous one; recapture it or leave the fixture out`,
+      });
+    } else if (keepsState(name) && foreignState(html, payload).length > 0) {
+      problems.push({
+        name,
+        message: `shows state its payload doesn't set (${foreignState(html, payload).join("; ")}): the Builder kept an earlier item's choice; recapture it after a neutral payload`,
       });
     } else if (entry.payload !== hashPayload(payload)) {
       problems.push({

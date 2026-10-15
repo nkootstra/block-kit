@@ -1,0 +1,19 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Notes",
+        "emoji": true
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "notes",
+        "multiline": true,
+        "max_length": 400,
+        "initial_value": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o"
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "broadcast",
+              "range": "here"
+            },
+            {
+              "type": "text",
+              "text": " "
+            },
+            {
+              "type": "broadcast",
+              "range": "channel"
+            },
+            {
+              "type": "text",
+              "text": " "
+            },
+            {
+              "type": "broadcast",
+              "range": "everyone",
+              "style": {
+                "bold": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

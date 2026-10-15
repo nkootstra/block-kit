@@ -1,7 +1,13 @@
 // Fixture payloads live in folders under fixtures/: the JSON files at its top are bookkeeping (the
-// lock and the baselines), and `*.actions.json` files are payloads recorded in Block Kit Builder.
+// lock and the baselines), `*.actions.json` files are payloads recorded in Block Kit Builder, and
+// `*.probe.json` and `*.behaviour.json` files are behaviour probes and their recordings.
 const modules = import.meta.glob<{ default: unknown }>(
-  ["../../../fixtures/*/**/*.json", "!../../../fixtures/**/*.actions.json"],
+  [
+    "../../../fixtures/*/**/*.json",
+    "!../../../fixtures/**/*.actions.json",
+    "!../../../fixtures/**/*.probe.json",
+    "!../../../fixtures/**/*.behaviour.json",
+  ],
   { eager: true },
 );
 

@@ -1,0 +1,21 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "channels",
+      "label": {
+        "type": "plain_text",
+        "text": "Channels"
+      },
+      "element": {
+        "type": "multi_channels_select",
+        "action_id": "channels",
+        "initial_channels": ["C0123456789"],
+        "placeholder": {
+          "type": "plain_text",
+          "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the"
+        }
+      }
+    }
+  ]
+}

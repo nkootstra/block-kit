@@ -1,0 +1,41 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "user",
+              "user_id": "U0123456789"
+            },
+            {
+              "type": "text",
+              "text": " "
+            },
+            {
+              "type": "user",
+              "user_id": "U0123456789",
+              "style": {
+                "bold": true
+              }
+            },
+            {
+              "type": "text",
+              "text": " "
+            },
+            {
+              "type": "user",
+              "user_id": "U0123456789",
+              "style": {
+                "italic": true,
+                "strike": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

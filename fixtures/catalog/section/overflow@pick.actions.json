@@ -31,10 +31,10 @@
       "selected_option": {
         "text": {
           "type": "plain_text",
-          "text": "*plain_text option 2*",
+          "text": "*plain_text option 1*",
           "emoji": true
         },
-        "value": "value-2"
+        "value": "value-1"
       },
       "action_ts": "<action_ts>"
     }

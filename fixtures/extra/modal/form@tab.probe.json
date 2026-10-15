@@ -1,0 +1,25 @@
+{
+  "steps": [
+    {
+      "click": "input-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Shift+Tab"
+    }
+  ]
+}

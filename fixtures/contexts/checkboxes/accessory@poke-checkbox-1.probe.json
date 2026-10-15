@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "checkbox-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "checkbox-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

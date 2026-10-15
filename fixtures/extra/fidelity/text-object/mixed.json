@@ -1,0 +1,35 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "plain_text",
+        "text": "Plain text with emoji off :wave:",
+        "emoji": false
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "plain_text",
+        "text": "Plain text with emoji on :wave:",
+        "emoji": true
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Verbatim mrkdwn: <!here> and https://example.com stay as typed",
+        "verbatim": true
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Escaped &lt;angle brackets&gt; &amp; an ampersand"
+      }
+    }
+  ]
+}

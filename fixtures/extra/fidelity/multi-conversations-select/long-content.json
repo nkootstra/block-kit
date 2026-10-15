@@ -1,0 +1,20 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Test block with multi conversations select"
+      },
+      "accessory": {
+        "type": "multi_conversations_select",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the",
+          "emoji": true
+        },
+        "action_id": "multi_conversations_select-action"
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "date",
+              "timestamp": 1767261600,
+              "format": "{date_long}",
+              "fallback": "January 1, 2026"
+            },
+            {
+              "type": "text",
+              "text": " · "
+            },
+            {
+              "type": "date",
+              "timestamp": 1767261600,
+              "format": "{date_short_pretty} at {time}",
+              "fallback": "Jan 1 at 10:00"
+            },
+            {
+              "type": "text",
+              "text": " · "
+            },
+            {
+              "type": "date",
+              "timestamp": 1767261600,
+              "format": "{ago}",
+              "url": "https://example.com",
+              "fallback": "a while ago"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

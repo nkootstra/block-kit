@@ -1,0 +1,409 @@
+{
+  "blocks": [
+    {
+      "type": "carousel",
+      "elements": [
+        {
+          "type": "card",
+          "block_id": "carousel-card-1",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_1"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-2",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_2"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-3",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_3"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-4",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_4"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-5",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_1"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-6",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_2"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-7",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_3"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-8",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_4"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-9",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_1"
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "block_id": "carousel-card-10",
+          "icon": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/kitten.4f40f3e3.jpg",
+            "alt_text": "Icon"
+          },
+          "title": {
+            "type": "mrkdwn",
+            "text": "Sample Card Title",
+            "verbatim": false
+          },
+          "subtitle": {
+            "type": "mrkdwn",
+            "text": "This is a subtitle",
+            "verbatim": false
+          },
+          "hero_image": {
+            "type": "image",
+            "image_url": "https://cdn.block-kit.dev/samples/mountain-lake.d12ac6fc.jpg",
+            "alt_text": "Sample hero image"
+          },
+          "body": {
+            "type": "mrkdwn",
+            "text": "Check out the latest updates to our project. We shipped new features this week and fixed several bugs reported by the team.",
+            "verbatim": false
+          },
+          "actions": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Action Button",
+                "emoji": false
+              },
+              "action_id": "button_action_2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

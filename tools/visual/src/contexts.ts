@@ -11,7 +11,7 @@
 import { mkdir, rm } from "node:fs/promises";
 import { Glob } from "bun";
 import { dirname, join } from "node:path";
-import { FIXTURES } from "./lock";
+import { FIXTURES, isFixturePayload } from "./lock";
 
 export const CONTEXTS = ["actions", "accessory", "modal-input", "home"] as const;
 export type Context = (typeof CONTEXTS)[number];
@@ -188,7 +188,7 @@ export function fixtureFor(element: string, context: Context): Record<string, un
 /**
  * Writes every allowed pairing's fixture into `dir` and deletes the fixtures of pairings no
  * longer allowed. Only the fixture JSON is touched: the references and payload recordings captured
- * next to it are maintainer-owned and stay, so dropping one goes through the lock (lock.ts).
+ * next to it are maintainer-owned and stay (as do probes), so dropping one goes through the lock (lock.ts).
  */
 export async function writeContexts(dir: string): Promise<number> {
   const keep = new Set<string>();
@@ -196,7 +196,7 @@ export async function writeContexts(dir: string): Promise<number> {
     for (const context of CONTEXTS)
       if (allowed(element, context)) keep.add(join(element, `${context}.json`));
   for await (const path of new Glob("*/*.json").scan({ cwd: dir, onlyFiles: true }))
-    if (!keep.has(path) && !path.endsWith(".actions.json")) await rm(join(dir, path));
+    if (!keep.has(path) && isFixturePayload(path)) await rm(join(dir, path));
   for (const path of keep) {
     const [element = "", file = ""] = path.split("/");
     const file_ = join(dir, path);

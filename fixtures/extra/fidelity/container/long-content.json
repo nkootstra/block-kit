@@ -1,0 +1,24 @@
+{
+  "blocks": [
+    {
+      "type": "container",
+      "block_id": "bkb_container_image",
+      "title": {
+        "type": "plain_text",
+        "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the"
+      },
+      "child_blocks": [
+        {
+          "type": "image",
+          "block_id": "image-1",
+          "image_url": "https://cdn.block-kit.dev/samples/kitten-tree.6f72129c.jpg",
+          "alt_text": "A sample landscape image",
+          "image_width": 400,
+          "image_height": 300,
+          "image_bytes": 50000,
+          "fallback": "A sample landscape image"
+        }
+      ]
+    }
+  ]
+}

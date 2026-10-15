@@ -1,0 +1,142 @@
+{
+  "steps": [
+    {
+      "hover": "field-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "field-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "",
+          "disabled": "false"
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "value": "",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Search tags",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false",
+          "disabled": "true"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Search tags",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": "",
+          "disabled": "false"
+        },
+        "option-1": {
+          "selected": "false",
+          "disabled": "true"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Search tags",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "false",
+          "value": "",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    }
+  ]
+}

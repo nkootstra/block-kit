@@ -1,0 +1,53 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "A section with ten fields"
+      },
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Field 1*\nValue 1"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 2*\nValue 2"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 3*\nValue 3"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 4*\nValue 4"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 5*\nValue 5"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 6*\nValue 6"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 7*\nValue 7"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 8*\nValue 8"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 9*\nValue 9"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Field 10*\nValue 10"
+        }
+      ]
+    }
+  ]
+}

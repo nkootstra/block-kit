@@ -1,0 +1,36 @@
+{
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "tags",
+      "optional": true,
+      "label": {
+        "type": "plain_text",
+        "text": "Tags (up to 3)"
+      },
+      "hint": {
+        "type": "plain_text",
+        "text": "Options load from the app as you type."
+      },
+      "element": {
+        "type": "multi_external_select",
+        "action_id": "tags",
+        "min_query_length": 1,
+        "max_selected_items": 3,
+        "initial_options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Urgent"
+            },
+            "value": "urgent"
+          }
+        ],
+        "placeholder": {
+          "type": "plain_text",
+          "text": "Search tags"
+        }
+      }
+    }
+  ]
+}

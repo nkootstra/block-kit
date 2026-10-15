@@ -475,10 +475,228 @@ describe("capture.js against stylesheets the Builder loads during a session", ()
     expect(log).toEqual(["snap", "snap", "snap"]);
   });
 
+  // Rendering a chart on a fresh Builder load brings a sheet that repeats hundreds of the message
+  // chrome's rules. Where nothing in the preview matches them, or the repeat leaves every value as
+  // it was, the cascade is the fresh page's and the capture goes ahead.
+  it("captures when a repeated rule styles nothing in the preview", async () => {
+    const { error, log } = await runDrift(["", ".message-actions { margin: 0 -8px; }"]);
+    expect(error).toBeUndefined();
+    expect(log).toEqual(["snap", "snap"]);
+  });
+
+  it("captures when a repeated rule matches but every value stays the same", async () => {
+    const { error } = await runDrift(["", ".slack-picker { margin: 0; }"]);
+    expect(error).toBeUndefined();
+  });
+
+  it("keeps refusing on the next item, and catches a sheet that arrives during the snapshot", async () => {
+    page = await browser.newPage();
+    await page.setContent(DRIFT_BUILDER);
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const errors = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      const once = async (append: string, snap = w.snap) => {
+        try {
+          await w.capture({
+            items: [{ name: "catalog/section/plain-text", payload: { append } }],
+            snap,
+            adapter: w.adapter,
+            settle: 0,
+          });
+          return "ok";
+        } catch (e) {
+          return String(e);
+        }
+      };
+      const fresh = await once("");
+      const repeated = await once(".picker { margin: 0 -8px; }");
+      const next = await once("");
+      return { fresh, repeated, next };
+    });
+    expect(errors.fresh).toBe("ok");
+    expect(errors.repeated).toMatch(/before the snapshot/);
+    expect(errors.next).toMatch(/before the snapshot/);
+
+    page = await browser.newPage();
+    await page.setContent(DRIFT_BUILDER);
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const during = await page.evaluate(async () => {
+      const w = window as unknown as Record<string, any>;
+      try {
+        await w.capture({
+          items: [{ name: "catalog/section/plain-text", payload: {} }],
+          // The chart's sheet arrives while the preview is being frozen.
+          snap: async () => {
+            const style = document.createElement("style");
+            style.textContent = ".picker { margin: 0 -8px; }";
+            document.head.append(style);
+            return "<html></html>";
+          },
+          adapter: w.adapter,
+          settle: 0,
+        });
+        return "ok";
+      } catch (e) {
+        return String(e);
+      }
+    });
+    expect(during).toMatch(/while it snapshotted/);
+  });
+
   it("refuses to snapshot once a later stylesheet repeats a rule the page already has", async () => {
     const { error, log } = await runDrift(["", ".picker { margin: 0 -8px; }"]);
     expect(error).toMatch(/plain-text-1: .*\.picker \{ margin/);
     expect(error).toMatch(/reload the Builder/);
     expect(log).toEqual(["snap"]);
+  });
+});
+
+/**
+ * A stand-in for the Builder's state keeping: each multi-select remembers its chips by block and
+ * action id across payloads. `forget` says whether unmounting an element (a payload without it)
+ * drops what it remembered, as a neutral payload is meant to make it.
+ */
+const stateBuilder = (forget: boolean) => `<!doctype html><html><body>
+  <div class="p-bkb_preview__message" style="width:512px"></div>
+  <script>
+    window.log = [];
+    const kept = new Map();
+    window.adapter = {
+      load: async (payload) => {
+        const els = (payload.blocks ?? []).flatMap((b) => b.elements ?? []);
+        window.log.push("load " + (els.length ? els.map((e) => e.action_id).join(",") : "neutral"));
+        if (${forget}) for (const k of [...kept.keys()]) if (!els.some((e) => e.action_id === k)) kept.delete(k);
+        const preview = document.querySelector(".p-bkb_preview__message");
+        preview.innerHTML = els.map((e) => {
+          const chips = kept.get(e.action_id) ?? (e.initial_options ?? []).map((o) => o.value);
+          kept.set(e.action_id, chips);
+          return '<div role="combobox">' + chips.map((c) => '<span class="c-token">' + c + "</span>").join("") + "</div>";
+        }).join("");
+      },
+      theme: () => "light", setTheme: async () => {},
+      previewSize: () => "desktop", setPreviewSize: async () => {},
+    };
+    window.snap = async () => document.querySelector(".p-bkb_preview__message").innerHTML;
+  </script>
+</body></html>`;
+
+const multi = (initial: string[]) => ({
+  blocks: [
+    {
+      type: "actions",
+      block_id: "colours",
+      elements: [
+        {
+          type: "multi_static_select",
+          action_id: "multi",
+          options: ["Red", "Blue"].map((v) => ({
+            text: { type: "plain_text", text: v },
+            value: v,
+          })),
+          initial_options: initial.map((v) => ({
+            text: { type: "plain_text", text: v },
+            value: v,
+          })),
+        },
+      ],
+    },
+  ],
+});
+
+async function runState(forget: boolean, items: { name: string; payload: unknown }[]) {
+  page = await browser.newPage();
+  await page.setContent(stateBuilder(forget));
+  await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+  return page.evaluate(async (list) => {
+    const w = window as unknown as Record<string, any>;
+    const errors: string[] = [];
+    // One call per item, as a runner does.
+    for (const item of list)
+      await w
+        .capture({ items: [item], snap: w.snap, adapter: w.adapter, settle: 0 })
+        .catch((e: Error) => errors.push(String(e)));
+    return { errors, log: w.log, refs: w.sbkCaptureOutput.references };
+  }, items);
+}
+
+describe("capture.js against the Builder keeping element state across payloads", () => {
+  const items = [
+    { name: "extra/payloads/selects", payload: multi(["Red"]) },
+    { name: "extra/input/more-selects", payload: multi([]) },
+  ];
+
+  it("loads a neutral payload first, so a later payload starts without the earlier chips", async () => {
+    const { errors, log, refs } = await runState(true, items);
+    expect(errors).toEqual([]);
+    expect(log).toEqual(["load neutral", "load multi", "load neutral", "load multi"]);
+    expect(refs["extra/input/more-selects"]).not.toContain("c-token");
+  });
+
+  it("stops when the preview still shows state its payload doesn't set", async () => {
+    const { errors } = await runState(false, items);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatch(
+      /more-selects: the Builder kept state from an earlier item \(chips: 1, expected 0\)/,
+    );
+  });
+
+  it("keeps what was captured across a reload of the Builder", async () => {
+    page = await browser.newPage();
+    await page.goto("about:blank");
+    // IndexedDB needs an origin; a data URL page has none, so serve the stand-in from a route.
+    await page.route("https://builder.test/", (route) =>
+      route.fulfill({ contentType: "text/html", body: stateBuilder(true) }),
+    );
+    await page.goto("https://builder.test/");
+    const once = async (name: string) => {
+      // Pasted again after the reload, as the maintainer does.
+      if (!(await page.evaluate(() => "capture" in window)))
+        await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+      return page.evaluate(async (n) => {
+        const w = window as unknown as Record<string, any>;
+        await w.capture({
+          items: [{ name: n, payload: { blocks: [] } }],
+          snap: w.snap,
+          adapter: w.adapter,
+          settle: 0,
+        });
+        return Object.keys(w.sbkCaptureOutput.references);
+      }, name);
+    };
+    await once("catalog/actions/button");
+    await page.reload();
+    expect(await once("catalog/actions/button@dark")).toEqual([
+      "catalog/actions/button",
+      "catalog/actions/button@dark",
+    ]);
+    await page.evaluate(() => (window as unknown as Record<string, any>).sbkCaptureReset());
+    await page.close();
+  });
+});
+
+describe("capture.js opening a multi-select that shows chips", () => {
+  it("asks for a click past the chips, then gives up with a clear message", async () => {
+    page = await browser.newPage();
+    await page.setContent(stateBuilder(true));
+    await page.addScriptTag({ content: `window.capture = ${CAPTURE};` });
+    const error = await page.evaluate(
+      async (payload) => {
+        const w = window as unknown as Record<string, any>;
+        return w
+          .capture({
+            items: [{ name: "extra/payloads/selects@open", payload }],
+            snap: w.snap,
+            adapter: w.adapter,
+            settle: 0,
+            chipTimeout: 500,
+          })
+          .then(
+            () => "",
+            (e: Error) => String(e),
+          );
+      },
+      multi(["Red"]),
+    );
+    expect(error).toMatch(/shows chips and the Builder doesn't open its list/);
   });
 });

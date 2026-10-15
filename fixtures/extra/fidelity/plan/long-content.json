@@ -1,0 +1,30 @@
+{
+  "blocks": [
+    {
+      "type": "plan",
+      "plan_id": "plan_long",
+      "title": "A plan whose title is long enough to wrap onto a second line at the desktop width",
+      "tasks": [
+        {
+          "task_id": "t1",
+          "title": "A task whose title is also long enough to wrap onto a second line in the plan",
+          "status": "complete",
+          "details": {
+            "type": "rich_text",
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
