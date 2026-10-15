@@ -20,15 +20,14 @@ export interface Finding {
 export const FINDINGS: Finding[] = [
   {
     id: "show-more-clipped",
-    title: "Section Show more button is probably clipped, and its layout doesn't replay",
+    title: "Section Show more button is probably clipped",
     evidence: [
-      "snapshotReplay.browser.ts fails on extra/fidelity/show-more/default and show-more/toggled: the replay puts button.sbk-section__toggle at y=304, where it was laid out live at y=150 (x=44, 63.8 x 22px).",
+      "Live, our button.sbk-section__toggle sits at y=150 in extra/fidelity/show-more/default (x=44, 63.8 x 22px). snapshot.js replayed it at y=304 until it kept the clamped box's display: -webkit-box, which Chrome reports as flow-root.",
       "Live, y=150 is just below the five clamped lines, inside the box that hides the overflow, so the button is likely invisible.",
       "Verification session: Slack doesn't truncate extra/fidelity/show-more/default at all (about 980 characters of mrkdwn render in full, no Show more). Our 300-character, 5-line clamp and its Show more aren't Slack's behaviour at that length; Slack's threshold, if any, is unknown. extra/fidelity/section/long-content (2,999 characters, Slack's section limit is 3,000) will show whether Slack truncates at all.",
     ],
     suspect: [
       "packages/block-kit/src/blocks/Section.tsx renders the toggle inside .sbk-section__text--clamped (display: -webkit-box, -webkit-box-orient: vertical, -webkit-line-clamp: 5, overflow: hidden), so the clamp and the overflow clip apply to the button too.",
-      "tools/visual/src/snapshot.js may not replay -webkit-box line clamping faithfully: the frozen copy lays the clamped box's children out differently from the live page.",
       "The truncation itself is a guess (Section.tsx: 300 characters, 5 lines); Slack's real limit is unknown.",
     ],
     next: "Capture show-more/default and show-more/default@expanded in Block Kit Builder: they show Slack's truncation and where its toggle sits.",

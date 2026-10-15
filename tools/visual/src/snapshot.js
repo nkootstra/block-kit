@@ -320,7 +320,11 @@ async (win = window, options = {}) => {
     if (src === doc.activeElement && src.selectionStart !== src.selectionEnd)
       el.setAttribute("data-sbk-selection", `${src.selectionStart} ${src.selectionEnd}`);
     const base = defaultsFor(src, cs.fontSize, parent?.fontSize);
-    el.setAttribute("style", diff(cs, base, parent, true, sizeOverrides(src, cs, parent)));
+    const overrides = sizeOverrides(src, cs, parent);
+    // Chrome reports a line-clamped `display: -webkit-box` as `flow-root`, which doesn't clamp when
+    // written back; keep the box the clamp needs.
+    if (cs.getPropertyValue("-webkit-line-clamp") !== "none") overrides.display = "-webkit-box";
+    el.setAttribute("style", diff(cs, base, parent, true, overrides));
     // The Builder's draggable block wrapper transitions its selection highlight; that's the
     // Builder's motion, not Slack's.
     const builderChrome = [...src.classList].some((c) => /^(dragWrapper|blockContent)/.test(c));
