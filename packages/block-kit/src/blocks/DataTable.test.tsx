@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it } from "vitest";
+import { BlockKitProvider } from "../context";
 import type { Json } from "../types";
 import { DataTable } from "./DataTable";
 
@@ -219,6 +220,34 @@ describe("<DataTable> cells", () => {
   it("renders raw_number cells by their text field", () => {
     render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
     expect(screen.getByText("10")).toBeTruthy();
+  });
+
+  it("draws a user mention in a rich text cell, resolved or not", () => {
+    const mention = {
+      type: "rich_text",
+      elements: [
+        { type: "rich_text_section", elements: [{ type: "user", user_id: "U0123456789" }] },
+      ],
+    };
+    const block = {
+      type: "data_table",
+      rows: [[rawText("Owner")], [mention]],
+    };
+    const { container, unmount } = render(
+      <DataTable block={asDataTableBlock(block)} blockId="b1" index={0} />,
+    );
+    expect(container.querySelector(".sbk-mention--unresolved")?.getAttribute("aria-label")).toBe(
+      "@U0123456789",
+    );
+    unmount();
+    render(
+      <BlockKitProvider
+        resolvers={{ user: (id) => (id === "U0123456789" ? "Ada Lovelace" : undefined) }}
+      >
+        <DataTable block={asDataTableBlock(block)} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByText("@Ada Lovelace")).toBeTruthy();
   });
 
   it("exposes toolbar buttons with accessible labels including the caption", () => {

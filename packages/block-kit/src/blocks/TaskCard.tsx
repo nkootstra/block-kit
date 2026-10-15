@@ -45,18 +45,16 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
 
   return (
     <div className="sbk-task-card">
-      {expandable ? (
-        <button
-          type="button"
-          className="sbk-task-card__pill"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((value) => !value)}
-        >
-          {pillContent}
-        </button>
-      ) : (
-        <div className="sbk-task-card__pill">{pillContent}</div>
-      )}
+      {/* Slack draws a card with nothing to reveal as a disabled toggle that still takes focus. */}
+      <button
+        type="button"
+        className="sbk-task-card__pill"
+        aria-expanded={expanded}
+        aria-disabled={expandable ? undefined : true}
+        onClick={expandable ? () => setExpanded((value) => !value) : undefined}
+      >
+        {pillContent}
+      </button>
       <Collapse open={expanded}>
         <div className="sbk-task-card__body">
           {block.details ? (

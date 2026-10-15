@@ -52,15 +52,14 @@ describe("<TaskCard>", () => {
     );
   });
 
-  it("shows a plain pill, not a button, and no caret when there is nothing to expand", () => {
+  it("shows a disabled, focusable pill and no caret when there is nothing to expand", () => {
     const bare = { type: "task_card", task_id: "t", title: "Bare task", status: "complete" };
     const { container } = render(<TaskCard block={asTaskCardBlock(bare)} blockId="b1" index={0} />);
-    expect(screen.queryByRole("button")).toBeNull();
     const pill = container.querySelector(".sbk-task-card__pill")!;
-    expect(pill.tagName).toBe("DIV");
-    expect(pill.hasAttribute("tabindex")).toBe(false);
-    expect(pill.hasAttribute("aria-expanded")).toBe(false);
-    expect(pill.hasAttribute("aria-disabled")).toBe(false);
+    expect(pill).toBe(screen.getByRole("button"));
+    expect(pill.hasAttribute("disabled")).toBe(false);
+    expect(pill.getAttribute("aria-expanded")).toBe("false");
+    expect(pill.getAttribute("aria-disabled")).toBe("true");
     expect(pill.textContent).toBe("Bare task, complete");
     expect(container.querySelector(".sbk-task-card__pill-chevron")).toBeNull();
   });

@@ -137,7 +137,8 @@ The preview above scrolls through three cards. Use the arrow buttons, or drag, t
 
 <Preview payload={{ blocks: [{ type: "carousel", elements: [] }] }} />
 
-An empty `elements` array still renders both scroll arrows, disabled since there's nothing to scroll to.
+An empty `elements` array still renders both scroll arrows, faded out since there's nothing to scroll
+to. As in Slack, a faded arrow isn't disabled: it stays in the tab order and a press scrolls nowhere.
 
 ## Interactivity
 

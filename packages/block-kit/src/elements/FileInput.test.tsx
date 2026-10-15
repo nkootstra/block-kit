@@ -55,6 +55,25 @@ describe("<FileInput>", () => {
     expect(files).toHaveLength(1);
   });
 
+  it("opens the file picker from a focusable button", () => {
+    render(
+      <BlockKitProvider>
+        <FileInput
+          element={{ type: "file_input", action_id: "a1" } as unknown as FileInputElement}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const button = screen.getByRole("button", { name: "Upload File" });
+    const native = document.querySelector(".sbk-file-input__native") as HTMLInputElement;
+    const pick = vi.spyOn(native, "click");
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    fireEvent.click(button);
+    expect(pick).toHaveBeenCalled();
+    expect(native.tabIndex).toBe(-1);
+  });
+
   it("keeps the singular button label even when several files are allowed", () => {
     render(
       <BlockKitProvider>

@@ -1,5 +1,5 @@
 import type { FileInput as FileInputElement } from "@slack/types";
-import { useId, useState } from "react";
+import { useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import { FileUploadIcon } from "../icons";
 import type { ElementProps } from "../types";
@@ -16,7 +16,7 @@ interface PickedFile {
 export function FileInput({ element, blockId }: ElementProps<FileInputElement>) {
   const { setValue, dispatch } = useBlockKit();
   const [files, setFiles] = useState<PickedFile[]>([]);
-  const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const actionId = element.action_id ?? "";
   const maxFiles = element.max_files ?? 10;
 
@@ -37,14 +37,21 @@ export function FileInput({ element, blockId }: ElementProps<FileInputElement>) 
 
   return (
     <div className="sbk-file-input">
-      <label className="sbk-file-input__button" htmlFor={inputId}>
+      {/* A button, as Slack's is, so it takes keyboard focus; it opens the hidden file input. */}
+      <button
+        type="button"
+        className="sbk-file-input__button"
+        onClick={() => inputRef.current?.click()}
+      >
         <FileUploadIcon />
         {/* Slack keeps the singular label even when `max_files` allows several. */}
         <span>Upload File</span>
-      </label>
+      </button>
       <input
-        id={inputId}
+        ref={inputRef}
         type="file"
+        tabIndex={-1}
+        aria-hidden="true"
         className="sbk-file-input__native"
         multiple={maxFiles > 1}
         accept={element.filetypes?.map((t) => `.${t}`).join(",")}

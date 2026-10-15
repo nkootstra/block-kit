@@ -35,8 +35,9 @@
 
 /* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
    (`.toggleBarButtonSlim:hover { background-color: transparent }`), leaving only an inset blue ring
-   for keyboard focus. A card with nothing to reveal gets the same pill as a div, without the ring. */
-div.sbk-task-card__pill {
+   for keyboard focus. A card with nothing to reveal gets the same pill, disabled (`aria-disabled`),
+   which still takes focus and its ring. */
+.sbk-task-card__pill[aria-disabled="true"] {
   cursor: default;
 }
 
