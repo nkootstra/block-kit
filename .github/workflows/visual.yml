@@ -41,13 +41,8 @@ permissions:
 concurrency:
   # Baseline commits to main queue up: a run on main is never cancelled once it started, though a
   # newer push replaces one still waiting, and `record` then picks up the PRs it skipped. A pull
-  # request only needs its latest run. A label other than
-  # visual-baseline-increase compares nothing, so its run gets a group of its own rather than
-  # cancelling the pull request's comparison.
-  group: >-
-    visual-${{ github.event_name == 'push' && 'main' || github.ref }}${{
-    contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
-    github.event.label.name != 'visual-baseline-increase' && '-other-label' || '' }}
+  # request only needs its latest run, whichever event started it.
+  group: visual-${{ github.event_name == 'push' && 'main' || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -85,11 +80,11 @@ jobs:
   compare-shard:
     name: compare (${{ matrix.shard }})
     needs: changes
-    # Of the label events, only this workflow's label changes the outcome.
-    if: >-
-      needs.changes.outputs.visual == 'true' &&
-      (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
-      github.event.label.name == 'visual-baseline-increase')
+    # Every label event compares again, not only visual-baseline-increase: GitHub reads a required
+    # check from the head commit's latest run of this workflow, so a label's run has to report
+    # `compare` itself. Only labels a person adds start a run (the Labeler's, added with
+    # GITHUB_TOKEN, don't).
+    if: needs.changes.outputs.visual == 'true'
     runs-on: ubuntu-latest
     # Pull requests and main compare the fixtures in eight slices at once (compare.ts --shard),
     # about 7 minutes each; on main, `record` merges the slices' reports into the baseline. A manual
@@ -245,32 +240,17 @@ jobs:
   # The check the main ruleset requires: it passes when every slice passed, or when the comparison
   # was skipped because nothing it renders changed, and fails when a slice failed. A run that was
   # cancelled (a newer push or label superseded it) skips it instead of failing it: the newer run
-  # reports the check.
-  #
-  # A label other than visual-baseline-increase compares nothing, so its run must not report
-  # `compare` at all: even a skipped job posts a passing check, and the latest check run of a name
-  # is the one the ruleset reads, so adding any label after a failure would turn the check green.
-  # That run names this job differently (the name is the check's name), which leaves the head
-  # commit's `compare` as the last comparison reported it.
+  # reports the check. A label's run compares again (compare-shard) rather than reporting a
+  # skipped comparison, which would turn a failed one green.
   compare:
-    name: >-
-      ${{ contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
-      github.event.label.name != 'visual-baseline-increase' && 'compare (label only, not a verdict)' ||
-      'compare' }}
+    name: compare
     needs: compare-shard
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - env:
           RESULT: ${{ needs.compare-shard.result }}
-          OTHER_LABEL: >-
-            ${{ contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
-            github.event.label.name != 'visual-baseline-increase' }}
         run: |
-          if [ "$OTHER_LABEL" = true ]; then
-            echo "This label doesn't change the comparison; the compare check stays as it was."
-            exit 0
-          fi
           echo "The comparison's slices: $RESULT"
           [ "$RESULT" = success ] || [ "$RESULT" = skipped ]
 
