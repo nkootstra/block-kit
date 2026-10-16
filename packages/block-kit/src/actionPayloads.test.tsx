@@ -58,8 +58,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     );
   },
   "catalog/actions/all-selects@pick-static": async () => {
-    // Slack's static select is a button showing its placeholder between dashes.
-    fireEvent.click(screen.getByText("--Select an item--"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   "catalog/actions/radio-buttons@pick": () => clickAsync(screen.getAllByRole("radio")[1]!),
@@ -168,7 +167,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   "catalog/actions/all-selects@pick": async () => {
     // The static select (actionId-3), as in all-selects@pick-static.
-    fireEvent.click(screen.getByText("--Select an item--"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   // The first channel the Builder's workspace lists (redacted to C0000001; PROVIDER).
@@ -183,7 +182,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await clickAsync(screen.getByRole("option", { name: /channel-two/ }));
   },
   "catalog/container/data-entry-form@pick": async () => {
-    fireEvent.click(screen.getByText("--Select priority--"));
+    fireEvent.click(screen.getByPlaceholderText("Select priority"));
     await clickAsync(screen.getByRole("option", { name: "High" }));
   },
   "catalog/input/radio-buttons@pick": () =>
@@ -201,7 +200,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await keyDownAsync(field, "Enter");
   },
   "catalog/input/static-select@pick": async () => {
-    fireEvent.click(screen.getByText("--Select an item--"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
   },
   "catalog/section/radio-buttons@pick": () =>

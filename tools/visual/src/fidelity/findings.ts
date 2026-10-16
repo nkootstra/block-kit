@@ -137,20 +137,6 @@ export const FINDINGS: Finding[] = [
     components: ["rich_text.color"],
   },
   {
-    id: "select-placeholder-dashes",
-    title:
-      "Slack drops the dashes around a button select's placeholder at mobile width and when open",
-    evidence: [
-      'Confirmed by a fresh capture (extra/payloads/selects@mobile, light, captured in the verification session): at the mobile width, in light and dark, and in the @open states, Slack writes the static select\'s placeholder as "Choose"; at desktop width at rest it writes "--Choose--". The earlier +mobile+dark captures (extra/payloads/selects, catalog/container/data-entry-form) show the same, so it isn\'t a Builder change.',
-      'Ours always writes "--Choose--".',
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.tsx: the button select's dashed placeholder. Slack seems to add the dashes only in the desktop at-rest layout; which rule decides it (width, the open state, the button-select layout) is to be found from the references.",
-    ],
-    next: "Compare every reference of a button select (desktop, mobile, @open, dark) for the placeholder text, then match the rule.",
-    components: ["static_select"],
-  },
-  {
     id: "button-long-text-ellipsis",
     title: "Slack cuts a long button label to one line with an ellipsis; ours wraps",
     evidence: [
