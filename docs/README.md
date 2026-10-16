@@ -61,6 +61,7 @@ This is a Bun workspace run with Turborepo.
 | `fixtures`           | Block Kit Builder payloads with Slack's reference renders                        |
 | `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference        |
 | `tools/react-18`     | Runs the package's tests and type-check against React 18                         |
+| `tools/deploy`       | Wrangler for the deploy and preview jobs, outside the workspaces (below)         |
 | `examples`           | Runnable apps that keep the Slack bot token on the server (Next.js, Vite + Hono) |
 
 ## Develop
@@ -111,7 +112,7 @@ Blume's page script gives every `.prose pre` a "Copy code" button when the page 
 The docs deploy with releases, never on a plain push to `main`, so they don't describe a package npm doesn't have yet:
 
 1. After publishing, the Release workflow runs [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) on the new `vX.Y.Z` tag with `deploy`. The `check` job builds the whole workspace, docs included (its changelog now shows the release), and uploads `apps/docs/dist` as an artifact.
-2. Once every check passes, the `deploy-docs` job asks [`scripts/deploy-guard.ts`](../scripts/deploy-guard.ts) whether to deploy: only the latest release's tag does, so re-running an older release's CI can't replace newer docs. It then downloads that build, installs the dependencies the Worker bundles and the Wrangler version `bun.lock` pins (a root dev dependency, used by every deploy and preview), and runs `wrangler deploy` in `apps/docs`.
+2. Once every check passes, the `deploy-docs` job asks [`scripts/deploy-guard.ts`](../scripts/deploy-guard.ts) whether to deploy: only the latest release's tag does, so re-running an older release's CI can't replace newer docs. It then downloads that build, installs the dependencies the Worker bundles and Wrangler, and runs `wrangler deploy` in `apps/docs`.
 
 For a docs-only fix between releases, run Actions → CI → Run workflow on `main` with `deploy` checked. The guard deploys only `main`'s head, and refuses when `packages/block-kit` changed since the latest release: release those changes instead, which deploys the docs too.
 
@@ -150,11 +151,18 @@ The deploy takes only the built files from the pull request; the Worker and `wra
 
 4. Previews use the same repository secrets and need no environment: the `/preview` comment check decides who can deploy them.
 
-To deploy by hand from a local build instead, log in once with `bunx wrangler login`, then:
+Wrangler lives in `tools/deploy`, a package outside the Bun workspaces with its own `bun.lock`, so a
+root `bun install` doesn't fetch it: only the deploy and preview jobs install it. Its version is
+pinned exactly in `tools/deploy/package.json`; to take a newer one, change it there and run
+`bun install` in `tools/deploy`.
+
+To deploy by hand from a local build instead, install it, log in once with
+`tools/deploy/node_modules/.bin/wrangler login`, then:
 
 ```sh
+(cd tools/deploy && bun install)
 bunx turbo run build --filter=@nkootstra/block-kit-docs
-cd apps/docs && bunx wrangler deploy
+cd apps/docs && ../../tools/deploy/node_modules/.bin/wrangler deploy
 ```
 
 ## Visual previews

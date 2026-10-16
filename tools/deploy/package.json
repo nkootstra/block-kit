@@ -1,0 +1,9 @@
+{
+  "name": "@block-kit/deploy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Wrangler for the deploy and preview jobs, outside the workspaces so nothing else installs it",
+  "devDependencies": {
+    "wrangler": "4.148.0"
+  }
+}
