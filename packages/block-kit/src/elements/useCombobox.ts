@@ -97,9 +97,14 @@ export function useCombobox({
   const [typed, setTyped] = useState(true);
   // Set by a click that opens the list, which starts on the blue highlight rather than the typed one.
   const pointerOpen = useRef(false);
+  // A list a click opened, before a key or the pointer moves its highlight: Slack draws no
+  // highlight in a grouped list there, though the arrow keys start from the active row.
+  const [untouched, setUntouched] = useState(false);
   useEffect(() => {
-    if (open) setTyped(!pointerOpen.current);
-    else pointerOpen.current = false;
+    if (open) {
+      setTyped(!pointerOpen.current);
+      setUntouched(pointerOpen.current);
+    } else pointerOpen.current = false;
   }, [open]);
 
   function setOpen(next: boolean) {
@@ -123,6 +128,7 @@ export function useCombobox({
 
   /** Keys for the input, or for a container around a button trigger and its list. */
   function onKeyDown(e: KeyboardEvent<HTMLElement>) {
+    setUntouched(false);
     if (e.key === "Tab") {
       if (open) setOpen(false);
       return;
@@ -192,6 +198,7 @@ export function useCombobox({
       // Moving the pointer over the list hands the highlight to it.
       onMouseMove: () => {
         if (typedHighlight) setTyped(false);
+        setUntouched(false);
         item.onMouseMove();
       },
     };
@@ -215,5 +222,7 @@ export function useCombobox({
     active: nav.active,
     /** Whether the highlighted row is the typed highlight (with `typedHighlight`). */
     typed: typedHighlight && typed,
+    /** Whether a click opened the list and nothing has moved its highlight since. */
+    untouched: open && untouched,
   };
 }

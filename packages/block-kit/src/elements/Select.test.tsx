@@ -38,6 +38,38 @@ describe("<Select> static_select", () => {
     expect(state.b1?.a1).toEqual({ type: "static_select", selected_option: sent("a", "A") });
   });
 
+  it("draws a clicked-open grouped list's chosen row as chosen, not highlighted, until a key moves it", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              option_groups: [
+                {
+                  label: { type: "plain_text", text: "One" },
+                  options: [opt("a", "A"), opt("b", "B")],
+                },
+                { label: { type: "plain_text", text: "Two" }, options: [opt("c", "C")] },
+              ],
+              initial_option: opt("a", "A"),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input, { detail: 1 });
+    const row = (text: string) => screen.getByText(text).closest('[role="option"]')!;
+    expect(row("A").getAttribute("aria-selected")).toBe("true");
+    expect(row("A").hasAttribute("data-active")).toBe(false);
+    // The keyboard starts from the chosen row, as Slack's does.
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(row("B").hasAttribute("data-active")).toBe(true);
+  });
+
   it("opens the menu, selects an option, and dispatches selected_option", async () => {
     const onAction = vi.fn();
     render(
