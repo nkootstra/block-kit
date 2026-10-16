@@ -27,10 +27,10 @@
           "selected_option": {
             "text": {
               "type": "plain_text",
-              "text": "Option 1",
+              "text": "Option 3",
               "emoji": true
             },
-            "value": "value-1"
+            "value": "value-3"
           }
         }
       }
@@ -45,10 +45,10 @@
       "selected_option": {
         "text": {
           "type": "plain_text",
-          "text": "Option 1",
+          "text": "Option 3",
           "emoji": true
         },
-        "value": "value-1"
+        "value": "value-3"
       },
       "placeholder": {
         "type": "plain_text",
