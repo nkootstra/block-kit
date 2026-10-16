@@ -70,6 +70,21 @@ async ({
   const win = window;
   const doc = document;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  // Whether the page renders frames: four animation frames within 300ms (a page that renders
+  // gets about 18, one in a covered window at most one).
+  const rendering = () =>
+    new Promise((resolve) => {
+      let frames = 0;
+      const timer = setTimeout(() => resolve(false), 300);
+      const frame = () => {
+        if (++frames < 4) win.requestAnimationFrame(frame);
+        else {
+          clearTimeout(timer);
+          resolve(true);
+        }
+      };
+      win.requestAnimationFrame(frame);
+    });
 
   // For a driver that follows the instructions: resolves with the next instruction after
   // `prevSeq` (`{ seq, instruction, screen }`, `screen` being its x, y and box times `scale`, for
@@ -1114,6 +1129,27 @@ async ({
   const freezeAs = async (refName, { want, held, holds = () => true }) => {
     // Let transitions (80–160ms in Slack) finish before freezing the computed styles.
     await sleep(settle);
+    // Transitions advance only with rendered frames. A Chrome window covered by another one keeps
+    // `visibilityState` "visible" and its focus, but renders about one frame in 500ms, and an open
+    // select's focus ring (an 80ms transition) then stays at its transparent start (Block Kit
+    // Builder, 16 October 2026). The page can also lose focus after the item started. Wait for
+    // both before freezing, then for the transitions again.
+    if (!adapter) {
+      let waited = false;
+      for (const t0 = performance.now(); !(doc.hasFocus() && (await rendering())); waited = true) {
+        if (performance.now() - t0 > timeout)
+          throw new Error(`${refName}: timed out waiting for the Builder window to render`);
+        win.sbkCaptureWaiting =
+          `${refName}: bring the Builder's window to the front, uncovered, and focus it ` +
+          "without clicking the preview";
+        if (!waited) console.log(win.sbkCaptureWaiting);
+        await sleep(250);
+      }
+      if (waited) {
+        win.sbkCaptureWaiting = undefined;
+        await sleep(settle);
+      }
+    }
     const reordered = (when) => {
       const changes = cascadeChanges();
       if (changes.length > 0)
@@ -1148,6 +1184,8 @@ async ({
       throw new Error(
         `${refName}: the ${held.input} was lost during the snapshot; hold it again and resume`,
       );
+    if (!adapter && !doc.hasFocus())
+      throw new Error(`${refName}: the Builder page lost focus during the snapshot; resume`);
     if (!adapter) {
       const meta = JSON.parse(/id="sbk-reference-meta">(\{.*?\})</.exec(html)?.[1] ?? "{}");
       const expected = want.mobile ? 400 : PREVIEW_WIDTH[meta.surface];

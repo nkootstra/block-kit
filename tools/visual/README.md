@@ -285,7 +285,12 @@ to the preview):
    always asks for a real click to open, then for the pointer to move away: a scripted press
    doesn't focus it, so the open field lacks its focus ring, and leaves a chosen option in the
    field where a click empties it to the placeholder. Before a held hover, and before a rest
-   capture, the run blurs whatever the Builder left focused in the preview.
+   capture, the run blurs whatever the Builder left focused in the preview. Transitions advance
+   only while the page renders frames, and a Chrome window covered by another one renders about one
+   in 500ms while still reporting itself visible and focused: an open select's focus ring then
+   stays at its transparent start. So right before each snapshot the run waits for the page to have
+   focus and render (`window.sbkCaptureWaiting` asks for it: bring the window to the front,
+   uncovered, without clicking the preview), and stops if it lost focus during one.
    Block Kit Builder keeps an element's state across payloads, by block and action id: a
    multi-select's chosen "Red" stayed in every later payload with the same ids, even one whose
    options don't have it. So `capture.js` first loads a neutral payload of the item's surface (one
