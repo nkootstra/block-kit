@@ -1,147 +1,51 @@
 {
-  "catalog/actions/all-selects": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "catalog/actions/all-selects": [],
   "catalog/actions/all-selects@dark": [],
-  "catalog/actions/all-selects@focus-field-1+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@focus-field-1+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@focus-field-2+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@focus-field-2+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@focus-field-3+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@focus-field-3+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@focus-field-4+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-1": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-1+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-1+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-1+mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-2": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-2+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-2+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-2+mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-3": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-3+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-3+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-3+mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-4+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-field-4+mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-sender-1": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-sender-1+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-sender-1+mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "catalog/actions/all-selects@hover-sender-1+mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "catalog/actions/all-selects@focus-field-1+dark": [],
+  "catalog/actions/all-selects@focus-field-1+mobile": [],
+  "catalog/actions/all-selects@focus-field-2+dark": [],
+  "catalog/actions/all-selects@focus-field-2+mobile": [],
+  "catalog/actions/all-selects@focus-field-3+dark": [],
+  "catalog/actions/all-selects@focus-field-3+mobile": [],
+  "catalog/actions/all-selects@focus-field-4+dark": [],
+  "catalog/actions/all-selects@hover-field-1": [],
+  "catalog/actions/all-selects@hover-field-1+dark": [],
+  "catalog/actions/all-selects@hover-field-1+mobile": [],
+  "catalog/actions/all-selects@hover-field-1+mobile+dark": [],
+  "catalog/actions/all-selects@hover-field-2": [],
+  "catalog/actions/all-selects@hover-field-2+dark": [],
+  "catalog/actions/all-selects@hover-field-2+mobile": [],
+  "catalog/actions/all-selects@hover-field-2+mobile+dark": [],
+  "catalog/actions/all-selects@hover-field-3": [],
+  "catalog/actions/all-selects@hover-field-3+dark": [],
+  "catalog/actions/all-selects@hover-field-3+mobile": [],
+  "catalog/actions/all-selects@hover-field-3+mobile+dark": [],
+  "catalog/actions/all-selects@hover-field-4+mobile": [],
+  "catalog/actions/all-selects@hover-field-4+mobile+dark": [],
+  "catalog/actions/all-selects@hover-sender-1": [],
+  "catalog/actions/all-selects@hover-sender-1+dark": [],
+  "catalog/actions/all-selects@hover-sender-1+mobile": [],
+  "catalog/actions/all-selects@hover-sender-1+mobile+dark": [],
   "catalog/actions/all-selects@mobile": [],
-  "catalog/actions/all-selects@mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "catalog/actions/all-selects@mobile+dark": [],
   "catalog/actions/all-selects@open": [],
   "catalog/actions/all-selects@open+dark": [],
-  "catalog/actions/all-selects@open+mobile": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|Select an item|0",
-    "missing|User Four|1",
-    "extra|--Select an item--|0",
-    "extra|User Two|1"
-  ],
-  "catalog/actions/all-selects@open+mobile+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|Select an item|0",
-    "missing|User Four|1",
-    "extra|--Select an item--|0",
-    "extra|User Two|1"
-  ],
+  "catalog/actions/all-selects@open+mobile": [],
+  "catalog/actions/all-selects@open+mobile+dark": [],
   "catalog/actions/all-selects@pick": [
-    "missing|*plain_text option 1*|0",
-    "extra|--Select an item--|0"
+    "missing|*plain_text option 1*|0"
+  ],
+  "catalog/actions/all-selects@pick-static": [
+    "missing|*plain_text option 1*|0"
   ],
   "catalog/actions/all-selects@pick+dark": [
-    "missing|*plain_text option 1*|0",
-    "extra|--Select an item--|0"
+    "missing|*plain_text option 1*|0"
   ],
   "catalog/actions/all-selects@pick+mobile": [
-    "missing|*plain_text option 1*|0",
-    "extra|--Select an item--|0"
+    "missing|*plain_text option 1*|0"
   ],
   "catalog/actions/all-selects@pick+mobile+dark": [
-    "missing|*plain_text option 1*|0",
-    "extra|--Select an item--|0"
+    "missing|*plain_text option 1*|0"
   ],
   "catalog/actions/button": [],
   "catalog/actions/button@dark": [],
@@ -638,86 +542,21 @@
   "catalog/container/collapsible@mobile+dark": [],
   "catalog/container/data-entry-form": [],
   "catalog/container/data-entry-form@dark": [],
-  "catalog/container/data-entry-form@focus-input-1": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
-  "catalog/container/data-entry-form@focus-input-1+dark": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
-  "catalog/container/data-entry-form@focus-input-1+mobile": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
-  "catalog/container/data-entry-form@hover-input-1": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
-  "catalog/container/data-entry-form@hover-input-1+dark": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
-  "catalog/container/data-entry-form@hover-input-1+mobile": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
-  "catalog/container/data-entry-form@hover-input-1+mobile+dark": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
+  "catalog/container/data-entry-form@focus-input-1": [],
+  "catalog/container/data-entry-form@focus-input-1+dark": [],
+  "catalog/container/data-entry-form@focus-input-1+mobile": [],
+  "catalog/container/data-entry-form@hover-input-1": [],
+  "catalog/container/data-entry-form@hover-input-1+dark": [],
+  "catalog/container/data-entry-form@hover-input-1+mobile": [],
+  "catalog/container/data-entry-form@hover-input-1+mobile+dark": [],
   "catalog/container/data-entry-form@mobile": [],
-  "catalog/container/data-entry-form@mobile+dark": [
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
-  ],
+  "catalog/container/data-entry-form@mobile+dark": [],
   "catalog/container/data-entry-form@open": [],
   "catalog/container/data-entry-form@open+dark": [],
-  "catalog/container/data-entry-form@open+mobile": [
-    "y|Critical|0",
-    "color|Critical|0",
-    "y|High|0",
-    "y|Medium|0",
-    "y|Low|0",
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0",
-    "extra|--Select priority--|1"
-  ],
-  "catalog/container/data-entry-form@open+mobile+dark": [
-    "y|Critical|0",
-    "color|Critical|0",
-    "y|High|0",
-    "y|Medium|0",
-    "y|Low|0",
-    "missing|Select priority|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0",
-    "extra|--Select priority--|1"
-  ],
+  "catalog/container/data-entry-form@open+mobile": [],
+  "catalog/container/data-entry-form@open+mobile+dark": [],
   "catalog/container/data-entry-form@pick": [
-    "missing|High|0",
-    "missing|Select category|0",
-    "extra|--Select priority--|0",
-    "extra|--Select category--|0"
+    "missing|High|0"
   ],
   "catalog/container/full-width": [],
   "catalog/container/full-width@dark": [],
@@ -973,15 +812,11 @@
   "catalog/input/static-select": [],
   "catalog/input/static-select@dark": [],
   "catalog/input/static-select@mobile": [],
-  "catalog/input/static-select@mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "catalog/input/static-select@mobile+dark": [],
   "catalog/input/static-select@open": [],
   "catalog/input/static-select@open+dark": [],
   "catalog/input/static-select@pick": [
-    "missing|*plain_text option 1*|0",
-    "extra|--Select an item--|0"
+    "missing|*plain_text option 1*|0"
   ],
   "catalog/input/timepicker": [],
   "catalog/input/timepicker@dark": [],
@@ -1199,10 +1034,7 @@
   "catalog/section/static-select": [],
   "catalog/section/static-select@dark": [],
   "catalog/section/static-select@mobile": [],
-  "catalog/section/static-select@mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "catalog/section/static-select@mobile+dark": [],
   "catalog/section/static-select@open": [],
   "catalog/section/static-select@open+dark": [],
   "catalog/section/text-fields": [],
@@ -1895,47 +1727,20 @@
   "contexts/static_select/accessory": [],
   "contexts/static_select/accessory@dark": [],
   "contexts/static_select/accessory@mobile": [],
-  "contexts/static_select/accessory@mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "contexts/static_select/accessory@mobile+dark": [],
   "contexts/static_select/accessory@open": [],
   "contexts/static_select/accessory@open+dark": [],
   "contexts/static_select/actions": [],
   "contexts/static_select/actions@dark": [],
-  "contexts/static_select/actions@focus-field-1": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "contexts/static_select/actions@focus-field-1": [],
   "contexts/static_select/actions@mobile": [],
-  "contexts/static_select/actions@mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
+  "contexts/static_select/actions@mobile+dark": [],
   "contexts/static_select/actions@open": [],
   "contexts/static_select/actions@open+dark": [],
-  "contexts/static_select/home": [
-    "extra|--Select an item--|0"
-  ],
-  "contexts/static_select/home@dark": [
-    "extra|--Select an item--|0"
-  ],
-  "contexts/static_select/home@open": [
-    "y|Option 1|0",
-    "color|Option 1|0",
-    "y|Option 2|0",
-    "y|Option 3|0",
-    "extra|--Select an item--|0",
-    "extra|--Select an item--|1"
-  ],
-  "contexts/static_select/home@open+dark": [
-    "y|Option 1|0",
-    "color|Option 1|0",
-    "y|Option 2|0",
-    "y|Option 3|0",
-    "extra|--Select an item--|0",
-    "extra|--Select an item--|1"
-  ],
+  "contexts/static_select/home": [],
+  "contexts/static_select/home@dark": [],
+  "contexts/static_select/home@open": [],
+  "contexts/static_select/home@open+dark": [],
   "contexts/static_select/modal-input": [],
   "contexts/static_select/modal-input@dark": [],
   "contexts/static_select/modal-input@open": [],
@@ -2790,11 +2595,11 @@
   "extra/fidelity/datepicker/empty@mobile+dark": [],
   "extra/fidelity/datepicker/empty@open": [
     "color|12|0",
-    "color|15|0"
+    "color|16|0"
   ],
   "extra/fidelity/datepicker/empty@open+dark": [
     "color|12|0",
-    "color|15|0"
+    "color|16|0"
   ],
   "extra/fidelity/datetimepicker/empty": [
     "extra|Select a date|0"
@@ -2846,20 +2651,10 @@
   "extra/fidelity/email-text-input/long-content@dark": [],
   "extra/fidelity/email-text-input/long-content@mobile": [],
   "extra/fidelity/email-text-input/long-content@mobile+dark": [],
-  "extra/fidelity/external-select/initial-value": [
-    "y|Mango|0"
-  ],
-  "extra/fidelity/external-select/initial-value@dark": [
-    "y|Mango|0",
-    "color|Mango|0"
-  ],
-  "extra/fidelity/external-select/initial-value@mobile": [
-    "y|Mango|0"
-  ],
-  "extra/fidelity/external-select/initial-value@mobile+dark": [
-    "y|Mango|0",
-    "color|Mango|0"
-  ],
+  "extra/fidelity/external-select/initial-value": [],
+  "extra/fidelity/external-select/initial-value@dark": [],
+  "extra/fidelity/external-select/initial-value@mobile": [],
+  "extra/fidelity/external-select/initial-value@mobile+dark": [],
   "extra/fidelity/external-select/initial-value@open": [],
   "extra/fidelity/external-select/initial-value@open+dark": [],
   "extra/fidelity/external-select/long-content": [],
@@ -3351,46 +3146,12 @@
     "extra|Cancel|0",
     "extra|Submit|0"
   ],
-  "extra/fidelity/option-group/many-items": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "extra/fidelity/option-group/many-items@dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "extra/fidelity/option-group/many-items@mobile": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "extra/fidelity/option-group/many-items@mobile+dark": [
-    "missing|Select an item|0",
-    "extra|--Select an item--|0"
-  ],
-  "extra/fidelity/option-group/many-items@open": [
-    "y|Group one|0",
-    "y|Option 1|0",
-    "color|Option 1|0",
-    "y|Option 2|0",
-    "y|Group two|0",
-    "y|Option 3|0",
-    "y|Option 4|0",
-    "missing|Select an item|0",
-    "extra|--Select an item--|0",
-    "extra|--Select an item--|1"
-  ],
-  "extra/fidelity/option-group/many-items@open+dark": [
-    "y|Group one|0",
-    "y|Option 1|0",
-    "color|Option 1|0",
-    "y|Option 2|0",
-    "y|Group two|0",
-    "y|Option 3|0",
-    "y|Option 4|0",
-    "missing|Select an item|0",
-    "extra|--Select an item--|0",
-    "extra|--Select an item--|1"
-  ],
+  "extra/fidelity/option-group/many-items": [],
+  "extra/fidelity/option-group/many-items@dark": [],
+  "extra/fidelity/option-group/many-items@mobile": [],
+  "extra/fidelity/option-group/many-items@mobile+dark": [],
+  "extra/fidelity/option-group/many-items@open": [],
+  "extra/fidelity/option-group/many-items@open+dark": [],
   "extra/fidelity/option/long-content": [],
   "extra/fidelity/option/long-content@confirm": [],
   "extra/fidelity/option/long-content@confirm+dark": [
@@ -4058,22 +3819,21 @@
     "extra|1:37 PM|0"
   ],
   "extra/payloads/selects": [],
+  "extra/payloads/selects@change-single": [
+    "missing|Bravo|0",
+    "extra|Alpha|0"
+  ],
   "extra/payloads/selects@dark": [],
-  "extra/payloads/selects@mobile": [
-    "missing|Choose|0",
-    "extra|--Choose--|0"
+  "extra/payloads/selects@keyboard-single": [
+    "missing|Charlie|0",
+    "extra|Alpha|0"
   ],
-  "extra/payloads/selects@mobile+dark": [
-    "missing|Choose|0",
-    "extra|--Choose--|0"
-  ],
-  "extra/payloads/selects@open": [
-    "missing|Choose|0",
-    "extra|--Choose--|0"
-  ],
-  "extra/payloads/selects@open+dark": [
-    "missing|Choose|0",
-    "extra|--Choose--|0"
+  "extra/payloads/selects@mobile": [],
+  "extra/payloads/selects@mobile+dark": [],
+  "extra/payloads/selects@open": [],
+  "extra/payloads/selects@open+dark": [],
+  "extra/payloads/selects@pick-accessory": [
+    "missing|Two|0"
   ],
   "extra/rich-text/mentions-and-styles": [
     "missing|· colour #1264A3|0",
