@@ -178,6 +178,13 @@ jobs:
       # scripts run here.
       - if: steps.build.outputs.run
         run: bun install --frozen-lockfile --ignore-scripts
+      # Wrangler, pinned by tools/deploy/bun.lock: a package outside the workspaces, so only the
+      # jobs that deploy install it. Its bin directory goes on PATH. No lifecycle scripts run here.
+      - if: steps.build.outputs.run
+        working-directory: tools/deploy
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
       # The build comes from the pull request, so it lands outside the workspace, where it can't
       # replace a file this job runs. Wrangler uploads every file under dist/, so a symlink could
       # publish a file from the runner; refuse any.
@@ -207,7 +214,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler.ndjson
         run: |
-          bunx wrangler@4 preview --name "pr-$PR" --message "$HEAD_SHA"
+          wrangler preview --name "pr-$PR" --message "$HEAD_SHA"
           url=$(jq -r 'select(.type == "preview") | .preview_urls[0] // empty' "$WRANGLER_OUTPUT_FILE_PATH")
           if [ -z "$url" ]; then
             echo "::error::The Preview has no URL. Is \"preview_urls\" deployed to production?"
@@ -252,6 +259,15 @@ jobs:
       REPO: ${{ github.repository }}
       PR: ${{ github.event.pull_request.number }}
     steps:
+      # The default branch, never the pull request: its tools/deploy/bun.lock pins the Wrangler that
+      # runs with the Cloudflare token.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
       # Only a pull request this workflow commented on can have a Preview.
       - id: comment
         run: |
@@ -260,6 +276,13 @@ jobs:
             head -n 1)
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
+      # Wrangler, pinned by tools/deploy/bun.lock: a package outside the workspaces, so only the
+      # jobs that deploy install it. Its bin directory goes on PATH. No lifecycle scripts run here.
+      - if: steps.comment.outputs.id
+        working-directory: tools/deploy
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
       - if: steps.comment.outputs.id
         name: Delete the Cloudflare Workers Preview
         # bash with pipefail, so a failed delete fails the `if` despite the tee.
@@ -269,7 +292,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           # No maintainer may have deployed one; Cloudflare answers 10025 for a missing Preview.
-          if ! npx --yes wrangler@4 preview delete --worker-name "$WORKER" --name "pr-$PR" \
+          if ! wrangler preview delete --worker-name "$WORKER" --name "pr-$PR" \
             --skip-confirmation 2>&1 | tee "$RUNNER_TEMP/delete.log"; then
             grep -q "code: 10025" "$RUNNER_TEMP/delete.log" || exit 1
           fi

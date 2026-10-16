@@ -87,11 +87,19 @@ jobs:
           bun-version-file: package.json
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          # Trusted publishing needs npm 11.5.1 or later; this Node bundles npm 11.19.0. Pinned to
+          # an exact release, as the actions are: this job can publish, so nothing in it moves
+          # under us. Take a newer Node once it has had a week out (nodejs.org/dist/index.json
+          # lists each release's npm).
+          node-version: 24.21.0
           registry-url: https://registry.npmjs.org
-      # Trusted publishing needs npm 11.5.1 or later. Pinned, as the actions are: this job can
-      # publish, so nothing in it moves under us. Take a newer npm once it has had a week out.
-      - run: npm install -g npm@12.1.0
+      - name: Require npm 11.5.1 or later
+        run: |
+          version=$(npm --version)
+          if [ "$(printf '%s\n' 11.5.1 "$version" | sort -V | head -n 1)" != 11.5.1 ]; then
+            echo "::error::Trusted publishing needs npm 11.5.1 or later; this Node bundles npm $version."
+            exit 1
+          fi
       - run: bun install --frozen-lockfile
 
       - name: Stamp the version

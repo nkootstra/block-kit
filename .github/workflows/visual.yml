@@ -6,8 +6,9 @@ name: Visual
 #   its own check. A maintainer can accept a deliberate regression with the visual-baseline-increase
 #   label.
 # - Pushes to main record the new baseline and commit it: new fixtures and improvements always,
-#   increases only when the merged PR carried the label. The commit is pushed with the
-#   VISUAL_DEPLOY_KEY deploy key, the one actor the main ruleset lets push without a pull request.
+#   increases only when a PR merged since the last recording carried the label. The slices measure
+#   and the `record` job merges their reports, commits and pushes, with the VISUAL_DEPLOY_KEY deploy
+#   key, the one actor the main ruleset lets push without a pull request.
 # - Run manually with `update_baseline` to regenerate the whole file as an artifact.
 # - Pull requests also render every fixture with the base branch's build and their own, in light
 #   and dark, and upload the renders that differ as the `render-diff` artifact. The Visual preview
@@ -38,8 +39,15 @@ permissions:
   contents: read
 
 concurrency:
-  # Baseline commits to main queue up; a pull request only needs its latest run.
-  group: visual-${{ github.event_name == 'push' && 'main' || github.ref }}
+  # Baseline commits to main queue up: a run on main is never cancelled once it started, though a
+  # newer push replaces one still waiting, and `record` then picks up the PRs it skipped. A pull
+  # request only needs its latest run. A label other than
+  # visual-baseline-increase compares nothing, so its run gets a group of its own rather than
+  # cancelling the pull request's comparison.
+  group: >-
+    visual-${{ github.event_name == 'push' && 'main' || github.ref }}${{
+    contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
+    github.event.label.name != 'visual-baseline-increase' && '-other-label' || '' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -83,26 +91,25 @@ jobs:
       (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) ||
       github.event.label.name == 'visual-baseline-increase')
     runs-on: ubuntu-latest
-    # A pull request compares the fixtures in four slices at once (compare.ts --shard), about 13
-    # minutes each. main and a manual run rewrite the baseline, which takes every fixture in one
-    # job, about 50 minutes. A hang fails fast instead of holding a runner for six hours.
+    # Pull requests and main compare the fixtures in eight slices at once (compare.ts --shard),
+    # about 7 minutes each; on main, `record` merges the slices' reports into the baseline. A manual
+    # run takes every fixture in one job, about 50 minutes. A hang fails fast instead of holding a
+    # runner for six hours.
     timeout-minutes: 75
     strategy:
       fail-fast: false
       matrix:
-        shard: ${{ fromJSON(github.event_name == 'pull_request' && '["1/4","2/4","3/4","4/4"]' || '["all"]') }}
+        shard: ${{ fromJSON(github.event_name == 'workflow_dispatch' && '["all"]' || '["1/8","2/8","3/8","4/8","5/8","6/8","7/8","8/8"]') }}
     container: mcr.microsoft.com/playwright:v1.63.0-noble
     permissions:
       contents: read
-      pull-requests: read
     steps:
-      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git and
-      # ssh come first so checkout makes a real clone that the baseline commit can push from.
-      - run: apt-get update && apt-get install -y --no-install-recommends unzip git openssh-client
+      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git comes
+      # first so checkout makes a real clone, which the base branch's sparse checkout needs.
+      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Only a push to main commits; pull requests, forks included, never see the key.
-          ssh-key: ${{ github.event_name == 'push' && secrets.VISUAL_DEPLOY_KEY || '' }}
+          persist-credentials: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
@@ -137,38 +144,17 @@ jobs:
           --text-baseline=base/fixtures/text-baseline.linux.json
           $ALLOW_INCREASE
 
-      - name: Record the baseline
+      # A slice can't update the baseline (compare.ts refuses --shard with --update-baseline): it
+      # only measures, writing test-results/visual/report.json for `record` to merge.
+      - name: Measure
         if: github.event_name == 'push'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          labels=$(bun -e '
-            const res = await fetch(
-              `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/commits/${process.env.GITHUB_SHA}/pulls`,
-              { headers: { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: "application/vnd.github+json" } },
-            );
-            if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
-            const pulls = await res.json();
-            console.log(pulls.flatMap((p) => p.labels.map((l) => l.name)).join("\n"));
-          ')
-          if grep -qx "$LABEL" <<< "$labels"; then mode=--update-baseline; else mode=--update-baseline=lower; fi
-          bun tools/visual/src/compare.ts $mode
-      - name: Commit the baseline
+        run: bun tools/visual/src/compare.ts --shard=${{ matrix.shard }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: github.event_name == 'push'
-        shell: bash
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          baselines="fixtures/visual-baseline.linux.json fixtures/text-baseline.linux.json"
-          git add $baselines
-          git diff --cached --quiet -- $baselines && exit 0
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # CI runs on this commit (a deploy key's push triggers workflows), so a release can be cut
-          # from it; the push trigger's paths-ignore keeps this workflow from comparing it again.
-          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" -- $baselines
-          git pull --rebase origin main
-          git push origin HEAD:main
+        with:
+          name: report-${{ strategy.job-index }}
+          path: test-results/visual/report.json
+          if-no-files-found: error
 
       - name: Update baseline
         if: github.event_name == 'workflow_dispatch' && inputs.update_baseline
@@ -188,18 +174,143 @@ jobs:
             fixtures/text-baseline.linux.json
           if-no-files-found: ignore
 
-  # The check the main ruleset requires: it passes when every slice passed, or when the comparison
-  # was skipped because nothing it renders changed.
-  compare:
+  # Merges the slices' reports on main into the baseline and commits it, once every slice succeeded.
+  # merge-baseline.ts fails unless the reports cover every reference, so a lost slice can't drop
+  # fixtures from the baseline; nothing is committed then, and the next push records them.
+  record:
+    name: Record the baseline
     needs: compare-shard
-    if: always()
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only a push to main commits; pull requests, forks included, never see the key.
+          ssh-key: ${{ secrets.VISUAL_DEPLOY_KEY }}
+          # The history since the last recording, to find the PRs merged since.
+          fetch-depth: 0
+      # merge-baseline.ts imports nothing outside tools/visual/src, so no install.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: report-*
+          path: ${{ runner.temp }}/reports
+      # Increases are accepted when any PR merged since the last recorded run carried the label, not
+      # only this push's: a newer push replaces a run still waiting in the concurrency group, and a
+      # run whose slices failed recorded nothing, so their PRs are recorded here.
+      - name: Merge the slices
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          last=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/visual.yml/runs?branch=main&event=push&status=success&per_page=1" \
+            --jq '.workflow_runs[0].head_sha // empty')
+          if [ -n "$last" ] && git merge-base --is-ancestor "$last" HEAD; then
+            commits=$(git rev-list --first-parent --max-count=100 "$last..HEAD")
+          else
+            commits=$GITHUB_SHA
+          fi
+          labels=$(for sha in $commits; do
+            gh api "repos/$GITHUB_REPOSITORY/commits/$sha/pulls" --jq '.[].labels[].name' || exit 1
+          done)
+          if grep -qx "$LABEL" <<< "$labels"; then mode=--update-baseline; else mode=--update-baseline=lower; fi
+          echo "Recording with $mode for $(wc -w <<< "$commits") commits since ${last:-this one}"
+          bun tools/visual/src/merge-baseline.ts "$mode" --platform=linux "$RUNNER_TEMP"/reports/*/report.json
+      - name: Commit the baseline
+        run: |
+          baselines="fixtures/visual-baseline.linux.json fixtures/text-baseline.linux.json"
+          git add $baselines
+          git diff --cached --quiet -- $baselines && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # CI runs on this commit (a deploy key's push triggers workflows), so a release can be cut
+          # from it; the push trigger's paths-ignore keeps this workflow from comparing it again.
+          git commit -m "test(visual): record the Linux baseline for ${GITHUB_SHA::7}" -- $baselines
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: baseline
+          path: |
+            fixtures/visual-baseline.linux.json
+            fixtures/text-baseline.linux.json
+
+  # The check the main ruleset requires: it passes when every slice passed, or when the comparison
+  # was skipped because nothing it renders changed, and fails when a slice failed. A run that was
+  # cancelled (a newer push or label superseded it) skips it instead of failing it: the newer run
+  # reports the check.
+  #
+  # A label other than visual-baseline-increase compares nothing, so its run must not report
+  # `compare` at all: even a skipped job posts a passing check, and the latest check run of a name
+  # is the one the ruleset reads, so adding any label after a failure would turn the check green.
+  # That run names this job differently (the name is the check's name), which leaves the head
+  # commit's `compare` as the last comparison reported it.
+  compare:
+    name: >-
+      ${{ contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
+      github.event.label.name != 'visual-baseline-increase' && 'compare (label only, not a verdict)' ||
+      'compare' }}
+    needs: compare-shard
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - env:
           RESULT: ${{ needs.compare-shard.result }}
+          OTHER_LABEL: >-
+            ${{ contains(fromJSON('["labeled","unlabeled"]'), github.event.action) &&
+            github.event.label.name != 'visual-baseline-increase' }}
         run: |
+          if [ "$OTHER_LABEL" = true ]; then
+            echo "This label doesn't change the comparison; the compare check stays as it was."
+            exit 0
+          fi
           echo "The comparison's slices: $RESULT"
           [ "$RESULT" = success ] || [ "$RESULT" = skipped ]
+
+  # The tests that need a browser (test:browser), one job per engine so they don't queue behind each
+  # other or the render diff. Chromium runs them all; Firefox and WebKit run the interaction tests,
+  # the only ones that use them. Not a required check.
+  browser-tests:
+    name: Browser tests (${{ matrix.engine }})
+    needs: changes
+    # Label changes don't change what renders.
+    if: >-
+      needs.changes.outputs.visual == 'true' &&
+      github.event_name == 'pull_request' &&
+      !contains(fromJSON('["labeled","unlabeled"]'), github.event.action)
+    runs-on: ubuntu-latest
+    # Chromium takes about 8 minutes, the others about 4; a hang fails fast instead of holding a
+    # runner for six hours.
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    # The container runs as root, but GitHub mounts HOME at /github/home owned by another user, and
+    # Firefox refuses to start under a HOME it doesn't own. Playwright's documented workaround.
+    env:
+      HOME: /root
+      SBK_ENGINES: ${{ matrix.engine }}
+    permissions:
+      contents: read
+    steps:
+      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: bun run --cwd tools/visual ${{ matrix.engine == 'chromium' && 'test:browser' || 'test:interaction' }}
 
   render-diff:
     name: Render changed fixtures
@@ -210,13 +321,9 @@ jobs:
       github.event_name == 'pull_request' &&
       !contains(fromJSON('["labeled","unlabeled"]'), github.event.action)
     runs-on: ubuntu-latest
-    # A run takes about 12 minutes; a hang fails fast instead of holding a runner for six hours.
-    timeout-minutes: 30
+    # A run takes about 6 minutes; a hang fails fast instead of holding a runner for six hours.
+    timeout-minutes: 20
     container: mcr.microsoft.com/playwright:v1.63.0-noble
-    # The container runs as root, but GitHub mounts HOME at /github/home owned by another user, and
-    # Firefox refuses to start under a HOME it doesn't own. Playwright's documented workaround.
-    env:
-      HOME: /root
     permissions:
       contents: read
     steps:
@@ -229,7 +336,6 @@ jobs:
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
-      - run: bun run --cwd tools/visual test:browser
       # The base branch's library, checked out next to the workspace with its own dependencies.
       - name: Check out the base branch
         env:

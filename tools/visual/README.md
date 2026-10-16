@@ -23,10 +23,15 @@ bun run compare
   combined with `--check` or `--update-baseline`.
 - `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
 - `--shard=2/4` compares one slice of the fixtures: every fourth one, starting from the second.
-  CI checks a pull request in four slices at once; a slice can't update the baseline.
+  CI checks a pull request in eight slices at once; a slice can't update the baseline.
 - `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`
   and the flagged text runs in `fixtures/text-baseline.<platform>.json` ([Text runs](#text-runs));
   `--update-baseline=lower` only adds new fixtures and lowers improved ones.
+- `bun tools/visual/src/merge-baseline.ts --update-baseline[=lower] <report.json>...` records the
+  baselines from the `test-results/visual/report.json` of every slice of a sharded run, as one full
+  `--update-baseline` run would. It fails and writes nothing unless the reports hold exactly one
+  result for every reference, so a missing slice can't drop fixtures from the baselines.
+  `--platform=linux` picks the baselines to write when the slices ran on another platform.
 
 Open `test-results/visual/index.html` for side-by-side reference / ours / diff images.
 
@@ -634,18 +639,32 @@ The Visual workflow keeps the Linux baseline without anyone editing it by hand:
 - A pull request is compared only when it touches something the comparison renders: the package,
   the playground, `fixtures/`, `tools/visual/` or the dependencies. Otherwise the comparison is
   skipped, which counts as passing.
-- A pull request's fixtures are compared in four parallel `compare-shard` jobs (`--shard`), about 13
-  minutes each instead of about 50 in one. The `compare` job, the check the ruleset requires, passes
-  when all four did. `main` and a manual run compare every fixture in one job, since they rewrite
-  the baseline.
+- The fixtures are compared in eight parallel `compare-shard` jobs (`--shard`), about 7
+  minutes each instead of about 50 in one; each spends a few minutes installing and starting the
+  playground, so more slices save less. The `compare` job, the check the ruleset requires, passes
+  when all eight did and fails when one failed. A run superseded by a newer push or label is
+  cancelled, and its `compare` is skipped rather than failed; the newer run reports the check. A
+  label other than `visual-baseline-increase` compares nothing and doesn't cancel the comparison
+  in progress. Its run names the aggregator `compare (label only, not a verdict)` instead, so it
+  never reports a `compare` check: the ruleset reads the latest check of that name, and a passing
+  one from a label would hide a failed comparison. A manual run compares every fixture in one job.
 - A pull request is checked against the **base branch's** baseline, so it can't loosen its own
   check. A fixture with no entry yet is reported, not failed. A maintainer accepts a deliberate
   regression with the `visual-baseline-increase` label.
 - After a merge, the workflow records the new numbers on `main` and commits them: new fixtures and
-  improvements beyond the tolerance always, increases only when the merged PR carried the label.
-  It pushes with the `VISUAL_DEPLOY_KEY` deploy key, which the `protect main` ruleset lets bypass
-  the pull request requirement. CI runs on that commit, so a release can be cut from it; the Visual
-  workflow ignores it, since only the baseline changed.
+  improvements beyond the tolerance always, increases only when a PR merged since the last
+  recorded run carried the label. The slices only measure and upload their `report.json`; once all
+  eight succeeded, the `record` job merges them with `merge-baseline.ts`, which refuses unless they
+  cover every reference, then commits both baselines in one commit. If a slice fails, nothing is
+  recorded and the next push records it. `record` pushes with the `VISUAL_DEPLOY_KEY` deploy key,
+  which the `protect main` ruleset lets bypass the pull request requirement. CI runs on that
+  commit, so a release can be cut from it; the Visual workflow ignores it, since only the baseline
+  changed.
+- Runs on `main` queue up and are never cancelled once they start. While one runs, a newer push
+  replaces a run that is still waiting, so that run's PR is never measured on its own. That is why
+  `record` looks for the label on every PR merged since the last successful run on `main` (up to
+  100 merges), not only the one it measures: an increase accepted in a replaced or failed run is
+  still recorded.
 - Running the workflow manually with `update_baseline` regenerates the whole file as an artifact.
 
 `visual-baseline.darwin.json` is for local runs only; keep it current with
@@ -675,7 +694,8 @@ the library draws them from a fixed, version-pinned set, so a payload can't choo
 
 `bun run --cwd tools/visual test:browser` runs the tests that need a browser, including the
 interaction tests below (`bunx playwright install chromium firefox webkit`); `bun run test` runs the
-rest.
+rest. In CI they run in the `Browser tests` jobs, one per engine, next to the `render-diff` job
+rather than before it; none of them is a required check.
 
 ## Interaction styles
 
@@ -696,7 +716,9 @@ don't have.
   than 2px to whole CSS pixels at any scale, so only WebKit on a 2x screen (Safari on a Retina
   display) paints a checkbox's 1.5px border; the declared width is checked in every engine.
 
-CI runs them in the `render-diff` job, whose Playwright image has all three browsers.
+`SBK_ENGINES=firefox,webkit` runs only those engines (`bun run test:interaction` runs this file
+alone). CI runs each engine in its own `Browser tests (<engine>)` job, in the Playwright image that
+has all three browsers: Chromium runs every browser test, Firefox and WebKit only these.
 
 ## Behaviour probes
 

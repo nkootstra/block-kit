@@ -6,6 +6,7 @@
     "packages/*",
     "apps/*",
     "tools/*",
+    "!tools/deploy",
     "examples/*"
   ],
   "type": "module",
