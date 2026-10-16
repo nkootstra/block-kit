@@ -137,20 +137,6 @@ export const FINDINGS: Finding[] = [
     components: ["rich_text.color"],
   },
   {
-    id: "select-placeholder-dashes",
-    title:
-      "Slack drops the dashes around a button select's placeholder at mobile width and when open",
-    evidence: [
-      'Confirmed by a fresh capture (extra/payloads/selects@mobile, light, captured in the verification session): at the mobile width, in light and dark, and in the @open states, Slack writes the static select\'s placeholder as "Choose"; at desktop width at rest it writes "--Choose--". The earlier +mobile+dark captures (extra/payloads/selects, catalog/container/data-entry-form) show the same, so it isn\'t a Builder change.',
-      'Ours always writes "--Choose--".',
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.tsx: the button select's dashed placeholder. Slack seems to add the dashes only in the desktop at-rest layout; which rule decides it (width, the open state, the button-select layout) is to be found from the references.",
-    ],
-    next: "Compare every reference of a button select (desktop, mobile, @open, dark) for the placeholder text, then match the rule.",
-    components: ["static_select"],
-  },
-  {
     id: "button-long-text-ellipsis",
     title: "Slack cuts a long button label to one line with an ellipsis; ours wraps",
     evidence: [
@@ -214,19 +200,19 @@ export const FINDINGS: Finding[] = [
     components: ["input", "modal-frame"],
   },
   {
-    id: "static-select-keyboard",
-    title: "An open static select's keyboard highlight, Enter and focus differ from Slack's",
+    id: "typed-select-keyboard",
+    title: "A typed-into select's arrow keys, outside click and field value differ from Slack's",
     evidence: [
-      'Probe contexts/static_select/actions@keyboard (verification session): Slack\'s first ArrowDown highlights "Option 2" (option 1 is already highlighted when the list opens), ours "Option 1"; after two ArrowDowns and Enter, Slack picks "Option 3", ours "Option 2".',
-      "After Enter, Slack keeps focus on the field; ours moves it to the option.",
-      "The same start shows in the users, conversations and channels selects: Slack's Enter right after opening picks the first entry (contexts/*_select/actions@pick recordings); ours picks nothing and sends no payload (listed in actionPayloads.test.tsx KNOWN_UNSENT).",
-      'Ours marks option 1 aria-selected="true" before anything is chosen, and lists an extra option-4 entry Slack doesn\'t have.',
+      "Probe contexts/static_select/accessory@scroll-field-1 (16 October 2026): Slack's ArrowDown runs Option 1, 2, 3 and then back to no highlight (the field) before Option 1 again; ours wraps from Option 3 straight to Option 1.",
+      "Probe extra/payloads/selects@outside-click: with the first select open, a click on the second only closes the first in Slack; ours opens the second.",
+      'Every typed-into select probe: Slack keeps the input empty while its value layer shows the choice (field-1.value ""); ours keeps the chosen label in the input, transparent behind the layer.',
     ],
     suspect: [
-      "packages/block-kit/src/elements/useCombobox.ts and Select.tsx: the initial highlight on open, where focus goes after a pick, aria-selected before a selection, and the extra list entry.",
+      "packages/block-kit/src/elements/useMenuNavigation.ts: a no-highlight step at the end of the cycle for typed-into lists.",
+      "packages/block-kit/src/elements/Popover.tsx and Select.tsx: whether the click that dismisses an open list also reaches the control under it, and the input's value while the overlay shows.",
     ],
-    next: "Replay the recording on ours (bun tools/visual/src/probes.ts contexts/static_select) after a fix; the other select probes will show whether multi, users and conversations selects share it.",
-    components: ["static_select", "option"],
+    next: "Replay the probes on ours (bun tools/visual/src/probes.ts contexts/static_select extra/payloads/selects) after a fix; the external select probes will show whether it shares each one.",
+    components: ["static_select", "external_select", "option"],
   },
   {
     id: "select-focus-styles",

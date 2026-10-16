@@ -58,8 +58,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     );
   },
   "catalog/actions/all-selects@pick-static": async () => {
-    // Slack's static select is a button showing its placeholder between dashes.
-    fireEvent.click(screen.getByText("--Select an item--"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   "catalog/actions/radio-buttons@pick": () => clickAsync(screen.getAllByRole("radio")[1]!),
@@ -168,7 +167,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   "catalog/actions/all-selects@pick": async () => {
     // The static select (actionId-3), as in all-selects@pick-static.
-    fireEvent.click(screen.getByText("--Select an item--"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByText("*plain_text option 1*"));
   },
   // The first channel the Builder's workspace lists (redacted to C0000001; PROVIDER).
@@ -183,7 +182,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await clickAsync(screen.getByRole("option", { name: /channel-two/ }));
   },
   "catalog/container/data-entry-form@pick": async () => {
-    fireEvent.click(screen.getByText("--Select priority--"));
+    fireEvent.click(screen.getByPlaceholderText("Select priority"));
     await clickAsync(screen.getByRole("option", { name: "High" }));
   },
   "catalog/input/radio-buttons@pick": () =>
@@ -201,7 +200,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await keyDownAsync(field, "Enter");
   },
   "catalog/input/static-select@pick": async () => {
-    fireEvent.click(screen.getByText("--Select an item--"));
+    fireEvent.click(screen.getByPlaceholderText("Select an item"));
     await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
   },
   "catalog/section/radio-buttons@pick": () =>
@@ -579,14 +578,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
   // Block Kit Builder leaves a link button's url out of the action, but Bolt's ButtonAction
   // declares `url?: string`, so real Slack may send it. Kept until a real app's payload settles it.
   "extra/payloads/buttons@click-url": ['actions.0.url: Slack missing, ours "https://example.com"'],
-  // Slack's open list starts on its first option, so two ArrowDowns reach the third; ours starts
-  // before the first (fidelity finding static-select-keyboard). Removed once that's fixed.
-  "contexts/static_select/actions@keyboard": [
-    'actions.0.selected_option.text.text: Slack "Option 3", ours "Option 2"',
-    'actions.0.selected_option.value: Slack "value-3", ours "value-2"',
-    'state.values.<block_id>.static.selected_option.text.text: Slack "Option 3", ours "Option 2"',
-    'state.values.<block_id>.static.selected_option.value: Slack "value-3", ours "value-2"',
-  ],
 };
 
 /**
@@ -594,10 +585,6 @@ const KNOWN_DIFFERENCES: Record<string, string[]> = {
  * moves the recording back to a full comparison.
  */
 const KNOWN_UNSENT: Record<string, string> = {
-  // Slack's open static list starts on its first option, so Enter (here after a "3" that matches
-  // no option's start) picks it; ours starts on the placeholder row (fidelity finding
-  // static-select-keyboard). The users, conversations and channels selects already pick.
-  "contexts/static_select/actions@typeahead": "Enter on a just-opened list picks nothing",
   // Block Kit Builder sends block_actions from an input block's element without
   // `dispatch_action`; ours follows Slack's docs and doesn't (fidelity finding
   // input-block-dispatch).

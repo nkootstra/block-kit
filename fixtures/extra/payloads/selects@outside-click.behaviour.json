@@ -17,11 +17,11 @@
       "controls": {
         "field-1": {
           "expanded": "false",
-          "value": "Alpha"
+          "value": ""
         },
         "field-2": {
           "expanded": "false",
-          "value": "Choose"
+          "value": ""
         },
         "field-3": {
           "expanded": "false",
@@ -50,11 +50,11 @@
       "controls": {
         "field-1": {
           "expanded": "true",
-          "value": "Alpha"
+          "value": ""
         },
         "field-2": {
           "expanded": "false",
-          "value": "Choose"
+          "value": ""
         },
         "field-3": {
           "expanded": "false",
@@ -91,7 +91,7 @@
         },
         "field-2": {
           "expanded": "false",
-          "value": "Choose"
+          "value": ""
         },
         "field-3": {
           "expanded": "false",

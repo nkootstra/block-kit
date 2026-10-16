@@ -1826,7 +1826,7 @@ export const VERIFY: { name: string; kind: ItemKind; check: string }[] = [
     name: "extra/payloads/selects@mobile",
     kind: "rest",
     check:
-      "recapture of the light mobile select placeholder (settled: finding select-placeholder-dashes)",
+      "recapture of the light mobile select placeholder (settled: Slack writes it without dashes)",
   },
   {
     name: "catalog/data-visualization/bar-single-series@scrolled-end+mobile",

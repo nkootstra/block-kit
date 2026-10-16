@@ -2,14 +2,7 @@ import type { OptionGroup, PlainTextOption } from "@slack/types";
 import { type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { type DirectoryEntry, useBlockKit } from "../context";
-import {
-  CaretDownIcon,
-  ChannelHashIcon,
-  ChevronDownIcon,
-  CloseIcon,
-  LockIcon,
-  SearchIcon,
-} from "../icons";
+import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
@@ -385,6 +378,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             .filter((group) => group.options.length > 0)
         : [{ options: filteredOptions }];
   const flatOptions = visibleGroups.flatMap((g) => g.options);
+  // A click opens Slack's list of option groups with no row highlighted until a key or the pointer
+  // moves; a chosen row shows as chosen (extra/fidelity/static-select/mixed@open,
+  // option-group/many-items@open). A plain list highlights its first or chosen row
+  // (extra/payloads/selects@open).
+  const grouped = !!element.option_groups?.length;
   const isSelected = (option: PlainTextOption) =>
     items.some((i) => i.id === (option.value ?? option.text.text));
 
@@ -392,12 +390,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   // Slack's single static and external selects are typed into (`c-select_input`): the field filters
   // the options or searches the app, so there's no search box in the menu. The others open from a
   // button.
-  // Slack's single users, conversations and channels selects are typed into the same way.
-  // Its single static select is a button (`c-select_button`, Block Kit Builder since 9 October
-  // 2026): the field shows the chosen option or the placeholder between dashes, and the list opens
-  // on the chosen row, with a "--placeholder--" row first while nothing is chosen.
-  const buttonSelect = source === "static" && !multi;
-  const typeable = !multi && !buttonSelect;
+  // Slack's single users, conversations and channels selects are typed into the same way. Block
+  // Kit Builder drew the single static select as a button (`c-select_button`) from 9 to 15 October
+  // 2026, and as this typed-into field before and since.
+  const typeable = !multi;
   // As a section accessory, Slack's multi-selects are a small button (the placeholder, then
   // "N selected") that opens a selection dialog and sends once, on Confirm. Measured for static,
   // users and conversations selects; channels follow conversations, and the external one keeps its
@@ -415,31 +411,22 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const placeholder = element.placeholder?.text ?? "Select an item";
-  const placeholderRow = buttonSelect && items.length === 0;
-  /** The rows before the options: the button select's "--placeholder--" row. */
-  const lead = placeholderRow ? 1 : 0;
 
   const combo = useCombobox({
     open,
     onOpenChange: setOpen,
     query,
     onQueryChange: setQuery,
-    count: flatOptions.length + lead,
+    count: flatOptions.length,
     // Slack's typed-into select opens on its first row even with an option chosen (Block Kit
     // Builder, `extra/modal/form@open`); the chosen one is marked with a check instead.
-    // The button select opens on its chosen row, or on the "--placeholder--" row while nothing is
-    // chosen.
-    initialIndex: typeable || placeholderRow ? 0 : Math.max(0, flatOptions.findIndex(isSelected)),
+    initialIndex: typeable ? 0 : Math.max(0, flatOptions.findIndex(isSelected)),
     // Opened with a click, Slack's multi-select highlights no row (Block Kit Builder).
     clickedIndex: multi ? -1 : undefined,
     // Opened on a chosen option, Slack's first arrow key moves on from it (Block Kit Builder).
     holdFirstArrow: flatOptions.findIndex(isSelected) < 0 || query.trim() !== "",
     onChoose: (i) => {
-      if (i < lead) {
-        combo.setOpen(false);
-        return;
-      }
-      const option = flatOptions[i - lead];
+      const option = flatOptions[i];
       if (option) selectItem(optionToItem(option));
     },
     // No live directory to search against: typing an id/value and pressing Enter selects it
@@ -450,8 +437,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     listRef,
     returnFocusRef: typeable ? undefined : triggerRef,
     keepQuery: typeable,
-    // The button select opens on its blue highlight; the typed-into ones start on the grey one.
-    typedHighlight: !buttonSelect,
+    typedHighlight: true,
     chosenAsPlaceholder: !typeable,
   });
   useFocusOnLoad<HTMLElement>(
@@ -476,23 +462,22 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       : undefined;
   // In an input block, Slack's multi-select and typed-into single select lists are 22px wider than
   // the field and start 12px left.
-  const wideList = (multi || typeable || buttonSelect) && inInputBlock;
+  const wideList = (multi || typeable) && inInputBlock;
 
   const menu = open && (
     <Popover
       anchorRef={rootRef}
       onDismiss={() => combo.setOpen(false)}
-      offsetX={typeable || buttonSelect || wideList ? -12 : 0}
+      offsetX={typeable || wideList ? -12 : 0}
       gap={MENU_GAP}
     >
       <div
-        className={`sbk-select__menu${typeable || buttonSelect ? " sbk-select__menu--typeable" : ""}${wideList ? " sbk-select__menu--wide" : ""}`}
+        className={`sbk-select__menu${typeable ? " sbk-select__menu--typeable" : ""}${wideList ? " sbk-select__menu--wide" : ""}`}
         role="listbox"
         id={combo.listId}
         ref={listRef}
       >
         {!typeable &&
-          !buttonSelect &&
           ((showSearchOnly && entries.length === 0) ||
             (entries.length > 0 ? entries.length : allOptions(element).length) > 8) && (
             <div className="sbk-select__search">
@@ -510,18 +495,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
               />
             </div>
           )}
-        {placeholderRow && (
-          <SelectOption
-            option={{ text: { type: "plain_text", text: `--${placeholder}--` } } as PlainTextOption}
-            selected
-            check
-            onSelect={() => combo.setOpen(false)}
-            navProps={combo.optionProps(0)}
-          />
-        )}
         {!belowMinimum &&
           (() => {
-            let index = lead;
+            let index = 0;
             return visibleGroups.map((group, gi) => {
               const rows = group.options.map((option) => {
                 const i = index++;
@@ -536,8 +512,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                         : undefined
                     }
                     selected={isSelected(option)}
-                    check={(multi || typeable || buttonSelect) && isSelected(option)}
+                    check={(multi || typeable) && isSelected(option)}
                     typed={combo.typed && combo.active === i}
+                    quiet={grouped && combo.untouched}
                     onSelect={() => selectItem(optionToItem(option))}
                     navProps={combo.optionProps(i)}
                   />
@@ -669,7 +646,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
 
   return (
     <div
-      className={`sbk-select${buttonSelect ? " sbk-select--button" : ""}${multi ? " sbk-select--multi" : ""}${multi && items.length > 0 ? " sbk-select--chips" : ""}${sizeClass}`}
+      className={`sbk-select${multi ? " sbk-select--multi" : ""}${multi && items.length > 0 ? " sbk-select--chips" : ""}${sizeClass}`}
       ref={rootRef}
       onKeyDown={combo.onKeyDown}
     >
@@ -682,19 +659,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         ref={triggerRef}
         type="button"
         className="sbk-select__control"
-        onClick={(e) => {
-          // Slack's button select takes focus on a click, so the arrow keys move its highlight;
-          // Safari doesn't focus a clicked button by itself.
-          if (buttonSelect) e.currentTarget.focus();
-          combo.toggleFromTrigger(e);
-        }}
-        role={buttonSelect ? "combobox" : undefined}
+        onClick={combo.toggleFromTrigger}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-controls={buttonSelect && open ? combo.listId : undefined}
-        aria-activedescendant={
-          buttonSelect && open && combo.active >= 0 ? combo.optionId(combo.active) : undefined
-        }
         {...invalid}
       >
         {multi ? (
@@ -743,16 +710,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
           ) : (
             <span className="sbk-select__value">{closedLabel}</span>
           )
-        ) : buttonSelect ? (
-          <span className="sbk-select__value">{`--${placeholder}--`}</span>
         ) : (
           <span className="sbk-select__placeholder">{placeholder}</span>
         )}
-        {buttonSelect ? (
-          <CaretDownIcon className="sbk-select__chevron" />
-        ) : (
-          <ChevronDownIcon className="sbk-select__chevron" />
-        )}
+        <ChevronDownIcon className="sbk-select__chevron" />
       </button>
       {menu}
       {dialog}
@@ -852,6 +813,7 @@ function SelectOption({
   selected,
   check,
   typed,
+  quiet,
   onSelect,
   navProps,
 }: {
@@ -865,6 +827,8 @@ function SelectOption({
   check?: boolean;
   /** The typed highlight, which shows an Enter key to pick it. */
   typed?: boolean;
+  /** A row of a grouped list a click just opened: not drawn highlighted, though it may be active. */
+  quiet?: boolean;
   onSelect: () => void;
   navProps?: ReturnType<ReturnType<typeof useCombobox>["optionProps"]>;
 }) {
@@ -876,6 +840,7 @@ function SelectOption({
       data-typed={typed || undefined}
       onClick={onSelect}
       {...navProps}
+      data-active={quiet ? undefined : navProps?.["data-active"]}
     >
       {check && (
         <svg

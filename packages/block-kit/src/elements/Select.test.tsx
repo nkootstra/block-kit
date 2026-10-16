@@ -17,73 +17,6 @@ function opt(value: string, text: string): PlainTextOption {
 function sent(value: string, text: string) {
   return { value, text: { type: "plain_text", text, emoji: true } };
 }
-describe("<Select> static_select as Slack's button select", () => {
-  function renderStatic(extra: Record<string, unknown> = {}, onAction = vi.fn()) {
-    render(
-      <BlockKitProvider onAction={onAction}>
-        <Select
-          element={
-            {
-              type: "static_select",
-              action_id: "a1",
-              options: [opt("a", "Alpha"), opt("b", "Bravo")],
-              ...extra,
-            } as unknown as SelectElement
-          }
-          blockId="b1"
-        />
-      </BlockKitProvider>,
-    );
-    return onAction;
-  }
-
-  it("shows the placeholder between dashes in a button when nothing is chosen", () => {
-    renderStatic({ placeholder: { type: "plain_text", text: "Pick one" } });
-    const trigger = screen.getByRole("combobox");
-    expect(trigger.tagName).toBe("BUTTON");
-    expect(trigger.textContent).toBe("--Pick one--");
-  });
-
-  it("lists the placeholder first, checked and highlighted, when nothing is chosen", async () => {
-    renderStatic();
-    await clickAsync(screen.getByRole("combobox"));
-    const options = screen.getAllByRole("option");
-    expect(options.map((o) => o.textContent)).toEqual(["--Select an item--", "Alpha", "Bravo"]);
-    expect(options[0]?.getAttribute("aria-selected")).toBe("true");
-    expect(options[0]?.hasAttribute("data-active")).toBe(true);
-    expect(options[0]?.hasAttribute("data-typed")).toBe(false);
-  });
-
-  it("shows the chosen option and opens on it, without the placeholder row", async () => {
-    renderStatic({ initial_option: opt("b", "Bravo") });
-    const trigger = screen.getByRole("combobox");
-    expect(trigger.textContent).toBe("Bravo");
-    await clickAsync(trigger);
-    const options = screen.getAllByRole("option");
-    expect(options.map((o) => o.textContent)).toEqual(["Alpha", "Bravo"]);
-    expect(options[1]?.hasAttribute("data-active")).toBe(true);
-  });
-
-  it("sends the option picked from the list, as before", async () => {
-    const onAction = renderStatic();
-    await clickAsync(screen.getByRole("combobox"));
-    await clickAsync(screen.getByRole("option", { name: "Bravo" }));
-    expect(onAction).toHaveBeenCalledWith(
-      expect.objectContaining({ selected_option: sent("b", "Bravo") }),
-      expect.anything(),
-    );
-    expect(screen.getByRole("combobox").textContent).toBe("Bravo");
-  });
-
-  it("closes without sending anything when the placeholder row is picked", async () => {
-    const onAction = renderStatic();
-    await clickAsync(screen.getByRole("combobox"));
-    await clickAsync(screen.getByRole("option", { name: "--Select an item--" }));
-    expect(onAction).not.toHaveBeenCalled();
-    expect(screen.queryByRole("listbox")).toBeNull();
-  });
-});
-
 describe("<Select> static_select", () => {
   it("reports initial_option as selected_option on mount", () => {
     let state: StateValues = {};
@@ -105,6 +38,38 @@ describe("<Select> static_select", () => {
     expect(state.b1?.a1).toEqual({ type: "static_select", selected_option: sent("a", "A") });
   });
 
+  it("draws a clicked-open grouped list's chosen row as chosen, not highlighted, until a key moves it", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              option_groups: [
+                {
+                  label: { type: "plain_text", text: "One" },
+                  options: [opt("a", "A"), opt("b", "B")],
+                },
+                { label: { type: "plain_text", text: "Two" }, options: [opt("c", "C")] },
+              ],
+              initial_option: opt("a", "A"),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input, { detail: 1 });
+    const row = (text: string) => screen.getByText(text).closest('[role="option"]')!;
+    expect(row("A").getAttribute("aria-selected")).toBe("true");
+    expect(row("A").hasAttribute("data-active")).toBe(false);
+    // The keyboard starts from the chosen row, as Slack's does.
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(row("B").hasAttribute("data-active")).toBe(true);
+  });
+
   it("opens the menu, selects an option, and dispatches selected_option", async () => {
     const onAction = vi.fn();
     render(
@@ -122,9 +87,9 @@ describe("<Select> static_select", () => {
         />
       </BlockKitProvider>,
     );
-    const trigger = screen.getByRole("combobox");
-    expect(trigger.textContent).toBe("--Choose--");
-    fireEvent.click(trigger);
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    expect(input.getAttribute("placeholder")).toBe("Choose");
+    fireEvent.click(input);
     await clickAsync(screen.getByText("B"));
     expect(onAction).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -135,9 +100,87 @@ describe("<Select> static_select", () => {
       }),
       expect.anything(),
     );
-    expect(trigger.textContent).toBe("B");
+    expect(input.value).toBe("B");
     // The menu closes after a pick.
     expect(screen.queryByRole("listbox")).toBeNull();
+  });
+
+  it("shows the chosen option in an overlay over the field, hidden while typing", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              options: [opt("a", "A"), opt("b", "B")],
+              initial_option: opt("b", "B"),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const overlay = () => document.querySelector(".sbk-select__content");
+    expect(overlay()?.textContent).toBe("B");
+    expect(overlay()?.getAttribute("aria-hidden")).toBe("true");
+    fireEvent.click(screen.getByRole("combobox"));
+    expect(overlay()).toBeNull();
+  });
+
+  it("filters the options by what's typed into the field, with no separate search box", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              // More than 8 options used to add a search box above the list.
+              options: "ABCDEFGHIJ".split("").map((l) => opt(l.toLowerCase(), `Option ${l}`)),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    expect(screen.queryByPlaceholderText("Search options")).toBeNull();
+    fireEvent.change(input, { target: { value: "option c" } });
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__option-text")?.textContent),
+    ).toEqual(["Option C"]);
+    expect(screen.getByText("Option C").closest("[data-active]")).toBeTruthy();
+  });
+
+  it("picks the highlighted option with Enter after typing", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              options: [opt("a", "Apple"), opt("b", "Banana"), opt("c", "Cherry")],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const input = screen.getByRole("combobox");
+    fireEvent.click(input);
+    // Slack matches the start of a word, so "ban" (not "an") finds Banana.
+    fireEvent.change(input, { target: { value: "ban" } });
+    await keyDownAsync(input, "Enter");
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ selected_option: sent("b", "Banana") }),
+      expect.anything(),
+    );
   });
 
   it("dispatches selected_options (plural) for multi_static_select", async () => {
@@ -304,14 +347,11 @@ describe("<Select> users_select / channels_select", () => {
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
-    // The button select opens on its "--Choose--" row in the blue highlight; three presses land on
-    // "C".
-    const first = screen.getByRole("option", { name: "--Choose--" });
-    expect([first.hasAttribute("data-active"), first.hasAttribute("data-typed")]).toEqual([
-      true,
-      false,
-    ]);
+    // Opening highlights the first option (Slack's typed highlight); the first press keeps it on
+    // "A" as the keyboard highlight, two more land on "C".
+    expect(screen.getByText("A").closest("[data-active]")).toBeTruthy();
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    expect(screen.getByText("A").closest("[data-active]:not([data-typed])")).toBeTruthy();
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
     expect(screen.getByText("C").closest("[data-active]")).toBeTruthy();
@@ -585,29 +625,16 @@ describe("<Select> external_select with onOptions", () => {
 
 // Measured in Block Kit Builder (see the PR): what Slack's option lists show while you type.
 describe("<Select> list states", () => {
-  // Slack's typed-into select (`c-select_input`): users, conversations and channels selects, and the
-  // external one. A users select listing three people shows the list's typing behaviour.
-  const people: DirectoryEntry[] = [
-    { type: "user", id: "U1", name: "Alpha" },
-    { type: "user", id: "U2", name: "Bravo" },
-    { type: "user", id: "U3", name: "Charlie" },
-  ];
   const static3 = {
-    type: "users_select",
+    type: "static_select",
     action_id: "a1",
     placeholder: { type: "plain_text", text: "Pick one" },
+    options: [opt("a", "Alpha"), opt("b", "Bravo"), opt("c", "Charlie")],
   } as unknown as SelectElement;
 
-  function renderSelect(element: SelectElement, props: Record<string, unknown> = {}) {
+  function renderSelect(element: SelectElement, props = {}) {
     render(
-      <BlockKitProvider
-        resolvers={{
-          user: (id) => people.find((p) => p.id === id)?.name,
-          directory: (source) =>
-            source === "users" ? ((props.people as DirectoryEntry[]) ?? people) : [],
-        }}
-        {...props}
-      >
+      <BlockKitProvider {...props}>
         <Select element={element} blockId="b1" />
       </BlockKitProvider>,
     );
@@ -616,14 +643,15 @@ describe("<Select> list states", () => {
   const rows = () => screen.queryAllByRole("option").map((o) => o.textContent);
 
   it("matches what's typed against the start of each word, keeping the options' order", () => {
-    const input = renderSelect(static3, {
-      people: [
-        { type: "user", id: "U4", name: "New York" },
-        { type: "user", id: "U5", name: "Old Alpha" },
-        { type: "user", id: "U6", name: "Alpha-Beta" },
-        { type: "user", id: "U7", name: "x(alpha)" },
+    const input = renderSelect({
+      ...static3,
+      options: [
+        opt("ny", "New York"),
+        opt("oa", "Old Alpha"),
+        opt("ab", "Alpha-Beta"),
+        opt("xa", "x(alpha)"),
       ],
-    });
+    } as unknown as SelectElement);
     fireEvent.click(input);
     fireEvent.change(input, { target: { value: "al" } });
     expect(rows()).toEqual(["Old AlphaEnter", "Alpha-Beta", "x(alpha)"]);
@@ -653,7 +681,7 @@ describe("<Select> list states", () => {
   // the list on its first row; the chosen one is marked with a check in blue, and the field is
   // emptied to the placeholder.
   describe("with an option chosen", () => {
-    const chosen = { ...static3, initial_user: "U2" } as unknown as SelectElement;
+    const chosen = { ...static3, initial_option: opt("b", "Bravo") } as unknown as SelectElement;
 
     it("opens on the first row, marking the chosen one with a check", () => {
       const input = renderSelect(chosen);
@@ -732,7 +760,6 @@ describe("<Select> list states", () => {
             {
               ...static3,
               type: "multi_static_select",
-              options: [opt("a", "Alpha"), opt("b", "Bravo"), opt("c", "Charlie")],
               initial_options: [opt("a", "Alpha")],
             } as unknown as SelectElement
           }
@@ -777,7 +804,7 @@ describe("<Select> list states", () => {
   it("separates option groups with a divider", () => {
     const input = renderSelect({
       ...static3,
-      type: "static_select",
+      options: undefined,
       option_groups: [
         {
           label: { type: "plain_text", text: "Group one" },

@@ -20,7 +20,7 @@
       "controls": {
         "field-1": {
           "expanded": "false",
-          "value": "Select an item"
+          "value": ""
         }
       }
     },
@@ -44,7 +44,7 @@
       "controls": {
         "field-1": {
           "expanded": "true",
-          "value": "Select an item"
+          "value": ""
         },
         "option-1": {
           "selected": "false"
@@ -72,21 +72,15 @@
           "scrollTop": 0
         }
       ],
-      "activeOption": "Option 1",
+      "activeOption": "Option 3",
       "tooltip": null,
       "busy": false,
       "controls": {
         "field-1": {
           "expanded": "true",
-          "value": "Select an item"
+          "value": "3"
         },
         "option-1": {
-          "selected": "false"
-        },
-        "option-2": {
-          "selected": "false"
-        },
-        "option-3": {
           "selected": "false"
         }
       },
@@ -106,7 +100,7 @@
       "controls": {
         "field-1": {
           "expanded": "false",
-          "value": "Option 1"
+          "value": "Option 3"
         }
       },
       "action": {
@@ -138,10 +132,10 @@
                 "selected_option": {
                   "text": {
                     "type": "plain_text",
-                    "text": "Option 1",
+                    "text": "Option 3",
                     "emoji": true
                   },
-                  "value": "value-1"
+                  "value": "value-3"
                 }
               }
             }
@@ -156,10 +150,10 @@
             "selected_option": {
               "text": {
                 "type": "plain_text",
-                "text": "Option 1",
+                "text": "Option 3",
                 "emoji": true
               },
-              "value": "value-1"
+              "value": "value-3"
             },
             "placeholder": {
               "type": "plain_text",

@@ -20,7 +20,7 @@
       "controls": {
         "field-1": {
           "expanded": "false",
-          "value": "Select an item"
+          "value": ""
         }
       }
     },
@@ -44,7 +44,7 @@
       "controls": {
         "field-1": {
           "expanded": "true",
-          "value": "Select an item"
+          "value": ""
         },
         "option-1": {
           "selected": "false"
@@ -151,7 +151,7 @@
       "controls": {
         "field-1": {
           "expanded": "false",
-          "value": "Option 1"
+          "value": ""
         }
       },
       "action": {

@@ -1377,6 +1377,12 @@ async ({
         const t = target(input[2]);
         const el = await found(() => controls(preview(), t.kind)[t.index - 1]);
         if (!el) throw new Error(`${name}: the preview has no ${input[2]}`);
+        // A held hover shows no focus: the Builder can leave the control an earlier item picked in
+        // focused, and its ring then shows in the hover capture (catalog/actions/all-selects).
+        if (input[1] === "hover" && preview()?.contains(doc.activeElement)) {
+          doc.activeElement.blur();
+          await sleep(Math.min(600, settle || 1));
+        }
         holds = await hold(name, input[1], el, input[2]);
         held = { input: input[1], target: input[2] };
       } else if (want.interaction === "submit-errors") {
@@ -1406,7 +1412,18 @@ async ({
         await sleep(Math.min(600, settle || 1));
       } else if (want.interaction && OPENERS[want.interaction]) {
         const opener = preview()?.querySelector(OPENERS[want.interaction]);
-        if (opener) press(opener);
+        // A typed-into select opens on a real click. A scripted press neither focuses it (no focus
+        // ring) nor empties a chosen option to the placeholder, as a click does (Block Kit Builder,
+        // 16 October 2026). A stand-in page (`adapter`) keeps the scripted press.
+        if (!adapter && opener?.matches("input.c-select_input")) {
+          const { x, y, box } = center(opener);
+          await ask(name, { do: "click", target: "field-1", x, y, box }, () =>
+            opened(want.interaction),
+          );
+          // The pointer is left on the field; the reference shows the open list without hover.
+          if (hovers(opener))
+            await ask(name, { do: "move-away", target: "field-1" }, () => !hovers(opener));
+        } else if (opener) press(opener);
         await sleep(Math.min(600, settle || 1));
         // A multi-select showing chips didn't open on a click or ArrowDown in the Builder. Ask for
         // a click past the chips, at the field's empty end, then a typed letter; give up quickly.
@@ -1447,6 +1464,12 @@ async ({
         await waitFor(name, () => win.sbkCaptureReady);
       }
       win.sbkCaptureWaiting = undefined;
+      // A rest capture shows no focus: the Builder can leave a control focused when a payload
+      // loads (a static select's focus ring was once captured as its rest state).
+      if (!probe && !input && !want.interaction && preview()?.contains(doc.activeElement)) {
+        doc.activeElement.blur();
+        await sleep(Math.min(600, settle || 1));
+      }
       if (sends && !probe && want.interaction !== "submit-errors") {
         const action = await newAction(actionsBefore);
         if (action) record("actions", actionKey, action);

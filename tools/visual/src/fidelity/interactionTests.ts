@@ -78,10 +78,6 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     },
     { components: ["select-dialog"], states: ["open", "selected"], facts: ["behaviour"] },
   ],
-  "static select as Slack's button select": [
-    { components: ["static_select"], states: ["default", "open"], facts: ["styles"], themes: BOTH },
-    { components: ["static_select"], states: ["open"], facts: ["behaviour"] },
-  ],
   "static select list": [{ components: ["static_select"], states: ["open"], facts: ["styles"] }],
   "select list states": [
     { components: SELECTS, states: ["open"], facts: ["styles", "behaviour"] },
