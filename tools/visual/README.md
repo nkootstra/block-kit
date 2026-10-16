@@ -276,7 +276,11 @@ to the preview):
    `@confirm` or `@dialog` on the first control of the kind, waits for transitions to finish,
    snapshots, and closes what it opened. When a scripted click doesn't open a control, or the
    interaction is fixture-specific, it waits: `window.sbkCaptureWaiting` names the item. Perform it
-   with a real click and set `window.sbkCaptureReady = true`.
+   with a real click and set `window.sbkCaptureReady = true`. A typed-into select (`c-select_input`)
+   always asks for a real click to open, then for the pointer to move away: a scripted press
+   doesn't focus it, so the open field lacks its focus ring, and leaves a chosen option in the
+   field where a click empties it to the placeholder. Before a held hover, and before a rest
+   capture, the run blurs whatever the Builder left focused in the preview.
    Block Kit Builder keeps an element's state across payloads, by block and action id: a
    multi-select's chosen "Red" stayed in every later payload with the same ids, even one whose
    options don't have it. So `capture.js` first loads a neutral payload of the item's surface (one
