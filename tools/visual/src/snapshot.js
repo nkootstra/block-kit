@@ -364,6 +364,18 @@ async (win = window, options = {}) => {
       }
     }
 
+    // A placeholder is painted in its ::placeholder colour, which an inline style can't set:
+    // without a rule the frozen copy draws it in the browser's grey, rgb(117, 117, 117), in either
+    // theme (Slack's is rgb(94, 93, 96) in the light one).
+    if (/^(input|textarea)$/.test(src.localName) && src.getAttribute("placeholder")) {
+      const ps = win.getComputedStyle(src, "::placeholder");
+      if (!el.hasAttribute("data-ref")) el.setAttribute("data-ref", String(++refs));
+      pseudoRules.push(
+        `[data-ref="${el.getAttribute("data-ref")}"]::placeholder{color:${ps.color};` +
+          `-webkit-text-fill-color:${ps.webkitTextFillColor};opacity:${ps.opacity}}`,
+      );
+    }
+
     for (const child of src.childNodes) {
       const frozen = freeze(child, cs);
       if (frozen) el.appendChild(frozen);

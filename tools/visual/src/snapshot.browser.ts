@@ -121,6 +121,19 @@ describe("snapshot.js", () => {
     expect(html).not.toMatch(/<input\b[^>]*\bid="other"[^>]*\bdata-sbk-selection/);
   });
 
+  it("keeps a field's placeholder in the colour the page gave it", async () => {
+    // Slack's typed-into select and text inputs colour their placeholder with ::placeholder, which
+    // an inline style can't carry; the references drew it in the browser's grey instead.
+    await page.setContent(
+      `<!doctype html><style>input::placeholder{color:rgb(154, 155, 158)}</style><body><div class="p-bkb_preview__message"><input id="field" placeholder="Select an item"></div></body>`,
+    );
+    await page.setContent(await snapshot(page));
+    const colour = await page.evaluate(
+      () => getComputedStyle(document.getElementById("field")!, "::placeholder").color,
+    );
+    expect(colour).toBe("rgb(154, 155, 158)");
+  });
+
   it("keeps a content-sized label on one line when its width is a sub-pixel value", async () => {
     // Slack's input label is a flex item sized to its content. Its used width (100.0625px here)
     // serializes as "100.062px"; frozen at that, the second part no longer fits and wraps.

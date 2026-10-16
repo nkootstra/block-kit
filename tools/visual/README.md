@@ -503,6 +503,10 @@ lays out like the live page:
   out, but many defaults are em-based: an `<hr>`'s 8px margin matched the default at the probe's
   16px and replayed as 7.5px at Slack's 15px.
 - **The root writes down what it inherits** (Slack's font), since it replays in a bare page.
+- **A field's placeholder keeps its colour** in a `::placeholder` rule, which an inline style can't
+  set. A reference captured without it draws every placeholder in Chrome's grey,
+  `rgb(117, 117, 117)`, in either theme: a little lighter than Slack's light one, `rgb(94, 93, 96)`,
+  and darker than its dark one.
 
 `src/snapshotReplay.browser.ts` checks all of this without the Builder: our own rendering of every
 fixture is snapshotted the way the capture loop does it, replayed, and every element must land
