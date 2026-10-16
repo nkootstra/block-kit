@@ -807,7 +807,7 @@ describe("our side of the wider control addresses", () => {
     const page = await harness.open({ blocks });
     const observations = await replay(page, [
       { click: "field-1" },
-      { click: "option-3" },
+      { click: "option-2" },
       { click: "button-1" },
       { click: "deny-1" },
     ]);
@@ -909,9 +909,9 @@ describe("probes that capture a state reached in more than one step, and scroll 
           {
             steps: [
               { click: "field-1" },
-              { hover: "option-3" },
+              { hover: "option-2" },
               { snapshot: "open-hover-green" },
-              { click: "option-3" },
+              { click: "option-2" },
             ],
           },
         ],
