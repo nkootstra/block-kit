@@ -2593,12 +2593,8 @@
   "extra/fidelity/datepicker/empty@dark": [],
   "extra/fidelity/datepicker/empty@mobile": [],
   "extra/fidelity/datepicker/empty@mobile+dark": [],
-  "extra/fidelity/datepicker/empty@open": [
-    "color|12|0"
-  ],
-  "extra/fidelity/datepicker/empty@open+dark": [
-    "color|12|0"
-  ],
+  "extra/fidelity/datepicker/empty@open": [],
+  "extra/fidelity/datepicker/empty@open+dark": [],
   "extra/fidelity/datetimepicker/empty": [
     "extra|Select a date|0"
   ],
@@ -3330,14 +3326,8 @@
     "missing|9 months ago|0",
     "extra|10 months ago|0"
   ],
-  "extra/fidelity/rich-text-date/mixed@dark": [
-    "missing|9 months ago|0",
-    "extra|10 months ago|0"
-  ],
-  "extra/fidelity/rich-text-date/mixed@mobile": [
-    "missing|9 months ago|0",
-    "extra|10 months ago|0"
-  ],
+  "extra/fidelity/rich-text-date/mixed@dark": [],
+  "extra/fidelity/rich-text-date/mixed@mobile": [],
   "extra/fidelity/rich-text-date/mixed@mobile+dark": [
     "missing|9 months ago|0",
     "extra|10 months ago|0"
