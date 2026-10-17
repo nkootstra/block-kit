@@ -40,7 +40,13 @@
   padding: 16px 24px;
 }
 
+/* Slack's `overflow_ellipsis`: a long title stays on one line. */
 .sbk-select-dialog__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin: 0;
   font-size: 22px;
   font-weight: 900;

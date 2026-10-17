@@ -99,4 +99,19 @@ describe("<Button>", () => {
     );
     expect(screen.getByRole("button", { name: "Approve" })).toBeTruthy();
   });
+
+  // `extra/fidelity/button/long-content`: Slack cuts the label to 40 characters and "…".
+  it("cuts a long label and still sends the full text", async () => {
+    const onAction = vi.fn();
+    const text = "This sentence is here to make the text long enough to wrap onto several lin";
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Button element={textElement(text, { action_id: "a1" })} blockId="b1" />
+      </BlockKitProvider>,
+    );
+    await clickAsync(
+      screen.getByRole("button", { name: "This sentence is here to make the text l…" }),
+    );
+    expect(onAction.mock.calls[0]![0]).toMatchObject({ text: { type: "plain_text", text } });
+  });
 });

@@ -203,7 +203,9 @@ keyboard focus; either way the action fires with the remaining `selected_options
 
 As a section accessory, a multi-select (static, users, conversations or channels) is a small
 button, as in Slack: it reads the placeholder ("Select options"), then "2 selected" once options are
-chosen. Clicking it opens a dialog titled with the placeholder, with the field and its chips. Its
+chosen. A placeholder over 30 characters shows its first 30 and "…" there. Clicking it opens a dialog
+titled with the placeholder, on one line that ends in "…" when it doesn't fit, with the field and
+its chips. Its
 list holds the options, or for a users, conversations or channels select the `resolvers.directory`
 entries; typing filters it, and in a directory select Enter adds a typed id that no entry matches.
 A click opens the list with nothing highlighted; the first arrow key highlights the first option.

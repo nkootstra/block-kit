@@ -3,6 +3,7 @@ import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { safeUrl } from "../safeUrl";
 import type { ElementProps } from "../types";
+import { BUTTON_LABEL_MAX, truncate } from "./truncate";
 
 export function Button({ element, blockId }: ElementProps<ButtonElement>) {
   const { dispatch } = useBlockKit();
@@ -37,7 +38,7 @@ export function Button({ element, blockId }: ElementProps<ButtonElement>) {
         onClick={handleClick}
         aria-label={element.accessibility_label}
       >
-        <span className="sbk-button__label">{element.text.text}</span>
+        <span className="sbk-button__label">{truncate(element.text.text, BUTTON_LABEL_MAX)}</span>
       </button>
       {dialog}
     </>
