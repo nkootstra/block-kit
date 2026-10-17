@@ -650,7 +650,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                 unresolvedValue(items[0].id)
               ) : chosenEntry ? (
                 <span className="sbk-select__content-text sbk-select__content-entity">
-                  <DirectoryRow entry={chosenEntry} />
+                  <DirectoryRow entry={chosenEntry} inField />
                 </span>
               ) : (
                 <span className="sbk-select__content-text">{display}</span>
@@ -770,7 +770,14 @@ const CHANNEL_LOCK =
  * `c-small_channel_entity` rows: a 20px avatar or 18px channel icon, 8px apart from the bold name,
  * then the person's "(you)" or badge, presence icon and full name.
  */
-function DirectoryRow({ entry }: { entry: DirectoryEntry }) {
+function DirectoryRow({
+  entry,
+  inField = false,
+}: {
+  entry: DirectoryEntry;
+  /** Drawn as the chosen value in the closed field, where Slack leaves out "(you)". */
+  inField?: boolean;
+}) {
   if (entry.type === "channel") {
     return (
       <span className="sbk-select__member sbk-select__member--channel">
@@ -803,7 +810,7 @@ function DirectoryRow({ entry }: { entry: DirectoryEntry }) {
         <span className="sbk-select__member-name">
           <strong>
             {entry.name}
-            {entry.self && <span className="sbk-select__member-you">(you)</span>}
+            {entry.self && !inField && <span className="sbk-select__member-you">(you)</span>}
             {entry.badge && <span className="sbk-select__member-badge">{entry.badge}</span>}
           </strong>
         </span>
