@@ -48,6 +48,11 @@ it runs when clicked.
       description: "Always `workflow_button`.",
       required: true,
     },
+    action_id: {
+      type: "string",
+      description:
+        "Identifies this action in the `block_actions` payload. Maximum length is 255 characters. See the note below.",
+    },
     text: {
       type: "PlainTextElement",
       description:

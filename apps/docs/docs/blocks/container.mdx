@@ -4,8 +4,8 @@ sidebar:
   label: Container
 description: Groups blocks together with a shared border, an optional header, and a width limit.
 seo:
-  description: "Render Slack's container block in React: a group of blocks with a shared border, an optional header with icon and subtitle, and a standard or full width."
-  title: "Slack container block"
+  description: "A block-kit container block in React: Block Kit blocks grouped with a shared border, an optional header with icon and subtitle, and a width. Not in @slack/types."
+  title: "Block Kit container block"
 ---
 
 `container` wraps a list of child blocks with a border and background, an optional header with an
@@ -67,7 +67,7 @@ block, not part of the public `@slack/types` package.
     width: {
       type: '"narrow" | "standard" | "wide" | "full"',
       description:
-        "The container's max width. An unrecognized or omitted value falls back to `standard`.",
+        "The container's max width: `narrow` 320px, `standard` 480px, `wide` 642px, `full` the whole block. An unrecognized or omitted value falls back to `standard`.",
       default: '"standard"',
     },
     is_collapsible: {

@@ -258,7 +258,9 @@ to the preview):
   the left of the message still fits. `compare.ts` crops both sides to one box, relative to the
   message, that holds both sides' message and popovers (`layout.ts`), and moves our message away
   from the window's edge so our popover isn't pushed inward. A popover a few pixels off shows as a
-  diff instead of shifting the whole image. The text check reads the popover's text too.
+  diff instead of shifting the whole image. The text check reads the popover's text too. Slack's
+  calendar marks the capture day as today, so `compare.ts` renders ours with the page's clock set
+  to that day (the `--is_today` date's `data-value`), not the day the comparison runs.
 - A **dialog** (a confirm dialog, the multi-select dialog) is centred in the window, so its position
   says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`).
 

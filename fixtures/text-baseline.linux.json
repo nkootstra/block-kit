@@ -2594,12 +2594,10 @@
   "extra/fidelity/datepicker/empty@mobile": [],
   "extra/fidelity/datepicker/empty@mobile+dark": [],
   "extra/fidelity/datepicker/empty@open": [
-    "color|12|0",
-    "color|16|0"
+    "color|12|0"
   ],
   "extra/fidelity/datepicker/empty@open+dark": [
-    "color|12|0",
-    "color|16|0"
+    "color|12|0"
   ],
   "extra/fidelity/datetimepicker/empty": [
     "extra|Select a date|0"

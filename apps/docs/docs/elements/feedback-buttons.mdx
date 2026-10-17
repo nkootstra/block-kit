@@ -127,7 +127,8 @@ Clicking a thumb dispatches a `feedback_buttons` action carrying that button's `
 }
 ```
 
-Every pick sends an action, including picking the thumb that's already checked, and picking with the
+Neither thumb is checked when the block first renders, and the package has no field to preselect
+one. Every pick sends an action, including picking the thumb that's already checked, and picking with the
 arrow keys. Choosing the other thumb moves the check to it. Slack doesn't record feedback buttons in
 `state.values`, and neither does the package.
 
