@@ -630,8 +630,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     const display = unresolved ? undefined : closedLabel;
     // Slack keeps the chosen option in the input but draws it in a layer over the field
     // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
-    // An ID it can't resolve shows its "Private channel" pill or loading skeleton there instead.
+    // An ID it can't resolve shows its "Private channel" pill or loading skeleton there instead, and
+    // a person or channel the directory lists shows as its list row does (`more-selects@pick`).
     const overlay = (display !== undefined || unresolved) && !open && !query;
+    const chosenEntry = items[0] ? entryById.get(items[0].id) : undefined;
     return (
       <div className={`sbk-select sbk-select--typeable${sizeClass}`} ref={rootRef}>
         {/* A label, so a press on the chevron or padding lands in the input as on Slack's field. */}
@@ -646,6 +648,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             <span className="sbk-select__content" aria-hidden="true">
               {unresolved && items[0] ? (
                 unresolvedValue(items[0].id)
+              ) : chosenEntry ? (
+                <span className="sbk-select__content-text sbk-select__content-entity">
+                  <DirectoryRow entry={chosenEntry} />
+                </span>
               ) : (
                 <span className="sbk-select__content-text">{display}</span>
               )}
@@ -685,6 +691,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                 <span className="sbk-select__chip" key={item.id}>
                   {source === "channels" && isUnresolved(item) ? (
                     privateChannel("sbk-select__chip-label sbk-select__chip-entity")
+                  ) : entryById.has(item.id) ? (
+                    <ChipEntity entry={entryById.get(item.id)!} />
                   ) : (
                     <span className="sbk-select__chip-label">
                       <span className="sbk-select__chip-text">
@@ -815,6 +823,46 @@ function DirectoryRow({ entry }: { entry: DirectoryEntry }) {
           </svg>
         )}
         {entry.realName && <span className="sbk-select__member-secondary">{entry.realName}</span>}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * A chosen person or channel as Slack's `c-token` draws it: a person's 26px avatar flush with the
+ * chip's left edge, 6px before the name in black (`c-token--member`), or a channel's 18px icon 2px
+ * before its name (`c-token_channel`).
+ */
+function ChipEntity({ entry }: { entry: DirectoryEntry }) {
+  if (entry.type === "channel") {
+    return (
+      <span className="sbk-select__chip-label">
+        <svg
+          className="sbk-select__chip-icon"
+          data-icon={entry.private ? "lock" : "hash"}
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          <path
+            fill="currentColor"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d={entry.private ? CHANNEL_LOCK : CHANNEL_HASH}
+          />
+        </svg>
+        <span className="sbk-select__chip-text">
+          <span>{entry.name}</span>
+        </span>
+      </span>
+    );
+  }
+  return (
+    <span className="sbk-select__chip-label sbk-select__chip-label--member">
+      <span className="sbk-select__chip-avatar">
+        {entry.avatarUrl && <img src={entry.avatarUrl} alt="" />}
+      </span>
+      <span className="sbk-select__chip-text">
+        <strong>{entry.name}</strong>
       </span>
     </span>
   );
