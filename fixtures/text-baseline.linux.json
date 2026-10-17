@@ -947,7 +947,21 @@
   "catalog/section/multi-conversations-select@mobile": [],
   "catalog/section/multi-conversations-select@mobile+dark": [],
   "catalog/section/multi-conversations-select@open": [],
-  "catalog/section/multi-conversations-select@open+dark": [],
+  "catalog/section/multi-conversations-select@open+dark": [
+    "missing|User One|0",
+    "missing|(you)|0",
+    "missing|User Two|0",
+    "missing|APP|0",
+    "missing|User Three|0",
+    "missing|User Three|1",
+    "missing|User Four|0",
+    "missing|User Four|1",
+    "missing|channel-one|0",
+    "missing|channel-two|0",
+    "missing|channel-three|0",
+    "missing|channel-four|0",
+    "missing|channel-five|0"
+  ],
   "catalog/section/multi-conversations-select@open+mobile": [],
   "catalog/section/multi-conversations-select@open+mobile+dark": [],
   "catalog/section/multi-conversations-select@pick": [],
@@ -1573,10 +1587,18 @@
   "contexts/multi_static_select/accessory@open-focus-option-1": [],
   "contexts/multi_static_select/accessory@open-focus-option-1+dark": [],
   "contexts/multi_static_select/accessory@open-focus-option-1+mobile": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1+dark": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [],
+  "contexts/multi_static_select/accessory@open-hover-option-1": [
+    "color|Option 1|0"
+  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1+dark": [
+    "color|Option 1|0"
+  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [
+    "color|Option 1|0"
+  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [
+    "color|Option 1|0"
+  ],
   "contexts/multi_static_select/accessory@open+dark": [],
   "contexts/multi_static_select/accessory@pick+mobile": [],
   "contexts/multi_static_select/accessory@pick+mobile+dark": [],
@@ -2561,15 +2583,11 @@
   ],
   "extra/fidelity/datetimepicker/empty@pick+mobile": [
     "missing|Tomorrow|0",
-    "missing|12:05 PM|0",
-    "extra|October 15th, 2026|0",
-    "extra|8:25 AM|0"
+    "extra|October 15th, 2026|0"
   ],
   "extra/fidelity/datetimepicker/empty@pick+mobile+dark": [
     "missing|Tomorrow|0",
-    "missing|12:09 PM|0",
-    "extra|October 15th, 2026|0",
-    "extra|8:25 AM|0"
+    "extra|October 15th, 2026|0"
   ],
   "extra/fidelity/divider/mixed": [
     "y|Below the divider|0",
@@ -3260,16 +3278,10 @@
     "missing|·|0",
     "missing|example.com|0"
   ],
-  "extra/fidelity/rich-text-date/mixed": [
-    "missing|9 months ago|0",
-    "extra|10 months ago|0"
-  ],
+  "extra/fidelity/rich-text-date/mixed": [],
   "extra/fidelity/rich-text-date/mixed@dark": [],
   "extra/fidelity/rich-text-date/mixed@mobile": [],
-  "extra/fidelity/rich-text-date/mixed@mobile+dark": [
-    "missing|9 months ago|0",
-    "extra|10 months ago|0"
-  ],
+  "extra/fidelity/rich-text-date/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-emoji/mixed": [],
   "extra/fidelity/rich-text-emoji/mixed@dark": [],
   "extra/fidelity/rich-text-emoji/mixed@mobile": [],
