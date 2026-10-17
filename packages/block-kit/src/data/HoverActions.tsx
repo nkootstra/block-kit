@@ -193,8 +193,20 @@ export function tableRows(table: HTMLTableElement | null): string[][] {
   );
 }
 
+const NUMBER_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+
+/**
+ * A cell a spreadsheet would read as a formula (`=`, `+`, `-`, `@`, or a leading tab or carriage
+ * return) gets a leading `'`, so a downloaded file can't run one. The cells come from the payload,
+ * which comes from whoever wrote the message. Numbers such as `-12` stay as they are.
+ */
+export function neutralizeFormula(value: string): string {
+  return /^[=+\-@\t\r]/.test(value) && !NUMBER_RE.test(value) ? `'${value}` : value;
+}
+
 function csvCell(value: string): string {
-  return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+  const cell = neutralizeFormula(value);
+  return /[",\n]/.test(cell) ? `"${cell.replace(/"/g, '""')}"` : cell;
 }
 
 export function toCsv(rows: string[][]): string {
@@ -306,7 +318,11 @@ export function ChartActions({
               label: "Download chart data",
               icon: <DownloadIcon width="15" height="15" />,
               onSelect: () =>
-                downloadText(chartFileName(title), toTsv(rows), "text/tab-separated-values"),
+                downloadText(
+                  chartFileName(title),
+                  toTsv(rows.map((row) => row.map(neutralizeFormula))),
+                  "text/tab-separated-values",
+                ),
             },
             {
               label: "Copy as image",

@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Table, type TableBlock } from "../blocks/Table";
-import { toCsv } from "./HoverActions";
+import { neutralizeFormula, toCsv } from "./HoverActions";
 
 afterEach(cleanup);
 
@@ -32,5 +32,15 @@ describe("hover action groups", () => {
 
   it("quotes CSV cells that contain commas or quotes", () => {
     expect(toCsv([["a", 'b "c", d']])).toBe('a,"b ""c"", d"');
+  });
+
+  it("keeps a downloaded cell from running as a spreadsheet formula", () => {
+    expect(toCsv([['=HYPERLINK("https://x.example")', "@SUM(A1)", "+1+1"]])).toBe(
+      '"\'=HYPERLINK(""https://x.example"")",\'@SUM(A1),\'+1+1',
+    );
+    expect(neutralizeFormula("-cmd")).toBe("'-cmd");
+    expect(neutralizeFormula("-12")).toBe("-12");
+    expect(neutralizeFormula("+1.5e3")).toBe("+1.5e3");
+    expect(neutralizeFormula("Ada")).toBe("Ada");
   });
 });

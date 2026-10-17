@@ -190,6 +190,7 @@ These props, and `resolvers`, are functions:
 - **Hover menus on charts, images and tables** act in the page only, as in Slack, and never call
   `onAction`: a chart's View as table (a modal) and Download chart data (a `.tsv`), with Copy as
   image disabled; an image's Copy link and Hide image; a table's Copy table and Download table.
+  Downloaded files prefix a cell that would run as a spreadsheet formula with `'`.
 - **Charts** are never narrower than 400px, as in Slack: in a narrower message the card scrolls
   sideways inside the block (the page doesn't scroll sideways). Hovering a bar, point or slice shows
   Slack's tooltip, which slides after the pointer and fades in and out.
