@@ -154,6 +154,8 @@ import {
 function handleAction(action: BlockAction, { message }: ActionContext) {
   const verdict = action.action_id === "approve" ? ":white_check_mark: Approved" : ":x: Rejected";
 
+  // A real app names whoever clicked, from the payload's `user.id` (see onPayload). This demo
+  // always shows the same reviewer.
   message?.update({
     blocks: [
       blocks[0],

@@ -10,7 +10,8 @@ seo:
 
 `input` pairs a label with one form element: a text field, a select, a date or time picker,
 checkboxes, or radio buttons. It's the field type modals and App Home tabs use to collect values a
-user submits; message and card surfaces never render it.
+user submits. A message can hold one too: it renders without the "(optional)" suffix, and its value
+reaches `state` once the user sets one (see [State](#state-in-a-modal-or-home-tab)).
 
 <Preview
   payload={{

@@ -90,7 +90,9 @@ It isn't part of the public `@slack/types` package, so treat this page's field l
 
 `ChartSeries` is `{ name: string; data: { label: string; value: number }[] }`. `AxisConfig` is
 `{ categories?: string[]; x_label?: string; y_label?: string }`. `categories` overrides the x-axis
-labels; when omitted they're taken from the first series' `data[].label`.
+labels; when omitted they're taken from the first series' `data[].label`. A block without `chart`
+renders nothing. A series value matches its category by `label`, then by position; one with no
+value either way leaves that cell empty in **View as table** and the download.
 
 :::note
 Colors come from a fixed 4-color palette, a deeper one in dark mode as in Slack, and are assigned by
@@ -138,7 +140,7 @@ focus to the button. As in Slack, these actions stay in the page: none of them c
 
 ### Bar: single series
 
-The preview above shows one series as grouped bars.
+The preview at the top of this page is a bar chart with one series: one bar per category.
 
 ### Bar: multiple series
 

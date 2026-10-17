@@ -58,7 +58,7 @@ alongside as an `accessory`.
     expand: {
       type: "boolean",
       description:
-        'When `true`, long text always renders in full. When `false` or omitted, text past a few lines collapses behind a "Show more" toggle.',
+        'When `true`, long text always renders in full. When `false` or omitted, text longer than 300 characters is cut to five lines behind a "Show more" toggle.',
       default: "false",
     },
     block_id: {
@@ -106,7 +106,7 @@ alongside as an `accessory`.
   }}
 />
 
-### Fields
+### Two-column fields
 
 Fields render as two columns. Combine `text` and `fields` on the same section to pair a
 summary line with structured details.
@@ -256,8 +256,8 @@ Buttons, selects, and other elements sit to the right of the text. `checkboxes` 
 
 ### Long text with `expand`
 
-Text past roughly 300 characters collapses behind a "Show more" toggle unless `expand` is
-set to `true`.
+Text longer than 300 characters is cut to five lines behind a "Show more" toggle unless
+`expand` is set to `true`.
 
 <Preview
   payload={{

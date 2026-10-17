@@ -8,7 +8,11 @@ seo:
 
 The provider builds Slack's interaction payloads for you and passes them to `onPayload`, `onSubmit`, `onClose` and `onOptions`. The same builders are exported, for tests or for payloads you send yourself.
 
-Each builder returns the JSON Slack would send, with the placeholder identity (`T00000000`, `U00000000`, `A00000000`) unless you pass `identity`.
+Each builder returns the JSON Slack would send, with the placeholder identity (`T00000000`, `U00000000`, `A00000000`) unless you pass `identity`. `identity` takes camelCase keys (`apiAppId`, `triggerId`, `responseUrl`); the payload has Slack's snake_case ones (`api_app_id`, `trigger_id`, `response_url`).
+
+:::warning
+These payloads are built in the browser, so they prove nothing about who sent them. Your app accepts a request as Slack's only when its signature checks out, and the relay that signs builder payloads is development tooling: see [Why the signing secret must stay server-side](/guides/connecting-your-app#why-the-signing-secret-must-stay-server-side). An `identity` ships in the page, so give it [placeholder or test values](/reference/block-kit-provider), never a real verification token or `response_url`.
+:::
 
 ## buildBlockActionsPayload
 
@@ -44,13 +48,14 @@ A `view_submission` payload: the modal's submit button was pressed.
 ```ts
 import { buildViewSubmissionPayload } from "@nkootstra/block-kit";
 
+// `blocks` is the modal's blocks array, the same one you pass to <Modal>.
 const payload = buildViewSubmissionPayload({
   view: { id: "V0DEPLOY", type: "modal", callback_id: "deploy", blocks },
   state: { version: { value: { type: "plain_text_input", value: "api@4.2.0" } } },
 });
 ```
 
-`view.state.values` in the payload is the `state` you pass, with its text objects normalized like the action's. The view itself comes back the way Slack echoes a stored view: `title`, `submit`, `close` and every text object in `blocks` get `emoji: true` or `verbatim: false`, and each input block gets `optional: false` and `dispatch_action: false` unless set. The same applies to the `view` in `view_closed`, `block_suggestion` and a view's `block_actions`. Add `responseUrls` for modals with a `response_url_enabled` conversation select.
+`view.state.values` in the payload is the `state` you pass, with its text objects normalized like the action's. The view itself comes back the way Slack echoes a stored view: `title`, `submit`, `close` and every text object in `blocks` get `emoji: true` or `verbatim: false`, and each input block gets `optional: false` and `dispatch_action: false` unless set. The same applies to the `view` in `view_closed`, `block_suggestion` and a view's `block_actions`. Add `responseUrls` for modals with a `response_url_enabled` conversation select: an array of `{ block_id, action_id, channel_id, response_url }`, which becomes the payload's `response_urls` (`[]` without it).
 
 ## buildViewClosedPayload
 
@@ -58,7 +63,21 @@ A `view_closed` payload: the modal was closed, for views with `notify_on_close`.
 
 ## buildBlockSuggestionPayload
 
-A `block_suggestion` payload: the user typed into an `external_select`. Pass `actionId`, `blockId`, the typed `value`, the `container` and `state`. Your options load URL answers it with an `OptionsResponse`:
+A `block_suggestion` payload: the user typed into an `external_select`. Pass `actionId`, `blockId`, the typed `value`, the `container` and `state`:
+
+```ts
+import { buildBlockSuggestionPayload } from "@nkootstra/block-kit";
+
+const payload = buildBlockSuggestionPayload({
+  actionId: "assignee",
+  blockId: "owner",
+  value: "ad",
+  container: { type: "message", messageTs: "1700000000.000100", channelId: "C0RELEASES" },
+  state: {},
+});
+```
+
+Your options load URL answers it with an `OptionsResponse`, built from [`SuggestionOption`](/elements/select-menus#external-select) objects (`text`, `value`, and an optional `description` or `url`):
 
 ```ts
 type OptionsResponse =
