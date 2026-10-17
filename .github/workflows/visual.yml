@@ -206,8 +206,8 @@ jobs:
         run: |
           last=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/visual.yml/runs?branch=main&event=push&status=success&per_page=1" \
             --jq '.workflow_runs[0].head_sha // empty')
-          if [ -n "$last" ] && git merge-base --is-ancestor "$last" HEAD; then
-            commits=$(git rev-list --first-parent --max-count=100 "$last..HEAD")
+          if [ -n "$last" ] && git merge-base --is-ancestor "$last" "$GITHUB_SHA"; then
+            commits=$(git rev-list --first-parent --max-count=100 "$last..$GITHUB_SHA")
           else
             commits=$GITHUB_SHA
           fi
@@ -215,6 +215,10 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/commits/$sha/pulls" --jq '.[].labels[].name' || exit 1
           done)
           if grep -qx "$LABEL" <<< "$labels"; then mode=--update-baseline; else mode=--update-baseline=lower; fi
+          # Record on top of main as it is now: a run that waited behind another starts from the
+          # baseline that one committed, so its own commit applies cleanly instead of conflicting.
+          git fetch --quiet origin main
+          git checkout --quiet FETCH_HEAD
           echo "Recording with $mode for $(wc -w <<< "$commits") commits since ${last:-this one}"
           bun tools/visual/src/merge-baseline.ts "$mode" --platform=linux "$RUNNER_TEMP"/reports/*/report.json
       - name: Commit the baseline
