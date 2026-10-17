@@ -415,7 +415,8 @@ a.sbk-mention {
 
 /* Slack's focus ring (`c-input_text:focus`, `c-select_button:focus`, `c-button--focus-visible`):
    a 1px solid ring plus a 4px 30% halo, replacing the border. Text fields show it on any focus;
-   buttons only for keyboard focus. */
+   buttons only for keyboard focus. An input block's multi-select is a text field in Slack
+   (`c-multi_select_input`), so it keeps the ring after a click pick hands focus back to it. */
 .sbk-root {
   --sbk-focus-shadow:
     0 0 0 1px var(--sbk-focus-ring),
@@ -444,6 +445,7 @@ a.sbk-mention {
 .sbk-select__control:focus-visible,
 .sbk-select__control[aria-expanded="true"],
 .sbk-select--typeable .sbk-select__control:focus-within,
+.sbk-input__element .sbk-select--multi .sbk-select__control:focus,
 .sbk-timepicker__control:focus-within,
 .sbk-datetimepicker__control:focus-visible,
 .sbk-datetimepicker__control[aria-expanded="true"] {
@@ -461,6 +463,7 @@ a.sbk-mention {
   .sbk-select__control:focus-visible,
   .sbk-select__control[aria-expanded="true"],
   .sbk-select--typeable .sbk-select__control:focus-within,
+  .sbk-input__element .sbk-select--multi .sbk-select__control:focus,
   .sbk-timepicker__control:focus-within,
   .sbk-datetimepicker__control:focus-visible,
   .sbk-datetimepicker__control[aria-expanded="true"] {
@@ -475,6 +478,7 @@ a.sbk-mention {
 .sbk-datepicker__input[aria-invalid="true"]:focus,
 .sbk-select__control[aria-invalid="true"]:focus-visible,
 .sbk-select__control[aria-invalid="true"][aria-expanded="true"],
+.sbk-input__element .sbk-select--multi .sbk-select__control[aria-invalid="true"]:focus,
 .sbk-select--typeable .sbk-select__control:has([aria-invalid="true"]):focus-within,
 .sbk-timepicker__control:has([aria-invalid="true"]):focus-within {
   border-color: transparent;

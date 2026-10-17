@@ -338,6 +338,17 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     }
   }
 
+  // A clicked option closes a multi-select's list and puts focus back on its field; Enter keeps it
+  // open for the next pick (Block Kit Builder: the multi-select `@pick` references, and
+  // `contexts/multi_static_select/modal-input@add-remove`).
+  async function clickItem(item: Item) {
+    await selectItem(item);
+    if (multi) {
+      combo.setOpen(false);
+      triggerRef.current?.focus();
+    }
+  }
+
   async function removeItem(id: string) {
     await commit(items.filter((i) => i.id !== id));
   }
@@ -516,7 +527,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                     check={(multi || typeable) && isSelected(option)}
                     typed={combo.typed && combo.active === i}
                     quiet={grouped && combo.untouched}
-                    onSelect={() => selectItem(optionToItem(option))}
+                    onSelect={() => clickItem(optionToItem(option))}
                     navProps={combo.optionProps(i)}
                   />
                 );
