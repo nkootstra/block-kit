@@ -524,6 +524,41 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
     expect(options[1]!.querySelector(".sbk-select__member-name")?.textContent).toBe("Ada(you)");
   });
 
+  it("draws a chosen person in the field as the list row does", () => {
+    renderDirectory("users_select", vi.fn(), { initial_user: "U03" });
+    const content = document.querySelector(".sbk-select__content-entity");
+    expect(content?.querySelector(".sbk-select__avatar")).toBeTruthy();
+    expect(content?.querySelector("strong")?.textContent).toBe("grace");
+    expect(content?.querySelector(".sbk-select__member-secondary")?.textContent).toBe(
+      "Grace Hopper",
+    );
+  });
+
+  it("leaves (you) out of the field, as Slack's chosen value does", () => {
+    renderDirectory("users_select", vi.fn(), { initial_user: "U01" });
+    const content = document.querySelector(".sbk-select__content-entity");
+    expect(content?.querySelector("strong")?.textContent).toBe("Ada");
+    expect(content?.querySelector(".sbk-select__member-you")).toBeNull();
+  });
+
+  it("gives a chosen person's chip an avatar, and a channel's its hash or lock", () => {
+    renderDirectory("multi_conversations_select", vi.fn(), {
+      initial_conversations: ["U03", "C01", "C02"],
+    });
+    const chips = [...document.querySelectorAll(".sbk-select__chip")];
+    expect(chips.map((c) => c.querySelector(".sbk-select__chip-text")?.textContent)).toEqual([
+      "grace",
+      "design-reviews",
+      "general",
+    ]);
+    expect(chips[0]!.querySelector(".sbk-select__chip-avatar")).toBeTruthy();
+    expect(chips[0]!.querySelector("strong")?.textContent).toBe("grace");
+    expect(chips.slice(1).map((c) => c.querySelector("svg")?.getAttribute("data-icon"))).toEqual([
+      "lock",
+      "hash",
+    ]);
+  });
+
   it("lists a chosen person from the directory in place", () => {
     renderDirectory("users_select", vi.fn(), { initial_user: "U03" });
     fireEvent.click(screen.getByRole("combobox"));
@@ -552,7 +587,7 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
       expect.objectContaining({ type: "users_select", selected_user: "U03" }),
       expect.anything(),
     );
-    expect(document.querySelector(".sbk-select__content-text")?.textContent).toBe("grace");
+    expect(document.querySelector(".sbk-select__content-text strong")?.textContent).toBe("grace");
   });
 });
 

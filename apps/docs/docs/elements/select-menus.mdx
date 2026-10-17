@@ -387,7 +387,9 @@ only which user (if any) starts selected. Outside Slack, the list comes from the
 `resolvers.directory`, which returns the people and channels to offer for `"users"`,
 `"conversations"` or `"channels"`. Each row is drawn as Slack's: a 20px avatar, the bold name,
 "(you)" for the signed-in user, a badge such as `AGENT`, the presence icon and the full name.
-Channels show a `#` or a lock. Without a directory the list says "😕 Nothing could be found."
+Channels show a `#` or a lock. A chosen entry looks the same in a single select's field. In a
+multi-select's chip, a person gets a 26px avatar and a channel its `#` or lock. Without a directory
+the list says "😕 Nothing could be found."
 
 The directory usually comes from `users.list` and `conversations.list`, which need the bot token, so
 fetch it on your server and pass the entries to the browser as data: from a Server Component, or a

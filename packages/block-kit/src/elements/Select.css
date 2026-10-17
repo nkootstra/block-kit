@@ -208,6 +208,12 @@
 }
 
 /* An id Slack couldn't resolve: c-small_channel_entity with a c-missing_channel--private pill. */
+/* Slack's `c-small_member_list_entity` in the field: the list row, 6px in from the content's edge. */
+.sbk-select__content-entity {
+  display: flex;
+  padding-left: 6px;
+}
+
 .sbk-select__entity {
   display: flex;
   align-items: center;
@@ -313,9 +319,43 @@
   overflow: hidden;
 }
 
-.sbk-select__chip-text > span {
+.sbk-select__chip-text > :is(span, strong) {
   font-size: 15px;
   line-height: 26px;
+}
+
+/* Slack's `c-token--member`: the avatar sits flush with the chip's left edge, its left corners
+   rounded (22.222% of 26px), 6px before the name, which is black (900), and 4px after it. */
+.sbk-select__chip-label--member {
+  padding: 0 4px 0 0;
+}
+
+.sbk-select__chip-avatar {
+  flex: 0 0 26px;
+  height: 26px;
+  margin-right: 6px;
+  overflow: hidden;
+  background: var(--sbk-select-avatar-bg);
+  border-radius: 5.778px 0 0 5.778px;
+}
+
+.sbk-select__chip-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sbk-select__chip-text > strong {
+  font-weight: 900;
+}
+
+/* Slack's `c-token_channel`: the 18px hash or lock, 2px before the name. */
+.sbk-select__chip-icon {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 4px 2px 0 0;
 }
 
 .sbk-select__chip-entity {
