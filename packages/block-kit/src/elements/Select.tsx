@@ -11,6 +11,7 @@ import { useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { MENU_GAP, Popover } from "./Popover";
 import { SectionAccessoryContext } from "./accessoryContext";
+import { DIALOG_TRIGGER_MAX, truncate } from "./truncate";
 import { SelectDialog } from "./SelectDialog";
 
 /**
@@ -576,7 +577,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
           {...invalid}
         >
           <span className="sbk-select__placeholder">
-            {items.length > 0 ? `${items.length} selected` : placeholder}
+            {items.length > 0
+              ? `${items.length} selected`
+              : truncate(placeholder, DIALOG_TRIGGER_MAX)}
           </span>
         </button>
         {dialogOpen && (

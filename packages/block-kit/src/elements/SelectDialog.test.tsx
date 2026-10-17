@@ -138,6 +138,15 @@ describe("the selection dialog's title", () => {
     fireEvent.click(trigger("Select items"));
     expect(screen.getByRole("dialog", { name: "Select items" })).toBeTruthy();
   });
+
+  // `extra/fidelity/multi-conversations-select/long-content`: the button cuts a long placeholder to
+  // 30 characters; the dialog's title keeps all of it.
+  it("keeps a long placeholder whole, where the button cuts it", () => {
+    const long = "This sentence is here to make the text long enough to wrap onto several lines";
+    renderAccessory({ placeholder: plain(long) });
+    fireEvent.click(trigger("This sentence is here to make…"));
+    expect(screen.getByRole("dialog", { name: long })).toBeTruthy();
+  });
 });
 
 function renderDirectoryAccessory(type: string, placeholder: string, onAction = vi.fn()) {
