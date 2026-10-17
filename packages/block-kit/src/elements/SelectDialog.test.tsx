@@ -113,6 +113,19 @@ describe("a multi_static_select section accessory", () => {
     await clickAsync(within(dialog()).getByRole("button", { name: "Cancel" }));
     expect(document.activeElement).toBe(button);
   });
+
+  // `contexts/multi_static_select/accessory@open-focus-option-1`: a click opens the list with no
+  // option highlighted, and ArrowDown highlights the first.
+  it("opens its list on a click with nothing highlighted", async () => {
+    renderAccessory();
+    fireEvent.click(trigger());
+    const field = within(dialog()).getByRole("combobox");
+    await act(async () => fireEvent.click(field));
+    expect(field.getAttribute("aria-activedescendant")).toBeNull();
+    await keyDownAsync(field, "ArrowDown");
+    const active = field.getAttribute("aria-activedescendant");
+    expect(active && document.getElementById(active)?.textContent).toBe("Alpha");
+  });
 });
 
 // Captured in Block Kit Builder (`contexts/multi_static_select/accessory@dialog`,

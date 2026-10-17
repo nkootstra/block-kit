@@ -262,7 +262,9 @@ to the preview):
   calendar marks the capture day as today, so `compare.ts` renders ours with the page's clock set
   to that day (the `--is_today` date's `data-value`), not the day the comparison runs.
 - A **dialog** (a confirm dialog, the multi-select dialog) is centred in the window, so its position
-  says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`).
+  says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`). A
+  popover open over a dialog (the multi-select dialog's list) is moved into the dialog's layer at
+  its offset from the dialog, and compared with the dialog alongside our list.
 
 ## Capture new references
 

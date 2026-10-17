@@ -128,10 +128,6 @@
   border: 0;
 }
 
-.sbk-select-dialog__menu {
-  width: 100%;
-}
-
 .sbk-select-dialog__footer {
   display: flex;
   justify-content: flex-end;

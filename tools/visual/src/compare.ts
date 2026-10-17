@@ -182,6 +182,27 @@ const restoreSelection = (p: Page) =>
     field.setSelectionRange(start ?? 0, end ?? 0);
   });
 
+/**
+ * snapshot.js places a popover at its offset from the preview and draws a dialog after the
+ * preview in the page's flow, so a list Slack opened over a dialog lands beside it instead. Moves
+ * each popover into the dialog's layer at its offset from the dialog, where Slack drew it.
+ */
+const layOverDialog = (p: Page, layers: Layer[]) =>
+  p.evaluate((boxes) => {
+    const dialog = boxes.find((l) => l.kind === "dialog");
+    const host = document.querySelector<HTMLElement>('[data-sbk-layer="dialog"]');
+    if (!dialog || !host) return;
+    host.style.position = "relative";
+    const popovers = boxes.filter((l) => l.kind === "popover");
+    document.querySelectorAll<HTMLElement>('[data-sbk-layer="popover"]').forEach((el, i) => {
+      const popover = popovers[i];
+      if (!popover) return;
+      el.style.left = `${popover.x - dialog.x}px`;
+      el.style.top = `${popover.y - dialog.y}px`;
+      host.append(el);
+    });
+  }, layers);
+
 // Slack's font CDN doesn't send CORS headers for a null origin; serve fonts through the harness.
 const fontCache = new Map<string, Buffer>();
 await context.route(/\.(woff2?|ttf|otf)(\?.*)?$/, async (route) => {
@@ -330,10 +351,13 @@ for (const name of names) {
     parsed.theme === "dark"
       ? (html.match(/html,body\{margin:0;padding:0;background:([^}]+)\}/)?.[1] ?? "")
       : "";
-  // What each side compares: the message, the message with its popovers, or a dialog alone.
+  // What each side compares: the message, the message with its popovers, or a dialog with any
+  // popover layOverDialog moved into it.
   const refTarget = dialog ? '[data-sbk-layer="dialog"] > *' : "#sbk-reference > *";
   const ourTarget = dialog
-    ? OUR_DIALOGS
+    ? popovers
+      ? `${OUR_DIALOGS}, ${OUR_POPOVERS}`
+      : OUR_DIALOGS
     : popovers
       ? `#sbk-render > *, ${OUR_POPOVERS}`
       : "#sbk-render > *";
@@ -355,6 +379,7 @@ for (const name of names) {
     await settle(refPage);
     await restoreSelection(refPage);
     await restoreScroll(refPage, meta.scrollers ?? []);
+    if (dialog) await layOverDialog(refPage, layers);
   }
   const refBoxes = popovers ? await boxesOf(refPage, refTarget) : [];
   let reference = popovers ? undefined : await shot(page, refTarget);
