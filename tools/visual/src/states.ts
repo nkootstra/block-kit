@@ -3,7 +3,7 @@
  * `ours` clicks through our rendering the way the reference was clicked through in Block Kit
  * Builder; `reference` restores what a DOM snapshot can't record, such as a scroll offset.
  */
-import type { ElementHandle, Page } from "playwright";
+import type { ElementHandle, Locator, Page } from "playwright";
 import { type InputState, parseInputState, parseReferenceName } from "./names";
 import { type Probe, probeSnapshots, runSteps } from "./probes";
 import { scrollOursToEnd } from "./scrollers";
@@ -53,7 +53,223 @@ export const STATES: Record<string, State> = {
         if (wrapper) wrapper.scrollLeft = 356;
       }),
   },
+  "catalog/agents/task-card-statuses@expanded": {
+    // The pills have no details to show (aria-disabled), so the click changes nothing, in Slack too.
+    ours: (p) => p.locator(".sbk-task-card__pill").first().click({ force: true }),
+  },
+  "catalog/callout/callout@hidden": { ours: (p) => p.click(".sbk-image__toggle") },
+  "catalog/callout/callout@menu": {
+    ours: async (p) => {
+      const menu = await ourTarget(p, { kind: "menu", index: 1 });
+      await menu.hover({ force: true });
+      await menu.click();
+    },
+  },
+  "catalog/table/basic-data-table@menu": {
+    ours: (p) => p.getByRole("button", { name: "More actions", exact: true }).click(),
+  },
+  "catalog/table/basic-data-table@sort-asc": {
+    ours: async (p) => {
+      await p.getByRole("button", { name: "Name", exact: true }).click();
+      await p.getByRole("menuitemradio", { name: "Ascending" }).click();
+    },
+  },
+  // The interactions recorded with Actions Preview, the same clicks and keys as the package's
+  // payload test (actionPayloads.test.tsx INTERACTIONS); the reference was frozen after them. The
+  // test's workspace has Slackbot and private-one where the redacted references, and the
+  // playground, list User One and channel-one.
+  "catalog/actions/all-selects@pick": pick((p) => p.getByPlaceholder("Select an item"), {
+    text: "*plain_text option 1*",
+  }),
+  "catalog/actions/all-selects@pick-static": pick((p) => p.getByPlaceholder("Select an item"), {
+    text: "*plain_text option 1*",
+  }),
+  "catalog/actions/datepickers@pick": pick((p) => p.getByPlaceholder("Select a date").first(), {
+    button: /April 15th, 1990/,
+  }),
+  "catalog/actions/filtered-conversations-select@pick": pick(
+    (p) => p.getByRole("combobox", { name: "Select private conversation", exact: true }),
+    { option: /channel-one/ },
+  ),
+  "catalog/actions/radio-buttons@pick": { ours: (p) => p.getByRole("radio").nth(1).click() },
+  "catalog/actions/selects-with-initial-options@pick": pick((p) => p.getByRole("combobox").nth(2), {
+    option: /channel-two/,
+  }),
+  "catalog/actions/timepicker@pick": arrowPick((p) => byValue(p, "1:37 PM")),
+  "catalog/agents/message-feedback@pick": { ours: (p) => p.getByRole("radio").first().click() },
+  "catalog/container/data-entry-form@pick": pick((p) => p.getByPlaceholder("Select priority"), {
+    option: "High",
+  }),
+  "catalog/input/multi-static-select@pick": pick(
+    (p) => p.locator(".sbk-input .sbk-select__control").first(),
+    { option: "*plain_text option 1*" },
+  ),
+  "catalog/input/multi-users-select@pick": pick(
+    (p) => p.locator(".sbk-input .sbk-select__control").first(),
+    { option: /User One/ },
+  ),
+  "catalog/input/radio-buttons@pick": {
+    ours: (p) => p.getByRole("radio", { name: "*plain_text option 1*", exact: true }).click(),
+  },
+  "catalog/input/static-select@pick": pick((p) => p.getByPlaceholder("Select an item"), {
+    option: "*plain_text option 1*",
+  }),
+  "catalog/section/multi-conversations-select@pick": dialogPick("Select conversations", /User One/),
+  "catalog/section/multi-static-select@pick": dialogPick("Select options", /plain_text option 0/),
+  "catalog/section/overflow@pick": pick(
+    (p) => p.getByRole("button", { name: "More options", exact: true }),
+    { text: "*plain_text option 1*" },
+  ),
+  "catalog/section/radio-buttons@pick": {
+    ours: (p) => p.getByRole("radio", { name: "*plain_text option 1*", exact: true }).click(),
+  },
+  "catalog/section/users-select@pick": pick(
+    (p) => p.getByRole("combobox", { name: "Select a user", exact: true }),
+    { option: /User One/ },
+  ),
+  "contexts/datetimepicker/actions@pick": pick(
+    (p) => p.getByRole("button", { name: /January 1st, 2026/ }),
+    { button: /January 14th, 2026/ },
+  ),
+  "contexts/multi_static_select/accessory@pick": dialogPick("Select items", /^Option 1$/),
+  "contexts/multi_users_select/accessory@pick": dialogPick("Select users", /User One/),
+  "extra/actions/more-elements@pick": pick(
+    (p) => p.getByRole("combobox", { name: "Pick a channel", exact: true }),
+    { option: /channel-one/ },
+  ),
+  "extra/fidelity/channels-select/long-content@pick": pick(
+    (p) => p.getByRole("combobox", { name: /^This sentence is here/ }),
+    { option: /channel-one/ },
+  ),
+  "extra/fidelity/checkboxes/long-content@pick": {
+    ours: (p) => p.getByRole("checkbox").first().click(),
+  },
+  "extra/fidelity/confirm/long-content@pick": pick(
+    (p) => p.getByRole("combobox", { name: "Pick a channel", exact: true }),
+    { option: /channel-one/ },
+  ),
+  "extra/fidelity/datetimepicker/empty@pick": pick(
+    (p) => p.getByRole("button", { name: /Select a date/ }),
+    { button: /October 15th, 2026/ },
+  ),
+  "extra/fidelity/multi-channels-select/empty@pick": pick(
+    (p) => p.locator(".sbk-input .sbk-select__control").first(),
+    { option: /channel-one/ },
+  ),
+  "extra/fidelity/multi-conversations-select/initial-value@pick": dialogPick(
+    /1 selected/,
+    /User One/,
+  ),
+  "extra/fidelity/option/long-content@pick": pick(
+    (p) => p.getByRole("button", { name: "More options", exact: true }),
+    { text: /^This sentence is here/ },
+  ),
+  "extra/fidelity/users-select/long-content@pick": pick(
+    (p) => p.getByRole("combobox", { name: /^This sentence is here/ }),
+    { option: /User One/ },
+  ),
+  "extra/input/more-selects@pick": pick(
+    (p) => p.getByRole("combobox", { name: "Select a conversation", exact: true }),
+    { option: /User One/ },
+  ),
+  "extra/modal/required-multi-selects@pick": pick(
+    (p) => p.locator(".sbk-input .sbk-select__control").first(),
+    { option: "Option 1" },
+  ),
+  "extra/payloads/accessory-multi-selects@pick": {
+    ours: async (p) => {
+      await p.getByRole("button", { name: "Select channels", exact: true }).click();
+      const field = p.getByRole("dialog").getByRole("combobox");
+      await field.click();
+      await p.keyboard.press("ArrowDown");
+      await p.keyboard.press("Enter");
+      await confirm(p);
+    },
+  },
+  "extra/payloads/pickers@pick": arrowPick((p) => byValue(p, "1:37 PM")),
+  "extra/payloads/selects@change-single": pick((p) => p.getByRole("combobox").first(), {
+    option: "Bravo",
+  }),
+  "extra/payloads/selects@keyboard-single": {
+    ours: async (p) => {
+      await p.getByRole("combobox").first().click();
+      await p.keyboard.press("ArrowDown");
+      await p.keyboard.press("ArrowDown");
+      await p.keyboard.press("Enter");
+    },
+  },
+  "extra/payloads/selects@pick-accessory": pick((p) => p.getByRole("combobox").nth(1), {
+    option: "Two",
+  }),
 };
+
+type Find = (p: Page) => Locator;
+/** What a pick clicks once its control is open: an option, a calendar day or menu text. */
+type Choice = { option: string | RegExp } | { button: string | RegExp } | { text: string | RegExp };
+
+/** A string names a control exactly, as Testing Library matches it; a RegExp matches as written. */
+const exact = (name: string | RegExp) => typeof name === "string";
+
+/** Opens a control and clicks one of the choices it shows. */
+function pick(opener: Find, choice: Choice): State {
+  return {
+    ours: async (p) => {
+      await opener(p).click();
+      if ("option" in choice)
+        await p
+          .getByRole("option", { name: choice.option, exact: exact(choice.option) })
+          .first()
+          .click();
+      else if ("button" in choice)
+        await p
+          .getByRole("button", { name: choice.button, exact: exact(choice.button) })
+          .first()
+          .click();
+      else
+        await p
+          .getByText(choice.text, { exact: exact(choice.text) })
+          .first()
+          .click();
+    },
+  };
+}
+
+/** Opens a field's list and takes the entry after its value with ArrowDown and Enter. */
+function arrowPick(field: Find): State {
+  return {
+    ours: async (p) => {
+      await field(p).click();
+      await p.keyboard.press("ArrowDown");
+      await p.keyboard.press("Enter");
+    },
+  };
+}
+
+/** Picks one option in a section accessory multi-select's dialog and confirms it. */
+function dialogPick(button: string | RegExp, option: RegExp): State {
+  return {
+    ours: async (p) => {
+      await p.getByRole("button", { name: button, exact: typeof button === "string" }).click();
+      await p.getByRole("dialog").getByRole("combobox").click();
+      await p.getByRole("option", { name: option }).first().click();
+      await confirm(p);
+    },
+  };
+}
+
+/**
+ * Presses the dialog's Confirm. A multi-select's list stays open after a pick and can cover the
+ * button at the mobile width; the package's payload test presses it with an event, and so does this.
+ */
+const confirm = (p: Page) =>
+  p.getByRole("button", { name: "Confirm", exact: true }).dispatchEvent("click");
+
+/** The input showing a value, as Testing Library's getByDisplayValue finds it. */
+const byValue = (p: Page, value: string) =>
+  p
+    .locator("input")
+    .filter({ visible: true })
+    .and(p.locator(`[value="${value}"]`));
 
 /**
  * The open states, replayed on any fixture: each opens the fixture's FIRST control of its kind,

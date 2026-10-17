@@ -1,5 +1,11 @@
 import { describe, expect, it } from "bun:test";
+import { join } from "node:path";
+import { Glob } from "bun";
+import { parseReferenceName } from "./names";
+import { readProbes } from "./probes";
 import { OPEN_STATES, STATES, stateFor } from "./states";
+
+const FIXTURES = join(import.meta.dir, "../../../fixtures");
 
 describe("states", () => {
   it("uses a fixture's own replay when it has one", () => {
@@ -23,5 +29,17 @@ describe("states", () => {
     expect(stateFor("catalog/agents/plan@expanded+dark")).toBe(
       STATES["catalog/agents/plan@expanded"],
     );
+  });
+
+  it("can replay every committed reference that was captured after an interaction", async () => {
+    // Without one, compare.ts compared the rendering at rest with the interacted reference: 83
+    // references (a picked option, a hidden image, an open menu) measured nothing but the state.
+    const probes = await readProbes();
+    const missing: string[] = [];
+    for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
+      const name = path.replace(/\.reference\.html$/, "");
+      if (parseReferenceName(name).interaction && !stateFor(name, probes)) missing.push(name);
+    }
+    expect(missing).toEqual([]);
   });
 });
