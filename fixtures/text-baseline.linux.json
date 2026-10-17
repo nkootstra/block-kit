@@ -1160,9 +1160,7 @@
     "width|Global Distribution Network|0",
     "x|proposal sent|0",
     "width|proposal sent|0",
-    "missing|review|0",
-    "missing|Copy table|0",
-    "missing|Download table|0"
+    "missing|review|0"
   ],
   "catalog/table/basic-data-table@menu+mobile+dark": [
     "width|Acme Expansion Deal|0",
@@ -1172,9 +1170,7 @@
     "width|Global Distribution Network|0",
     "x|proposal sent|0",
     "width|proposal sent|0",
-    "missing|review|0",
-    "missing|Copy table|0",
-    "missing|Download table|0"
+    "missing|review|0"
   ],
   "catalog/table/basic-data-table@mobile": [
     "width|Acme Expansion Deal|0",
