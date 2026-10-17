@@ -14,7 +14,16 @@ export interface ChartSeries {
 const HEIGHT = 360;
 const PLOT_TOP = 9;
 const PLOT_BOTTOM = 334;
-const LABELS_Y = 342;
+// When the category labels don't fit side by side, Slack turns them 45° and gives them more room:
+// the plot spans 17–282.4817 instead of 9–334, and the first label sits at x 86.2 or further in
+// (extra/fidelity/data-visualization/many-items, at 406 and 374px wide).
+const ROTATED_PLOT_TOP = 17;
+const ROTATED_PLOT_BOTTOM = 282.4817;
+const ROTATED_FIRST_LABEL_X = 86.21;
+/** The category labels sit this far below the plot. */
+const LABELS_GAP = 8;
+/** About how wide a 13px label character is; an estimate, so the server and browser agree. */
+const LABEL_CHAR_WIDTH = 7.5;
 /** The dashed line Slack's charts draw at the category under the pointer (ECharts' axis pointer). */
 const POINTER_COLOR = "#b7b9be";
 
@@ -45,19 +54,34 @@ export function CartesianChart({
   const { ref, width } = useContainerWidth(406);
   const allValues = series.flatMap((s) => s.data.map((d) => d.value));
   const scale = niceLinearScale(Math.min(0, ...allValues), Math.max(0, ...allValues));
-  const leftMargin = leftMarginFor(scale.ticks);
   // Slack's line and area plots stop 10.7675px short of the edge, leaving room for half the last
   // category label; bars fill the width.
   const rightMargin = type === "bar" ? 0 : 10.7675;
-  const plotLeft = leftMargin;
+  const n = categories.length;
+  // The room each label has: a bar's band, or the distance between two points.
+  const slots = type === "bar" ? n : n - 1;
+  const room = (left: number) => (slots > 0 ? (width - rightMargin - left) / slots : Infinity);
+  const longestLabel = Math.max(0, ...categories.map((c) => c.length)) * LABEL_CHAR_WIDTH;
+  const rotated = longestLabel > room(leftMarginFor(scale.ticks));
+  // Turned labels hang down to the left of their category, so the first one pushes the plot in.
+  // Its x is the plot's left edge plus half a band for bars, the edge itself for points.
+  const firstLabelOffset = type === "bar" ? 1 / (2 * n) : 0;
+  const plotLeft = rotated
+    ? Math.max(
+        leftMarginFor(scale.ticks),
+        (ROTATED_FIRST_LABEL_X - (width - rightMargin) * firstLabelOffset) / (1 - firstLabelOffset),
+      )
+    : leftMarginFor(scale.ticks);
   const plotRight = Math.max(plotLeft + 1, width - rightMargin);
   const plotWidth = plotRight - plotLeft;
+  const plotTop = rotated ? ROTATED_PLOT_TOP : PLOT_TOP;
+  const plotBottom = rotated ? ROTATED_PLOT_BOTTOM : PLOT_BOTTOM;
+  const labelsY = plotBottom + LABELS_GAP;
 
   const y = (v: number) =>
-    PLOT_BOTTOM - ((v - scale.min) / (scale.max - scale.min)) * (PLOT_BOTTOM - PLOT_TOP);
+    plotBottom - ((v - scale.min) / (scale.max - scale.min)) * (plotBottom - plotTop);
   const zeroY = y(0);
 
-  const n = categories.length;
   const bandWidth = n > 0 ? plotWidth / n : plotWidth;
   const pointX = (i: number) =>
     n > 1 ? plotLeft + (i * plotWidth) / (n - 1) : plotLeft + plotWidth / 2;
@@ -82,7 +106,7 @@ export function CartesianChart({
     const rect = e.currentTarget.getBoundingClientRect();
     const px = ((e.clientX - rect.left) * width) / rect.width;
     const py = ((e.clientY - rect.top) * HEIGHT) / rect.height;
-    if (px < plotLeft || px > plotRight || py < PLOT_TOP || py > PLOT_BOTTOM) {
+    if (px < plotLeft || px > plotRight || py < plotTop || py > plotBottom) {
       setHover(null);
       return;
     }
@@ -100,7 +124,7 @@ export function CartesianChart({
   const shown = useLastValue(hover);
 
   return (
-    <div className="sbk-chart" ref={ref}>
+    <div className={rotated ? "sbk-chart sbk-chart--rotated" : "sbk-chart"} ref={ref}>
       <svg
         className="sbk-chart__svg"
         width={width}
@@ -143,18 +167,30 @@ export function CartesianChart({
               {formatTick(t)}
             </text>
           ))}
-          {categories.map((c, i) => (
-            <text
-              key={c}
-              transform={`translate(${type === "bar" ? bandCenterX(i) : pointX(i)} ${LABELS_Y})`}
-              y={9}
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="sbk-chart__tick"
-            >
-              {c}
-            </text>
-          ))}
+          {categories.map((c, i) =>
+            rotated ? (
+              <text
+                key={c}
+                transform={`translate(${categoryX(i)} ${labelsY}) rotate(-45)`}
+                textAnchor="end"
+                dominantBaseline="central"
+                className="sbk-chart__tick"
+              >
+                {c}
+              </text>
+            ) : (
+              <text
+                key={c}
+                transform={`translate(${categoryX(i)} ${labelsY})`}
+                y={9}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="sbk-chart__tick"
+              >
+                {c}
+              </text>
+            ),
+          )}
 
           {type === "bar"
             ? series.map((s, si) =>
@@ -206,8 +242,8 @@ export function CartesianChart({
               className="sbk-chart__pointer"
               x1={crispLine(categoryX(hovered))}
               x2={crispLine(categoryX(hovered))}
-              y1={PLOT_TOP}
-              y2={PLOT_BOTTOM}
+              y1={plotTop}
+              y2={plotBottom}
               stroke={POINTER_COLOR}
               strokeDasharray="4 2"
             />

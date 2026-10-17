@@ -98,4 +98,23 @@ describe("<DataVisualization>", () => {
     );
     expect(container.firstChild).toBeNull();
   });
+
+  // `extra/fidelity/data-visualization/many-items`: 20 categories don't fit side by side, so Slack
+  // turns their labels 45°; five do.
+  it.each([
+    [20, true],
+    [5, false],
+  ])("with %i categories, turns the labels: %s", (count, turned) => {
+    const data = Array.from({ length: count }, (_, i) => ({ label: `D${i + 1}`, value: i }));
+    const block = {
+      type: "data_visualization",
+      chart: { type: "bar", series: [{ name: "Requests", data }] },
+    };
+    const { container } = render(
+      <DataVisualization block={asDataVizBlock(block)} blockId="b1" index={0} />,
+    );
+    const label = screen.getByText("D1", { selector: "text" });
+    expect(label.getAttribute("transform")?.includes("rotate(-45)")).toBe(turned);
+    expect(container.querySelector(".sbk-chart--rotated") !== null).toBe(turned);
+  });
 });
