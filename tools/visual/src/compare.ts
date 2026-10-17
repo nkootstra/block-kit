@@ -130,7 +130,7 @@ interface Meta {
 }
 
 /** Where our open menus and dialogs render: portalled to <body>, outside #sbk-render. */
-const OUR_POPOVERS = ".sbk-popover > *";
+const OUR_POPOVERS = ".sbk-popover > *, .sbk-tooltip";
 const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog";
 
 const names = shard(

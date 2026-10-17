@@ -5,7 +5,7 @@
  */
 import type { ElementHandle, Locator, Page } from "playwright";
 import { type InputState, parseInputState, parseReferenceName } from "./names";
-import { type Probe, probeSnapshots, runSteps } from "./probes";
+import { type Probe, probeSnapshots, runSteps, type Step } from "./probes";
 import { scrollOursToEnd } from "./scrollers";
 import { findTarget, OURS, ourRoot, type Target } from "./targets";
 
@@ -398,6 +398,12 @@ export const SUBMIT_ERRORS: State = {
 /** Scrolls the first horizontal scroll container that overflows fully to the right. */
 export const SCROLLED_END: State = { ours: scrollOursToEnd };
 
+/** Whether the last step that moves the pointer is a hover. */
+function hoversLast(steps: Step[]): boolean {
+  const moved = steps.findLast((s) => "hover" in s || "click" in s || "scroll" in s);
+  return !!moved && "hover" in moved;
+}
+
 /**
  * The replay for a reference, whatever theme and width it was captured at, or undefined. `probes`
  * are the behaviour probes (probes.ts); one with `snapshot` replays its steps.
@@ -413,8 +419,9 @@ export function stateFor(name: string, probes?: Map<string, Probe>): State | und
   if (steps)
     return {
       ours: (p) => runSteps(p, steps),
-      // A hover just before the snapshot is part of the state.
-      keepPointer: !!steps.at(-1) && "hover" in steps.at(-1)!,
+      // A hover is part of the state until a click or scroll moves the pointer; a wait or a key
+      // after it (hover → wait for the tooltip → snapshot) leaves it where it is.
+      keepPointer: hoversLast(steps),
     };
   return (
     STATES[`${fixture}@${interaction}`] ??

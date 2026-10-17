@@ -2,12 +2,26 @@ import { describe, expect, it } from "bun:test";
 import { join } from "node:path";
 import { Glob } from "bun";
 import { parseReferenceName } from "./names";
-import { readProbes } from "./probes";
+import { readProbes, type Step } from "./probes";
 import { OPEN_STATES, STATES, stateFor } from "./states";
 
 const FIXTURES = join(import.meta.dir, "../../../fixtures");
 
+/** Whether a probe snapshot taken after `steps` keeps the pointer where they left it. */
+const keeps = (steps: Step[]) =>
+  stateFor("x/y@shot", new Map([["x/y@probe", { steps: [...steps, { snapshot: "shot" }] }]]))
+    ?.keepPointer;
+
 describe("states", () => {
+  it("keeps the pointer on a hover that a wait or a key follows, not on one a click follows", () => {
+    // catalog/agents/message-feedback@poke-tooltip-1: hover, wait for the tooltip, snapshot.
+    expect(keeps([{ hover: "button-1" }, { wait: 1200 }])).toBe(true);
+    expect(keeps([{ hover: "option-2" }, { key: "ArrowDown" }])).toBe(true);
+    expect(keeps([{ hover: "option-2" }])).toBe(true);
+    expect(keeps([{ hover: "field-1" }, { click: "field-1" }, { wait: 300 }])).toBe(false);
+    expect(keeps([{ key: "Tab" }])).toBe(false);
+  });
+
   it("uses a fixture's own replay when it has one", () => {
     expect(stateFor("catalog/agents/plan@expanded")).toBe(STATES["catalog/agents/plan@expanded"]);
   });
