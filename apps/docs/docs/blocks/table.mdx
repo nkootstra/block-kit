@@ -224,7 +224,9 @@ the second is right-aligned:
   }}
 />
 
-Hovering the table also shows Slack's download-as-CSV and copy buttons, same as `data_table`.
+Hovering the table also shows Slack's download-as-CSV and copy buttons, same as `data_table`. In
+the downloaded CSV, a cell a spreadsheet would read as a formula (starting with `=`, `+`, `-` or
+`@`, and not a number) gets a leading `'`, so opening the file can't run it.
 
 ## Related
 

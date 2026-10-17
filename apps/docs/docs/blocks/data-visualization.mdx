@@ -127,7 +127,9 @@ The **More actions** button in the chart's top-right corner opens Slack's menu:
   one row per series under **Series** and the categories, or a pie's segments under **Label** and
   **Value**. Escape, the close button or a click outside closes it.
 - **Download chart data** saves the same table as a tab-separated file named after the title
-  (`messages-sent-by-platform.tsv`).
+  (`messages-sent-by-platform.tsv`). A label or name a spreadsheet would read as a formula
+  (starting with `=`, `+`, `-` or `@`, and not a number) is saved with a leading `'`, so opening
+  the file can't run it.
 - **Copy as image** shows disabled, as it does in Block Kit Builder.
 
 The menu opens beside the button above the page, so the card never clips or scrolls it, and works
