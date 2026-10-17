@@ -10,12 +10,13 @@ seo:
 
 Slack shows blocks on three surfaces: messages, modals and the App Home tab. Each has its own component, and each lays the same blocks out the way Slack does on that surface.
 
-| Component   | Slack surface                                    | Takes                                                    |
-| ----------- | ------------------------------------------------ | -------------------------------------------------------- |
-| `<Message>` | A message in a channel                           | `blocks`, or a whole message object                      |
-| `<Modal>`   | A modal opened with `views.open`                 | A `modal` view                                           |
-| `<HomeTab>` | The App Home tab, published with `views.publish` | A `home` view                                            |
-| `<View>`    | Either of the two above                          | Any view; picks `<Modal>` or `<HomeTab>` from its `type` |
+| Component   | Slack surface                                             | Takes                                                                   |
+| ----------- | --------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `<Message>` | A message in a channel                                    | `blocks`, or a whole message object                                     |
+| `<Modal>`   | A modal opened with `views.open`                          | A `modal` view                                                          |
+| `<HomeTab>` | The App Home tab, published with `views.publish`          | A `home` view                                                           |
+| `<View>`    | Either of the two above                                   | Any view; picks `<Modal>` or `<HomeTab>` from its `type`                |
+| `<Blocks>`  | None: loose blocks, laid out for the provider's `surface` | An array of blocks; see [below](#choosing-the-surface-for-loose-blocks) |
 
 ## Message
 
@@ -52,7 +53,8 @@ import { Message } from "@nkootstra/block-kit";
     },
     ts: {
       type: "string | number",
-      description: "The message timestamp in seconds, as in Slack's `ts`.",
+      description:
+        "The message timestamp in seconds, as in Slack's `ts`. Set it when you render on the server, or the server's and the browser's times differ: see [Server rendering](/guides/server-rendering).",
       default: "The time the component mounted",
     },
     timeZone: {
@@ -201,7 +203,7 @@ import { Modal } from "@nkootstra/block-kit";
   }}
 />
 
-Press **Deploy** with the field empty: the modal validates it the way Slack does before it sends anything. When it's valid, the provider's `onSubmit` gets the `view_submission` payload. To open, push and update modals from actions, and answer a submission with errors, see [Modals](/guides/modals).
+Press **Deploy** with the field empty: the modal validates it the way Slack does before it sends anything (see [Validation](/guides/validation) for the rules). When it's valid, the provider's `onSubmit` gets the `view_submission` payload. To open, push and update modals from actions, and answer a submission with errors, see [Modals](/guides/modals).
 
 <TypeTable
   type={{
@@ -261,7 +263,7 @@ import { View } from "@nkootstra/block-kit";
 
 ## Choosing the surface for loose blocks
 
-`<Blocks>` renders an array of blocks with no surface around them. Some elements look different per surface: selects and text inputs are taller in modals and the Home tab, and only there does an optional `input` block get its “(optional)” label. Set the provider's `surface` to the one you're imitating:
+`<Blocks>` renders an array of blocks with no surface around them. Some elements look different per surface: selects and text inputs are taller in modals and the Home tab, and only there does an optional `input` block get its “(optional)” label. Set the provider's `surface` to the one you're imitating, `"message"` (the default), `"modal"` or `"home"`:
 
 ```tsx
 import { BlockKitProvider, Blocks } from "@nkootstra/block-kit";

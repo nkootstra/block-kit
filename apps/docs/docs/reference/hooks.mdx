@@ -31,7 +31,7 @@ Two functions matter for custom elements:
     setValue: {
       type: "(blockId: string, actionId: string, value: ElementState | undefined) => void",
       description:
-        'Records an input\'s current value in `state`, as Slack does for `view.state.values`. `value` has a `type` plus the element\'s value fields, for example `{ type: "plain_text_input", value: "hi" }`.',
+        'Records an input\'s current value in `state`, as Slack does for `view.state.values`. `value` is an `ElementState`: a `type` plus the element\'s value fields, for example `{ type: "plain_text_input", value: "hi" }`. `undefined` removes it from `state`.',
     },
     dispatch: {
       type: "(action) => void",
@@ -75,7 +75,8 @@ import { Blocks, SurfaceScope } from "@nkootstra/block-kit";
     },
     message: {
       type: "MessageApi",
-      description: "What `onAction` receives as `context.message` for actions in this scope.",
+      description:
+        "What `onAction` receives as `context.message` for actions in this scope: `update` and `delete`, see [Updating or deleting the message](/guides/interactivity#updating-or-deleting-the-message). Not the same as `container.message`, the message object echoed in the payload.",
     },
     errors: {
       type: "Record<string, string>",
