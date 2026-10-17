@@ -10,6 +10,9 @@ Every block and element is looked up by its `type` in a registry. Add an entry t
 
 Unknown types otherwise render as a placeholder that names the type.
 
+A block's JSON comes from whoever wrote the payload, so check a field before you rely on it, as
+the examples below do with `max`, URLs and nesting.
+
 ## Add a block
 
 A block component receives the block's JSON, its `blockId` and its `index`:
@@ -53,9 +56,11 @@ interface RatingElement {
 
 function Rating({ element, blockId }: ElementProps<RatingElement>) {
   const { dispatch } = useBlockKit();
+  // `max` comes from the payload: clamp it, so a huge value can't hang the page.
+  const max = Math.min(Math.max(Math.trunc(Number(element.max)) || 0, 0), 10);
   return (
     <span>
-      {Array.from({ length: element.max }, (_, i) => (
+      {Array.from({ length: max }, (_, i) => (
         <button
           key={i}
           type="button"
@@ -113,15 +118,23 @@ The registries are shared by every surface in your app. A replaced built-in no l
 Inside a custom block, render nested blocks and elements with `<Block>` and `<Element>` so they go through the registries too:
 
 ```tsx
+import { createContext, useContext } from "react";
 import { Block, type BlockProps, type Json } from "@nkootstra/block-kit";
 
+const PanelDepth = createContext(0);
+
 function Panel({ block }: BlockProps<{ type: "panel"; blocks: Json[] }>) {
+  // A payload can nest panels as deep as it likes: stop at a depth your design needs.
+  const depth = useContext(PanelDepth);
+  if (depth >= 3 || !Array.isArray(block.blocks)) return null;
   return (
-    <section className="panel">
-      {block.blocks.map((child, i) => (
-        <Block key={i} block={child} index={i} />
-      ))}
-    </section>
+    <PanelDepth.Provider value={depth + 1}>
+      <section className="panel">
+        {block.blocks.map((child, i) => (
+          <Block key={i} block={child} index={i} />
+        ))}
+      </section>
+    </PanelDepth.Provider>
   );
 }
 ```

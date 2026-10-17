@@ -72,7 +72,7 @@ links, mentions, emoji, and dates.
     rich_text_list: {
       type: '{ type: "rich_text_list"; style: "bullet" | "ordered"; indent?: number; border?: number; elements: RichTextSection[] }',
       description:
-        "A list. `indent` (0–8) nests it under the previous list item at a shallower indent; consecutive rich_text_list elements merge into one continuous outline. `border: 1` draws the list inside a quote, which the rich_text_quote elements right after it join, as Slack does.",
+        "A list. `indent` (0–8) is its nesting level: a list with a deeper `indent` than the list before it nests under that list's last item; consecutive rich_text_list elements merge into one continuous outline. `border: 1` draws the list inside a quote, which the rich_text_quote elements right after it join, as Slack does.",
     },
     rich_text_quote: {
       type: '{ type: "rich_text_quote"; elements: RichTextElement[] }',
@@ -339,7 +339,7 @@ syntax-highlighted fenced code block instead:
 :::note
 A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to render. The preview
 resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DESIGN` for you (see
-[interactivity](/guides/interactivity) for how resolvers work in your own app). An unresolved
+[Mentions and resolvers](/guides/mentions-and-resolvers) for how resolvers work in your own app). An unresolved
 `channel` renders as a locked "Private channel" placeholder; an unresolved `user` or `usergroup`
 renders a loading placeholder instead.
 :::
