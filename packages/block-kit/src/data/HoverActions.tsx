@@ -193,7 +193,7 @@ export function tableRows(table: HTMLTableElement | null): string[][] {
   );
 }
 
-const NUMBER_RE = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i;
+const NUMBER_RE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 
 /**
  * A cell a spreadsheet would read as a formula (`=`, `+`, `-`, `@`, or a leading tab or carriage
