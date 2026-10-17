@@ -199,18 +199,48 @@ describe("<Select> static_select", () => {
         />
       </BlockKitProvider>,
     );
-    // multi-select keeps the menu open across picks, so the trigger is only clicked once.
     fireEvent.click(screen.getByRole("button", { expanded: false }));
     await clickAsync(screen.getByText("A"));
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({ selected_options: [sent("a", "A")] }),
       expect.anything(),
     );
+    // A click pick closes the list, as Slack does.
+    fireEvent.click(screen.getByRole("button", { expanded: false }));
     await clickAsync(screen.getByText("B"));
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({ selected_options: [sent("a", "A"), sent("b", "B")] }),
       expect.anything(),
     );
+  });
+});
+
+describe("<Select> multi-select picks", () => {
+  const element = {
+    type: "multi_static_select",
+    action_id: "a1",
+    options: [opt("a", "A"), opt("b", "B")],
+  } as unknown as SelectElement;
+
+  it("closes the list and focuses the field after a click pick", async () => {
+    render(<Select element={element} blockId="b1" />);
+    const trigger = screen.getByRole("button", { expanded: false });
+    fireEvent.click(trigger);
+    await clickAsync(screen.getByRole("option", { name: "A" }));
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it("keeps the list open after an Enter pick", async () => {
+    render(<Select element={element} blockId="b1" />);
+    const trigger = screen.getByRole("button", { expanded: false });
+    fireEvent.click(trigger);
+    const list = screen.getByRole("listbox");
+    fireEvent.keyDown(list, { key: "ArrowDown" });
+    await keyDownAsync(list, "Enter");
+    expect(screen.getByRole("listbox")).toBeTruthy();
+    expect(screen.getByRole("option", { name: "A" }).getAttribute("aria-selected")).toBe("true");
   });
 });
 
@@ -905,10 +935,11 @@ describe("<Select> max_selected_items", () => {
         />
       </BlockKitProvider>,
     );
-    fireEvent.click(screen.getByRole("button", { expanded: false }));
-    await clickAsync(screen.getByRole("option", { name: "A" }));
-    await clickAsync(screen.getByRole("option", { name: "B" }));
-    await clickAsync(screen.getByRole("option", { name: "C" }));
+    // Each click pick closes the list, so it's reopened for the next one.
+    for (const name of ["A", "B", "C"]) {
+      fireEvent.click(screen.getByRole("button", { expanded: false }));
+      await clickAsync(screen.getByRole("option", { name }));
+    }
     expect(onAction).toHaveBeenCalledTimes(2);
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({ selected_options: [sent("a", "A"), sent("b", "B")] }),
@@ -946,7 +977,8 @@ describe("<Select> multi_external_select with onOptions", () => {
       </BlockKitProvider>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /Add tags/ }));
+    const trigger = screen.getByRole("button", { name: /Add tags/ });
+    fireEvent.click(trigger);
     fireEvent.change(screen.getByPlaceholderText("Search options"), { target: { value: "x" } });
     await vi.waitFor(() => expect(screen.getByRole("option", { name: "x one" })).toBeTruthy());
     expect(onOptions).toHaveBeenCalledWith(
@@ -954,6 +986,7 @@ describe("<Select> multi_external_select with onOptions", () => {
     );
     await clickAsync(screen.getByRole("option", { name: "x one" }));
 
+    fireEvent.click(trigger);
     fireEvent.change(screen.getByPlaceholderText("Search options"), { target: { value: "y" } });
     await vi.waitFor(() => expect(screen.getByRole("option", { name: "y two" })).toBeTruthy());
     await clickAsync(screen.getByRole("option", { name: "y two" }));

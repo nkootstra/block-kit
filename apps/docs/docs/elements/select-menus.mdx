@@ -132,7 +132,9 @@ turns that row into the blue keyboard highlight, and later presses move it. Opti
 
 The single users, conversations and channels selects are typed into the same way. The
 multi-selects open from a button, with a search box where there's something to search. A multi-select ticks the options it already has; in
-an `input` block its list is 22px wider than the field and starts 12px to its left. An
+an `input` block its list is 22px wider than the field and starts 12px to its left. Picking with
+Enter keeps a multi-select's list open for the next pick; a click closes it and leaves the field
+focused, with its focus ring. An
 `external_select` asks for "Type a minimum of N characters to see options." until the query reaches
 its `min_query_length`.
 
