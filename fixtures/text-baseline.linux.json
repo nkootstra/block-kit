@@ -2046,14 +2046,8 @@
   "extra/fidelity/datetimepicker/empty@open+dark": [
     "extra|Select a date|0"
   ],
-  "extra/fidelity/datetimepicker/empty@pick+mobile": [
-    "missing|Tomorrow|0",
-    "extra|October 15th, 2026|0"
-  ],
-  "extra/fidelity/datetimepicker/empty@pick+mobile+dark": [
-    "missing|Tomorrow|0",
-    "extra|October 15th, 2026|0"
-  ],
+  "extra/fidelity/datetimepicker/empty@pick+mobile": [],
+  "extra/fidelity/datetimepicker/empty@pick+mobile+dark": [],
   "extra/fidelity/divider/mixed": [
     "y|Below the divider|0",
     "y|Cancel|0",
