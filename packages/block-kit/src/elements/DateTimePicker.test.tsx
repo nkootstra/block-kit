@@ -108,6 +108,18 @@ describe("<DateTimePicker>", () => {
       expect([dateText(), timeText()]).toEqual(["Today", "3:00 PM"]);
     });
 
+    it("calls the day after today Tomorrow", async () => {
+      renderPicker();
+      await pickDay("8");
+      expect(dateText()).toBe("Tomorrow");
+    });
+
+    it("calls the day after the last of a month Tomorrow", async () => {
+      vi.setSystemTime(new Date("2026-10-31T09:31:40Z"));
+      renderPicker({ initial_date_time: ts("2026-11-01T10:00:00Z") });
+      expect(dateText()).toBe("Tomorrow");
+    });
+
     it("sends a second action with both parts when the other one is picked", async () => {
       const { onAction } = renderPicker();
       await pickTime("3:00 PM");
