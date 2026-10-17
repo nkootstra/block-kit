@@ -107,8 +107,10 @@ A reference is a fixture captured in one state (`names.ts`):
 
 - **No suffix:** light theme, desktop width, nothing opened. These are the 123 catalog references.
 - **`@<interaction>`:** captured after interacting with the preview. Fixture-specific ones
-  (`@expanded`, `@sort-asc`, `@page-2`) are listed in `states.ts`; three apply to any fixture and
-  act on its _first_ control of the kind:
+  (`@expanded`, `@sort-asc`, `@page-2`, and the `@pick` references recorded with Actions Preview,
+  which repeat the package payload test's clicks) are listed in `states.ts`. A reference whose
+  interaction has no replay fails `states.test.ts`: compare.ts would compare our rendering at rest
+  with it. Three apply to any fixture and act on its _first_ control of the kind:
   - `@open`: the first select, multi-select, time list, datepicker, datetime picker or overflow
     menu, opened;
   - `@confirm`: the first button, with its confirm dialog open (put the `confirm` on it);
