@@ -56,6 +56,7 @@ export function SelectDialog({
     initialIndex: 0,
     // As in Slack, a click opens the list with nothing highlighted; ArrowDown highlights the first.
     clickedIndex: -1,
+    hoverHighlight: false,
     onChoose: (i) => {
       const option = rows[i];
       if (option) toggle(option);
