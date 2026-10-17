@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { BlockKitProvider } from "../context";
 import { Actions } from "./Actions";
@@ -56,5 +56,40 @@ describe("<Actions> block", () => {
         .querySelector(".sbk-actions__action")
         ?.classList.contains("sbk-actions__action--full-width"),
     ).toBe(false);
+  });
+
+  // `extra/fidelity/actions/many-items`: 25 buttons show as the first five and "+ 20 more".
+  it("shows the first five elements and a button for the rest", () => {
+    const buttons = Array.from({ length: 25 }, (_, i) => ({
+      type: "button",
+      action_id: `btn${i}`,
+      text: { type: "plain_text", text: `Button ${i + 1}` },
+    }));
+    const { container } = render(
+      <BlockKitProvider>
+        <Actions block={block(buttons)} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelectorAll(".sbk-actions__action")).toHaveLength(6);
+    expect(screen.getByRole("button", { name: "Button 5" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Button 6" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "+ 20 more" }));
+    expect(container.querySelectorAll(".sbk-actions__action")).toHaveLength(25);
+    expect(screen.getByRole("button", { name: "Button 25" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /more$/ })).toBeNull();
+  });
+
+  it("shows five elements without a more button", () => {
+    const buttons = Array.from({ length: 5 }, (_, i) => ({
+      type: "button",
+      action_id: `btn${i}`,
+      text: { type: "plain_text", text: `Button ${i + 1}` },
+    }));
+    render(
+      <BlockKitProvider>
+        <Actions block={block(buttons)} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(5);
   });
 });

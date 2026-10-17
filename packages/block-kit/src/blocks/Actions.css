@@ -14,3 +14,8 @@
   flex: 1 1 100%;
   width: 100%;
 }
+
+/* Slack's `bk_actions_block_truncation_button` is a plain small button with wider padding. */
+.sbk-button.sbk-actions__more {
+  padding: 0 12px;
+}
