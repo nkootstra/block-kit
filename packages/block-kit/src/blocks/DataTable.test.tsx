@@ -1,6 +1,6 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider } from "../context";
 import type { Json } from "../types";
 import { DataTable } from "./DataTable";
@@ -255,5 +255,31 @@ describe("<DataTable> cells", () => {
     expect(screen.getByLabelText("Search table")).toBeTruthy();
     expect(screen.getByLabelText("View Data table")).toBeTruthy();
     expect(screen.getByLabelText("More actions")).toBeTruthy();
+  });
+});
+
+describe("<DataTable> More actions", () => {
+  it("lists Copy table and Download table, as Slack does", () => {
+    render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: "More actions" }));
+    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual([
+      "Copy table",
+      "Download table",
+    ]);
+  });
+
+  it("copies the whole table, header first and unsorted, as tab-separated text", async () => {
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.assign(navigator, { clipboard: { writeText } });
+    render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
+    sortBy("Amount", "Descending");
+    fireEvent.click(screen.getByRole("button", { name: "More actions" }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("menuitem", { name: "Copy table" }));
+    });
+    expect(writeText).toHaveBeenCalledWith(
+      "Name\tAmount\nAlpha\t10\nBravo\t2\nCharlie\t100\nDelta\t5",
+    );
+    expect(screen.queryByRole("menu")).toBeNull();
   });
 });
