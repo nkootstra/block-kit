@@ -126,6 +126,18 @@ describe("a multi_static_select section accessory", () => {
     const active = field.getAttribute("aria-activedescendant");
     expect(active && document.getElementById(active)?.textContent).toBe("Alpha");
   });
+
+  it("leaves a hovered row unhighlighted, as Slack's dialog list does", async () => {
+    renderAccessory();
+    fireEvent.click(trigger());
+    const field = within(dialog()).getByRole("combobox");
+    await act(async () => fireEvent.click(field));
+    const bravo = screen.getByRole("option", { name: "Bravo" });
+    fireEvent.mouseEnter(bravo);
+    fireEvent.mouseMove(bravo);
+    expect(bravo.hasAttribute("data-active")).toBe(false);
+    expect(field.getAttribute("aria-activedescendant")).toBeNull();
+  });
 });
 
 // Captured in Block Kit Builder (`contexts/multi_static_select/accessory@dialog`,

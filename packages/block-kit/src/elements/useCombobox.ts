@@ -33,6 +33,7 @@ export function useCombobox({
   highlightOnType = true,
   holdFirstArrow = true,
   chosenAsPlaceholder = true,
+  hoverHighlight = true,
 }: {
   /** What's typed; the owner filters its rows by it, so it owns the state. */
   query: string;
@@ -85,6 +86,12 @@ export function useCombobox({
    * single static select empties the field to its own placeholder instead.
    */
   chosenAsPlaceholder?: boolean;
+  /**
+   * Whether the pointer moves the highlight. Slack's select dialog list doesn't: a hovered row
+   * stays as it is, and only the arrow keys highlight (`contexts/multi_static_select/
+   * accessory@open-hover-option-1`).
+   */
+  hoverHighlight?: boolean;
 }) {
   const [ownOpen, setOwnOpen] = useState(false);
   const open = controlledOpen ?? ownOpen;
@@ -190,8 +197,14 @@ export function useCombobox({
   }
 
   /** Props for the row at `index`, tying it to the input's aria-activedescendant. */
-  function optionProps(index: number) {
+  function optionProps(index: number): {
+    id: string;
+    "data-active": true | undefined;
+    onMouseEnter?: () => void;
+    onMouseMove?: () => void;
+  } {
     const item = nav.itemProps(index);
+    if (!hoverHighlight) return { id: optionId(index), "data-active": item["data-active"] };
     return {
       id: optionId(index),
       ...item,
