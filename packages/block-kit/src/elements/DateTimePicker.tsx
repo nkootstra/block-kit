@@ -22,10 +22,14 @@ interface WallClock {
 /** The time list's first row while a value is chosen. */
 const CLEAR = "clear";
 
-/** Slack spells a datetimepicker's day out ("January 1st, 2026"), and calls today "Today". */
+/** Slack spells a datetimepicker's day out ("January 1st, 2026"), and calls today "Today" and the
+ * day after "Tomorrow" (extra/fidelity/datetimepicker/empty@pick). */
 function formatDay(date: string, today: string): string {
   if (date === today) return "Today";
   const d = new Date(`${date}T00:00:00Z`);
+  const tomorrow = new Date(`${today}T00:00:00Z`);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  if (d.getTime() === tomorrow.getTime()) return "Tomorrow";
   const month = d.toLocaleString("en-US", { month: "long", timeZone: "UTC" });
   return `${month} ${ordinal(d.getUTCDate())}, ${d.getUTCFullYear()}`;
 }
