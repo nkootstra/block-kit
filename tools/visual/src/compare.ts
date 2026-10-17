@@ -320,7 +320,7 @@ for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
 const fontFaces = [...faces.values()].join("\n");
 
 const results: Result[] = [];
-const page = await context.newPage();
+const sharedPage = await context.newPage();
 const probes = await readProbes();
 
 for (const name of names) {
@@ -332,6 +332,14 @@ for (const name of names) {
   const icon = html.match(
     /<img[^>]*class="(?:p-bkb_preview__app_icon|p-bkb_preview_modal__title_icon)"[^>]*src="([^"]+)"/,
   )?.[1];
+  // Slack's calendar marks the day the reference was captured as today, and ours marks the day the
+  // comparison runs, so a calendar reference drifted a day each day. Ours gets a page whose clock
+  // reads the capture day.
+  const today = html.match(
+    /c-date_picker_calendar__date--is_today[^>]*?data-value="(\d{4}-\d{2}-\d{2})"/,
+  )?.[1];
+  const page = today ? await context.newPage() : sharedPage;
+  if (today) await page.clock.setFixedTime(new Date(`${today}T12:00:00`));
 
   const parsed = parseReferenceName(name);
   const layers = meta.layers ?? [];
@@ -442,6 +450,7 @@ for (const name of names) {
   } finally {
     page.off("pageerror", onError);
     if (refPage !== page) await refPage.close();
+    if (page !== sharedPage) await page.close();
   }
   if (!reference) throw new Error(`${name}: no reference screenshot`);
 
