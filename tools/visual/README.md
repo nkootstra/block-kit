@@ -258,7 +258,9 @@ to the preview):
   from the window's edge so our popover isn't pushed inward. A popover a few pixels off shows as a
   diff instead of shifting the whole image. The text check reads the popover's text too.
 - A **dialog** (a confirm dialog, the multi-select dialog) is centred in the window, so its position
-  says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`).
+  says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`). A
+  popover open over a dialog (the multi-select dialog's list) is moved into the dialog's layer at
+  its offset from the dialog, and compared with the dialog alongside our list.
 
 ## Capture new references
 

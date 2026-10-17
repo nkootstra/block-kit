@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { useBlockKit } from "../context";
 import { CloseIcon } from "../icons";
 import { Text } from "../Text";
-import { Popover } from "./Popover";
+import { MENU_GAP, Popover } from "./Popover";
 import { useCombobox } from "./useCombobox";
 
 const optionId = (option: PlainTextOption) => option.value ?? option.text.text;
@@ -54,6 +54,8 @@ export function SelectDialog({
     onQueryChange: setQuery,
     count: rows.length,
     initialIndex: 0,
+    // As in Slack, a click opens the list with nothing highlighted; ArrowDown highlights the first.
+    clickedIndex: -1,
     onChoose: (i) => {
       const option = rows[i];
       if (option) toggle(option);
@@ -136,9 +138,16 @@ export function SelectDialog({
             />
           </div>
           {combo.open && (
-            <Popover anchorRef={fieldRef} onDismiss={() => combo.setOpen(false)}>
+            // Slack opens it like an input block's multi-select list: 12px left of the field, 22px
+            // wider, over the field's bottom 4px.
+            <Popover
+              anchorRef={fieldRef}
+              onDismiss={() => combo.setOpen(false)}
+              offsetX={-12}
+              gap={MENU_GAP}
+            >
               <div
-                className="sbk-select__menu sbk-select-dialog__menu"
+                className="sbk-select__menu sbk-select__menu--wide"
                 role="listbox"
                 aria-multiselectable="true"
                 id={combo.listId}
