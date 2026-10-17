@@ -1,4 +1,5 @@
 import type { ActionsBlock } from "@slack/types";
+import { useState } from "react";
 import { Element } from "../elements/Element";
 import type { BlockProps, Json } from "../types";
 
@@ -9,10 +10,17 @@ import type { BlockProps, Json } from "../types";
 // boxes stretch to fill the row too (extra/actions/more-elements).
 const FULL_WIDTH_TYPES = new Set(["checkboxes", "radio_buttons", "datetimepicker"]);
 
+// Slack shows the first five elements and a "+ N more" button for the rest
+// (`bk_actions_block_truncation`, extra/fidelity/actions/many-items).
+const VISIBLE_ELEMENTS = 5;
+
 export function Actions({ block, blockId }: BlockProps<ActionsBlock>) {
+  const [expanded, setExpanded] = useState(false);
+  const elements = block.elements as unknown as Json[];
+  const hidden = expanded ? 0 : Math.max(0, elements.length - VISIBLE_ELEMENTS);
   return (
     <div className="sbk-actions">
-      {(block.elements as unknown as Json[]).map((element, i) => {
+      {elements.slice(0, elements.length - hidden).map((element, i) => {
         const fullWidth = FULL_WIDTH_TYPES.has(element.type as string);
         return (
           <div
@@ -23,6 +31,17 @@ export function Actions({ block, blockId }: BlockProps<ActionsBlock>) {
           </div>
         );
       })}
+      {hidden > 0 && (
+        <div className="sbk-actions__action">
+          <button
+            type="button"
+            className="sbk-button sbk-actions__more"
+            onClick={() => setExpanded(true)}
+          >
+            {`+ ${hidden} more`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
