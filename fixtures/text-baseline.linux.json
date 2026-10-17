@@ -32,21 +32,11 @@
   "catalog/actions/all-selects@open+dark": [],
   "catalog/actions/all-selects@open+mobile": [],
   "catalog/actions/all-selects@open+mobile+dark": [],
-  "catalog/actions/all-selects@pick": [
-    "missing|*plain_text option 1*|0"
-  ],
-  "catalog/actions/all-selects@pick-static": [
-    "missing|*plain_text option 1*|0"
-  ],
-  "catalog/actions/all-selects@pick+dark": [
-    "missing|*plain_text option 1*|0"
-  ],
-  "catalog/actions/all-selects@pick+mobile": [
-    "missing|*plain_text option 1*|0"
-  ],
-  "catalog/actions/all-selects@pick+mobile+dark": [
-    "missing|*plain_text option 1*|0"
-  ],
+  "catalog/actions/all-selects@pick": [],
+  "catalog/actions/all-selects@pick-static": [],
+  "catalog/actions/all-selects@pick+dark": [],
+  "catalog/actions/all-selects@pick+mobile": [],
+  "catalog/actions/all-selects@pick+mobile+dark": [],
   "catalog/actions/button": [],
   "catalog/actions/button@dark": [],
   "catalog/actions/button@focus-button-1": [],
@@ -79,16 +69,8 @@
   "catalog/actions/datepickers@open+dark": [],
   "catalog/actions/datepickers@open+mobile": [],
   "catalog/actions/datepickers@open+mobile+dark": [],
-  "catalog/actions/datepickers@pick+mobile": [
-    "y|04/28/1990|0",
-    "missing|04/15/1990|0",
-    "extra|04/28/1990|1"
-  ],
-  "catalog/actions/datepickers@pick+mobile+dark": [
-    "y|04/28/1990|0",
-    "missing|04/15/1990|0",
-    "extra|04/28/1990|1"
-  ],
+  "catalog/actions/datepickers@pick+mobile": [],
+  "catalog/actions/datepickers@pick+mobile+dark": [],
   "catalog/actions/filtered-conversations-select": [],
   "catalog/actions/filtered-conversations-select@dark": [],
   "catalog/actions/filtered-conversations-select@mobile": [],
@@ -96,10 +78,16 @@
   "catalog/actions/filtered-conversations-select@open": [],
   "catalog/actions/filtered-conversations-select@open+dark": [],
   "catalog/actions/filtered-conversations-select@pick+mobile": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "catalog/actions/filtered-conversations-select@pick+mobile+dark": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "catalog/actions/radio-buttons": [],
   "catalog/actions/radio-buttons@dark": [],
@@ -123,11 +111,13 @@
   "catalog/actions/selects-with-initial-options@open+dark": [],
   "catalog/actions/selects-with-initial-options@pick": [
     "missing|channel-one|0",
-    "extra|Private channel|0"
+    "extra|channel-two|0"
   ],
   "catalog/actions/selects-with-initial-options@pick+mobile+dark": [
     "missing|User One|0",
-    "missing|User One|1"
+    "missing|User One|1",
+    "missing|Private channel|0",
+    "extra|channel-two|0"
   ],
   "catalog/actions/timepicker": [],
   "catalog/actions/timepicker@dark": [],
@@ -141,10 +131,7 @@
   "catalog/actions/timepicker@open+dark": [],
   "catalog/actions/timepicker@open+mobile": [],
   "catalog/actions/timepicker@open+mobile+dark": [],
-  "catalog/actions/timepicker@pick+dark": [
-    "missing|12:00 AM|0",
-    "extra|1:37 PM|0"
-  ],
+  "catalog/actions/timepicker@pick+dark": [],
   "catalog/agents/message-feedback": [],
   "catalog/agents/message-feedback@dark": [],
   "catalog/agents/message-feedback@focus-feedback-1": [],
@@ -404,15 +391,15 @@
     "extra|Contact|0"
   ],
   "catalog/callout/callout@menu+mobile": [
+    "x|Copy link|0",
+    "x|Hide image|0",
     "missing|This content could not be displayed.|0",
-    "missing|Copy link|0",
-    "missing|Hide image|0",
     "extra|Contact|0"
   ],
   "catalog/callout/callout@menu+mobile+dark": [
+    "x|Copy link|0",
+    "x|Hide image|0",
     "missing|This content could not be displayed.|0",
-    "missing|Copy link|0",
-    "missing|Hide image|0",
     "extra|Contact|0"
   ],
   "catalog/callout/callout@mobile": [
@@ -555,9 +542,7 @@
   "catalog/container/data-entry-form@open+dark": [],
   "catalog/container/data-entry-form@open+mobile": [],
   "catalog/container/data-entry-form@open+mobile+dark": [],
-  "catalog/container/data-entry-form@pick": [
-    "missing|High|0"
-  ],
+  "catalog/container/data-entry-form@pick": [],
   "catalog/container/full-width": [],
   "catalog/container/full-width@dark": [],
   "catalog/container/full-width@mobile": [],
@@ -739,14 +724,8 @@
   "catalog/input/multi-static-select@open+dark": [],
   "catalog/input/multi-static-select@open+mobile": [],
   "catalog/input/multi-static-select@open+mobile+dark": [],
-  "catalog/input/multi-static-select@pick+mobile": [
-    "missing|*plain_text option 1*|0",
-    "extra|Select options|0"
-  ],
-  "catalog/input/multi-static-select@pick+mobile+dark": [
-    "missing|*plain_text option 1*|0",
-    "extra|Select options|0"
-  ],
+  "catalog/input/multi-static-select@pick+mobile": [],
+  "catalog/input/multi-static-select@pick+mobile+dark": [],
   "catalog/input/multi-users-select": [],
   "catalog/input/multi-users-select@dark": [],
   "catalog/input/multi-users-select@focus-field-1+dark": [
@@ -789,12 +768,16 @@
     "extra|User Two|1"
   ],
   "catalog/input/multi-users-select@pick": [
-    "missing|User One|0",
-    "extra|Select users|0"
+    "x|User One|0",
+    "y|User One|0",
+    "width|User One|0",
+    "font-weight|User One|0"
   ],
   "catalog/input/multi-users-select@pick+dark": [
-    "missing|User One|0",
-    "extra|Select users|0"
+    "x|User One|0",
+    "y|User One|0",
+    "width|User One|0",
+    "font-weight|User One|0"
   ],
   "catalog/input/multiline-plain-text-input": [],
   "catalog/input/multiline-plain-text-input@dark": [],
@@ -815,9 +798,7 @@
   "catalog/input/static-select@mobile+dark": [],
   "catalog/input/static-select@open": [],
   "catalog/input/static-select@open+dark": [],
-  "catalog/input/static-select@pick": [
-    "missing|*plain_text option 1*|0"
-  ],
+  "catalog/input/static-select@pick": [],
   "catalog/input/timepicker": [],
   "catalog/input/timepicker@dark": [],
   "catalog/input/timepicker@mobile": [],
@@ -966,25 +947,27 @@
   "catalog/section/multi-conversations-select@mobile": [],
   "catalog/section/multi-conversations-select@mobile+dark": [],
   "catalog/section/multi-conversations-select@open": [],
-  "catalog/section/multi-conversations-select@open+dark": [],
+  "catalog/section/multi-conversations-select@open+dark": [
+    "missing|User One|0",
+    "missing|(you)|0",
+    "missing|User Two|0",
+    "missing|APP|0",
+    "missing|User Three|0",
+    "missing|User Three|1",
+    "missing|User Four|0",
+    "missing|User Four|1",
+    "missing|channel-one|0",
+    "missing|channel-two|0",
+    "missing|channel-three|0",
+    "missing|channel-four|0",
+    "missing|channel-five|0"
+  ],
   "catalog/section/multi-conversations-select@open+mobile": [],
   "catalog/section/multi-conversations-select@open+mobile+dark": [],
-  "catalog/section/multi-conversations-select@pick": [
-    "missing|1 selected|0",
-    "extra|Select conversations|0"
-  ],
-  "catalog/section/multi-conversations-select@pick+dark": [
-    "missing|1 selected|0",
-    "extra|Select conversations|0"
-  ],
-  "catalog/section/multi-conversations-select@pick+mobile": [
-    "missing|1 selected|0",
-    "extra|Select conversations|0"
-  ],
-  "catalog/section/multi-conversations-select@pick+mobile+dark": [
-    "missing|1 selected|0",
-    "extra|Select conversations|0"
-  ],
+  "catalog/section/multi-conversations-select@pick": [],
+  "catalog/section/multi-conversations-select@pick+dark": [],
+  "catalog/section/multi-conversations-select@pick+mobile": [],
+  "catalog/section/multi-conversations-select@pick+mobile+dark": [],
   "catalog/section/multi-static-select": [],
   "catalog/section/multi-static-select@dark": [],
   "catalog/section/multi-static-select@dialog": [],
@@ -993,16 +976,8 @@
   "catalog/section/multi-static-select@mobile+dark": [],
   "catalog/section/multi-static-select@open": [],
   "catalog/section/multi-static-select@open+dark": [],
-  "catalog/section/multi-static-select@pick+mobile": [
-    "width|Test block with multi static select|0",
-    "missing|1 selected|0",
-    "extra|Select options|0"
-  ],
-  "catalog/section/multi-static-select@pick+mobile+dark": [
-    "width|Test block with multi static select|0",
-    "missing|1 selected|0",
-    "extra|Select options|0"
-  ],
+  "catalog/section/multi-static-select@pick+mobile": [],
+  "catalog/section/multi-static-select@pick+mobile+dark": [],
   "catalog/section/overflow": [],
   "catalog/section/overflow@dark": [],
   "catalog/section/overflow@focus-overflow-1": [],
@@ -1066,15 +1041,21 @@
     "extra|User Two|1"
   ],
   "catalog/section/users-select@pick+dark": [
-    "missing|User One|0",
+    "x|User One|0",
+    "y|User One|0",
+    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "catalog/section/users-select@pick+mobile": [
-    "missing|User One|0",
+    "x|User One|0",
+    "y|User One|0",
+    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "catalog/section/users-select@pick+mobile+dark": [
-    "missing|User One|0",
+    "x|User One|0",
+    "y|User One|0",
+    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "catalog/structure/default": [],
@@ -1277,53 +1258,31 @@
   ],
   "catalog/table/basic-data-table@sort-asc+dark": [
     "width|Acme Expansion Deal|0",
+    "width|Global Distribution Network|0",
+    "x|proposal sent|0",
+    "width|proposal sent|0",
     "width|Retail Partner Portal|0",
     "width|Sustainable Materials Sourcing|0",
-    "y|Global Distribution Network|0",
-    "width|Global Distribution Network|0",
-    "y|LogiFlow Inc.|0",
-    "y|$1.2M|0",
-    "x|proposal sent|0",
-    "y|proposal sent|0",
-    "width|proposal sent|0",
-    "y|Weather Forecast Integration|0",
-    "width|Weather Forecast Integration|0",
-    "y|Nimbus Corp.|0",
-    "y|Waiting on|0",
-    "y|review|0"
+    "width|Weather Forecast Integration|0"
   ],
   "catalog/table/basic-data-table@sort-asc+mobile": [
     "width|Acme Expansion Deal|0",
+    "width|Global Distribution Network|0",
+    "x|proposal sent|0",
+    "width|proposal sent|0",
     "width|Retail Partner Portal|0",
     "width|Sustainable Materials Sourcing|0",
-    "y|Global Distribution Network|0",
-    "width|Global Distribution Network|0",
-    "y|LogiFlow Inc.|0",
-    "y|$1.2M|0",
-    "x|proposal sent|0",
-    "y|proposal sent|0",
-    "width|proposal sent|0",
-    "y|Weather Forecast Integration|0",
     "width|Weather Forecast Integration|0",
-    "y|Nimbus Corp.|0",
-    "y|Waiting on|0",
     "missing|review|0"
   ],
   "catalog/table/basic-data-table@sort-asc+mobile+dark": [
     "width|Acme Expansion Deal|0",
+    "width|Global Distribution Network|0",
+    "x|proposal sent|0",
+    "width|proposal sent|0",
     "width|Retail Partner Portal|0",
     "width|Sustainable Materials Sourcing|0",
-    "y|Global Distribution Network|0",
-    "width|Global Distribution Network|0",
-    "y|LogiFlow Inc.|0",
-    "y|$1.2M|0",
-    "x|proposal sent|0",
-    "y|proposal sent|0",
-    "width|proposal sent|0",
-    "y|Weather Forecast Integration|0",
     "width|Weather Forecast Integration|0",
-    "y|Nimbus Corp.|0",
-    "y|Waiting on|0",
     "missing|review|0"
   ],
   "catalog/table/numeric-sort-data-table": [],
@@ -1563,14 +1522,8 @@
     "x|31|0",
     "x|Clear selection|0"
   ],
-  "contexts/datetimepicker/actions@pick": [
-    "missing|January 14th, 2026|0",
-    "extra|January 1st, 2026|0"
-  ],
-  "contexts/datetimepicker/actions@pick+dark": [
-    "missing|January 14th, 2026|0",
-    "extra|January 1st, 2026|0"
-  ],
+  "contexts/datetimepicker/actions@pick": [],
+  "contexts/datetimepicker/actions@pick+dark": [],
   "contexts/datetimepicker/modal-input": [],
   "contexts/datetimepicker/modal-input@dark": [],
   "contexts/datetimepicker/modal-input@open": [
@@ -1634,19 +1587,21 @@
   "contexts/multi_static_select/accessory@open-focus-option-1": [],
   "contexts/multi_static_select/accessory@open-focus-option-1+dark": [],
   "contexts/multi_static_select/accessory@open-focus-option-1+mobile": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1+dark": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [],
+  "contexts/multi_static_select/accessory@open-hover-option-1": [
+    "color|Option 1|0"
+  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1+dark": [
+    "color|Option 1|0"
+  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [
+    "color|Option 1|0"
+  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [
+    "color|Option 1|0"
+  ],
   "contexts/multi_static_select/accessory@open+dark": [],
-  "contexts/multi_static_select/accessory@pick+mobile": [
-    "missing|1 selected|0",
-    "extra|Select items|0"
-  ],
-  "contexts/multi_static_select/accessory@pick+mobile+dark": [
-    "missing|1 selected|0",
-    "extra|Select items|0"
-  ],
+  "contexts/multi_static_select/accessory@pick+mobile": [],
+  "contexts/multi_static_select/accessory@pick+mobile+dark": [],
   "contexts/multi_static_select/modal-input": [],
   "contexts/multi_static_select/modal-input@dark": [],
   "contexts/multi_static_select/modal-input@open": [],
@@ -1659,14 +1614,8 @@
   "contexts/multi_users_select/accessory@mobile+dark": [],
   "contexts/multi_users_select/accessory@open": [],
   "contexts/multi_users_select/accessory@open+dark": [],
-  "contexts/multi_users_select/accessory@pick+mobile": [
-    "missing|1 selected|0",
-    "extra|Select users|0"
-  ],
-  "contexts/multi_users_select/accessory@pick+mobile+dark": [
-    "missing|1 selected|0",
-    "extra|Select users|0"
-  ],
+  "contexts/multi_users_select/accessory@pick+mobile": [],
+  "contexts/multi_users_select/accessory@pick+mobile+dark": [],
   "contexts/multi_users_select/modal-input": [],
   "contexts/multi_users_select/modal-input@dark": [],
   "contexts/multi_users_select/modal-input@open": [],
@@ -1826,13 +1775,22 @@
     "color|Type a minimum of 2 characters to see options.|0"
   ],
   "extra/actions/more-elements@pick": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "extra/actions/more-elements@pick+dark": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "extra/actions/more-elements@pick+mobile": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "extra/context-actions/feedback-row": [],
   "extra/context-actions/feedback-row@dark": [],
@@ -1995,7 +1953,10 @@
   "extra/fidelity/channels-select/long-content@open": [],
   "extra/fidelity/channels-select/long-content@open+dark": [],
   "extra/fidelity/channels-select/long-content@pick": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "extra/fidelity/chart-table-modal/many-items": [],
   "extra/fidelity/chart-table-modal/many-items@dark": [],
@@ -2029,7 +1990,10 @@
   "extra/fidelity/confirm/long-content@open": [],
   "extra/fidelity/confirm/long-content@open+dark": [],
   "extra/fidelity/confirm/long-content@pick": [
-    "missing|channel-one|0"
+    "x|channel-one|0",
+    "y|channel-one|0",
+    "width|channel-one|0",
+    "font-weight|channel-one|0"
   ],
   "extra/fidelity/contact-card/mixed": [
     "missing|This content could not be displayed.|0",
@@ -2619,13 +2583,11 @@
   ],
   "extra/fidelity/datetimepicker/empty@pick+mobile": [
     "missing|Tomorrow|0",
-    "missing|12:05 PM|0",
-    "extra|Select a date|0"
+    "extra|October 15th, 2026|0"
   ],
   "extra/fidelity/datetimepicker/empty@pick+mobile+dark": [
     "missing|Tomorrow|0",
-    "missing|12:09 PM|0",
-    "extra|Select a date|0"
+    "extra|October 15th, 2026|0"
   ],
   "extra/fidelity/divider/mixed": [
     "y|Below the divider|0",
@@ -2772,12 +2734,12 @@
   "extra/fidelity/multi-channels-select/empty@open+mobile": [],
   "extra/fidelity/multi-channels-select/empty@open+mobile+dark": [],
   "extra/fidelity/multi-channels-select/empty@pick": [
-    "missing|channel-one|0",
-    "extra|Select channels|0"
+    "x|channel-one|0",
+    "y|channel-one|0"
   ],
   "extra/fidelity/multi-channels-select/empty@pick+dark": [
-    "missing|channel-one|0",
-    "extra|Select channels|0"
+    "x|channel-one|0",
+    "y|channel-one|0"
   ],
   "extra/fidelity/multi-channels-select/long-content": [
     "missing|channel-one|0",
@@ -2854,14 +2816,8 @@
     "missing|Private channel|0",
     "extra|C0123456789|0"
   ],
-  "extra/fidelity/multi-conversations-select/initial-value@pick+mobile": [
-    "missing|2 selected|0",
-    "extra|1 selected|0"
-  ],
-  "extra/fidelity/multi-conversations-select/initial-value@pick+mobile+dark": [
-    "missing|2 selected|0",
-    "extra|1 selected|0"
-  ],
+  "extra/fidelity/multi-conversations-select/initial-value@pick+mobile": [],
+  "extra/fidelity/multi-conversations-select/initial-value@pick+mobile+dark": [],
   "extra/fidelity/multi-conversations-select/long-content": [
     "width|Test block with multi conversations select|0",
     "missing|This sentence is here to make…|0",
@@ -3322,16 +3278,10 @@
     "missing|·|0",
     "missing|example.com|0"
   ],
-  "extra/fidelity/rich-text-date/mixed": [
-    "missing|9 months ago|0",
-    "extra|10 months ago|0"
-  ],
+  "extra/fidelity/rich-text-date/mixed": [],
   "extra/fidelity/rich-text-date/mixed@dark": [],
   "extra/fidelity/rich-text-date/mixed@mobile": [],
-  "extra/fidelity/rich-text-date/mixed@mobile+dark": [
-    "missing|9 months ago|0",
-    "extra|10 months ago|0"
-  ],
+  "extra/fidelity/rich-text-date/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-emoji/mixed": [],
   "extra/fidelity/rich-text-emoji/mixed@dark": [],
   "extra/fidelity/rich-text-emoji/mixed@mobile": [],
@@ -3640,7 +3590,9 @@
     "extra|User Two|1"
   ],
   "extra/fidelity/users-select/long-content@pick": [
-    "missing|User One|0",
+    "x|User One|0",
+    "y|User One|0",
+    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "extra/fidelity/video/long-content": [
@@ -3678,12 +3630,16 @@
     "color|Private channel|0"
   ],
   "extra/input/more-selects@pick": [
-    "missing|User One|0",
+    "x|User One|0",
+    "y|User One|0",
+    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "extra/input/more-selects@pick+dark": [
+    "x|User One|0",
+    "y|User One|0",
+    "font-weight|User One|0",
     "color|Private channel|0",
-    "missing|User One|0",
     "missing|User One|1"
   ],
   "extra/input/text-inputs": [],
@@ -3722,20 +3678,7 @@
   "extra/modal/required-multi-selects@dark": [],
   "extra/modal/required-multi-selects@open": [],
   "extra/modal/required-multi-selects@open+dark": [],
-  "extra/modal/required-multi-selects@pick": [
-    "y|Users|0",
-    "y|Select users|0",
-    "y|Conversations|0",
-    "y|Select conversations|0",
-    "y|Channels|0",
-    "y|Select channels|0",
-    "y|External|0",
-    "y|Search|0",
-    "y|Cancel|0",
-    "y|Submit|0",
-    "missing|Option 1|0",
-    "extra|Select options|0"
-  ],
+  "extra/modal/required-multi-selects@pick": [],
   "extra/modal/required-multi-selects@submit-errors": [
     "y|Users|0",
     "y|Select users|0",
@@ -3762,14 +3705,8 @@
   "extra/payloads/accessory-multi-selects@mobile+dark": [],
   "extra/payloads/accessory-multi-selects@open": [],
   "extra/payloads/accessory-multi-selects@open+dark": [],
-  "extra/payloads/accessory-multi-selects@pick+mobile": [
-    "missing|1 selected|0",
-    "extra|Select channels|0"
-  ],
-  "extra/payloads/accessory-multi-selects@pick+mobile+dark": [
-    "missing|1 selected|0",
-    "extra|Select channels|0"
-  ],
+  "extra/payloads/accessory-multi-selects@pick+mobile": [],
+  "extra/payloads/accessory-multi-selects@pick+mobile+dark": [],
   "extra/payloads/buttons": [],
   "extra/payloads/buttons@dark": [],
   "extra/payloads/buttons@mobile": [],
@@ -3798,31 +3735,17 @@
   "extra/payloads/pickers@mobile+dark": [],
   "extra/payloads/pickers@open": [],
   "extra/payloads/pickers@open+dark": [],
-  "extra/payloads/pickers@pick+mobile": [
-    "missing|12:00 AM|0",
-    "extra|1:37 PM|0"
-  ],
-  "extra/payloads/pickers@pick+mobile+dark": [
-    "missing|12:00 AM|0",
-    "extra|1:37 PM|0"
-  ],
+  "extra/payloads/pickers@pick+mobile": [],
+  "extra/payloads/pickers@pick+mobile+dark": [],
   "extra/payloads/selects": [],
-  "extra/payloads/selects@change-single": [
-    "missing|Bravo|0",
-    "extra|Alpha|0"
-  ],
+  "extra/payloads/selects@change-single": [],
   "extra/payloads/selects@dark": [],
-  "extra/payloads/selects@keyboard-single": [
-    "missing|Charlie|0",
-    "extra|Alpha|0"
-  ],
+  "extra/payloads/selects@keyboard-single": [],
   "extra/payloads/selects@mobile": [],
   "extra/payloads/selects@mobile+dark": [],
   "extra/payloads/selects@open": [],
   "extra/payloads/selects@open+dark": [],
-  "extra/payloads/selects@pick-accessory": [
-    "missing|Two|0"
-  ],
+  "extra/payloads/selects@pick-accessory": [],
   "extra/rich-text/mentions-and-styles": [
     "missing|· colour #1264A3|0",
     "extra|· colour|0",

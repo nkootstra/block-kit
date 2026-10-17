@@ -125,6 +125,8 @@ interface Meta {
   stateStyles?: StateStyles;
   /** The preview's horizontal scroll containers (snapshot.js); absent in older captures. */
   scrollers?: Scroller[];
+  /** When the reference was captured (snapshot.js). */
+  capturedAt?: string;
 }
 
 /** Where our open menus and dialogs render: portalled to <body>, outside #sbk-render. */
@@ -334,12 +336,18 @@ for (const name of names) {
   )?.[1];
   // Slack's calendar marks the day the reference was captured as today, and ours marks the day the
   // comparison runs, so a calendar reference drifted a day each day. Ours gets a page whose clock
-  // reads the capture day.
+  // reads the capture day. A datetimepicker fills in the time of day when a date is picked, so
+  // its page reads the capture time.
   const today = html.match(
     /c-date_picker_calendar__date--is_today[^>]*?data-value="(\d{4}-\d{2}-\d{2})"/,
   )?.[1];
-  const page = today ? await context.newPage() : sharedPage;
-  if (today) await page.clock.setFixedTime(new Date(`${today}T12:00:00`));
+  const clock = today
+    ? new Date(`${today}T12:00:00`)
+    : meta.capturedAt && html.includes('"type":"datetimepicker"')
+      ? new Date(meta.capturedAt)
+      : undefined;
+  const page = clock ? await context.newPage() : sharedPage;
+  if (clock) await page.clock.setFixedTime(clock);
 
   const parsed = parseReferenceName(name);
   const layers = meta.layers ?? [];
