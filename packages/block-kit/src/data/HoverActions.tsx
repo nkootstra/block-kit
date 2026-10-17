@@ -32,6 +32,8 @@ export interface HoverAction {
   href?: string;
   /** Opens a `c-menu` of further actions (Slack's "More actions"). */
   menu?: HoverMenuItem[];
+  /** Lines the tooltip's right edge up with the button's instead of centring it. */
+  tooltipAlign?: "center" | "end";
 }
 
 /** Where a "More actions" menu opens beside its button, top edges aligned, as Slack does. */
@@ -57,7 +59,7 @@ export function HoverActions({
         action.menu ? (
           <MenuAction key={action.label} action={action} items={action.menu} side={menuSide} />
         ) : (
-          <Tooltip key={action.label} label={action.label}>
+          <Tooltip key={action.label} label={action.label} align={action.tooltipAlign}>
             {safeUrl(action.href, { image: true }) ? (
               <a
                 className="sbk-hover-actions__button"
@@ -127,7 +129,7 @@ function MenuAction({
 
   return (
     <div className="sbk-hover-actions__menu-root" onKeyDown={nav.onKeyDown}>
-      <Tooltip label={open ? "" : action.label}>
+      <Tooltip label={open ? "" : action.label} align={action.tooltipAlign}>
         <button
           ref={triggerRef}
           type="button"
@@ -265,6 +267,8 @@ export function ImageActions({ url, onHide }: { url: string; onHide: () => void 
         {
           label: "More actions",
           icon: <EllipsisVerticalIcon />,
+          // Slack's image menu button has a `top-right` tooltip; a chart's is centred.
+          tooltipAlign: "end",
           menu: [
             { label: "Copy link", onSelect: () => copyText(url) },
             { label: "Hide image", onSelect: onHide },

@@ -17,6 +17,7 @@ import { useClientLayoutEffect } from "./useClientLayoutEffect";
 const SHOW_DELAY_MS = 300;
 
 type Placement = "top" | "bottom";
+type Align = "center" | "end";
 
 type AnchorProps = {
   onMouseEnter?: (e: MouseEvent) => void;
@@ -33,6 +34,11 @@ export interface TooltipProps {
   children: ReactElement<AnchorProps>;
   /** Preferred side; flips to the other one when there's no room. Defaults to `top`. */
   placement?: Placement;
+  /**
+   * `center` (the default) centres it on its anchor; `end` lines its right edge up with the
+   * anchor's, as Slack's `top-right` tooltips do.
+   */
+  align?: Align;
 }
 
 /**
@@ -40,7 +46,7 @@ export interface TooltipProps {
  * after a short hover or on keyboard focus. It appears and disappears without animation, as in
  * Slack. Portalled to `<body>` so scroll containers and `overflow: hidden` can't clip it.
  */
-export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
+export function Tooltip({ label, children, placement = "top", align = "center" }: TooltipProps) {
   const { theme } = useBlockKit();
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -77,11 +83,11 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
           ? "bottom"
           : "top";
     const left = Math.min(
-      Math.max(4, a.left + a.width / 2 - t.width / 2),
+      Math.max(4, align === "end" ? a.right - t.width : a.left + a.width / 2 - t.width / 2),
       window.innerWidth - t.width - 4,
     );
     setPosition({ top: side === "top" ? a.top - gap - t.height : a.bottom + gap, left, side });
-  }, [open, placement]);
+  }, [open, placement, align]);
 
   if (label === undefined || label === null || label === "") return children;
 
@@ -126,7 +132,7 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
             id={id}
             role="tooltip"
             data-theme={theme}
-            className={`sbk-tooltip sbk-tooltip--${position?.side ?? placement}`}
+            className={`sbk-tooltip sbk-tooltip--${position?.side ?? placement}${align === "end" ? " sbk-tooltip--end" : ""}`}
             style={
               position
                 ? { top: position.top, left: position.left }

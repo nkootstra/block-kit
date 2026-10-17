@@ -52,9 +52,9 @@ These render parts of a surface. Reach for them when you build your own layout a
         "An `@name` mention that opens a profile card on click, filled from `resolvers.userProfile`.",
     },
     "<Tooltip label>": {
-      type: '{ label: ReactNode; placement?: "top" | "bottom"; children: ReactElement }',
+      type: '{ label: ReactNode; placement?: "top" | "bottom"; align?: "center" | "end"; children: ReactElement }',
       description:
-        "Slack's dark tooltip, shown on hover and focus of its single child. Flips to the other side when there's no room.",
+        "Slack's dark tooltip, shown on hover and focus of its single child. Flips to the other side when there's no room. `align=\"end\"` lines its right edge up with the child's, as Slack does for an image's menu button.",
     },
   }}
 />
