@@ -181,7 +181,10 @@ attachments yet.
 
 A tooltip doesn't take the pointer (ours has `pointer-events: none`), so hovering one never
 matches `:hover`: hover its trigger, then address the tooltip (`tooltip-1`) to snapshot or observe
-it. No reference shows Slack's tooltip yet, so its selector is a guess too.
+it. A probe snapshot taken after a hover keeps the pointer there, also when a wait or a key comes
+between them (hover, wait for the tooltip, snapshot); a click or a scroll after the hover moves it
+away as usual. `compare.ts` counts ours (`.sbk-tooltip`) with the popovers, as Slack's capture
+counts its own (`catalog/agents/message-feedback@tooltip-over-icon-1`).
 
 `option`, `menuitem`, `confirm`, `deny` and `tooltip` are counted in the open layers rather than the message,
 in page order: both sides portal them out of the message, and only the open layer has any. An
