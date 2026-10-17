@@ -34,3 +34,18 @@ export function dataTableSortValue(cell: Json | undefined): number | string {
   if (typeof cell.text === "string") return cell.text.toLowerCase();
   return "";
 }
+
+/** A cell's text as it's shown, for copying or downloading the table. */
+export function dataTableCellText(cell: Json | undefined): string {
+  if (!cell || typeof cell !== "object") return "";
+  switch (cell.type) {
+    case "rich_text":
+      return richTextMiniToString(cell);
+    case "url":
+      return typeof cell.text === "string" ? cell.text : String(cell.url ?? "");
+    case "raw_number":
+      return typeof cell.text === "string" ? cell.text : String(cell.value ?? "");
+    default:
+      return typeof cell.text === "string" ? cell.text : "";
+  }
+}

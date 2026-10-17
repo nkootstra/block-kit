@@ -36,8 +36,11 @@ export interface HoverAction {
   tooltipAlign?: "center" | "end";
 }
 
-/** Where a "More actions" menu opens beside its button, top edges aligned, as Slack does. */
-type MenuSide = "left" | "right";
+/**
+ * Where a "More actions" menu opens: beside its button with top edges aligned (an image's, a
+ * chart's), or flush below it with left edges aligned (a data table's), as Slack does.
+ */
+type MenuSide = "left" | "right" | "below";
 
 /**
  * Slack's `c-message_actions__group` pinned to the top-right of a table, image or chart: a white
@@ -91,15 +94,23 @@ export function HoverActions({
 const MENU_WIDTH = 300;
 const MENU_SIDE_GAP = 4;
 const BUTTON_SIZE = 32;
+/** The border a data table's toolbar button draws around Slack's 28px button. */
+const BORDER = 1;
 
-function MenuAction({
+/** A button that opens Slack's `c-menu` of `items`. */
+export function MenuAction({
   action,
   items,
   side,
+  buttonClassName = "sbk-hover-actions__button",
+  tooltip = true,
 }: {
   action: HoverAction;
   items: HoverMenuItem[];
   side: MenuSide;
+  buttonClassName?: string;
+  /** Shows `action.label` as a tooltip; a data table's toolbar buttons have none. */
+  tooltip?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -129,11 +140,11 @@ function MenuAction({
 
   return (
     <div className="sbk-hover-actions__menu-root" onKeyDown={nav.onKeyDown}>
-      <Tooltip label={open ? "" : action.label} align={action.tooltipAlign}>
+      <Tooltip label={open || !tooltip ? "" : action.label} align={action.tooltipAlign}>
         <button
           ref={triggerRef}
           type="button"
-          className="sbk-hover-actions__button"
+          className={buttonClassName}
           aria-label={action.label}
           aria-haspopup="menu"
           aria-expanded={open}
@@ -144,13 +155,22 @@ function MenuAction({
       </Tooltip>
       {open && (
         // Slack opens it beside the button, top edges aligned: a chart's to the right, flush with
-        // the button, an image's 4px to its left. It's portaled like the overflow menu, so the
-        // card (which clips its content) neither cuts it off nor scrolls to show it.
+        // the button, an image's 4px to its left. A data table's opens flush below its button:
+        // Slack's is 28px inside a 1px border, where ours draws the border on the button, so the
+        // menu sits 1px in from our button's left and bottom edges. It's portaled like the
+        // overflow menu, so the card (which clips its content) neither cuts it off nor scrolls to
+        // show it.
         <Popover
           anchorRef={triggerRef}
           onDismiss={() => setOpen(false)}
-          gap={-BUTTON_SIZE}
-          offsetX={side === "right" ? BUTTON_SIZE : -(MENU_WIDTH + MENU_SIDE_GAP)}
+          gap={side === "below" ? -BORDER : -BUTTON_SIZE}
+          offsetX={
+            side === "below"
+              ? BORDER
+              : side === "right"
+                ? BUTTON_SIZE
+                : -(MENU_WIDTH + MENU_SIDE_GAP)
+          }
           onPlaced={() => listRef.current?.focus()}
         >
           <div

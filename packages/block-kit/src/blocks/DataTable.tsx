@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
-import { DataTableCell, dataTableSortValue } from "../data/dataTableCells";
+import { DataTableCell, dataTableCellText, dataTableSortValue } from "../data/dataTableCells";
+import { copyText, downloadText, MenuAction, toCsv, toTsv } from "../data/HoverActions";
 import { ChevronIcon, ExpandIcon, KebabIcon, SearchIcon } from "../data/icons";
+import { CopyIcon, DownloadIcon } from "../icons";
 import type { BlockProps, Json } from "../types";
 import { DataTableColumnHeader, type SortDirection } from "./DataTableColumnHeader";
 
@@ -55,6 +57,22 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
     setSort(direction ? { column, direction } : null);
   };
 
+  // Slack's "More actions" menu: the whole table, header first and in the payload's order, copied
+  // tab-separated (it pastes into spreadsheets) or downloaded as CSV, as the table block's actions.
+  const textRows = () => rows.map((row) => (Array.isArray(row) ? row.map(dataTableCellText) : []));
+  const menuItems = [
+    {
+      label: "Copy table",
+      icon: <CopyIcon width="16" height="16" />,
+      onSelect: () => copyText(toTsv(textRows())),
+    },
+    {
+      label: "Download table",
+      icon: <DownloadIcon width="16" height="16" />,
+      onSelect: () => downloadText("table.csv", toCsv(textRows())),
+    },
+  ];
+
   // Slack's columns share the width but never shrink below 120px; past that the frame scrolls.
   const gridStyle = { gridTemplateColumns: `repeat(${columnCount}, minmax(120px, 1fr))` };
 
@@ -73,9 +91,13 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
           >
             <ExpandIcon />
           </button>
-          <button type="button" className="sbk-data-table__icon-btn" aria-label="More actions">
-            <KebabIcon />
-          </button>
+          <MenuAction
+            action={{ label: "More actions", icon: <KebabIcon /> }}
+            items={menuItems}
+            side="below"
+            buttonClassName="sbk-data-table__icon-btn"
+            tooltip={false}
+          />
         </div>
       </div>
 
