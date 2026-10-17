@@ -1542,18 +1542,10 @@
   "contexts/multi_static_select/accessory@open-focus-option-1": [],
   "contexts/multi_static_select/accessory@open-focus-option-1+dark": [],
   "contexts/multi_static_select/accessory@open-focus-option-1+mobile": [],
-  "contexts/multi_static_select/accessory@open-hover-option-1": [
-    "color|Option 1|0"
-  ],
-  "contexts/multi_static_select/accessory@open-hover-option-1+dark": [
-    "color|Option 1|0"
-  ],
-  "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [
-    "color|Option 1|0"
-  ],
-  "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [
-    "color|Option 1|0"
-  ],
+  "contexts/multi_static_select/accessory@open-hover-option-1": [],
+  "contexts/multi_static_select/accessory@open-hover-option-1+dark": [],
+  "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [],
+  "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [],
   "contexts/multi_static_select/accessory@open+dark": [],
   "contexts/multi_static_select/accessory@pick+mobile": [],
   "contexts/multi_static_select/accessory@pick+mobile+dark": [],
