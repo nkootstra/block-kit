@@ -77,18 +77,8 @@
   "catalog/actions/filtered-conversations-select@mobile+dark": [],
   "catalog/actions/filtered-conversations-select@open": [],
   "catalog/actions/filtered-conversations-select@open+dark": [],
-  "catalog/actions/filtered-conversations-select@pick+mobile": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
-  ],
-  "catalog/actions/filtered-conversations-select@pick+mobile+dark": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
-  ],
+  "catalog/actions/filtered-conversations-select@pick+mobile": [],
+  "catalog/actions/filtered-conversations-select@pick+mobile+dark": [],
   "catalog/actions/radio-buttons": [],
   "catalog/actions/radio-buttons@dark": [],
   "catalog/actions/radio-buttons@focus-radio-1+dark": [],
@@ -752,16 +742,10 @@
     "extra|User Two|1"
   ],
   "catalog/input/multi-users-select@pick": [
-    "x|User One|0",
-    "y|User One|0",
-    "width|User One|0",
-    "font-weight|User One|0"
+    "y|User One|0"
   ],
   "catalog/input/multi-users-select@pick+dark": [
-    "x|User One|0",
-    "y|User One|0",
-    "width|User One|0",
-    "font-weight|User One|0"
+    "y|User One|0"
   ],
   "catalog/input/multiline-plain-text-input": [],
   "catalog/input/multiline-plain-text-input@dark": [],
@@ -1025,21 +1009,12 @@
     "extra|User Two|1"
   ],
   "catalog/section/users-select@pick+dark": [
-    "x|User One|0",
-    "y|User One|0",
-    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "catalog/section/users-select@pick+mobile": [
-    "x|User One|0",
-    "y|User One|0",
-    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "catalog/section/users-select@pick+mobile+dark": [
-    "x|User One|0",
-    "y|User One|0",
-    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "catalog/structure/default": [],
@@ -1755,22 +1730,13 @@
     "color|Type a minimum of 2 characters to see options.|0"
   ],
   "extra/actions/more-elements@pick": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
+    "x|channel-one|0"
   ],
   "extra/actions/more-elements@pick+dark": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
+    "x|channel-one|0"
   ],
   "extra/actions/more-elements@pick+mobile": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
+    "x|channel-one|0"
   ],
   "extra/context-actions/feedback-row": [],
   "extra/context-actions/feedback-row@dark": [],
@@ -1825,10 +1791,7 @@
   "extra/fidelity/channels-select/long-content@open": [],
   "extra/fidelity/channels-select/long-content@open+dark": [],
   "extra/fidelity/channels-select/long-content@pick": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
+    "x|channel-one|0"
   ],
   "extra/fidelity/chart-table-modal/many-items": [],
   "extra/fidelity/chart-table-modal/many-items@dark": [],
@@ -1862,10 +1825,7 @@
   "extra/fidelity/confirm/long-content@open": [],
   "extra/fidelity/confirm/long-content@open+dark": [],
   "extra/fidelity/confirm/long-content@pick": [
-    "x|channel-one|0",
-    "y|channel-one|0",
-    "width|channel-one|0",
-    "font-weight|channel-one|0"
+    "x|channel-one|0"
   ],
   "extra/fidelity/contact-card/mixed": [
     "missing|This content could not be displayed.|0",
@@ -2173,11 +2133,9 @@
   "extra/fidelity/multi-channels-select/empty@open+mobile": [],
   "extra/fidelity/multi-channels-select/empty@open+mobile+dark": [],
   "extra/fidelity/multi-channels-select/empty@pick": [
-    "x|channel-one|0",
     "y|channel-one|0"
   ],
   "extra/fidelity/multi-channels-select/empty@pick+dark": [
-    "x|channel-one|0",
     "y|channel-one|0"
   ],
   "extra/fidelity/multi-channels-select/long-content": [
@@ -2989,9 +2947,6 @@
     "extra|User Two|1"
   ],
   "extra/fidelity/users-select/long-content@pick": [
-    "x|User One|0",
-    "y|User One|0",
-    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "extra/fidelity/video/long-content": [
@@ -3029,15 +2984,9 @@
     "color|Private channel|0"
   ],
   "extra/input/more-selects@pick": [
-    "x|User One|0",
-    "y|User One|0",
-    "font-weight|User One|0",
     "missing|User One|1"
   ],
   "extra/input/more-selects@pick+dark": [
-    "x|User One|0",
-    "y|User One|0",
-    "font-weight|User One|0",
     "color|Private channel|0",
     "missing|User One|1"
   ],
