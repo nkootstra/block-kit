@@ -116,6 +116,18 @@
   text-align: center;
 }
 
+/* With its category labels turned 45°, Slack's chart moves both axis titles: the x title and the
+   legend centre from 26px in, and the y title runs to 8px above the bottom
+   (data-visualization/many-items). */
+.sbk-dataviz:has(.sbk-chart--rotated) .sbk-dataviz__x-label,
+.sbk-dataviz:has(.sbk-chart--rotated) .sbk-dataviz__legend {
+  padding-left: 26px;
+}
+
+.sbk-dataviz:has(.sbk-chart--rotated) .sbk-dataviz__y-label {
+  bottom: 8px;
+}
+
 .sbk-dataviz__legend {
   display: flex;
   padding: 8px 0 0 74px;
