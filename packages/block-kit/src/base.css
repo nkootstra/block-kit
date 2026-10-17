@@ -578,6 +578,14 @@ a.sbk-mention {
   top: -4px;
 }
 
+/* Slack's `top-right` tooltip: its arrow sits off-centre, 16px from the right edge as Slack
+   positions it, which is 20.5px for our 9px box rotated about its centre. */
+.sbk-tooltip--end .sbk-tooltip__arrow {
+  right: 20.5px;
+  left: auto;
+  margin-left: 0;
+}
+
 .sbk-tooltip__secondary {
   display: block;
   font-weight: 400;

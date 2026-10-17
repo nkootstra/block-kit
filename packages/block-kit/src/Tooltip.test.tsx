@@ -63,4 +63,29 @@ describe("<Tooltip>", () => {
     act(() => vi.advanceTimersByTime(500));
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
+
+  it.each([
+    ["center", 170, false],
+    ["end", 140, true],
+  ] as const)("places a %s-aligned tooltip at left %i", (align, left, end) => {
+    // Anchor 200–240, tooltip 100 wide.
+    const rect = (x: number, width: number) =>
+      ({ left: x, right: x + width, width, top: 200, bottom: 232, height: 32 }) as DOMRect;
+    const spy = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute("role") === "tooltip" ? rect(0, 100) : rect(200, 40);
+      });
+    render(
+      <Tooltip label="More actions" align={align}>
+        <button type="button">x</button>
+      </Tooltip>,
+    );
+    fireEvent.mouseEnter(screen.getByRole("button"));
+    act(() => vi.advanceTimersByTime(300));
+    const tip = screen.getByRole("tooltip");
+    expect(tip.style.left).toBe(`${left}px`);
+    expect(tip.classList.contains("sbk-tooltip--end")).toBe(end);
+    spy.mockRestore();
+  });
 });
