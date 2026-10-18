@@ -1567,21 +1567,11 @@
   "contexts/radio_buttons/home@dark": [],
   "contexts/radio_buttons/modal-input": [],
   "contexts/radio_buttons/modal-input@dark": [],
-  "contexts/rich_text_input/modal-input": [
-    "missing|Write something|0"
-  ],
-  "contexts/rich_text_input/modal-input@dark": [
-    "missing|Write something|0"
-  ],
-  "contexts/rich_text_input/modal-input@focus-richtext-1+dark": [
-    "missing|Write something|0"
-  ],
-  "contexts/rich_text_input/modal-input@hover-richtext-1": [
-    "missing|Write something|0"
-  ],
-  "contexts/rich_text_input/modal-input@hover-richtext-1+dark": [
-    "missing|Write something|0"
-  ],
+  "contexts/rich_text_input/modal-input": [],
+  "contexts/rich_text_input/modal-input@dark": [],
+  "contexts/rich_text_input/modal-input@focus-richtext-1+dark": [],
+  "contexts/rich_text_input/modal-input@hover-richtext-1": [],
+  "contexts/rich_text_input/modal-input@hover-richtext-1+dark": [],
   "contexts/static_select/accessory": [],
   "contexts/static_select/accessory@dark": [],
   "contexts/static_select/accessory@mobile": [],
@@ -2487,40 +2477,12 @@
     "missing|Hidden file|0"
   ],
   "extra/fidelity/rich-text-input/initial-value": [],
-  "extra/fidelity/rich-text-input/initial-value@dark": [
-    "color|Initial value|0"
-  ],
+  "extra/fidelity/rich-text-input/initial-value@dark": [],
   "extra/fidelity/rich-text-input/long-content": [],
   "extra/fidelity/rich-text-input/long-content@dark": [],
   "extra/fidelity/rich-text-input/many-lines": [],
-  "extra/fidelity/rich-text-input/mixed": [
-    "y|Cancel|0",
-    "y|Submit|0",
-    "missing|Bold|0",
-    "missing|,|0",
-    "missing|italic|0",
-    "missing|,|1",
-    "missing|code|0",
-    "missing|and|0",
-    "missing|a link|0",
-    "missing|A bullet|0",
-    "missing|Another bullet|0",
-    "extra|Bold, italic, code and a link|0"
-  ],
-  "extra/fidelity/rich-text-input/mixed@dark": [
-    "y|Cancel|0",
-    "y|Submit|0",
-    "missing|Bold|0",
-    "missing|,|0",
-    "missing|italic|0",
-    "missing|,|1",
-    "missing|code|0",
-    "missing|and|0",
-    "missing|a link|0",
-    "missing|A bullet|0",
-    "missing|Another bullet|0",
-    "extra|Bold, italic, code and a link|0"
-  ],
+  "extra/fidelity/rich-text-input/mixed": [],
+  "extra/fidelity/rich-text-input/mixed@dark": [],
   "extra/fidelity/rich-text-list-record/default": [
     "missing|Private list|0"
   ],
@@ -2829,28 +2791,16 @@
   "extra/media/video@mobile+dark": [],
   "extra/modal/alert": [],
   "extra/modal/alert@dark": [],
-  "extra/modal/dispatch-rich-text": [
-    "missing|Write something|0"
-  ],
-  "extra/modal/dispatch-rich-text@dark": [
-    "missing|Write something|0"
-  ],
+  "extra/modal/dispatch-rich-text": [],
+  "extra/modal/dispatch-rich-text@dark": [],
   "extra/modal/form": [],
   "extra/modal/form@dark": [],
   "extra/modal/form@open": [],
   "extra/modal/form@open+dark": [],
-  "extra/modal/optional-inputs": [
-    "missing|Write something|0"
-  ],
-  "extra/modal/optional-inputs@dark": [
-    "missing|Write something|0"
-  ],
-  "extra/modal/optional-inputs@open": [
-    "missing|Write something|0"
-  ],
-  "extra/modal/optional-inputs@open+dark": [
-    "missing|Write something|0"
-  ],
+  "extra/modal/optional-inputs": [],
+  "extra/modal/optional-inputs@dark": [],
+  "extra/modal/optional-inputs@open": [],
+  "extra/modal/optional-inputs@open+dark": [],
   "extra/modal/required-multi-selects": [],
   "extra/modal/required-multi-selects@dark": [],
   "extra/modal/required-multi-selects@open": [],
