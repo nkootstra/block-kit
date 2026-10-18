@@ -60,10 +60,10 @@ const FORMATTING_GROUPS: { label: string; evenOdd: boolean; d: string }[][] = [
   ],
 ];
 
-/** The formatting bar Slack shows above a modal's rich-text editor. The editor here is plain text,
- * so its buttons are there to look like Slack's but marked unavailable; they dim until the editor
- * has focus, as Slack's do. */
-export function RichTextToolbar() {
+/** The formatting bar Slack shows above a modal's rich-text editor. Its buttons can't format text
+ * yet, so they're marked unavailable, but they show the formats at the caret as pressed; they dim
+ * until the editor has focus, as Slack's do. */
+export function RichTextToolbar({ pressed }: { pressed: ReadonlySet<string> }) {
   return (
     <div
       className="sbk-rich-text-input__toolbar"
@@ -81,6 +81,7 @@ export function RichTextToolbar() {
               className="sbk-rich-text-input__tool"
               aria-label={icon.label}
               aria-disabled="true"
+              aria-pressed={pressed.has(icon.label)}
               tabIndex={-1}
             >
               <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">

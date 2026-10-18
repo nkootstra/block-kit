@@ -37,9 +37,10 @@ supports it in modals, not Home tabs.
 :::note
 The field is drawn like Slack's composer: the formatting bar above it (bold, italic, lists, links,
 and so on) and a row under it with **Aa** and an emoji button. **Aa** hides and shows the formatting
-bar. The editor itself is plain text, so the formatting buttons are marked unavailable (they dim
-until the field has focus, as Slack's do), and the emoji button is unavailable until block-kit has
-an emoji picker. Typing into the field works normally.
+bar. The field shows an `initial_value` with its formatting, as Slack's editor does, and the bar
+shows the formats at the caret as pressed, but its buttons can't format new text yet, so they're
+marked unavailable (they dim until the field has focus, as Slack's do). The emoji button is
+unavailable until block-kit has an emoji picker. Typing into the field works normally.
 :::
 
 ## Fields
@@ -63,7 +64,7 @@ an emoji picker. Typing into the field works normally.
     placeholder: {
       type: "PlainTextElement",
       description:
-        "Grey placeholder text shown when the field is empty. Maximum length is 150 characters.",
+        'Grey placeholder text shown when the field is empty. Maximum length is 150 characters. Without one, the field shows Slack\'s own, "Write something".',
     },
     min_lines: {
       type: "number",
@@ -108,7 +109,22 @@ an emoji picker. Typing into the field works normally.
             elements: [
               {
                 type: "rich_text_section",
-                elements: [{ type: "text", text: "Fixed the login redirect loop." }],
+                elements: [
+                  { type: "text", text: "Fixed", style: { bold: true } },
+                  { type: "text", text: " the login redirect loop in " },
+                  { type: "text", text: "auth.ts", style: { code: true } },
+                  { type: "text", text: "." },
+                ],
+              },
+              {
+                type: "rich_text_list",
+                style: "bullet",
+                elements: [
+                  {
+                    type: "rich_text_section",
+                    elements: [{ type: "text", text: "Sessions survive a refresh" }],
+                  },
+                ],
               },
             ],
           },
@@ -119,7 +135,9 @@ an emoji picker. Typing into the field works normally.
 />
 
 `initial_value` takes a full `rich_text` block, the same shape you'd get back from the element
-itself, not a plain string.
+itself, not a plain string. The field draws it as Slack's editor does: bold, italic,
+strikethrough, inline code and links styled, each line of a section on its own line, and lists,
+quotes and code blocks as blocks of their own.
 
 ### Sizing the field
 
@@ -172,7 +190,8 @@ Without `dispatch_action`, typing only updates `state.values`, as in Slack:
 ### Reading the value
 
 Every edit (and the initial value, if any) is written to `state.values` as `{ type, rich_text_value
-}`:
+}`. An edited value keeps its formatting, lists, quotes and code blocks, and joins its lines with
+`\n` into one section:
 
 ```json
 {

@@ -30,6 +30,47 @@ function richText(text: string): RichTextBlock {
   } as unknown as RichTextBlock;
 }
 
+// fixtures/extra/fidelity/rich-text-input/mixed
+const mixed = {
+  type: "rich_text",
+  elements: [
+    {
+      type: "rich_text_section",
+      elements: [
+        { type: "text", text: "Bold", style: { bold: true } },
+        { type: "text", text: ", " },
+        { type: "text", text: "italic", style: { italic: true } },
+        { type: "text", text: ", " },
+        { type: "text", text: "code", style: { code: true } },
+        { type: "text", text: " and " },
+        { type: "link", url: "https://example.com", text: "a link" },
+      ],
+    },
+    {
+      type: "rich_text_list",
+      style: "bullet",
+      indent: 0,
+      elements: ["A bullet", "Another bullet"].map((text) => ({
+        type: "rich_text_section",
+        elements: [{ type: "text", text }],
+      })),
+    },
+  ],
+} as unknown as RichTextBlock;
+
+/** A rich text input with an initial value; returns its editor. */
+function renderValue(initial_value: RichTextBlock, onStateChange?: (s: StateValues) => void) {
+  render(
+    <BlockKitProvider onStateChange={onStateChange}>
+      <RichTextInput
+        element={{ type: "rich_text_input", action_id: "a1", initial_value }}
+        blockId="b1"
+      />
+    </BlockKitProvider>,
+  );
+  return screen.getByRole("textbox");
+}
+
 describe("<RichTextInput>", () => {
   it("reports initial_value as rich_text_value state on mount", () => {
     let state: StateValues = {};
@@ -73,6 +114,46 @@ describe("<RichTextInput>", () => {
     );
     const lines = [...screen.getByRole("textbox").children].map((line) => line.textContent);
     expect(lines).toEqual(["Line 1", "Line 2"]);
+  });
+
+  it("draws initial_value with its formatting and lists, as Slack's editor does", () => {
+    const box = renderValue(mixed);
+    expect(box.querySelector("b")?.textContent).toBe("Bold");
+    expect(box.querySelector("i")?.textContent).toBe("italic");
+    expect(box.querySelector("code")?.textContent).toBe("code");
+    expect(box.querySelector("a")?.getAttribute("href")).toBe("https://example.com");
+    expect([...box.querySelectorAll("ul > li")].map((li) => li.textContent)).toEqual([
+      "A bullet",
+      "Another bullet",
+    ]);
+  });
+
+  it("reports an edited value with its formatting kept", () => {
+    let state: StateValues = {};
+    const box = renderValue(mixed, (s) => (state = s));
+    fireEvent.input(box);
+    expect(state.b1?.a1).toEqual({ type: "rich_text_input", rich_text_value: mixed });
+  });
+
+  it("joins the editor's lines into one section", () => {
+    let state: StateValues = {};
+    const box = renderValue(richText("first"), (s) => (state = s));
+    const line = document.createElement("div");
+    line.textContent = "second";
+    box.append(line);
+    fireEvent.input(box);
+    expect(state.b1?.a1).toEqual({
+      type: "rich_text_input",
+      rich_text_value: richText("first\nsecond"),
+    });
+  });
+
+  it("presses the formats at the caret, at the start of the value before it's used", () => {
+    renderValue(mixed);
+    expect(screen.getByRole("button", { name: "Bold" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Italic" }).getAttribute("aria-pressed")).toBe(
+      "false",
+    );
   });
 
   it.each([
@@ -225,6 +306,12 @@ describe("<RichTextInput>", () => {
       box.textContent = "hi";
       fireEvent.input(box);
       expect(screen.queryByText("Write something")).toBeNull();
+    });
+
+    // fixtures/contexts/rich_text_input/modal-input
+    it("shows Slack's own placeholder when the payload sets none", () => {
+      renderComposer();
+      expect(screen.getByText("Write something")).toBeTruthy();
     });
   });
 });

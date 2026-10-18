@@ -2,37 +2,23 @@ import type { RichTextBlock, RichTextInput as RichTextInputElement } from "@slac
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import type { ElementProps } from "../types";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
 import { RichTextComposerActions, RichTextToolbar } from "./RichTextToolbar";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInvalidProps } from "./inputBlockContext";
+import { firstText, formatsAt, readRichTextValue, renderRichTextValue } from "./richTextValue";
 
-/** Wraps plain text into the `rich_text` block shape Slack uses for this element's value. The
- * editor is plain text; Slack's formatting bar and composer row are drawn around it for parity. */
-function toRichText(text: string): RichTextBlock {
-  return {
-    type: "rich_text",
-    elements: [
-      {
-        type: "rich_text_section",
-        elements: text ? [{ type: "text", text }] : [],
-      },
-    ],
-  };
-}
+/** Slack's placeholder when the payload sets none (fixtures/contexts/rich_text_input/modal-input). */
+const DEFAULT_PLACEHOLDER = "Write something";
 
-/** The value's text, one line per section. */
-function fromRichText(value: RichTextBlock | undefined): string[] {
-  if (!value) return [];
-  return (value.elements as unknown[]).map((section) => {
-    const node = section as { elements?: unknown[] };
-    return (node.elements ?? [])
-      .map((el: unknown) => {
-        const leaf = el as { text?: unknown };
-        return typeof leaf.text === "string" ? leaf.text : "";
-      })
-      .join("");
-  });
+/** Whether the value holds nothing to show: no sections with text, and no lists, quotes or code. */
+function isBlank(value: RichTextBlock | undefined): boolean {
+  return (value?.elements ?? []).every(
+    (block) =>
+      block.type === "rich_text_section" &&
+      block.elements.every((leaf) => leaf.type === "text" && leaf.text.trim() === ""),
+  );
 }
 
 /** Slack's line height, the editor's top and bottom padding, and the lines it shows before it
@@ -51,14 +37,34 @@ type DispatchConfig = {
 };
 
 export function RichTextInput({ element, blockId }: ElementProps<RichTextInputElement>) {
-  const { setValue, dispatch } = useBlockKit();
+  const { setValue, dispatch, resolvers, timeZone } = useBlockKit();
   const ref = useRef<HTMLDivElement>(null);
   useFocusOnLoad(element, ref);
   const invalid = useInvalidProps();
   const actionId = element.action_id ?? "";
-  const initialLines = fromRichText(element.initial_value);
+  // Drawn once: after that the editor's DOM is the user's, and the same element keeps React from
+  // touching it on a re-render.
+  const [initialContent] = useState(() =>
+    renderRichTextValue(element.initial_value, { resolvers, timeZone }),
+  );
   const [formatting, setFormatting] = useState(true);
-  const [empty, setEmpty] = useState(initialLines.join("") === "");
+  const [empty, setEmpty] = useState(() => isBlank(element.initial_value));
+  const [pressed, setPressed] = useState<ReadonlySet<string>>(() => new Set());
+
+  // Slack's toolbar shows the formats at the caret as pressed, and before the field is used the
+  // caret sits at the start of the value: "Bold" is pressed for a value that opens in bold
+  // (fixtures/extra/fidelity/rich-text-input/mixed).
+  useClientLayoutEffect(() => {
+    const editor = ref.current;
+    if (!editor) return;
+    setPressed(formatsAt(firstText(editor), editor));
+    const onSelection = () => {
+      const at = editor.ownerDocument.getSelection()?.anchorNode ?? null;
+      if (at && editor.contains(at)) setPressed(formatsAt(at, editor));
+    };
+    editor.ownerDocument.addEventListener("selectionchange", onSelection);
+    return () => editor.ownerDocument.removeEventListener("selectionchange", onSelection);
+  }, []);
 
   useEffect(() => {
     if (element.initial_value) {
@@ -81,18 +87,21 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
 
   function fire() {
     clearTimeout(typing.current);
+    if (!ref.current) return;
     dispatch({
       type: "rich_text_input",
       action_id: actionId,
       block_id: blockId,
-      rich_text_value: toRichText(ref.current?.innerText ?? ""),
+      rich_text_value: readRichTextValue(ref.current),
     });
   }
 
   function onInput() {
-    const text = ref.current?.innerText ?? "";
-    setEmpty(text.trim() === "");
-    setValue(blockId, actionId, { type: "rich_text_input", rich_text_value: toRichText(text) });
+    const editor = ref.current;
+    if (!editor) return;
+    const value = readRichTextValue(editor);
+    setEmpty(isBlank(value));
+    setValue(blockId, actionId, { type: "rich_text_input", rich_text_value: value });
     if (dispatchEnabled && triggers.includes("on_character_entered")) {
       clearTimeout(typing.current);
       typing.current = setTimeout(fire, CHARACTER_DISPATCH_DELAY);
@@ -106,10 +115,10 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
     fire();
   }
 
-  const placeholder = element.placeholder?.text;
+  const placeholder = element.placeholder?.text ?? DEFAULT_PLACEHOLDER;
   return (
     <div className="sbk-rich-text-input">
-      {formatting && <RichTextToolbar />}
+      {formatting && <RichTextToolbar pressed={pressed} />}
       <div className="sbk-rich-text-input__body">
         <div
           ref={ref}
@@ -119,7 +128,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
           role="textbox"
           aria-multiline="true"
           {...invalid}
-          aria-label={placeholder ?? actionId}
+          aria-label={element.placeholder?.text ?? actionId}
           onInput={onInput}
           onKeyDown={onKeyDown}
           style={{
@@ -127,14 +136,10 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
             maxHeight: linesHeight(element.max_lines ?? MAX_LINES),
           }}
         >
-          {/* A block per line, as Slack's editor draws each section as its own paragraph and the
-              browser's own editing makes a block per line, so innerText reads one line each. */}
-          {initialLines.map((line, i) => (
-            <div key={i}>{line || <br />}</div>
-          ))}
+          {initialContent}
         </div>
         {/* A real element, as Slack's `ql-placeholder` is, so it's text on the page. */}
-        {placeholder && empty && (
+        {empty && (
           <div className="sbk-rich-text-input__placeholder" aria-hidden="true">
             {placeholder}
           </div>
