@@ -92,8 +92,10 @@ export const STATES: Record<string, State> = {
     { option: /channel-one/ },
   ),
   "catalog/actions/radio-buttons@pick": { ours: (p) => p.getByRole("radio").nth(1).click() },
+  // The redaction names channels in the order a reference shows them, so the one channel left
+  // after the pick is always channel-one there.
   "catalog/actions/selects-with-initial-options@pick": pick((p) => p.getByRole("combobox").nth(2), {
-    option: /channel-two/,
+    option: /channel-one/,
   }),
   "catalog/actions/timepicker@pick": arrowPick((p) => byValue(p, "1:37 PM")),
   "catalog/agents/message-feedback@pick": { ours: (p) => p.getByRole("radio").first().click() },
