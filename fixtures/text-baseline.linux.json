@@ -915,21 +915,7 @@
   "catalog/section/multi-conversations-select@mobile": [],
   "catalog/section/multi-conversations-select@mobile+dark": [],
   "catalog/section/multi-conversations-select@open": [],
-  "catalog/section/multi-conversations-select@open+dark": [
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|APP|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1",
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0",
-    "missing|channel-four|0",
-    "missing|channel-five|0"
-  ],
+  "catalog/section/multi-conversations-select@open+dark": [],
   "catalog/section/multi-conversations-select@open+mobile": [],
   "catalog/section/multi-conversations-select@open+mobile+dark": [],
   "catalog/section/multi-conversations-select@pick": [],
@@ -1844,9 +1830,7 @@
     "extra|Contact|1"
   ],
   "extra/fidelity/container/long-content": [],
-  "extra/fidelity/container/long-content@dark": [
-    "missing|A sample landscape image|0"
-  ],
+  "extra/fidelity/container/long-content@dark": [],
   "extra/fidelity/container/long-content@mobile": [],
   "extra/fidelity/container/long-content@mobile+dark": [],
   "extra/fidelity/container/many-items": [],
@@ -2025,9 +2009,7 @@
   "extra/fidelity/icon-button/mixed@mobile+dark": [],
   "extra/fidelity/image/long-content": [],
   "extra/fidelity/image/long-content@dark": [],
-  "extra/fidelity/image/long-content@mobile": [
-    "missing|An incredibly cute kitten.|0"
-  ],
+  "extra/fidelity/image/long-content@mobile": [],
   "extra/fidelity/image/long-content@mobile+dark": [],
   "extra/fidelity/input/long-content": [],
   "extra/fidelity/input/long-content@dark": [],
@@ -2095,16 +2077,8 @@
   "extra/fidelity/message-attachments/long-content@dark": [],
   "extra/fidelity/message-attachments/long-content@mobile": [],
   "extra/fidelity/message-attachments/long-content@mobile+dark": [],
-  "extra/fidelity/multi-channels-select/empty": [
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
-  ],
-  "extra/fidelity/multi-channels-select/empty@dark": [
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
-  ],
+  "extra/fidelity/multi-channels-select/empty": [],
+  "extra/fidelity/multi-channels-select/empty@dark": [],
   "extra/fidelity/multi-channels-select/empty@focus-field-1+dark": [
     "missing|channel-one|0",
     "missing|channel-two|0",
@@ -2130,23 +2104,13 @@
   "extra/fidelity/multi-channels-select/empty@pick+dark": [
     "y|channel-one|0"
   ],
-  "extra/fidelity/multi-channels-select/long-content": [
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
-  ],
+  "extra/fidelity/multi-channels-select/long-content": [],
   "extra/fidelity/multi-channels-select/long-content@dark": [
-    "color|Private channel|0",
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
+    "color|Private channel|0"
   ],
   "extra/fidelity/multi-channels-select/long-content@mobile": [],
   "extra/fidelity/multi-channels-select/long-content@mobile+dark": [
-    "color|Private channel|0",
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
+    "color|Private channel|0"
   ],
   "extra/fidelity/multi-channels-select/long-content@open": [
     "extra|Selected|0",
@@ -2159,10 +2123,7 @@
   ],
   "extra/fidelity/multi-channels-select/open": [],
   "extra/fidelity/multi-channels-select/open@dark": [
-    "color|Private channel|0",
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
+    "color|Private channel|0"
   ],
   "extra/fidelity/multi-channels-select/open@mobile": [],
   "extra/fidelity/multi-channels-select/open@mobile+dark": [
@@ -2235,16 +2196,10 @@
   "extra/fidelity/multi-external-select/empty@open+dark": [
     "y|Type a minimum of 1 characters to see options.|0"
   ],
-  "extra/fidelity/multi-external-select/long-content": [
-    "missing|Type a minimum of 1 characters to see options.|0"
-  ],
-  "extra/fidelity/multi-external-select/long-content@dark": [
-    "missing|Type a minimum of 1 characters to see options.|0"
-  ],
+  "extra/fidelity/multi-external-select/long-content": [],
+  "extra/fidelity/multi-external-select/long-content@dark": [],
   "extra/fidelity/multi-external-select/long-content@mobile": [],
-  "extra/fidelity/multi-external-select/long-content@mobile+dark": [
-    "missing|Type a minimum of 1 characters to see options.|0"
-  ],
+  "extra/fidelity/multi-external-select/long-content@mobile+dark": [],
   "extra/fidelity/multi-external-select/long-content@open": [
     "y|Type a minimum of 1 characters to see options.|0",
     "extra|Selected|0",
@@ -2256,9 +2211,7 @@
     "extra|Urgent|1"
   ],
   "extra/fidelity/multi-external-select/open": [],
-  "extra/fidelity/multi-external-select/open@dark": [
-    "missing|Type a minimum of 1 characters to see options.|0"
-  ],
+  "extra/fidelity/multi-external-select/open@dark": [],
   "extra/fidelity/multi-external-select/open@mobile": [],
   "extra/fidelity/multi-external-select/open@mobile+dark": [],
   "extra/fidelity/multi-external-select/open@open": [
@@ -2370,48 +2323,16 @@
     "extra|U0123456789|1"
   ],
   "extra/fidelity/multi-users-select/long-content": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|AGENT|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/multi-users-select/long-content@dark": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|AGENT|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/multi-users-select/long-content@mobile": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|AGENT|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/multi-users-select/long-content@mobile+dark": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|AGENT|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/multi-users-select/long-content@open": [
     "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
@@ -2653,6 +2574,7 @@
   ],
   "extra/fidelity/rich-text-input/long-content": [],
   "extra/fidelity/rich-text-input/long-content@dark": [],
+  "extra/fidelity/rich-text-input/many-lines": [],
   "extra/fidelity/rich-text-input/mixed": [
     "y|Cancel|0",
     "y|Submit|0",
