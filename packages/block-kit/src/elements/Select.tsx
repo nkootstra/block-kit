@@ -341,12 +341,16 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
 
   // A clicked option closes a multi-select's list and puts focus back on its field; Enter keeps it
   // open for the next pick (Block Kit Builder: the multi-select `@pick` references, and
-  // `contexts/multi_static_select/modal-input@add-remove`).
+  // `contexts/multi_static_select/modal-input@add-remove`). A single static select also keeps
+  // focus, with its ring, where a users, conversations or channels select lets it go
+  // (`catalog/actions/all-selects@pick` against `catalog/section/users-select@pick+dark`).
   async function clickItem(item: Item) {
     await selectItem(item);
     if (multi) {
       combo.setOpen(false);
       triggerRef.current?.focus();
+    } else if (source === "static") {
+      (typeable ? combo.inputRef : triggerRef).current?.focus();
     }
   }
 
@@ -653,8 +657,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
               {unresolved && items[0] ? (
                 unresolvedValue(items[0].id)
               ) : chosenEntry ? (
-                <span className="sbk-select__content-text sbk-select__content-entity">
-                  <DirectoryRow entry={chosenEntry} inField />
+                <span
+                  className={`sbk-select__content-text sbk-select__content-entity${source === "channels" ? " sbk-select__content-entity--channel" : ""}`}
+                >
+                  <DirectoryRow entry={chosenEntry} inField={source === "users"} />
                 </span>
               ) : (
                 <span className="sbk-select__content-text">{display}</span>
@@ -779,7 +785,8 @@ function DirectoryRow({
   inField = false,
 }: {
   entry: DirectoryEntry;
-  /** Drawn as the chosen value in the closed field, where Slack leaves out "(you)". */
+  /** Drawn as the chosen value in a users select's closed field, where Slack leaves out "(you)";
+   * a conversations select's field keeps it (`extra/input/more-selects@pick`). */
   inField?: boolean;
 }) {
   if (entry.type === "channel") {

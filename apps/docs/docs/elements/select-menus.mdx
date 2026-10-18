@@ -136,7 +136,8 @@ The single users, conversations and channels selects are typed into the same way
 multi-selects open from a button, with a search box where there's something to search. A
 multi-select ticks the options it already has; in an `input` block its list is a little wider than
 the field. Picking with Enter keeps a multi-select's list open for the next pick; a click closes it
-and leaves the field focused, with its focus ring. An `external_select` asks for "Type a minimum of
+and leaves the field focused, with its focus ring. A single static select also stays focused after a
+click pick, as Slack's does; a users, conversations or channels select lets focus go. An `external_select` asks for "Type a minimum of
 N characters to see options." until the query reaches its `min_query_length`.
 
 That message, "Nothing could be found." and the rows themselves are list content, not a live
@@ -399,7 +400,8 @@ only which user (if any) starts selected. Outside Slack, the list comes from the
 `resolvers.directory`, which returns the people and channels to offer for `"users"`,
 `"conversations"` or `"channels"`. Each row is drawn as Slack's: an avatar, the bold name, "(you)"
 for the signed-in user, a badge such as `AGENT`, the presence icon and the full name. Channels show
-a `#` or a lock. A chosen entry looks the same in a single select's field. In a multi-select's chip,
+a `#` or a lock. A chosen entry looks the same in a single select's field, except that a users
+select leaves out "(you)" there, as Slack's does. In a multi-select's chip,
 a person gets a smaller avatar and a channel its `#` or lock. Without a directory the list says
 "😕 Nothing could be found."
 

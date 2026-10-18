@@ -214,6 +214,13 @@
   padding-left: 6px;
 }
 
+/* A channels select draws Slack's `c-small_channel_entity` at the content's edge, with no inset
+   (catalog/actions/selects-with-initial-options@pick); a conversations select keeps the member
+   row's inset for a channel too (catalog/actions/filtered-conversations-select@pick+mobile). */
+.sbk-select__content-entity--channel {
+  padding-left: 0;
+}
+
 .sbk-select__entity {
   display: flex;
   align-items: center;

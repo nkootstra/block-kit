@@ -215,6 +215,28 @@ describe("<Select> static_select", () => {
   });
 });
 
+describe("<Select> single static select picks", () => {
+  it("keeps focus on the field after a click pick, so its focus ring stays", async () => {
+    render(
+      <Select
+        element={
+          {
+            type: "static_select",
+            action_id: "a1",
+            options: [opt("a", "A"), opt("b", "B")],
+          } as unknown as SelectElement
+        }
+        blockId="b1"
+      />,
+    );
+    const field = screen.getByRole("combobox");
+    fireEvent.click(field);
+    await clickAsync(screen.getByRole("option", { name: "B" }));
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(document.activeElement).toBe(field);
+  });
+});
+
 describe("<Select> multi-select picks", () => {
   const element = {
     type: "multi_static_select",
@@ -558,11 +580,23 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
     );
   });
 
-  it("leaves (you) out of the field, as Slack's chosen value does", () => {
+  it("leaves (you) out of a users select's field, as Slack's chosen value does", () => {
     renderDirectory("users_select", vi.fn(), { initial_user: "U01" });
     const content = document.querySelector(".sbk-select__content-entity");
     expect(content?.querySelector("strong")?.textContent).toBe("Ada");
     expect(content?.querySelector(".sbk-select__member-you")).toBeNull();
+  });
+
+  it("keeps (you) in a conversations select's field, as Slack does", () => {
+    renderDirectory("conversations_select", vi.fn(), { initial_conversation: "U01" });
+    const content = document.querySelector(".sbk-select__content-entity");
+    expect(content?.querySelector(".sbk-select__member-you")?.textContent).toBe("(you)");
+  });
+
+  it("draws a channels select's chosen channel at the field's edge, without a person's inset", () => {
+    renderDirectory("channels_select", vi.fn(), { initial_channel: "C01" });
+    const content = document.querySelector(".sbk-select__content-entity");
+    expect(content?.classList.contains("sbk-select__content-entity--channel")).toBe(true);
   });
 
   it("gives a chosen person's chip an avatar, and a channel's its hash or lock", () => {
