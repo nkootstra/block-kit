@@ -109,6 +109,9 @@
   --sbk-composer-toolbar-bg: #f8f8f8;
   --sbk-composer-tool: rgba(29, 28, 29, 0.7);
   --sbk-composer-separator: rgb(234, 234, 234);
+  /* A pressed formatting button, and inline code in the editor (its own colour in dark mode). */
+  --sbk-composer-tool-pressed-bg: rgba(29, 28, 29, 0.13);
+  --sbk-composer-code-text: rgb(192, 19, 67);
   /* A calendar day's number, and today's number and ring. */
   --sbk-calendar-day: #1d1c1d;
   --sbk-calendar-today: #1264a3;

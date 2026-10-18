@@ -41,6 +41,12 @@
   opacity: 1;
 }
 
+/* A format at the caret, dim like the rest until the editor has focus. */
+.sbk-rich-text-input__tool[aria-pressed="true"] {
+  color: var(--sbk-text-body);
+  background: var(--sbk-composer-tool-pressed-bg);
+}
+
 .sbk-rich-text-input__separator {
   width: 1px;
   height: 20px;
@@ -58,9 +64,33 @@
   flex: 1;
   padding: 8px 12px;
   font: 15px / 22px var(--sbk-font);
-  color: var(--sbk-text);
+  color: var(--sbk-text-body);
+  overflow-wrap: break-word;
   overflow-y: auto;
   outline: none; /* the field around it draws the focus ring */
+}
+
+/* The value's blocks as Slack's editor draws them (fixtures/extra/fidelity/rich-text-input/mixed):
+   no gaps between paragraphs and lists, and a list's text 26px in. The lists, quotes, code and
+   bullets are a rich_text block's otherwise. */
+.sbk-rich-text-input__editor :is(p, ul, ol) {
+  margin: 0;
+}
+
+.sbk-rich-text-input__editor .sbk-rich-list--bullet > .sbk-rich-list__item {
+  margin-left: 26px;
+}
+
+/* The editor's bullet is a little larger than a message's (about 8px across, not 7) and centred
+   15px left of the text. */
+.sbk-rich-text-input__editor .sbk-rich-list--bullet > .sbk-rich-list__item::before {
+  margin-left: -26px;
+  margin-right: 4px;
+  mask-size: 17px 17px;
+}
+
+.sbk-rich-text-input__editor .sbk-mrkdwn__code {
+  color: var(--sbk-composer-code-text);
 }
 
 /* Slack's `ql-placeholder`: a line of text over the empty editor, cut off with an ellipsis. */

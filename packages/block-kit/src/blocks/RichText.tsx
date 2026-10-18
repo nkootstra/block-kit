@@ -26,7 +26,7 @@ type RichTextPreformattedExt = Extract<RichTextBlockElement, { type: "rich_text_
 
 type Resolvers = ReturnType<typeof useBlockKit>["resolvers"];
 
-interface RenderCtx {
+export interface RenderCtx {
   resolvers: Resolvers;
   timeZone: string | undefined;
 }
@@ -167,7 +167,9 @@ function mergeTextRuns(elements: RichTextElement[]): RichTextElement[] {
   return merged;
 }
 
-function renderLeaf(
+/** One inline element of a section, styled. The rich text input's editor draws its initial value
+ * with it too. */
+export function renderLeaf(
   el: RichTextElement,
   ctx: RenderCtx,
   emojiSize: number,

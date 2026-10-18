@@ -303,6 +303,8 @@
     --sbk-composer-toolbar-bg: #222529;
     --sbk-composer-tool: rgba(232, 232, 232, 0.7);
     --sbk-composer-separator: #212428;
+    --sbk-composer-tool-pressed-bg: rgba(232, 232, 232, 0.13);
+    --sbk-composer-code-text: rgb(204, 119, 31);
     --sbk-calendar-day: #d1d2d3;
     --sbk-calendar-today: #1d9bd1;
     --sbk-avatar-placeholder: #35373b;
@@ -436,6 +438,8 @@
   --sbk-composer-toolbar-bg: #222529;
   --sbk-composer-tool: rgba(232, 232, 232, 0.7);
   --sbk-composer-separator: #212428;
+  --sbk-composer-tool-pressed-bg: rgba(232, 232, 232, 0.13);
+  --sbk-composer-code-text: rgb(204, 119, 31);
   --sbk-calendar-day: #d1d2d3;
   --sbk-calendar-today: #1d9bd1;
   --sbk-avatar-placeholder: #35373b;
