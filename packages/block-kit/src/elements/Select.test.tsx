@@ -1109,17 +1109,23 @@ describe("<Select> multi_external_select with onOptions", () => {
       </BlockKitProvider>,
     );
 
-    const trigger = screen.getByRole("button", { name: /Add tags/ });
-    fireEvent.click(trigger);
-    fireEvent.change(screen.getByPlaceholderText("Search options"), { target: { value: "x" } });
+    // Typed into in the field itself, as Slack's is: the list has no search box.
+    const field = screen.getByRole("combobox", { name: "Add tags" });
+    expect(screen.getByText("Add tags")).toBeTruthy();
+    fireEvent.click(field);
+    expect(screen.queryByPlaceholderText("Search options")).toBeNull();
+    fireEvent.change(field, { target: { value: "x" } });
     await vi.waitFor(() => expect(screen.getByRole("option", { name: "x one" })).toBeTruthy());
     expect(onOptions).toHaveBeenCalledWith(
       expect.objectContaining({ type: "block_suggestion", action_id: "tags", value: "x" }),
     );
     await clickAsync(screen.getByRole("option", { name: "x one" }));
+    expect(document.activeElement).toBe(field);
+    expect((field as HTMLInputElement).value).toBe("");
+    // With a chip in the field, the placeholder gives way to it.
+    expect(screen.queryByText("Add tags")).toBeNull();
 
-    fireEvent.click(trigger);
-    fireEvent.change(screen.getByPlaceholderText("Search options"), { target: { value: "y" } });
+    fireEvent.change(field, { target: { value: "y" } });
     await vi.waitFor(() => expect(screen.getByRole("option", { name: "y two" })).toBeTruthy());
     await clickAsync(screen.getByRole("option", { name: "y two" }));
     expect(onAction).toHaveBeenLastCalledWith(

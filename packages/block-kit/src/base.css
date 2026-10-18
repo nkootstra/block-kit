@@ -445,6 +445,7 @@ a.sbk-mention {
 .sbk-select__control:focus-visible,
 .sbk-select__control[aria-expanded="true"],
 .sbk-select--typeable .sbk-select__control:focus-within,
+.sbk-select--field-typed .sbk-select__control:focus-within,
 .sbk-input__element .sbk-select--multi .sbk-select__control:focus,
 .sbk-timepicker__control:focus-within,
 .sbk-datetimepicker__control:focus-visible,
@@ -463,6 +464,7 @@ a.sbk-mention {
   .sbk-select__control:focus-visible,
   .sbk-select__control[aria-expanded="true"],
   .sbk-select--typeable .sbk-select__control:focus-within,
+  .sbk-select--field-typed .sbk-select__control:focus-within,
   .sbk-input__element .sbk-select--multi .sbk-select__control:focus,
   .sbk-timepicker__control:focus-within,
   .sbk-datetimepicker__control:focus-visible,
@@ -480,6 +482,7 @@ a.sbk-mention {
 .sbk-select__control[aria-invalid="true"][aria-expanded="true"],
 .sbk-input__element .sbk-select--multi .sbk-select__control[aria-invalid="true"]:focus,
 .sbk-select--typeable .sbk-select__control:has([aria-invalid="true"]):focus-within,
+.sbk-select--field-typed .sbk-select__control:has([aria-invalid="true"]):focus-within,
 .sbk-timepicker__control:has([aria-invalid="true"]):focus-within {
   border-color: transparent;
   box-shadow: var(--sbk-focus-shadow-invalid);
