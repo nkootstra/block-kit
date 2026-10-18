@@ -656,6 +656,16 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                 ? (typed) => itemToOption({ id: typed, label: resolveLabel(typed) })
                 : undefined
             }
+            // The dialog draws a channel or conversation it can't resolve as the field's "Private
+            // channel" pill, never its ID (extra/fidelity/multi-conversations-select/initial-value@dialog).
+            chipLabel={
+              source === "channels" || source === "conversations"
+                ? (option) =>
+                    isUnresolved({ id: option.value ?? option.text.text })
+                      ? privateChannel("sbk-select__chip-label sbk-select__chip-entity")
+                      : undefined
+                : undefined
+            }
             onCancel={closeDialog}
             onConfirm={async (selected) => {
               closeDialog();

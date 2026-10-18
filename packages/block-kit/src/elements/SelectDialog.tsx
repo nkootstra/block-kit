@@ -1,5 +1,5 @@
 import type { PlainTextOption } from "@slack/types";
-import { useEffect, useId, useRef, useState } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBlockKit } from "../context";
 import { CloseIcon } from "../icons";
@@ -14,13 +14,15 @@ const optionId = (option: PlainTextOption) => option.value ?? option.text.text;
  * menu, titled with the select's placeholder. Picks are a draft: the option list stays open while
  * choosing, and nothing is sent until Confirm. Cancel, the close button and Escape discard the
  * draft. A users, conversations or channels select lists its `resolvers.directory` entries, and
- * `addTyped` turns a typed id no entry matches into a chip on Enter.
+ * `addTyped` turns a typed id no entry matches into a chip on Enter. `chipLabel` draws a chip's
+ * label in place of its option text when it returns one.
  */
 export function SelectDialog({
   options,
   initial,
   placeholder,
   addTyped,
+  chipLabel,
   onConfirm,
   onCancel,
 }: {
@@ -29,6 +31,8 @@ export function SelectDialog({
   placeholder: string;
   /** Turns a typed id into a chip on Enter when no listed option matches it. */
   addTyped?: (typed: string) => PlainTextOption;
+  /** A chip's label, or `undefined` for its option text. */
+  chipLabel?: (option: PlainTextOption) => ReactNode;
   onConfirm: (selected: PlainTextOption[]) => void;
   onCancel: () => void;
 }) {
@@ -111,11 +115,13 @@ export function SelectDialog({
           <div className="sbk-select-dialog__field" ref={fieldRef}>
             {draft.map((option) => (
               <span className="sbk-select__chip" key={optionId(option)}>
-                <span className="sbk-select__chip-label">
-                  <span className="sbk-select__chip-text">
-                    <span>{option.text.text}</span>
+                {chipLabel?.(option) ?? (
+                  <span className="sbk-select__chip-label">
+                    <span className="sbk-select__chip-text">
+                      <span>{option.text.text}</span>
+                    </span>
                   </span>
-                </span>
+                )}
                 <button
                   type="button"
                   className="sbk-select__chip-remove"

@@ -202,3 +202,46 @@ describe.each([
     expect(trigger("1 selected")).toBeTruthy();
   });
 });
+
+describe.each([
+  ["multi_conversations_select", "Select conversations", "initial_conversations"],
+  ["multi_channels_select", "Select channels", "initial_channels"],
+])("a %s section accessory's dialog", (type, placeholder, initial) => {
+  function renderWith(resolvers?: { channel: (id: string) => string | undefined }) {
+    render(
+      <BlockKitProvider resolvers={resolvers}>
+        <Message
+          blocks={
+            [
+              {
+                type: "section",
+                block_id: "b1",
+                text: { type: "mrkdwn", text: "Pick some" },
+                accessory: {
+                  type,
+                  action_id: "a1",
+                  placeholder: plain(placeholder),
+                  [initial]: ["C0123456789"],
+                },
+              },
+            ] as never
+          }
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(trigger("1 selected"));
+    return screen.getByRole("dialog", { name: placeholder });
+  }
+
+  it("draws a conversation it can't resolve as a Private channel pill, not its ID", () => {
+    const box = renderWith();
+    expect(within(box).getByText("Private channel")).toBeTruthy();
+    expect(within(box).queryByText("C0123456789")).toBeNull();
+  });
+
+  it("draws a resolved conversation by its name", () => {
+    const box = renderWith({ channel: (id) => (id === "C0123456789" ? "general" : undefined) });
+    expect(within(box).getByText("general")).toBeTruthy();
+    expect(within(box).queryByText("Private channel")).toBeNull();
+  });
+});

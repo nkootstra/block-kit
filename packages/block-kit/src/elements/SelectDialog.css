@@ -86,7 +86,8 @@
 }
 
 /* The multi-select field: chips, then the input they're typed after. Slack's sits 14px from the
-   header and the footer, 468px wide. */
+   header and the footer, 468px wide, and starts its chips 4px in, each 4px after the last
+   (extra/fidelity/multi-conversations-select/initial-value@dialog). */
 .sbk-select-dialog__field {
   position: relative;
   display: flex;
@@ -94,7 +95,7 @@
   align-items: center;
   min-height: 36px;
   margin: 14px 4px 14px 0;
-  padding: 0 8px 4px 0;
+  padding: 0 8px 4px 4px;
   border: 1px solid var(--sbk-select-border);
   border-radius: 8px;
 }
@@ -107,7 +108,7 @@
 .sbk-select-dialog__input {
   flex: 1;
   min-width: 80px;
-  margin: 4px 0 0 12px;
+  margin: 4px 0 0 8px;
   padding: 0;
   font: inherit;
   color: var(--sbk-text);
