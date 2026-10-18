@@ -11,8 +11,10 @@ The provider builds Slack's interaction payloads for you and passes them to `onP
 Each builder returns the JSON Slack would send, with the placeholder identity (`T00000000`, `U00000000`, `A00000000`) unless you pass `identity`. `identity` takes camelCase keys (`apiAppId`, `triggerId`, `responseUrl`); the payload has Slack's snake_case ones (`api_app_id`, `trigger_id`, `response_url`).
 
 :::warning
-These payloads are built in the browser, so they prove nothing about who sent them. Your app accepts a request as Slack's only when its signature checks out, and the relay that signs builder payloads is development tooling: see [Why the signing secret must stay server-side](/guides/connecting-your-app#why-the-signing-secret-must-stay-server-side). An `identity` ships in the page, so give it [placeholder or test values](/reference/block-kit-provider), never a real verification token or `response_url`. [Untrusted input](/guides/untrusted-input) lists what to check on the server.
+These payloads are built in the browser, so they prove nothing about who sent them. Never use a field in one (`user`, `team`, `token` or any other) to decide who is acting or what they may do; take that from your own session. Your app accepts a request as Slack's only when its signature checks out, and the relay that signs builder payloads is development tooling: see [Why the signing secret must stay server-side](/guides/connecting-your-app#why-the-signing-secret-must-stay-server-side). An `identity` ships in the page, so give it [placeholder or test values](/reference/block-kit-provider), never a real verification token or `response_url`. [Untrusted input](/guides/untrusted-input) lists what to check on the server.
 :::
+
+The payloads changed in 0.5: an overflow action no longer sends the option's URL, `state.values` lists every input, and `on_character_entered` sends one action once typing pauses. [Upgrading](/guides/upgrading#05) says what to change.
 
 ## buildBlockActionsPayload
 

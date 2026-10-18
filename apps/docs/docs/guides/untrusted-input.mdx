@@ -21,6 +21,10 @@ app should trust as is. This page lists what the package checks for you and what
 - **Image URLs** are left as they are, so an `image_url` makes the viewer's browser load whatever
   host the payload names. Render payloads from people you don't trust only where that's acceptable,
   or replace the image block with one that checks the host (see [Custom blocks](/reference/custom-blocks#replace-a-built-in)).
+- **Downloaded files:** Download table and Download chart data save a cell that starts with `=`,
+  `+`, `-`, `@`, a tab or a carriage return, and isn't a number, with a leading `'`, so a cell
+  someone wrote into the payload can't run as a formula in the spreadsheet the reader opens it in.
+  Releases before 0.6.2 saved these cells as they were.
 
 Fields your own [custom blocks](/reference/custom-blocks) read are not checked by the renderer;
 check them in the component.
