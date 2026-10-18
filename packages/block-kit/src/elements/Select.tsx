@@ -657,8 +657,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
               {unresolved && items[0] ? (
                 unresolvedValue(items[0].id)
               ) : chosenEntry ? (
-                <span className="sbk-select__content-text sbk-select__content-entity">
-                  <DirectoryRow entry={chosenEntry} inField />
+                <span
+                  className={`sbk-select__content-text sbk-select__content-entity${source === "channels" ? " sbk-select__content-entity--channel" : ""}`}
+                >
+                  <DirectoryRow entry={chosenEntry} inField={source === "users"} />
                 </span>
               ) : (
                 <span className="sbk-select__content-text">{display}</span>
@@ -783,7 +785,8 @@ function DirectoryRow({
   inField = false,
 }: {
   entry: DirectoryEntry;
-  /** Drawn as the chosen value in the closed field, where Slack leaves out "(you)". */
+  /** Drawn as the chosen value in a users select's closed field, where Slack leaves out "(you)";
+   * a conversations select's field keeps it (`extra/input/more-selects@pick`). */
   inField?: boolean;
 }) {
   if (entry.type === "channel") {
