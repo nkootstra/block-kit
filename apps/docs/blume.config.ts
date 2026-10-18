@@ -23,7 +23,7 @@ export default defineConfig({
   changelog: {
     title: "Changelog",
     description:
-      "What changed in each release of @nkootstra/block-kit, the React renderer for Slack Block Kit, newest first, with the pull requests behind each change.",
+      "What changed in each release of @nkootstra/block-kit, the React renderer for Slack Block Kit, newest first, each linking the pull requests behind it.",
   },
   // A tab owns the section under its path, so the release pages stay out of the docs sidebar (and
   // out of the last docs page's "next" link) while /changelog, its RSS feed, llms.txt, the sitemap
