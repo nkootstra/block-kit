@@ -130,9 +130,12 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
             setText(e.target.value);
             setOpen(true);
           }}
-          onFocus={() => {
+          // A press opens the calendar; tabbing in selects the date and leaves it closed, as Slack's
+          // field does (`catalog/actions/datepickers@focus-field-1`). Typing or ArrowDown opens it.
+          onFocus={(e) => {
             if (quietFocus.current) quietFocus.current = false;
-            else setOpen(true);
+            else if (focusCalendar.current) setOpen(true);
+            else e.currentTarget.select();
           }}
           onBlur={async () => {
             await takeTyped();
