@@ -281,6 +281,7 @@
     --sbk-spinner-track: #9a9b9e;
     --sbk-tooltip-bg: #212428;
     --sbk-tooltip-text: #f8f8f8;
+    --sbk-tooltip-filter: drop-shadow(#797c81 0 0 1px);
     --sbk-surface-sec: #1a1d21;
     --sbk-surface-ter: #212428;
     --sbk-container-bg: #212428;
@@ -414,6 +415,7 @@
   --sbk-spinner-track: #9a9b9e;
   --sbk-tooltip-bg: #212428;
   --sbk-tooltip-text: #f8f8f8;
+  --sbk-tooltip-filter: drop-shadow(#797c81 0 0 1px);
   --sbk-surface-sec: #1a1d21;
   --sbk-surface-ter: #212428;
   --sbk-container-bg: #212428;

@@ -1,5 +1,5 @@
 import type { FileInput as FileInputElement } from "@slack/types";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
 import { FileInput } from "./FileInput";
@@ -72,6 +72,36 @@ describe("<FileInput>", () => {
     fireEvent.click(button);
     expect(pick).toHaveBeenCalled();
     expect(native.tabIndex).toBe(-1);
+  });
+
+  it("describes the button with Slack's sharing note while it's hovered", () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <BlockKitProvider>
+          <FileInput
+            element={{ type: "file_input", action_id: "a1" } as unknown as FileInputElement}
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      const button = screen.getByRole("button", { name: "Upload File" });
+      expect(screen.queryByRole("tooltip")).toBeNull();
+      fireEvent.mouseEnter(button);
+      act(() => vi.advanceTimersByTime(300));
+      const tip = screen.getByRole("tooltip");
+      expect(tip.textContent).toBe(
+        "The people who can edit this automation will also have access to any files shared here",
+      );
+      expect(button.getAttribute("aria-describedby")).toBe(tip.id);
+      // The note describes the button; it doesn't rename it.
+      expect(screen.getByRole("button", { name: "Upload File" })).toBe(button);
+      fireEvent.mouseLeave(button);
+      expect(screen.queryByRole("tooltip")).toBeNull();
+      expect(button.hasAttribute("aria-describedby")).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("keeps the singular button label even when several files are allowed", () => {
