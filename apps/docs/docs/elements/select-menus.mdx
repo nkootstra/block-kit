@@ -136,7 +136,8 @@ The single users, conversations and channels selects are typed into the same way
 multi-selects open from a button, with a search box where there's something to search. A
 multi-select ticks the options it already has; in an `input` block its list is a little wider than
 the field. Picking with Enter keeps a multi-select's list open for the next pick; a click closes it
-and leaves the field focused, with its focus ring. An `external_select` asks for "Type a minimum of
+and leaves the field focused, with its focus ring. A single static select also stays focused after a
+click pick, as Slack's does; a users, conversations or channels select lets focus go. An `external_select` asks for "Type a minimum of
 N characters to see options." until the query reaches its `min_query_length`.
 
 That message, "Nothing could be found." and the rows themselves are list content, not a live

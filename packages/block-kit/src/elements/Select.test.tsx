@@ -215,6 +215,28 @@ describe("<Select> static_select", () => {
   });
 });
 
+describe("<Select> single static select picks", () => {
+  it("keeps focus on the field after a click pick, so its focus ring stays", async () => {
+    render(
+      <Select
+        element={
+          {
+            type: "static_select",
+            action_id: "a1",
+            options: [opt("a", "A"), opt("b", "B")],
+          } as unknown as SelectElement
+        }
+        blockId="b1"
+      />,
+    );
+    const field = screen.getByRole("combobox");
+    fireEvent.click(field);
+    await clickAsync(screen.getByRole("option", { name: "B" }));
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(document.activeElement).toBe(field);
+  });
+});
+
 describe("<Select> multi-select picks", () => {
   const element = {
     type: "multi_static_select",
