@@ -93,10 +93,10 @@ reference here. It's read-only: expanding a plan doesn't emit an action.
 Click the pill to expand the plan and see each task's details, output, and sources.
 
 Statuses show as icons, so screen readers hear them as text after each title instead: "complete",
-"in progress", "pending" or "failed", on the pill and on every task. A task's title is a button only
-when the task has something to show; a task with no `details`, `output` or `sources` is plain text,
-not a disabled button. As in Slack, each expanded task is a list item the keyboard can focus, so Tab
-steps through a long plan task by task, with the focus ring around the whole task.
+"in progress", "pending" or "failed" (for `error`), on the pill and on every task. A task's title is
+a button only when the task has something to show; a task with no `details`, `output` or `sources`
+is plain text, not a disabled button. As in Slack, each expanded task is a list item the keyboard
+can focus, so Tab steps through a long plan task by task, with the focus ring around the whole task.
 
 ## Fields
 
@@ -157,8 +157,8 @@ A plan's tasks share the same shape as a standalone [task card](/blocks/task-car
 />
 
 The plan's own collapsed pill shows one status for the whole plan: in progress (a spinner) while any
-task is still pending or in progress, then failed (a warning) if any task failed, else complete (a
-check).
+task is still pending or in progress, then failed (a warning) if any task's status is `error`, else
+complete (a check).
 
 ## Examples
 
