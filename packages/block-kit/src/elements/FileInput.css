@@ -18,6 +18,34 @@
   color: var(--sbk-text);
   font: 700 15px var(--sbk-font);
   cursor: pointer;
+  /* Slack's `c-button`: every colour change eases on the same 80ms curve. */
+  transition-property: color, background-color, border-color;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.36, 0.19, 0.29, 1);
+}
+
+/* Slack's outline `c-button` hover: a light gray fill and a raised two-layer shadow, dropped
+   while pressed (contexts/file_input/modal-input@hover-file-1). */
+@media (hover: hover) and (pointer: fine) {
+  .sbk-file-input__button:hover {
+    background-color: var(--sbk-button-hover-bg);
+    box-shadow: var(--sbk-button-hover-shadow);
+  }
+
+  /* Keyboard focus keeps its ring under the pointer. */
+  .sbk-file-input__button:focus-visible:hover {
+    box-shadow: var(--sbk-focus-shadow);
+  }
+}
+
+.sbk-file-input__button:active {
+  background-color: var(--sbk-button-hover-bg);
+  box-shadow: none;
+}
+
+/* The border hides behind the focus ring (contexts/file_input/modal-input@focus-file-1). */
+.sbk-file-input__button:focus-visible {
+  border-color: transparent;
 }
 
 .sbk-file-input__button svg {

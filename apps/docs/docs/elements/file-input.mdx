@@ -71,7 +71,10 @@ you receive it.
 :::note
 Slack always labels the picker button "Upload File" (singular), even when `max_files` allows
 several. It's a real button, so it takes keyboard focus, and pressing it opens the browser's file
-picker.
+picker. Hovering it or focusing it from the keyboard shows Slack's tooltip "The people who can edit
+this automation will also have access to any files shared here", which also becomes the button's
+accessible description. The text is Slack's own and the same for every `file_input`; the payload
+can't change it.
 :::
 
 ## Examples

@@ -80,6 +80,9 @@
   /* Tooltips (`c-tooltip__tip`). */
   --sbk-tooltip-bg: #1d1c1d;
   --sbk-tooltip-text: #fff;
+  /* Dark tooltips outline their bubble and arrow with a 1px gray drop-shadow
+     (contexts/file_input/modal-input@hover-file-1+dark); light ones have none. */
+  --sbk-tooltip-filter: none;
   /* Slack design-token equivalents shared by component styles, so the dark theme can remap them
      in one place: `base-sec`, `ctr-pry`, `content-sec/ter`, `otl-pry/ter`, `base-pry-hover/pressed`,
      `base-inv-hgl-1`, and `--dt_blend-mode-interaction` (multiply in light, lighten in dark). */
@@ -562,6 +565,7 @@ a.sbk-mention {
   color: var(--sbk-tooltip-text);
   background: var(--sbk-tooltip-bg);
   border-radius: 8px;
+  filter: var(--sbk-tooltip-filter);
   pointer-events: none;
   -webkit-font-smoothing: antialiased;
 }

@@ -2,7 +2,13 @@ import type { FileInput as FileInputElement } from "@slack/types";
 import { useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import { FileUploadIcon } from "../icons";
+import { Tooltip } from "../Tooltip";
 import type { ElementProps } from "../types";
+
+/** Slack's own copy, the same for every `file_input`: the tooltip on its Upload File button
+ * (contexts/file_input/modal-input@hover-file-1 and @focus-file-1). */
+const SHARING_NOTE =
+  "The people who can edit this automation will also have access to any files shared here";
 
 interface PickedFile {
   id: string;
@@ -37,16 +43,19 @@ export function FileInput({ element, blockId }: ElementProps<FileInputElement>) 
 
   return (
     <div className="sbk-file-input">
-      {/* A button, as Slack's is, so it takes keyboard focus; it opens the hidden file input. */}
-      <button
-        type="button"
-        className="sbk-file-input__button"
-        onClick={() => inputRef.current?.click()}
-      >
-        <FileUploadIcon />
-        {/* Slack keeps the singular label even when `max_files` allows several. */}
-        <span>Upload File</span>
-      </button>
+      {/* A button, as Slack's is, so it takes keyboard focus; it opens the hidden file input.
+          Hovering or keyboard-focusing it shows Slack's note on who can see the files. */}
+      <Tooltip label={SHARING_NOTE}>
+        <button
+          type="button"
+          className="sbk-file-input__button"
+          onClick={() => inputRef.current?.click()}
+        >
+          <FileUploadIcon />
+          {/* Slack keeps the singular label even when `max_files` allows several. */}
+          <span>Upload File</span>
+        </button>
+      </Tooltip>
       <input
         ref={inputRef}
         type="file"
