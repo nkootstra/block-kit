@@ -2005,67 +2005,37 @@
     "y|channel-one|0"
   ],
   "extra/fidelity/multi-channels-select/long-content": [],
-  "extra/fidelity/multi-channels-select/long-content@dark": [
-    "color|Private channel|0"
-  ],
+  "extra/fidelity/multi-channels-select/long-content@dark": [],
   "extra/fidelity/multi-channels-select/long-content@mobile": [],
-  "extra/fidelity/multi-channels-select/long-content@mobile+dark": [
-    "color|Private channel|0"
-  ],
+  "extra/fidelity/multi-channels-select/long-content@mobile+dark": [],
   "extra/fidelity/multi-channels-select/long-content@open": [
     "extra|Selected|0",
     "extra|C0123456789|0"
   ],
   "extra/fidelity/multi-channels-select/long-content@open+dark": [
-    "color|Private channel|0",
     "extra|Selected|0",
     "extra|C0123456789|0"
   ],
   "extra/fidelity/multi-channels-select/open": [],
-  "extra/fidelity/multi-channels-select/open@dark": [
-    "color|Private channel|0"
-  ],
+  "extra/fidelity/multi-channels-select/open@dark": [],
   "extra/fidelity/multi-channels-select/open@mobile": [],
-  "extra/fidelity/multi-channels-select/open@mobile+dark": [
-    "color|Private channel|0"
-  ],
+  "extra/fidelity/multi-channels-select/open@mobile+dark": [],
   "extra/fidelity/multi-channels-select/open@open": [
     "extra|Selected|0",
     "extra|C0123456789|0"
   ],
   "extra/fidelity/multi-channels-select/open@open+dark": [
-    "color|Private channel|0",
     "extra|Selected|0",
     "extra|C0123456789|0"
   ],
   "extra/fidelity/multi-conversations-select/initial-value": [],
   "extra/fidelity/multi-conversations-select/initial-value@dark": [],
-  "extra/fidelity/multi-conversations-select/initial-value@dialog": [
-    "y|Cancel|0",
-    "y|Confirm|0",
-    "missing|Private channel|0",
-    "extra|C0123456789|0"
-  ],
-  "extra/fidelity/multi-conversations-select/initial-value@dialog+dark": [
-    "y|Cancel|0",
-    "y|Confirm|0",
-    "missing|Private channel|0",
-    "extra|C0123456789|0"
-  ],
+  "extra/fidelity/multi-conversations-select/initial-value@dialog": [],
+  "extra/fidelity/multi-conversations-select/initial-value@dialog+dark": [],
   "extra/fidelity/multi-conversations-select/initial-value@mobile": [],
   "extra/fidelity/multi-conversations-select/initial-value@mobile+dark": [],
-  "extra/fidelity/multi-conversations-select/initial-value@open": [
-    "y|Cancel|0",
-    "y|Confirm|0",
-    "missing|Private channel|0",
-    "extra|C0123456789|0"
-  ],
-  "extra/fidelity/multi-conversations-select/initial-value@open+dark": [
-    "y|Cancel|0",
-    "y|Confirm|0",
-    "missing|Private channel|0",
-    "extra|C0123456789|0"
-  ],
+  "extra/fidelity/multi-conversations-select/initial-value@open": [],
+  "extra/fidelity/multi-conversations-select/initial-value@open+dark": [],
   "extra/fidelity/multi-conversations-select/initial-value@pick+mobile": [],
   "extra/fidelity/multi-conversations-select/initial-value@pick+mobile+dark": [],
   "extra/fidelity/multi-conversations-select/long-content": [],
@@ -2706,21 +2676,13 @@
   "extra/input/datetimepicker@open": [],
   "extra/input/datetimepicker@open+dark": [],
   "extra/input/more-selects": [],
-  "extra/input/more-selects@dark": [
-    "color|Private channel|0"
-  ],
+  "extra/input/more-selects@dark": [],
   "extra/input/more-selects@mobile": [],
-  "extra/input/more-selects@mobile+dark": [
-    "color|Private channel|0"
-  ],
+  "extra/input/more-selects@mobile+dark": [],
   "extra/input/more-selects@open": [],
-  "extra/input/more-selects@open+dark": [
-    "color|Private channel|0"
-  ],
+  "extra/input/more-selects@open+dark": [],
   "extra/input/more-selects@pick": [],
-  "extra/input/more-selects@pick+dark": [
-    "color|Private channel|0"
-  ],
+  "extra/input/more-selects@pick+dark": [],
   "extra/input/text-inputs": [],
   "extra/input/text-inputs@dark": [],
   "extra/input/text-inputs@mobile": [],
