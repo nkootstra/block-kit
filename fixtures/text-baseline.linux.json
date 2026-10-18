@@ -2348,24 +2348,8 @@
     "missing|User Four|1",
     "extra|User Two|1"
   ],
-  "extra/fidelity/number-input/long-content": [
-    "missing|Reset|0",
-    "missing|Close|0",
-    "extra|Number|0",
-    "extra|Amount|0",
-    "extra|12345678901234567890.123456789|0",
-    "extra|Cancel|0",
-    "extra|Submit|0"
-  ],
-  "extra/fidelity/number-input/long-content@dark": [
-    "missing|Reset|0",
-    "missing|Close|0",
-    "extra|Number|0",
-    "extra|Amount|0",
-    "extra|12345678901234567890.123456789|0",
-    "extra|Cancel|0",
-    "extra|Submit|0"
-  ],
+  "extra/fidelity/number-input/long-content": [],
+  "extra/fidelity/number-input/long-content@dark": [],
   "extra/fidelity/option-group/many-items": [],
   "extra/fidelity/option-group/many-items@dark": [],
   "extra/fidelity/option-group/many-items@mobile": [],
