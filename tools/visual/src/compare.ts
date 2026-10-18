@@ -336,14 +336,14 @@ for (const name of names) {
   )?.[1];
   // Slack's calendar marks the day the reference was captured as today, and ours marks the day the
   // comparison runs, so a calendar reference drifted a day each day. Ours gets a page whose clock
-  // reads the capture day. A datetimepicker fills in the time of day when a date is picked, so
-  // its page reads the capture time.
+  // reads the capture day. A datetimepicker fills in the time of day when a date is picked, and a
+  // rich text `date` can read "9 months ago" or "Yesterday", so their pages read the capture time.
   const today = html.match(
     /c-date_picker_calendar__date--is_today[^>]*?data-value="(\d{4}-\d{2}-\d{2})"/,
   )?.[1];
   const clock = today
     ? new Date(`${today}T12:00:00`)
-    : meta.capturedAt && html.includes('"type":"datetimepicker"')
+    : meta.capturedAt && /"type":"(datetimepicker|date)"/.test(html)
       ? new Date(meta.capturedAt)
       : undefined;
   const page = clock ? await context.newPage() : sharedPage;
