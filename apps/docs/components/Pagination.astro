@@ -1,7 +1,8 @@
 ---
-// Blume's prev/next footer, with one change on release pages: the changelog lists releases newest
-// first, so Blume's "Previous" link points at the newer release and "Next" at the older one. The
-// labels say which is which instead. Registered in components.ts.
+// Blume's prev/next footer, with two changes on release pages: the changelog lists releases newest
+// first, so Blume's "Previous" link points at the newer release and "Next" at the older one, and the
+// labels say which is which instead; and a line above it points to the Upgrading guide, since a
+// release's notes come from GitHub and can't link it themselves. Registered in components.ts.
 import BlumePagination from "blume/components/layout/Pagination.astro";
 import type { UIStrings } from "blume/core/i18n-ui.ts";
 
@@ -23,4 +24,15 @@ const releases =
 const labels = releases ? { ...strings, next: "Older release", previous: "Newer release" } : strings;
 ---
 
+{
+  releases && (
+    <p class="mx-auto mt-12 max-w-content text-muted-foreground">
+      Upgrading from an earlier release?{" "}
+      <a class="text-foreground underline" href="/guides/upgrading">
+        Upgrading
+      </a>{" "}
+      lists what each release changes for your app and what to do about it.
+    </p>
+  )
+}
 <BlumePagination next={next} prev={prev} strings={labels} />
