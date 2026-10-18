@@ -6820,14 +6820,14 @@
     "captured": "2026-10-13"
   },
   "extra/fidelity/number-input/long-content": {
-    "payload": "b5e83d570aaa2e76bd35221e0505bf7e687a3e8b0d7fd3e71319d561f32ead22",
-    "reference": "17e79f34c23af10cb362c71190b3aa89772bf54389b59375906952ac8f0f9d14",
-    "captured": "2026-10-14"
+    "payload": "7af5b2b304e491c9657140efd6306278b56a448555b4b617534f14bc976b5aef",
+    "reference": "7020097e7893ef3bf439b8df0b2a81bcd27964ca6e5580fb9b95407265b70e07",
+    "captured": "2026-10-18"
   },
   "extra/fidelity/number-input/long-content@dark": {
-    "payload": "b5e83d570aaa2e76bd35221e0505bf7e687a3e8b0d7fd3e71319d561f32ead22",
-    "reference": "6a36d8c225bd3cdecdd1a75e2270f8623eebad10164d40c2b614d8f7c97929b2",
-    "captured": "2026-10-14"
+    "payload": "7af5b2b304e491c9657140efd6306278b56a448555b4b617534f14bc976b5aef",
+    "reference": "35131b0fbca0390caeef111bd3c86f97c3e5e4ad0dae8f85f5f4da76254d8138",
+    "captured": "2026-10-18"
   },
   "extra/fidelity/option-group/many-items": {
     "payload": "6b133ba82b40f39391fd9af1c4f905342122936e70df4fa025efe3dfd423e0af",

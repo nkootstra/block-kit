@@ -27,7 +27,7 @@
         "type": "number_input",
         "action_id": "amount--number-input-long-content",
         "is_decimal_allowed": true,
-        "initial_value": "12345678901234567890.123456789"
+        "initial_value": "123456789.12345"
       }
     }
   ]
