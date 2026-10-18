@@ -124,11 +124,23 @@ function renderBlocks(children: RootContent[]): ReactNode[] {
       default:
         break;
     }
+    // Slack separates a list, quote or code snippet from whatever follows it with the same 8px
+    // paragraph break a paragraph ends with (extra/fidelity/markdown/mixed); the last node gets none
+    // (catalog/markdown/inline-styles, catalog/markdown/code).
+    if (SPACED_NODES.has(node.type) && i < children.length - 1) {
+      nodes.push(
+        <div key={key++} className="sbk-markdown__section">
+          <span className="sbk-rich-text__br" />
+        </div>,
+      );
+    }
     i++;
   }
 
   return nodes;
 }
+
+const SPACED_NODES = new Set<RootContent["type"]>(["list", "blockquote", "code"]);
 
 /** Consecutive paragraphs inside a blockquote are joined with a plain line break, no spacer. */
 function renderQuoteChildren(children: RootContent[]): ReactNode {
@@ -141,12 +153,10 @@ function renderQuoteChildren(children: RootContent[]): ReactNode {
   ));
 }
 
-const MARKER_STYLES = ["disc", "circle", "square"];
-
+/** Bullets are Slack's icon glyphs, drawn in CSS from the list's `data-indent` (RichText.css). */
 function renderList(list: List, key: number, depth: number): ReactNode {
   const Tag = list.ordered ? "ol" : "ul";
   const style = list.ordered ? "ordered" : "bullet";
-  const markerStyle = list.ordered ? "decimal" : MARKER_STYLES[depth % 3];
   const start = list.ordered ? (list.start ?? 1) : undefined;
 
   return (
@@ -154,7 +164,8 @@ function renderList(list: List, key: number, depth: number): ReactNode {
       key={key}
       className={`sbk-rich-list sbk-rich-list--${style}`}
       start={start}
-      style={{ listStyleType: markerStyle }}
+      data-indent={list.ordered ? undefined : depth}
+      style={list.ordered ? { listStyleType: "decimal" } : undefined}
     >
       {list.children.map((item, i) => renderListItem(item, i, depth))}
     </Tag>

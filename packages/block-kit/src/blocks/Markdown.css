@@ -70,3 +70,9 @@
 .sbk-markdown__table > :last-child > tr:last-child > :last-child {
   border-bottom-right-radius: 4px;
 }
+
+/* A rich_text ordered list pads 11px before its items; the one a markdown block expands into
+   doesn't, so its numbers line up with the bullets' text (extra/fidelity/markdown/mixed). */
+.sbk-markdown .sbk-rich-list--ordered {
+  padding-left: 0;
+}

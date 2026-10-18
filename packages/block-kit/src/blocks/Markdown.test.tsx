@@ -96,6 +96,9 @@ describe("<Markdown>", () => {
     const outer = container.querySelector("ul.sbk-rich-list--bullet");
     const nested = outer?.querySelector("ul.sbk-rich-list--bullet");
     expect(nested?.textContent).toBe("nested");
+    // The indent picks Slack's bullet glyph (dot, then ring) in RichText.css.
+    expect(outer?.getAttribute("data-indent")).toBe("0");
+    expect(nested?.getAttribute("data-indent")).toBe("1");
   });
 
   it("renders a GFM table with header and body rows", () => {
@@ -115,6 +118,16 @@ describe("<Markdown>", () => {
     const sections = container.querySelectorAll(".sbk-markdown__section");
     expect(sections).toHaveLength(1);
     expect(sections[0]?.querySelectorAll(".sbk-rich-text__br")).toHaveLength(2);
+  });
+
+  it("puts a paragraph break after a list, quote or code snippet unless it comes last", () => {
+    const { container } = render(
+      <Markdown block={block("- a\n\n1. b\n\n> c\n\n```\nd\n```\n\n> e")} blockId="b1" index={0} />,
+    );
+    const kinds = [...(container.firstElementChild?.children ?? [])].map((el) =>
+      el.classList.contains("sbk-markdown__section") ? "br" : el.tagName.toLowerCase(),
+    );
+    expect(kinds).toEqual(["ul", "br", "ol", "br", "blockquote", "br", "pre", "br", "blockquote"]);
   });
 
   it("renders emoji shortcodes in plain text", () => {
