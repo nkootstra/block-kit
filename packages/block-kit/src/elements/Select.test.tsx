@@ -317,6 +317,30 @@ describe("<Select> users_select / channels_select", () => {
     expect(container.querySelector(".sbk-select__skeleton")).toBeTruthy();
   });
 
+  it("gives a screen reader the ID behind an unresolved initial_user, but never shows it", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "users_select",
+              action_id: "a1",
+              initial_user: "U0UNKNOWN",
+              placeholder: { type: "plain_text", text: "Pick someone" },
+            } as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const field = screen.getByRole("combobox");
+    expect(field).toHaveProperty("value", "U0UNKNOWN");
+    expect(field.className).toContain("sbk-select__input--behind");
+    fireEvent.click(field);
+    expect(field).toHaveProperty("value", "");
+    expect(field.getAttribute("placeholder")).toBe("Pick someone");
+  });
+
   it("leaves an unresolved initial_conversation blank, like Slack", () => {
     render(
       <BlockKitProvider>
