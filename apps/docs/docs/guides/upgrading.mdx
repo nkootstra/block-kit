@@ -1,0 +1,71 @@
+---
+title: Upgrading
+description: What changes for your code when you move to a newer release, and what to do about it.
+seo:
+  description: "Upgrade notes for @nkootstra/block-kit: breaking changes, changed payloads and security fixes in each release, with what to change in your app."
+  title: "Upgrading @nkootstra/block-kit"
+---
+
+The [changelog](/changelog) lists every change in a release. This page covers only the ones that
+can change how your app behaves, newest first, and what to do about each. While the package is on
+0.x, a minor release (0.5, 0.6) can contain breaking changes; a patch release doesn't.
+
+## 0.6
+
+### Unsafe link URLs are dropped
+
+Links, link buttons and overflow options now follow only `http`, `https`, `mailto`, `slack` and
+relative URLs ([#214](https://github.com/nkootstra/block-kit/pull/214)). Any other scheme
+(`javascript:`, `data:`, `vbscript:` and the rest) is dropped without an error: a link keeps its
+text and has no `href`, and a button still sends its action but opens nothing. Image URLs aren't
+checked. See [URL safety](/reference/block-kit-provider#url-safety).
+
+You don't need to change anything. On React 18, which the package supports, earlier releases let a
+crafted `javascript:` link in a message run script in the page, so upgrade if you render messages
+written by people you don't trust.
+
+### The interaction relay refuses cross-site posts
+
+`createInteractionRelay` now answers a browser post from another site's page with a 403
+([#217](https://github.com/nkootstra/block-kit/pull/217)). `httpTransport` already sends the header
+the relay looks for, so the playground and your own page keep working, and server-to-server calls
+are unaffected.
+
+It also takes an optional `token`. Set it on the relay and the same value on `httpTransport` as soon
+as the relay is reachable from anywhere but your own machine; see
+[Protecting the relay](/guides/connecting-your-app#protecting-the-relay).
+
+### Web API resolvers return bare names
+
+The resolvers from `@nkootstra/block-kit/web-api` now return `general` and `eng` rather than
+`#general` and `@eng` ([#210](https://github.com/nkootstra/block-kit/pull/210)), which fixes
+mentions that rendered as `##general`. If your own code shows these names and relied on the prefix,
+add it yourself.
+
+## 0.5
+
+### Overflow actions no longer send the option's URL
+
+An overflow action's `selected_option` carries only `text` and `value`, as Slack's does
+([#124](https://github.com/nkootstra/block-kit/pull/124)). A link option still opens its page. If a
+handler read `selected_option.url`, look the URL up in your own options by `value`.
+
+The same release brought other payloads closer to Slack's, which only adds fields:
+
+- `plain_text` objects in `state.values` and `onStateChange` carry `emoji: true`.
+- A radio buttons action echoes the element's `initial_option`.
+- An icon button action carries the button's `icon` and `text`.
+
+### State lists every input
+
+In a modal or Home tab, `state.values` holds every input block's element, in `onStateChange`,
+`block_actions` and `view_submission` ([#133](https://github.com/nkootstra/block-kit/pull/133)). An
+input nobody touched reports `null` for a single value and `[]` for a list. Check the value rather
+than whether the key exists.
+
+### Typing sends fewer actions
+
+With `on_character_entered`, an input sends one action with the whole value once typing pauses for
+300 ms, not one per keystroke ([#133](https://github.com/nkootstra/block-kit/pull/133)). A rich text
+input dispatches only on its trigger (Enter by default) and only when its input block sets
+`dispatch_action`; before, it sent an action on every keystroke.
