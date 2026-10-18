@@ -40,6 +40,10 @@ which control the person used. Combined with the block's `block_id`, it's also t
 surface makes your handler code simpler.
 :::
 
+What an element reports is built in the browser. Before your server acts on an action or a
+submission, it checks who sent it and that each value is one it offered: see
+[Untrusted input](/guides/untrusted-input).
+
 ## Where elements live
 
 Slack restricts which elements can appear in which context:

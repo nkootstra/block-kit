@@ -40,12 +40,15 @@ import { BlockKitProvider, Message, type OptionsResponse } from "@nkootstra/bloc
 const FRUIT = ["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange", "Peach", "Pear"];
 
 function onOptions({ value }: { value: string }): OptionsResponse {
-  const query = value.toLowerCase();
+  // `value` is whatever was typed: cap it before it reaches a search.
+  const query = value.slice(0, 100).toLowerCase();
   return {
-    options: FRUIT.filter((name) => name.toLowerCase().includes(query)).map((name) => ({
-      text: { type: "plain_text", text: name },
-      value: name.toLowerCase(),
-    })),
+    options: FRUIT.filter((name) => name.toLowerCase().includes(query))
+      .slice(0, 100) // Slack accepts at most 100 options
+      .map((name) => ({
+        text: { type: "plain_text", text: name },
+        value: name.toLowerCase(),
+      })),
   };
 }
 
@@ -72,10 +75,13 @@ export function App() {
 }
 ```
 
-`onOptions` can also return a promise, so it's fine to call a real API from it.
+`onOptions` can also return a promise, so it's fine to call a real API from it. When it calls
+your server, that endpoint can be called without the page too: cap the query there as well, and
+rate limit it like any search (see [Untrusted input](/guides/untrusted-input)).
 
 Without an `onOptions` handler, an `external_select` still lets the user type a value and press Enter,
-but it just never offers suggestions, since there's nothing to ask.
+but it just never offers suggestions, since there's nothing to ask. Slack doesn't allow that, and
+it means a selected value can be any text: your app checks it against the options it offers.
 
 ## The block_suggestion payload
 

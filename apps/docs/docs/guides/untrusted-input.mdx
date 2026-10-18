@@ -1,0 +1,112 @@
+---
+title: Untrusted input
+description: What the renderer checks in the Block Kit JSON it draws, and what your server still has to check in every interaction, text and lookup.
+seo:
+  description: "Which parts of Slack Block Kit JSON and interaction payloads to treat as untrusted in a React app: request signatures, selected values, mrkdwn escaping, URLs and resolvers."
+  title: "Untrusted Block Kit input and payloads"
+---
+
+Two kinds of data cross the renderer: the Block Kit JSON it draws, which comes from whoever wrote
+the payload, and the interactions it reports, which come from the browser. Neither is something your
+app should trust as is. This page lists what the package checks for you and what stays your job.
+
+## What the renderer checks
+
+- **Markup:** the renderer builds every block with React elements and never sets HTML from a
+  payload, so text in a block can't inject markup or script.
+- **Link URLs:** links, link buttons and overflow options keep only `http`, `https`, `mailto`,
+  `slack` and relative URLs. Any other scheme is dropped without an error: the link keeps its text
+  and loses its `href`, and a button still sends its action but opens nothing. See
+  [URL safety](/reference/block-kit-provider#url-safety) for the full list.
+- **Image URLs** are left as they are, so an `image_url` makes the viewer's browser load whatever
+  host the payload names. Render payloads from people you don't trust only where that's acceptable,
+  or replace the image block with one that checks the host (see [Custom blocks](/reference/custom-blocks#replace-a-built-in)).
+
+Fields your own [custom blocks](/reference/custom-blocks) read are not checked by the renderer;
+check them in the component.
+
+## Interactions come from the browser
+
+`onAction`, `onPayload`, `onSubmit`, `onClose` and `onOptions` receive payloads the provider builds
+in the page. Anyone who can open the page can change them, or send your server the same request
+without the page at all. On the server:
+
+- **Accept a request as Slack's only when its signature checks out.** Slack signs every request
+  with your app's signing secret ([Verifying requests from Slack](https://docs.slack.dev/authentication/verifying-requests-from-slack));
+  Bolt does this for you. The `token` field in a payload is Slack's deprecated verification token
+  and proves nothing. A payload the [interaction relay](/guides/connecting-your-app) signed proves
+  only that it passed through the relay, which signs whatever it's sent.
+- **Decide who is acting from your own session,** not from the payload's `user`, `team` or
+  `identity` fields. Then check that this person may do what the action asks: approving a deploy
+  in the browser is not an authorization check.
+- **Check each value against what you offered.** A selected option should be one of the options you
+  sent (or your options load URL returned), a user or channel ID one the person may pick, a date in
+  the range you accept. Without an `onOptions` handler the preview lets someone type any value into
+  an `external_select` and press Enter, and a users, conversations or channels select accepts a typed
+  ID; a forged request can carry anything.
+- **Enforce limits again.** `max_selected_items`, `min_length`, `max_length`, `min_value` and
+  `max_value` shape what the controls let someone enter, and [validation](/guides/validation)
+  checks them before submitting, but a request built by hand skips both. Slack's own limits are in
+  [Limits](/reference/limits).
+- **Treat `file_input` values as claims.** The preview reports each file's name, extension and size
+  as the browser gives them and uploads nothing; `filetypes` only filters the file picker. Check the
+  real file's type and size where you receive it.
+- **Bound the work an `onOptions` request triggers.** The renderer waits 250 ms after the last
+  keystroke and drops answers to stale queries, but your options endpoint can be called directly:
+  cap the length of `value`, return at most 100 options (Slack's limit), and rate limit it like any
+  search endpoint.
+
+## Text you put into mrkdwn
+
+Slack reads `<…>` in mrkdwn as a link, a mention or a special command such as `<!channel>`, and
+the renderer does the same. When you build a message from text someone else typed, escape `&`, `<`
+and `>` the way Slack asks ([escaping text](https://docs.slack.dev/messaging/formatting-message-text#escaping)),
+so their text can't add a link or ping a channel:
+
+```ts
+const escapeMrkdwn = (text: string) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const text = `*New comment:* ${escapeMrkdwn(comment)}`;
+```
+
+Bold, italics and the other formatting characters stay; escaping only stops the text from becoming
+a link or a mention. To show it with no formatting at all, put it in a `plain_text` object instead.
+
+## Resolvers return your data to the page
+
+[Resolvers](/guides/mentions-and-resolvers) run in the browser, and whatever they return is in the
+page for anyone who can open it.
+
+- **`directory`, `user` and `userProfile`:** return only the people and channels the viewer may see,
+  and only the fields you mean to show. Names, avatars, presence, titles and time zones of everyone
+  in a workspace are personal data. `createResolverRelay` already limits its answers to an allowlist
+  of fields, and its `token` keeps strangers from querying it; a directory you build yourself needs
+  the same care.
+- **`slackFile`:** return a route on your own server that checks access, never `url_private` or a
+  URL with a token in it. [Slack files](/blocks/image#slack-files) lists what the route checks.
+- **`imageSize`:** don't have your server download a payload's `image_url` to measure it. A payload
+  can name an internal address, and the request reveals your server's IP to the host. Return a size
+  you already know, such as one stored when the image was uploaded, or `undefined`.
+
+## Reporting a vulnerability
+
+Report a problem in the package itself through [`SECURITY.md`](https://github.com/nkootstra/block-kit/blob/main/SECURITY.md),
+which also lists what counts.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Connecting your app" href="/guides/connecting-your-app" icon="plug">
+    Relay interactions to a real Slack app, and keep the signing secret on the server.
+  </Card>
+  <Card title="Payloads" href="/reference/payloads" icon="braces">
+    The interaction payloads the provider builds, and their identity fields.
+  </Card>
+  <Card title="Validation" href="/guides/validation" icon="circle-check">
+    The client-side checks an input block runs before a submission.
+  </Card>
+  <Card title="URL safety" href="/reference/block-kit-provider#url-safety" icon="link">
+    The URL schemes the renderer follows, and what it does with the rest.
+  </Card>
+</CardGroup>

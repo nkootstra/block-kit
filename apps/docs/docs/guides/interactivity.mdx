@@ -222,6 +222,10 @@ what you'd actually receive in production, use `onPayload` instead (or alongside
 `onPayload` needs the surface it fires from (`<Message>`, `<Modal>`, `<HomeTab>`) to know its
 container, which they register automatically. You don't need to do anything extra to enable it.
 
+Every payload here is built in the browser, so a server that acts on one checks it first: who is
+acting, whether they may, and whether each value is one you offered. See
+[Untrusted input](/guides/untrusted-input).
+
 ## Identity
 
 Slack stamps every payload with a team, user, app id, `trigger_id` and `response_url`. By default the

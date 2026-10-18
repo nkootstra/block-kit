@@ -93,6 +93,10 @@ const resolvers: Resolvers = {
 `UserProfile` fields: `name` (required), `realName`, `title`, `pronouns`, `avatarUrl`, `status: {
 emoji?, text? }`, and `timeZone` (an IANA zone, used for the card's "local time" row).
 
+Resolvers run in the browser, so everything they return is in the page. Give a viewer only the
+people, channels and fields they may see; [Untrusted input](/guides/untrusted-input#resolvers-return-your-data-to-the-page)
+covers `directory`, `slackFile` and `imageSize`.
+
 ## What unresolved ids look like
 
 An id a resolver returns `undefined` for renders exactly like Slack's client does when it hasn't

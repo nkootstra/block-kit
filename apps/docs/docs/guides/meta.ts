@@ -16,6 +16,7 @@ export default defineMeta({
     "theming",
     "mrkdwn",
     "validation",
+    "untrusted-input",
     "server-rendering",
     "block-kit-editor",
   ],
