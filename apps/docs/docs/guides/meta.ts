@@ -19,5 +19,6 @@ export default defineMeta({
     "untrusted-input",
     "server-rendering",
     "block-kit-editor",
+    "upgrading",
   ],
 });
