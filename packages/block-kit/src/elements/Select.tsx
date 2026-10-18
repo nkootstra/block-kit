@@ -255,12 +255,13 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     source === "channels" ? (
       privateChannel("sbk-select__value sbk-select__entity")
     ) : source === "users" ? (
-      <span className="sbk-select__value sbk-select__skeleton" aria-label={id}>
+      // An image named by the ID, so a row or button holding it is named by it too.
+      <span className="sbk-select__value sbk-select__skeleton" role="img" aria-label={id}>
         <span className="sbk-select__skeleton-avatar" />
         <span className="sbk-select__skeleton-name" />
       </span>
     ) : (
-      <span className="sbk-select__value" aria-label={id} />
+      <span className="sbk-select__value" role="img" aria-label={id} />
     );
 
   useEffect(() => {
@@ -640,6 +641,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         <label className="sbk-select__control">
           <input
             {...combo.inputProps(display, placeholder)}
+            // Behind the skeleton or pill, the input holds the ID, so a screen reader hears that a
+            // value is chosen and which; its text is transparent, and it's never the placeholder.
+            {...(unresolved && overlay && items[0] ? { value: items[0].id } : {})}
             {...invalid}
             className={`sbk-select__input${overlay ? " sbk-select__input--behind" : ""}`}
           />
