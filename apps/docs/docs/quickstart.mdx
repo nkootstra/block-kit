@@ -154,8 +154,7 @@ import {
 function handleAction(action: BlockAction, { message }: ActionContext) {
   const verdict = action.action_id === "approve" ? ":white_check_mark: Approved" : ":x: Rejected";
 
-  // A real app names whoever clicked, from the payload's `user.id` (see onPayload). This demo
-  // always shows the same reviewer.
+  // A demo: anyone who clicks approves, and the reviewer is always the same. See the note below.
   message?.update({
     blocks: [
       blocks[0],
@@ -183,6 +182,14 @@ After a click, the message becomes:
 />
 
 The context also has `views`, to open a modal, and `state`, with the current value of every input in the message.
+
+:::warning
+This handler decides the outcome in the browser, which is fine for a preview and nothing more:
+anyone who can open the page can call it. In a real app the click goes to your server, which works
+out who clicked from its own session (or from `user.id` in a request whose Slack signature it
+checked), checks that they may approve this deploy, and only then updates the message. See
+[Untrusted input](/guides/untrusted-input).
+:::
 
 </Step>
 </Steps>
