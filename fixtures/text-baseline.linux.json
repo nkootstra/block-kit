@@ -1490,18 +1490,10 @@
   "contexts/external_select/modal-input@open+dark": [],
   "contexts/file_input/modal-input": [],
   "contexts/file_input/modal-input@dark": [],
-  "contexts/file_input/modal-input@focus-file-1": [
-    "missing|The people who can edit this automation will also have access to any files shared here|0"
-  ],
-  "contexts/file_input/modal-input@focus-file-1+dark": [
-    "missing|The people who can edit this automation will also have access to any files shared here|0"
-  ],
-  "contexts/file_input/modal-input@hover-file-1": [
-    "missing|The people who can edit this automation will also have access to any files shared here|0"
-  ],
-  "contexts/file_input/modal-input@hover-file-1+dark": [
-    "missing|The people who can edit this automation will also have access to any files shared here|0"
-  ],
+  "contexts/file_input/modal-input@focus-file-1": [],
+  "contexts/file_input/modal-input@focus-file-1+dark": [],
+  "contexts/file_input/modal-input@hover-file-1": [],
+  "contexts/file_input/modal-input@hover-file-1+dark": [],
   "contexts/multi_static_select/accessory": [],
   "contexts/multi_static_select/accessory@dark": [],
   "contexts/multi_static_select/accessory@dialog": [],
