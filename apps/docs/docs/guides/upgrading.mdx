@@ -12,6 +12,18 @@ can change how your app behaves, newest first, and what to do about each. While 
 
 ## 0.6
 
+### Downloaded cells can't run as spreadsheet formulas (0.6.2)
+
+Download table and Download chart data now save a cell that starts with `=`, `+`, `-`, `@`, a tab
+or a carriage return, and isn't a number, with a leading `'`
+([#239](https://github.com/nkootstra/block-kit/pull/239)). Numbers such as `-12` are saved as they
+are.
+
+You don't need to change anything. Earlier releases saved these cells as they were, so a table or
+chart written by someone you don't trust could put a formula in a file the reader opens in a
+spreadsheet; upgrade if you render such messages. If you process the downloaded files yourself,
+expect the leading `'`.
+
 ### Unsafe link URLs are dropped
 
 Links, link buttons and overflow options now follow only `http`, `https`, `mailto`, `slack` and

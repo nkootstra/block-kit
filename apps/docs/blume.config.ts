@@ -13,7 +13,8 @@ export default defineConfig({
   lastModified: "git",
   // Each GitHub release becomes a page under /changelog, listed newest first at /changelog with an
   // RSS feed. The notes come from the release's PR titles; set GITHUB_TOKEN to avoid GitHub's
-  // anonymous rate limit.
+  // anonymous rate limit. docs/changelog/index.mdx owns the /changelog page so it can link the
+  // Upgrading guide; keep its description in step with `changelog.description` below.
   content: {
     sources: [
       filesystem(),
