@@ -2144,52 +2144,28 @@
   "extra/fidelity/multi-conversations-select/long-content@open+dark": [],
   "extra/fidelity/multi-external-select/empty": [],
   "extra/fidelity/multi-external-select/empty@dark": [],
-  "extra/fidelity/multi-external-select/empty@focus-field-1+dark": [
-    "y|Type a minimum of 1 characters to see options.|0"
-  ],
-  "extra/fidelity/multi-external-select/empty@focus-field-1+mobile": [
-    "y|Type a minimum of 1 characters to see options.|0"
-  ],
+  "extra/fidelity/multi-external-select/empty@focus-field-1+dark": [],
+  "extra/fidelity/multi-external-select/empty@focus-field-1+mobile": [],
   "extra/fidelity/multi-external-select/empty@hover-field-1": [],
   "extra/fidelity/multi-external-select/empty@hover-field-1+dark": [],
   "extra/fidelity/multi-external-select/empty@hover-field-1+mobile": [],
   "extra/fidelity/multi-external-select/empty@hover-field-1+mobile+dark": [],
   "extra/fidelity/multi-external-select/empty@mobile": [],
   "extra/fidelity/multi-external-select/empty@mobile+dark": [],
-  "extra/fidelity/multi-external-select/empty@open": [
-    "y|Type a minimum of 1 characters to see options.|0"
-  ],
-  "extra/fidelity/multi-external-select/empty@open+dark": [
-    "y|Type a minimum of 1 characters to see options.|0"
-  ],
+  "extra/fidelity/multi-external-select/empty@open": [],
+  "extra/fidelity/multi-external-select/empty@open+dark": [],
   "extra/fidelity/multi-external-select/long-content": [],
   "extra/fidelity/multi-external-select/long-content@dark": [],
   "extra/fidelity/multi-external-select/long-content@mobile": [],
   "extra/fidelity/multi-external-select/long-content@mobile+dark": [],
-  "extra/fidelity/multi-external-select/long-content@open": [
-    "y|Type a minimum of 1 characters to see options.|0",
-    "extra|Selected|0",
-    "extra|Urgent|1"
-  ],
-  "extra/fidelity/multi-external-select/long-content@open+dark": [
-    "y|Type a minimum of 1 characters to see options.|0",
-    "extra|Selected|0",
-    "extra|Urgent|1"
-  ],
+  "extra/fidelity/multi-external-select/long-content@open": [],
+  "extra/fidelity/multi-external-select/long-content@open+dark": [],
   "extra/fidelity/multi-external-select/open": [],
   "extra/fidelity/multi-external-select/open@dark": [],
   "extra/fidelity/multi-external-select/open@mobile": [],
   "extra/fidelity/multi-external-select/open@mobile+dark": [],
-  "extra/fidelity/multi-external-select/open@open": [
-    "y|Type a minimum of 1 characters to see options.|0",
-    "extra|Selected|0",
-    "extra|Urgent|1"
-  ],
-  "extra/fidelity/multi-external-select/open@open+dark": [
-    "y|Type a minimum of 1 characters to see options.|0",
-    "extra|Selected|0",
-    "extra|Urgent|1"
-  ],
+  "extra/fidelity/multi-external-select/open@open": [],
+  "extra/fidelity/multi-external-select/open@open+dark": [],
   "extra/fidelity/multi-static-select/initial-value": [],
   "extra/fidelity/multi-static-select/initial-value@dark": [],
   "extra/fidelity/multi-static-select/initial-value@mobile": [],
