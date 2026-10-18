@@ -7359,6 +7359,11 @@
     "reference": "e76cfe92534799866d5cd9ce90bba6137b815bf2fe8ee6119f16f54cc6b81461",
     "captured": "2026-10-14"
   },
+  "extra/fidelity/rich-text-input/many-lines": {
+    "payload": "011d3f9f54b397362756bc5ec95995c9911f1a0f4bd095b9398673b8bfea01bc",
+    "reference": "2c6f77c512e23e83cfafc01e2e01c3740b78329567db3e5eb45b9cdf7b52edcf",
+    "captured": "2026-10-18"
+  },
   "extra/fidelity/rich-text-input/mixed": {
     "payload": "43ec3010a1bb9c85b6defc2e961eb6cf147c293a7283a1a2f6dee11489fa7b3e",
     "reference": "4eeb15f3788d68faff6f66ceb16cfbada4439fb06d41cb037a41e9ca3fcbc3d2",

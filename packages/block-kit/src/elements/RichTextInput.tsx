@@ -21,18 +21,29 @@ function toRichText(text: string): RichTextBlock {
   };
 }
 
-function fromRichText(value: RichTextBlock | undefined): string {
-  if (!value) return "";
-  return (value.elements as unknown[])
-    .flatMap((section) => {
-      const node = section as { elements?: unknown[] };
-      return node.elements ?? [];
-    })
-    .map((el: unknown) => {
-      const node = el as { text?: unknown };
-      return typeof node.text === "string" ? node.text : "";
-    })
-    .join("");
+/** The value's text, one line per section. */
+function fromRichText(value: RichTextBlock | undefined): string[] {
+  if (!value) return [];
+  return (value.elements as unknown[]).map((section) => {
+    const node = section as { elements?: unknown[] };
+    return (node.elements ?? [])
+      .map((el: unknown) => {
+        const leaf = el as { text?: unknown };
+        return typeof leaf.text === "string" ? leaf.text : "";
+      })
+      .join("");
+  });
+}
+
+/** Slack's line height, the editor's top and bottom padding, and the lines it shows before it
+ * scrolls when the payload sets no `max_lines` (Slack's field stops at 192px: 8 × 22 + 16). */
+const LINE = 22;
+const PADDING = 16;
+const MAX_LINES = 8;
+
+/** The height of `lines` lines of text, padding included, as the editor's box is border-box. */
+function linesHeight(lines: number): string {
+  return `${lines * LINE + PADDING}px`;
 }
 
 type DispatchConfig = {
@@ -45,9 +56,9 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
   useFocusOnLoad(element, ref);
   const invalid = useInvalidProps();
   const actionId = element.action_id ?? "";
-  const initialText = fromRichText(element.initial_value);
+  const initialLines = fromRichText(element.initial_value);
   const [formatting, setFormatting] = useState(true);
-  const [empty, setEmpty] = useState(initialText === "");
+  const [empty, setEmpty] = useState(initialLines.join("") === "");
 
   useEffect(() => {
     if (element.initial_value) {
@@ -112,11 +123,15 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
           onInput={onInput}
           onKeyDown={onKeyDown}
           style={{
-            minHeight: element.min_lines ? `${element.min_lines * 22}px` : undefined,
-            maxHeight: element.max_lines ? `${element.max_lines * 22}px` : undefined,
+            minHeight: element.min_lines ? linesHeight(element.min_lines) : undefined,
+            maxHeight: linesHeight(element.max_lines ?? MAX_LINES),
           }}
         >
-          {initialText}
+          {/* A block per line, as Slack's editor draws each section as its own paragraph and the
+              browser's own editing makes a block per line, so innerText reads one line each. */}
+          {initialLines.map((line, i) => (
+            <div key={i}>{line || <br />}</div>
+          ))}
         </div>
         {/* A real element, as Slack's `ql-placeholder` is, so it's text on the page. */}
         {placeholder && empty && (
