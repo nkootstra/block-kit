@@ -25,24 +25,6 @@
   margin-top: 12px;
 }
 
-.sbk-section__text--clamped {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.sbk-section__toggle {
-  display: block;
-  margin-top: 2px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 13px;
-  color: var(--sbk-link);
-  cursor: pointer;
-}
-
 .sbk-section__accessory {
   display: flex;
   position: relative;
