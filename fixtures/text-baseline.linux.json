@@ -695,24 +695,16 @@
   "catalog/input/multi-users-select": [],
   "catalog/input/multi-users-select@dark": [],
   "catalog/input/multi-users-select@focus-field-1+dark": [
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|AGENT|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1"
+    "x|AGENT|0",
+    "y|AGENT|0",
+    "missing|User Four|1",
+    "extra|User Two|1"
   ],
   "catalog/input/multi-users-select@focus-field-1+mobile": [
-    "missing|User One|0",
-    "missing|(you)|0",
-    "missing|User Two|0",
-    "missing|AGENT|0",
-    "missing|User Three|0",
-    "missing|User Three|1",
-    "missing|User Four|0",
-    "missing|User Four|1"
+    "x|AGENT|0",
+    "y|AGENT|0",
+    "missing|User Four|1",
+    "extra|User Two|1"
   ],
   "catalog/input/multi-users-select@hover-field-1": [],
   "catalog/input/multi-users-select@hover-field-1+dark": [],
@@ -2061,16 +2053,8 @@
   "extra/fidelity/message-attachments/long-content@mobile+dark": [],
   "extra/fidelity/multi-channels-select/empty": [],
   "extra/fidelity/multi-channels-select/empty@dark": [],
-  "extra/fidelity/multi-channels-select/empty@focus-field-1+dark": [
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
-  ],
-  "extra/fidelity/multi-channels-select/empty@focus-field-1+mobile": [
-    "missing|channel-one|0",
-    "missing|channel-two|0",
-    "missing|channel-three|0"
-  ],
+  "extra/fidelity/multi-channels-select/empty@focus-field-1+dark": [],
+  "extra/fidelity/multi-channels-select/empty@focus-field-1+mobile": [],
   "extra/fidelity/multi-channels-select/empty@hover-field-1": [],
   "extra/fidelity/multi-channels-select/empty@hover-field-1+dark": [],
   "extra/fidelity/multi-channels-select/empty@hover-field-1+mobile": [],
@@ -2161,10 +2145,10 @@
   "extra/fidelity/multi-external-select/empty": [],
   "extra/fidelity/multi-external-select/empty@dark": [],
   "extra/fidelity/multi-external-select/empty@focus-field-1+dark": [
-    "missing|Type a minimum of 1 characters to see options.|0"
+    "y|Type a minimum of 1 characters to see options.|0"
   ],
   "extra/fidelity/multi-external-select/empty@focus-field-1+mobile": [
-    "missing|Type a minimum of 1 characters to see options.|0"
+    "y|Type a minimum of 1 characters to see options.|0"
   ],
   "extra/fidelity/multi-external-select/empty@hover-field-1": [],
   "extra/fidelity/multi-external-select/empty@hover-field-1+dark": [],
