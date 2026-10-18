@@ -348,7 +348,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     await selectItem(item);
     if (multi) {
       combo.setOpen(false);
-      triggerRef.current?.focus();
+      (fieldTyped ? combo.inputRef : triggerRef).current?.focus();
     } else if (source === "static") {
       (typeable ? combo.inputRef : triggerRef).current?.focus();
     }
@@ -418,6 +418,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const inAccessory = useContext(SectionAccessoryContext);
   const inInputBlock = useInInputBlock();
   const dialogMode = inAccessory && multi && source !== "external";
+  // Slack's multi-external select is typed into in its field (`c-multi_select_input`), after the
+  // chips: there's no search box in its list, which shows only the minimum-query hint or the
+  // app's options (`extra/fidelity/multi-external-select/open@open`).
+  const fieldTyped = multi && source === "external" && !inAccessory;
   const directory = source === "users" || source === "conversations" || source === "channels";
   /** An item as a dialog option: a directory id becomes an option labelled as it's shown. */
   const itemToOption = (item: Item): PlainTextOption =>
@@ -452,14 +456,14 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       if (showSearchOnly && !remote) selectItem({ id: typed, label: resolveLabel(typed) });
     },
     listRef,
-    returnFocusRef: typeable ? undefined : triggerRef,
+    returnFocusRef: typeable || fieldTyped ? undefined : triggerRef,
     keepQuery: typeable,
     typedHighlight: true,
     chosenAsPlaceholder: !typeable,
   });
   useFocusOnLoad<HTMLElement>(
     element as { focus_on_load?: boolean },
-    typeable ? combo.inputRef : triggerRef,
+    typeable || fieldTyped ? combo.inputRef : triggerRef,
   );
 
   const closedLabel = multi
@@ -493,8 +497,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         role="listbox"
         id={combo.listId}
         ref={listRef}
+        // A press on a row leaves focus in the field that's typed into, so it doesn't reopen.
+        onMouseDown={fieldTyped ? (e) => e.preventDefault() : undefined}
       >
         {!typeable &&
+          !fieldTyped &&
           ((showSearchOnly && entries.length === 0) ||
             (entries.length > 0 ? entries.length : allOptions(element).length) > 8) && (
             <div className="sbk-select__search">
@@ -562,11 +569,12 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             </span>
           </div>
         )}
-        {showSearchOnly && items.length > 0 && multi && (
+        {showSearchOnly && items.length > 0 && multi && !fieldTyped && (
           <div className="sbk-select__group-label">Selected</div>
         )}
         {showSearchOnly &&
           multi &&
+          !fieldTyped &&
           items.map((item) => (
             <div className="sbk-select__option sbk-select__option--selected" key={item.id}>
               {item.label || resolveLabel(item.id)}
@@ -575,6 +583,42 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       </div>
     </Popover>
   );
+
+  const chips = items.map((item) => (
+    <span className="sbk-select__chip" key={item.id}>
+      {source === "channels" && isUnresolved(item) ? (
+        privateChannel("sbk-select__chip-label sbk-select__chip-entity")
+      ) : entryById.has(item.id) ? (
+        <ChipEntity entry={entryById.get(item.id)!} />
+      ) : (
+        <span className="sbk-select__chip-label">
+          <span className="sbk-select__chip-text">
+            <span>{item.label || resolveLabel(item.id)}</span>
+          </span>
+        </span>
+      )}
+      <span
+        className="sbk-select__chip-remove"
+        role="button"
+        tabIndex={0}
+        aria-label={`Remove ${item.label || resolveLabel(item.id)}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          removeItem(item.id);
+        }}
+        // A role="button" span only gets clicks from the pointer; Enter and Space
+        // remove the chip too, and stop there so the select doesn't open.
+        onKeyDown={(e) => {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          e.stopPropagation();
+          removeItem(item.id);
+        }}
+      >
+        <CloseIcon />
+      </span>
+    </span>
+  ));
 
   if (dialogMode) {
     const closeDialog = () => {
@@ -674,6 +718,61 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     );
   }
 
+  if (fieldTyped) {
+    return (
+      <div
+        className={`sbk-select sbk-select--multi sbk-select--field-typed${items.length > 0 ? " sbk-select--chips" : ""}${sizeClass}`}
+        ref={rootRef}
+      >
+        {element.max_selected_items && (
+          <p className="sbk-select__max-info">
+            {`You can select up to ${element.max_selected_items} ${element.max_selected_items === 1 ? "item" : "items"}.`}
+          </p>
+        )}
+        {/* A press anywhere in the field but on a chip's "x" lands in the input, as on Slack's. */}
+        <div
+          className="sbk-select__control"
+          onMouseDown={(e) => {
+            if ((e.target as Element).closest(".sbk-select__chip-remove, .sbk-select__input"))
+              return;
+            e.preventDefault();
+            combo.inputRef.current?.focus();
+            combo.openAsClicked();
+          }}
+        >
+          <span className="sbk-select__chips">
+            {chips}
+            <span className="sbk-select__typed">
+              <input
+                {...combo.inputProps(undefined, "", placeholder)}
+                {...invalid}
+                className="sbk-select__input"
+                // Focus arriving from outside, by Tab or a press, opens the list as a click does
+                // (`extra/fidelity/multi-external-select/empty@focus-field-1+mobile`).
+                onFocus={(e) => {
+                  const from = e.relatedTarget as Element | null;
+                  if (!inInputBlock || open) return;
+                  if (from && (rootRef.current?.contains(from) || from.closest(".sbk-popover")))
+                    return;
+                  combo.openAsClicked();
+                }}
+              />
+              {/* Slack draws the placeholder as text laid over the empty field, not the input's own. */}
+              {items.length === 0 && !query && (
+                <span className="sbk-select__placeholder" aria-hidden="true">
+                  {placeholder}
+                </span>
+              )}
+            </span>
+          </span>
+          <ChevronDownIcon className="sbk-select__chevron" />
+        </div>
+        {menu}
+        {dialog}
+      </div>
+    );
+  }
+
   return (
     <div
       className={`sbk-select${multi ? " sbk-select--multi" : ""}${multi && items.length > 0 ? " sbk-select--chips" : ""}${sizeClass}`}
@@ -705,43 +804,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       >
         {multi ? (
           items.length > 0 ? (
-            <span className="sbk-select__chips">
-              {items.map((item) => (
-                <span className="sbk-select__chip" key={item.id}>
-                  {source === "channels" && isUnresolved(item) ? (
-                    privateChannel("sbk-select__chip-label sbk-select__chip-entity")
-                  ) : entryById.has(item.id) ? (
-                    <ChipEntity entry={entryById.get(item.id)!} />
-                  ) : (
-                    <span className="sbk-select__chip-label">
-                      <span className="sbk-select__chip-text">
-                        <span>{item.label || resolveLabel(item.id)}</span>
-                      </span>
-                    </span>
-                  )}
-                  <span
-                    className="sbk-select__chip-remove"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Remove ${item.label || resolveLabel(item.id)}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeItem(item.id);
-                    }}
-                    // A role="button" span only gets clicks from the pointer; Enter and Space
-                    // remove the chip too, and stop there so the select doesn't open.
-                    onKeyDown={(e) => {
-                      if (e.key !== "Enter" && e.key !== " ") return;
-                      e.preventDefault();
-                      e.stopPropagation();
-                      removeItem(item.id);
-                    }}
-                  >
-                    <CloseIcon />
-                  </span>
-                </span>
-              ))}
-            </span>
+            <span className="sbk-select__chips">{chips}</span>
           ) : (
             <span className="sbk-select__placeholder">{placeholder}</span>
           )

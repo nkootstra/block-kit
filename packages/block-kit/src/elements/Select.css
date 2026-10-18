@@ -51,6 +51,37 @@
   padding: 0 28px 4px 4px;
 }
 
+/* Slack's multi-external select is typed into after its chips (`c-multi_select_input`): the query
+   follows the last chip on its 28px row, a space after it, or stands in for the placeholder. */
+.sbk-select--field-typed .sbk-select__control {
+  cursor: text;
+}
+
+.sbk-select__typed {
+  display: grid;
+  flex: 1 0 24px;
+  min-width: 0;
+}
+
+.sbk-select__typed > * {
+  grid-area: 1 / 1;
+}
+
+.sbk-select--field-typed .sbk-select__input {
+  margin-left: 0;
+}
+
+.sbk-select__typed .sbk-select__placeholder {
+  color: var(--sbk-content-ter);
+  pointer-events: none;
+}
+
+.sbk-select--field-typed.sbk-select--chips .sbk-select__typed {
+  height: 28px;
+  margin: 4px 0 0 4px;
+  line-height: 22px;
+}
+
 /* Slack's p-block_kit_max_selected_items__info, tucked into the label's 8px bottom padding. */
 .sbk-select__max-info {
   display: none;
