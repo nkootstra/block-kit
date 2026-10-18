@@ -265,6 +265,11 @@ export function SharedEditor() {
 }
 ```
 
+A shared link renders whatever JSON its sender wrote, under the app name and avatar your editor
+gives the preview, so a link can make a message look like it came from your app, with any text,
+links and buttons. Label the preview as a draft from the person who shared it, and keep its
+`onAction` to a log like the one above rather than wiring it to anything that acts for the viewer.
+
 A hash never reaches your server, so a draft shared this way isn't stored anywhere. Long payloads
 make long URLs; for anything bigger than a few blocks, or a template your users keep, save the
 JSON in your own database and put its id in the URL instead.

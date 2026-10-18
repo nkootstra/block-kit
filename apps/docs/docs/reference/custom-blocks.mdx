@@ -11,7 +11,7 @@ Every block and element is looked up by its `type` in a registry. Add an entry t
 Unknown types otherwise render as a placeholder that names the type.
 
 A block's JSON comes from whoever wrote the payload, so check a field before you rely on it, as
-the examples below do with `max`, URLs and nesting.
+the examples below do with `state`, `max`, URLs and nesting.
 
 ## Add a block
 
@@ -27,8 +27,10 @@ interface StatusBlock {
 }
 
 function Status({ block }: BlockProps<StatusBlock>) {
+  // `state` comes from the payload: map it to a class you know, rather than putting it in one.
+  const modifier = block.state === "down" ? "status--down" : "status--up";
   return (
-    <div className={`status status--${block.state}`}>
+    <div className={`status ${modifier}`}>
       <Mrkdwn text={block.text} />
     </div>
   );
