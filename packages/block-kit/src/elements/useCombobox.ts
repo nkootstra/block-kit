@@ -220,6 +220,11 @@ export function useCombobox({
   return {
     open,
     setOpen,
+    /** Opens the list as a click does, with no keyboard highlight: a multi-select tabbed into. */
+    openAsClicked() {
+      pointerOpen.current = true;
+      setOpenState(true);
+    },
     /** Opens or closes the list from a button trigger; a click opens it as `inputProps` does. */
     toggleFromTrigger(e: MouseEvent) {
       // A button's Enter or Space also clicks it, with no pointer behind it (`detail` 0).

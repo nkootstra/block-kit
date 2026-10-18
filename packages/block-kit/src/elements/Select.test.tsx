@@ -4,6 +4,7 @@ import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type DirectoryEntry, type StateValues } from "../context";
 import { Message } from "../Message";
+import { InputBlockContext } from "./inputBlockContext";
 import { Select, type SelectElement } from "./Select";
 import { clickAsync, keyDownAsync } from "./test-utils";
 
@@ -234,6 +235,44 @@ describe("<Select> single static select picks", () => {
     await clickAsync(screen.getByRole("option", { name: "B" }));
     expect(screen.queryByRole("listbox")).toBeNull();
     expect(document.activeElement).toBe(field);
+  });
+});
+
+describe("<Select> multi-select keyboard focus", () => {
+  const element = {
+    type: "multi_static_select",
+    action_id: "a1",
+    options: [opt("a", "A"), opt("b", "B")],
+  } as unknown as SelectElement;
+
+  function renderIn(inInput: boolean) {
+    render(
+      <InputBlockContext.Provider value={inInput}>
+        <button type="button">Before</button>
+        <Select element={element} blockId="b1" />
+      </InputBlockContext.Provider>,
+    );
+    const trigger = screen.getByRole("button", { expanded: false });
+    // Tabbing in: keyboard focus, from the element before it.
+    const before = screen.getByRole("button", { name: "Before" });
+    Object.defineProperty(trigger, "matches", {
+      value: (selector: string) =>
+        selector === ":focus-visible" || Element.prototype.matches.call(trigger, selector),
+    });
+    fireEvent.focus(trigger, { relatedTarget: before });
+    return trigger;
+  }
+
+  it("opens its list when tabbed into in an input block, as a click does, as Slack's does", () => {
+    renderIn(true);
+    expect(screen.getByRole("listbox")).toBeTruthy();
+    // No keyboard highlight and no Enter hint, as when a click opens it.
+    expect(document.querySelector("[data-typed]")).toBeNull();
+  });
+
+  it("stays closed when tabbed into outside an input block", () => {
+    renderIn(false);
+    expect(screen.queryByRole("listbox")).toBeNull();
   });
 });
 
