@@ -99,16 +99,8 @@
   "catalog/actions/selects-with-initial-options@mobile+dark": [],
   "catalog/actions/selects-with-initial-options@open": [],
   "catalog/actions/selects-with-initial-options@open+dark": [],
-  "catalog/actions/selects-with-initial-options@pick": [
-    "missing|channel-one|0",
-    "extra|channel-two|0"
-  ],
-  "catalog/actions/selects-with-initial-options@pick+mobile+dark": [
-    "missing|User One|0",
-    "missing|User One|1",
-    "missing|Private channel|0",
-    "extra|channel-two|0"
-  ],
+  "catalog/actions/selects-with-initial-options@pick": [],
+  "catalog/actions/selects-with-initial-options@pick+mobile+dark": [],
   "catalog/actions/timepicker": [],
   "catalog/actions/timepicker@dark": [],
   "catalog/actions/timepicker@focus-field-1+dark": [],
@@ -1707,15 +1699,9 @@
   "extra/actions/more-elements@open+dark": [
     "color|Type a minimum of 2 characters to see options.|0"
   ],
-  "extra/actions/more-elements@pick": [
-    "x|channel-one|0"
-  ],
-  "extra/actions/more-elements@pick+dark": [
-    "x|channel-one|0"
-  ],
-  "extra/actions/more-elements@pick+mobile": [
-    "x|channel-one|0"
-  ],
+  "extra/actions/more-elements@pick": [],
+  "extra/actions/more-elements@pick+dark": [],
+  "extra/actions/more-elements@pick+mobile": [],
   "extra/context-actions/feedback-row": [],
   "extra/context-actions/feedback-row@dark": [],
   "extra/context-actions/feedback-row@mobile": [],
@@ -1768,9 +1754,7 @@
   "extra/fidelity/channels-select/long-content@mobile+dark": [],
   "extra/fidelity/channels-select/long-content@open": [],
   "extra/fidelity/channels-select/long-content@open+dark": [],
-  "extra/fidelity/channels-select/long-content@pick": [
-    "x|channel-one|0"
-  ],
+  "extra/fidelity/channels-select/long-content@pick": [],
   "extra/fidelity/chart-table-modal/many-items": [],
   "extra/fidelity/chart-table-modal/many-items@dark": [],
   "extra/fidelity/chart-table-modal/many-items@mobile": [],
@@ -1802,9 +1786,7 @@
   "extra/fidelity/confirm/long-content@mobile+dark": [],
   "extra/fidelity/confirm/long-content@open": [],
   "extra/fidelity/confirm/long-content@open+dark": [],
-  "extra/fidelity/confirm/long-content@pick": [
-    "x|channel-one|0"
-  ],
+  "extra/fidelity/confirm/long-content@pick": [],
   "extra/fidelity/contact-card/mixed": [
     "missing|This content could not be displayed.|0",
     "missing|Workspace|0",
@@ -2881,12 +2863,9 @@
   "extra/input/more-selects@open+dark": [
     "color|Private channel|0"
   ],
-  "extra/input/more-selects@pick": [
-    "missing|User One|1"
-  ],
+  "extra/input/more-selects@pick": [],
   "extra/input/more-selects@pick+dark": [
-    "color|Private channel|0",
-    "missing|User One|1"
+    "color|Private channel|0"
   ],
   "extra/input/text-inputs": [],
   "extra/input/text-inputs@dark": [],
