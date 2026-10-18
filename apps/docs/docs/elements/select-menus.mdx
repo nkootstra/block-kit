@@ -115,28 +115,34 @@ them. Slack caps `options` and `option_groups` at 100 entries each (see [Limits]
 and a select can carry one or the other, never both.
 
 Like Slack's, a single `static_select` or `external_select` is typed into: its field is a text
-input (`role="combobox"`) that shows the chosen option. Clicking it opens a 322px list, starting 12px
-left of the field and over its bottom 4px, with the first option highlighted in blue; a list of
-`option_groups` opens with nothing highlighted until a key or the pointer moves. A chosen
-option is marked with a check, and the field shows the placeholder while the list is open. In an
-`input` block the list is 22px wider than the field instead. Typing narrows the list to the
-options with a word that starts with what you typed ("york" finds "New York", "ork" finds
-nothing), so there's no separate search box; an `external_select` searches the app instead. When
-nothing matches, the list says "😕 Nothing could be found." Escape and Tab close the list and keep
-what you typed, for the next time it opens.
+input (`role="combobox"`) that shows the chosen option. Clicking it opens the list under the field
+with the first option highlighted; a list of `option_groups` opens with nothing highlighted until a
+key or the pointer moves. A chosen option is marked with a check and `aria-selected`, and the field
+shows the placeholder while the list is open. In an `input` block the list is a little wider than
+the field. Typing narrows the list to the options with a word that starts with what you typed
+("york" finds "New York", "ork" finds nothing), so there's no separate search box; an
+`external_select` searches the app instead. When nothing matches, the list says "😕 Nothing could
+be found.", Slack's wording, emoji included, so a screen reader reads the emoji's name too. Escape
+and Tab close the list and keep what you typed, for the next time it opens.
 
-The highlight works as in Slack: a list opened with the keyboard, and the first match while you
-type, starts on a grey row with an **Enter** key on it, and Enter picks it. The first arrow key
-turns that row into the blue keyboard highlight, and later presses move it. Option groups get a
-28px heading each, with their options indented under it and a rule between groups.
+The highlight works as in Slack. A list opened with the keyboard, and the first match while you
+type, starts on a lighter highlight (grey) with an **Enter** key on the row, and Enter picks it. The
+first arrow key turns it into the keyboard highlight (blue), and later presses move it. In a
+typed-into select, either highlight makes the row the field's `aria-activedescendant`, so a screen
+reader announces it as it moves. Option groups get a heading each, with their options indented under it and a rule between
+groups.
 
 The single users, conversations and channels selects are typed into the same way. The
-multi-selects open from a button, with a search box where there's something to search. A multi-select ticks the options it already has; in
-an `input` block its list is 22px wider than the field and starts 12px to its left. Picking with
-Enter keeps a multi-select's list open for the next pick; a click closes it and leaves the field
-focused, with its focus ring. An
-`external_select` asks for "Type a minimum of N characters to see options." until the query reaches
-its `min_query_length`.
+multi-selects open from a button, with a search box where there's something to search. A
+multi-select ticks the options it already has; in an `input` block its list is a little wider than
+the field. Picking with Enter keeps a multi-select's list open for the next pick; a click closes it
+and leaves the field focused, with its focus ring. An `external_select` asks for "Type a minimum of
+N characters to see options." until the query reaches its `min_query_length`.
+
+That message, "Nothing could be found." and the rows themselves are list content, not a live
+region: a screen reader reads them when it moves into the list, not when they change. The number of
+results isn't announced. If a minimum query length matters to your users, say so in the input
+block's `hint` as well.
 
 <Preview
   payload={{
@@ -209,13 +215,14 @@ chosen. A placeholder over 30 characters shows its first 30 and "…" there. Cli
 titled with the placeholder, on one line that ends in "…" when it doesn't fit, with the field and
 its chips. Its
 list holds the options, or for a users, conversations or channels select the `resolvers.directory`
-entries; typing filters it, and in a directory select Enter adds a typed id that no entry matches.
+entries; typing filters it by name. In a directory select, Enter with no row highlighted adds
+what you typed as an ID, which stands in for Slack's search of the workspace.
 A click opens the list with nothing highlighted; the first arrow key highlights the first option,
 and hovering a row doesn't highlight it.
 The list stays open while you pick, and nothing is sent until **Confirm**, which fires one action
 with every pick (`selected_options`, `selected_users` and so on; a static select adds its
-`placeholder`). **Cancel**, the close button and Escape discard the picks. As in Slack, focus moves
-to the dialog itself, so its field opens without a focus ring; Tab reaches the close button and then
+`placeholder`). **Cancel**, the close button and Escape discard the picks. Focus moves to the
+dialog itself rather than to its field, as it does in Slack; Tab reaches the close button and then
 the field. Focus returns to the button when the dialog closes.
 
 <Preview
@@ -255,7 +262,7 @@ the field. Focus returns to the button when the dialog closes.
     initial_option: {
       type: "PlainTextOption",
       description:
-        "Preselected on load. Must exactly match one entry in `options`/`option_groups`. Single-select only.",
+        "Preselected on load. Must exactly match one entry in `options`/`option_groups`, as Slack requires. If no option has its `value`, the field still shows its text and `state` reports it, but no row is checked. Single-select only.",
     },
     initial_options: {
       type: "PlainTextOption[]",
@@ -386,11 +393,11 @@ options already picked via `initial_options`:
 Populated from Slack's own user directory: there's nothing to pass for the option list itself,
 only which user (if any) starts selected. Outside Slack, the list comes from the provider's
 `resolvers.directory`, which returns the people and channels to offer for `"users"`,
-`"conversations"` or `"channels"`. Each row is drawn as Slack's: a 20px avatar, the bold name,
-"(you)" for the signed-in user, a badge such as `AGENT`, the presence icon and the full name.
-Channels show a `#` or a lock. A chosen entry looks the same in a single select's field. In a
-multi-select's chip, a person gets a 26px avatar and a channel its `#` or lock. Without a directory
-the list says "😕 Nothing could be found."
+`"conversations"` or `"channels"`. Each row is drawn as Slack's: an avatar, the bold name, "(you)"
+for the signed-in user, a badge such as `AGENT`, the presence icon and the full name. Channels show
+a `#` or a lock. A chosen entry looks the same in a single select's field. In a multi-select's chip,
+a person gets a smaller avatar and a channel its `#` or lock. Without a directory the list says
+"😕 Nothing could be found."
 
 The directory usually comes from `users.list` and `conversations.list`, which need the bot token, so
 fetch it on your server and pass the entries to the browser as data: from a Server Component, or a
@@ -409,8 +416,12 @@ route of your own. Never call them from the browser with a `WebClient`; see
 ```
 
 A conversations select applies its `filter` to the directory: `include` keeps people (`im`),
-`private` or `public` channels, and `exclude_bot_users` drops entries marked `bot`. A chosen ID the
-directory doesn't list comes first in the list, drawn as the field draws it.
+`private` or `public` channels, and `exclude_bot_users` drops entries marked `bot`. A directory
+entry is a person or a channel, never a group DM, so `mpim` keeps nothing, and
+`exclude_external_shared_channels` has nothing to act on. A chosen ID the directory doesn't list
+comes first in the list, shown the same way as in the closed field: its resolved name, or for an ID
+nobody resolves, a loading skeleton for a person, a "Private channel" pill for a channel and a blank
+row for a conversation.
 
 <Preview
   payload={{
@@ -466,15 +477,19 @@ As an `input` block, `multi_users_select` starts with `initial_users` already se
   }}
 />
 
-This library can't look up a real workspace directory, so an id it doesn't know (anything besides
-`U0ADA`, `U0GRACE`, `U0ALAN`) renders as Slack's own loading skeleton rather than the raw id. Pass
-a `resolvers.user` function to `<BlockKitProvider>` to show real names instead.
+The package can't look up a real workspace directory. The previews on this page resolve three demo
+people (`U0ADA`, `U0GRACE` and `U0ALAN`); any other user ID renders as Slack's loading skeleton
+rather than the raw ID, as Block Kit Builder does for a user it can't find. The skeleton stays until
+a resolver names the ID; there's no timeout. It has no visible text, so a screen reader hears the
+field's placeholder instead of a name. Pass a `resolvers.user` function (or list the person in
+`resolvers.directory`) to show the name to everyone.
 
 ### Conversations select
 
 Populated from every conversation the person can see: public and private channels, DMs, and group
-DMs. `default_to_current_conversation` preselects whatever conversation the surface was opened
-from, and `filter` narrows the list Slack offers.
+DMs. In Slack, `default_to_current_conversation` preselects the conversation the person was viewing
+when they opened the modal, if there is one; this package has no current conversation, so the flag
+preselects nothing. `filter` narrows the list Slack offers.
 
 <Preview
   payload={{
@@ -526,12 +541,12 @@ external shared channels from the list:
     initial_conversation: {
       type: "string",
       description:
-        "A conversation ID preselected on load. Takes precedence over `default_to_current_conversation`. Single-select only.",
+        "A conversation ID preselected on load. Slack documents that it takes precedence over `default_to_current_conversation`. Single-select only.",
     },
     initial_conversations: {
       type: "string[]",
       description:
-        "Conversation IDs preselected on load. Ignored if `default_to_current_conversation` is set. Multi-select only.",
+        "Conversation IDs preselected on load. Slack documents the opposite of the single select here: they're ignored when `default_to_current_conversation` is set. This package has no current conversation and always preselects them. Multi-select only.",
     },
     default_to_current_conversation: {
       type: "boolean",
@@ -594,7 +609,7 @@ It has no `filter` or `default_to_current_conversation`.
 />
 
 As an `actions` element, a multi-channels-select with items already picked collapses to a
-content-sized outline button rather than the 190px dropdown a single-select uses:
+content-sized outline button rather than the full-width dropdown a single-select uses:
 
 <Preview
   payload={{
@@ -630,8 +645,15 @@ content-sized outline button rather than the 190px dropdown a single-select uses
 
 ## Interactivity
 
-A select reports its value the moment it changes, with no separate submit step outside a modal. The
-field name in both the `block_actions` action and `state.values` depends on the data source and
+A select sends a `block_actions` action as soon as an option is picked or a chip removed (after its
+`confirm` dialog, if it has one), with two exceptions:
+
+- In an `input` block it sends one only when the block sets `dispatch_action: true`. Otherwise its
+  value waits in `state` until the modal is submitted.
+- A multi-select in a section accessory (other than `multi_external_select`) collects picks in its
+  dialog and sends one action, with all of them, when **Confirm** is pressed.
+
+The field name in both the `block_actions` action and `state.values` depends on the data source and
 whether it's single- or multi-select:
 
 | Source                 | Single                  | Multi                    |
@@ -676,7 +698,9 @@ plural for a multi-select) instead. Both are what Slack sends.
 }
 ```
 
-**Multi users select**, from the reviewers example above, after picking Ada and Grace:
+**Multi users select**, from the reviewers example above, after picking Ada and Grace. Its `input`
+block doesn't set `dispatch_action`, so this is the action it would send if it did; as it stands,
+the same `selected_users` waits in `state.values.reviewers.value` for the submission:
 
 ```json
 {
@@ -708,6 +732,7 @@ import { BlockKitProvider, Message } from "@nkootstra/block-kit";
     if (action.action_id === "priority") {
       console.log(action.selected_option.value); // "high"
     }
+    // The single users_select from the code review example.
     if (action.action_id === "reviewer") {
       console.log(action.selected_user); // "U0ADA"
     }

@@ -123,9 +123,11 @@ onAction={(action, { state }) => {
 
 :::note
 Only elements with an `action_id` report into `state`. Elements in `actions` blocks and section
-accessories send an action on every change. Inside an `input` block, an element only does so when
-the block sets `dispatch_action: true`; otherwise its value updates `state` silently until the
-modal is submitted or another element sends an action.
+accessories send an action on every change, except a multi-select in a section accessory, which
+sends one when its selection dialog's **Confirm** is pressed (see
+[Select menus](/elements/select-menus#interactivity)). Inside an `input` block, an element only
+does so when the block sets `dispatch_action: true`; otherwise its value updates `state` silently
+until the modal is submitted or another element sends an action.
 :::
 
 ## onStateChange
