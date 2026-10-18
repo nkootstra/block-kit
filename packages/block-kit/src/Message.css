@@ -236,6 +236,8 @@
     --sbk-mention-private-text: rgba(232, 232, 232, 0.7);
     --sbk-broadcast-bg: #a073002e;
     --sbk-broadcast-text: #dea700;
+    --sbk-tag-bg: rgb(3, 49, 58);
+    --sbk-tag-text: rgb(102, 190, 196);
     --sbk-bg: #1a1d21;
     --sbk-muted: #9a9b9e;
     --sbk-text-sec: #ababad;
@@ -372,6 +374,8 @@
   --sbk-mention-private-text: rgba(232, 232, 232, 0.7);
   --sbk-broadcast-bg: #a073002e;
   --sbk-broadcast-text: #dea700;
+  --sbk-tag-bg: rgb(3, 49, 58);
+  --sbk-tag-text: rgb(102, 190, 196);
   --sbk-bg: #1a1d21;
   --sbk-muted: #9a9b9e;
   --sbk-text-sec: #ababad;

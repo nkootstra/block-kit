@@ -23,6 +23,13 @@ type RichTextEmojiExt = Extract<RichTextElement, { type: "emoji" }> & { skin_ton
 type RichTextPreformattedExt = Extract<RichTextBlockElement, { type: "rich_text_preformatted" }> & {
   language?: string;
 };
+/** A coloured label, e.g. `{ type: "tag", text: "In progress", color: "blue" }`. */
+interface RichTextTag {
+  type: "tag";
+  text: string;
+  color?: string;
+  style?: RichTextElement["style"];
+}
 
 type Resolvers = ReturnType<typeof useBlockKit>["resolvers"];
 
@@ -170,7 +177,7 @@ function mergeTextRuns(elements: RichTextElement[]): RichTextElement[] {
 /** One inline element of a section, styled. The rich text input's editor draws its initial value
  * with it too. */
 export function renderLeaf(
-  el: RichTextElement,
+  el: RichTextElement | RichTextTag,
   ctx: RenderCtx,
   emojiSize: number,
   isFirst = false,
@@ -254,6 +261,11 @@ export function renderLeaf(
       break;
     case "team":
       content = <span className="sbk-mention--unresolved" aria-label={`@${el.team_id}`} />;
+      break;
+    case "tag":
+      // extra/fidelity/rich-text-tag/default: Slack's `tag-span`, a 24px pill in the tag's colour.
+      // Blue is the only colour captured so far; any other draws as blue until it is.
+      content = <span className="sbk-rich-text__tag">{el.text}</span>;
       break;
     default:
       content = null;
