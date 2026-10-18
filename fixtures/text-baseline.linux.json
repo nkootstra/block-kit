@@ -2553,22 +2553,10 @@
     "y|See|0",
     "missing|Record was deleted|0"
   ],
-  "extra/fidelity/rich-text-tag/default": [
-    "y|See|0",
-    "missing|In progress|0"
-  ],
-  "extra/fidelity/rich-text-tag/default@dark": [
-    "y|See|0",
-    "missing|In progress|0"
-  ],
-  "extra/fidelity/rich-text-tag/default@mobile": [
-    "y|See|0",
-    "missing|In progress|0"
-  ],
-  "extra/fidelity/rich-text-tag/default@mobile+dark": [
-    "y|See|0",
-    "missing|In progress|0"
-  ],
+  "extra/fidelity/rich-text-tag/default": [],
+  "extra/fidelity/rich-text-tag/default@dark": [],
+  "extra/fidelity/rich-text-tag/default@mobile": [],
+  "extra/fidelity/rich-text-tag/default@mobile+dark": [],
   "extra/fidelity/rich-text-team/default": [],
   "extra/fidelity/rich-text-team/default@dark": [],
   "extra/fidelity/rich-text-team/default@mobile": [],
