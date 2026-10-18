@@ -1,3 +1,10 @@
+/* A `tag` element's colours, from extra/fidelity/rich-text-tag/default (blue); dark in Message.css. */
+:root,
+[data-theme="light"] {
+  --sbk-tag-bg: rgb(197, 246, 247);
+  --sbk-tag-text: rgb(13, 106, 123);
+}
+
 .sbk-rich-text {
   font-family: var(--sbk-font);
   font-size: 15px;
@@ -151,4 +158,17 @@
 
 .sbk-rich-list--bordered {
   margin-left: 0;
+}
+
+/* Slack's `tag-span` (extra/fidelity/rich-text-tag/default): an inline-flex pill 24px tall on a 22px
+   line, so it sits 1px above and below the text beside it and makes the line box 24px. */
+.sbk-rich-text__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 4px;
+  border-radius: 4px;
+  color: var(--sbk-tag-text);
+  background: var(--sbk-tag-bg);
 }

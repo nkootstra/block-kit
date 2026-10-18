@@ -87,7 +87,8 @@ links, mentions, emoji, and dates.
 />
 
 Inline (`RichTextElement`) types: `text` (with `style.bold` / `italic` / `strike` / `code` /
-`underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, and `color`.
+`underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, `color`, and
+`tag`.
 
 ## Examples
 
@@ -435,6 +436,31 @@ A `color` element (a Builder/undocumented extension) prints a hex value next to 
             elements: [
               { type: "text", text: "Brand color: " },
               { type: "color", value: "#1264A3" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Tag
+
+A `tag` element (a Builder/undocumented extension) draws its `text` as a coloured label, 24px tall,
+so its line is 2px taller than plain text. Slack's blue is the only colour captured so far; every
+`color` draws as blue, from `--sbk-tag-bg` and `--sbk-tag-text`.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "See " },
+              { type: "tag", text: "In progress", color: "blue" },
             ],
           },
         ],

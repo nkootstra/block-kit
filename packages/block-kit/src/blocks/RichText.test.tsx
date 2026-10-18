@@ -25,6 +25,25 @@ describe("<RichText>", () => {
     expect(screen.getByText("italic").tagName).toBe("I");
   });
 
+  it("renders a tag as a pill holding its text", () => {
+    const block = {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            { type: "text", text: "See " },
+            { type: "tag", text: "In progress", color: "blue" },
+          ],
+        },
+      ],
+    };
+    render(<RichText block={block as never} blockId="b1" index={0} />);
+    const tag = screen.getByText("In progress");
+    expect(tag.tagName).toBe("SPAN");
+    expect(tag.className).toBe("sbk-rich-text__tag");
+  });
+
   it("renders a link leaf", () => {
     const block = {
       type: "rich_text",
