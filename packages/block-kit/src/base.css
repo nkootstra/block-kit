@@ -19,6 +19,7 @@
   --sbk-mention-bg: rgba(29, 155, 209, 0.1);
   --sbk-mention-text: #1264a3;
   --sbk-mention-private-bg: rgba(29, 28, 29, 0.13);
+  --sbk-chip-bg: rgba(54, 197, 240, 0.13);
   --sbk-mention-private-text: rgba(29, 28, 29, 0.7);
   --sbk-broadcast-bg: rgba(255, 198, 0, 0.18);
   --sbk-broadcast-text: #1d1c1d;

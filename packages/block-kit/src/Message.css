@@ -233,6 +233,7 @@
     --sbk-mention-bg: #03669640;
     --sbk-mention-text: #2ba5ce;
     --sbk-mention-private-bg: rgba(232, 232, 232, 0.13);
+    --sbk-chip-bg: rgba(3, 102, 150, 0.25);
     --sbk-mention-private-text: rgba(232, 232, 232, 0.7);
     --sbk-broadcast-bg: #a073002e;
     --sbk-broadcast-text: #dea700;
@@ -366,6 +367,7 @@
   --sbk-mention-bg: #03669640;
   --sbk-mention-text: #2ba5ce;
   --sbk-mention-private-bg: rgba(232, 232, 232, 0.13);
+  --sbk-chip-bg: rgba(3, 102, 150, 0.25);
   --sbk-mention-private-text: rgba(232, 232, 232, 0.7);
   --sbk-broadcast-bg: #a073002e;
   --sbk-broadcast-text: #dea700;
