@@ -36,7 +36,9 @@ tabs.
 
 :::note
 This is a UI-only picker: choosing a file records its name, type and size in the shape Slack sends
-to a `files:read`-scoped app, but no bytes are uploaded anywhere.
+to a `files:read`-scoped app, but no bytes are uploaded anywhere. The name, type and size are what
+the browser reports, and `filetypes` only filters the file picker, so check the real file where
+you receive it.
 :::
 
 ## Fields

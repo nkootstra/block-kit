@@ -99,7 +99,7 @@ A `multi_*_select` additionally accepts:
     max_selected_items: {
       type: "number",
       description:
-        'Caps how many items can be picked at once. Renders as Slack\'s "You can select up to N items." hint in an `input` block.',
+        'Caps how many items can be picked at once. Renders as Slack\'s "You can select up to N items." hint in an `input` block. A request built by hand can carry more, so check the count on your server.',
     },
   }}
 />
@@ -288,7 +288,9 @@ function FruitPicker() {
     <BlockKitProvider
       onOptions={({ value }) => ({
         options: fruits
-          .filter((fruit) => fruit.toLowerCase().startsWith(value.toLowerCase()))
+          // `value` is whatever was typed: cap it before it reaches a real search.
+          .filter((fruit) => fruit.toLowerCase().startsWith(value.slice(0, 100).toLowerCase()))
+          .slice(0, 100) // Slack accepts at most 100 options
           .map((fruit) => ({
             text: { type: "plain_text", text: fruit },
             value: fruit.toLowerCase(),
@@ -333,7 +335,9 @@ select's, built from `SuggestionOption` objects (`text`, `value`, optional `desc
 
 :::note
 Without an `onOptions` handler, this library's preview lets you type a value and press Enter to
-select it directly. This is useful for prototyping, but it's not how Slack itself behaves.
+select it directly. This is useful for prototyping, but it's not how Slack itself behaves, and it
+means a selected value can be any text. Your app checks every selected value against the options it
+offers; see [Untrusted input](/guides/untrusted-input).
 :::
 
 The Preview above already answers `external_select` from a fixed fruit list, so you can try typing
@@ -754,7 +758,8 @@ interface BlockSuggestionPayload {
   block_id: string;
   value: string; // what's typed so far
   container: { type: "message" | "view" /* ... */ };
-  // team, user, api_app_id, token: identity fields, like any Slack payload
+  // team, user, api_app_id: identity fields, like any Slack payload. `token` is Slack's
+  // deprecated verification token: check the request's signature instead.
 }
 ```
 

@@ -96,6 +96,12 @@ relay is development and preview tooling (it signs whatever it's sent): keep the
 the server, set the same `token` on both whenever the route is reachable beyond the developer's
 machine, and never deploy it in front of a production app.
 
+**Rule: every payload the provider reports is built in the browser.** Server code that acts on one
+verifies Slack's request signature, takes the acting user from its own session rather than the
+payload, and checks each selected value, count and length against what it offered. Text from
+users that goes into mrkdwn has `&`, `<` and `>` escaped. Details:
+https://docs.block-kit.dev/guides/untrusted-input.md
+
 ## Mentions
 
 `<@U123>`, `<#C123>` and `<!subteam^S123>` show raw ids, as Slack does for unknown ones, until you
