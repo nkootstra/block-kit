@@ -207,7 +207,7 @@ describe("<DatePicker>", () => {
   });
 
   describe("keyboard", () => {
-    it("keeps focus in the field when tabbing opens the calendar, and ArrowDown moves in", () => {
+    it("selects the date when tabbed into, leaves the calendar closed, and ArrowDown opens it", () => {
       render(
         <BlockKitProvider>
           <DatePicker
@@ -223,12 +223,14 @@ describe("<DatePicker>", () => {
         </BlockKitProvider>,
       );
       const input = screen.getByRole("textbox") as HTMLInputElement;
-      // Tabbing in: focus lands on the field without a click.
+      // Tabbing in: focus lands on the field without a press.
       input.focus();
       fireEvent.focus(input);
-      expect(calendarOpen()).toBe(true);
+      expect(calendarOpen()).toBe(false);
       expect(document.activeElement).toBe(input);
+      expect(input.value.slice(input.selectionStart!, input.selectionEnd!)).toBe(input.value);
       fireEvent.keyDown(input, { key: "ArrowDown" });
+      expect(calendarOpen()).toBe(true);
       expect(focusedDay()).toBe("28");
     });
 
