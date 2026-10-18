@@ -330,7 +330,8 @@
   min-width: 0;
 }
 
-/* Slack's c-token--medium: a 28px pale-blue tag with a bold 15px label and an 18px "x". */
+/* Slack's c-token--medium: a 28px pale-blue tag (a deeper blue in dark, as every dark reference
+   draws it) with a bold 15px label and an 18px "x". */
 .sbk-select__chip {
   display: flex;
   align-items: center;
@@ -341,7 +342,7 @@
   line-height: 26.4px;
   white-space: nowrap;
   color: var(--sbk-text);
-  background: rgba(54, 197, 240, 0.13);
+  background: var(--sbk-chip-bg);
   border: 1px solid transparent;
   border-radius: 4px;
 }
