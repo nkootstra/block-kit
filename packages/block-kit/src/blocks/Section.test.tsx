@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { Section } from "./Section";
 
@@ -36,32 +36,16 @@ describe("<Section>", () => {
     expect(container.querySelector(".sbk-section--has-accessory")).toBeTruthy();
   });
 
-  it("does not clamp short text even without expand", () => {
-    const block = { type: "section", text: { type: "mrkdwn", text: "Short text" } };
-    const { container } = render(<Section block={block as never} blockId="b1" index={0} />);
-    expect(container.querySelector(".sbk-section__toggle")).toBeNull();
-  });
-
-  it("clamps long text behind a Show more toggle, and expands on click", () => {
-    const longText = "word ".repeat(80);
-    const block = { type: "section", text: { type: "mrkdwn", text: longText } };
-    const { container } = render(<Section block={block as never} blockId="b1" index={0} />);
-    expect(container.querySelector(".sbk-section__text--clamped")).toBeTruthy();
-    const toggle = screen.getByRole("button", { name: "Show more" });
-    fireEvent.click(toggle);
-    expect(container.querySelector(".sbk-section__text--clamped")).toBeNull();
-    expect(screen.getByRole("button", { name: "Show less" })).toBeTruthy();
-  });
-
-  it("never clamps when expand is true", () => {
-    const longText = "word ".repeat(80);
-    const block = {
-      type: "section",
-      text: { type: "mrkdwn", text: longText },
-      expand: true,
-    };
-    const { container } = render(<Section block={block as never} blockId="b1" index={0} />);
-    expect(container.querySelector(".sbk-section__text--clamped")).toBeNull();
-    expect(container.querySelector(".sbk-section__toggle")).toBeNull();
-  });
+  it.each([undefined, false, true])(
+    "shows long text in full with no toggle, as Block Kit Builder does (expand: %s)",
+    (expand) => {
+      const longText = "word ".repeat(600);
+      const block = { type: "section", text: { type: "mrkdwn", text: longText }, expand };
+      const { container } = render(<Section block={block as never} blockId="b1" index={0} />);
+      const text = container.querySelector(".sbk-section__text");
+      expect(text?.textContent?.trim()).toBe(longText.trim());
+      expect(text?.getAttribute("style")).toBeNull();
+      expect(screen.queryByRole("button")).toBeNull();
+    },
+  );
 });

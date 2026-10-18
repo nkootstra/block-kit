@@ -58,7 +58,7 @@ alongside as an `accessory`.
     expand: {
       type: "boolean",
       description:
-        'When `true`, long text always renders in full. When `false` or omitted, text longer than 300 characters is cut to five lines behind a "Show more" toggle.',
+        "Whether the text always renders in full in Slack's apps. Block Kit Builder shows section text in full either way, and so does this renderer, so it changes nothing here.",
       default: "false",
     },
     block_id: {
@@ -254,10 +254,10 @@ Buttons, selects, and other elements sit to the right of the text. `checkboxes` 
 </Tab>
 </Tabs>
 
-### Long text with `expand`
+### Long text
 
-Text longer than 300 characters is cut to five lines behind a "Show more" toggle unless
-`expand` is set to `true`.
+Section text renders in full, up to Slack's 3,000-character limit, with no "Show more" toggle.
+Block Kit Builder draws it the same way, with or without `expand`.
 
 <Preview
   payload={{
@@ -266,14 +266,12 @@ Text longer than 300 characters is cut to five lines behind a "Show more" toggle
         type: "section",
         text: {
           type: "mrkdwn",
-          text: "This is a long line of mrkdwn text meant to demonstrate the automatic text clamping behavior when the text is really long, sometimes people wanna post a lot of text and that's when this really shows its value, so with this change, the text will be clamped after five lines of text, and will present a show more button to expand the text block.",
+          text: "This is a long line of mrkdwn text, meant to show how a section block draws text that runs on for several lines. People sometimes post a lot of text in one message, and when they do, every line of it shows: the block grows to fit the text, wrapping it at the message's width, just as Block Kit Builder draws it.",
         },
       },
     ],
   }}
 />
-
-Set `expand: true` on the same block and the full text renders with no toggle.
 
 ## Interactivity
 
