@@ -690,6 +690,15 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         type="button"
         className="sbk-select__control"
         onClick={combo.toggleFromTrigger}
+        // Tabbing into an input block's multi-select opens its list as a click does, with no row
+        // highlighted, as Slack's does (`catalog/input/multi-users-select@focus-field-1`); focus
+        // coming back from the list, after a pick or Escape, leaves it closed.
+        onFocus={(e) => {
+          const from = e.relatedTarget as Element | null;
+          if (!multi || !inInputBlock || open || !e.currentTarget.matches(":focus-visible")) return;
+          if (from && (rootRef.current?.contains(from) || from.closest(".sbk-popover"))) return;
+          combo.openAsClicked();
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
         {...invalid}
