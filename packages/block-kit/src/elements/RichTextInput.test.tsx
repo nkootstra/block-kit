@@ -51,6 +51,53 @@ describe("<RichTextInput>", () => {
     expect(screen.getByRole("textbox").textContent).toBe("hello");
   });
 
+  it("shows each section of initial_value on its own line", () => {
+    const value = {
+      type: "rich_text",
+      elements: ["Line 1", "Line 2"].map((text) => ({
+        type: "rich_text_section",
+        elements: [{ type: "text", text }],
+      })),
+    } as unknown as RichTextBlock;
+    render(
+      <BlockKitProvider>
+        <RichTextInput
+          element={{
+            type: "rich_text_input",
+            action_id: "a1",
+            initial_value: value,
+          }}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const lines = [...screen.getByRole("textbox").children].map((line) => line.textContent);
+    expect(lines).toEqual(["Line 1", "Line 2"]);
+  });
+
+  it.each([
+    [{}, "", "192px"],
+    [{ min_lines: 3, max_lines: 5 }, "82px", "126px"],
+  ])("sizes the editor from min_lines and max_lines %j, padding included", (lines, min, max) => {
+    render(
+      <BlockKitProvider>
+        <RichTextInput
+          element={
+            {
+              type: "rich_text_input",
+              action_id: "a1",
+              ...lines,
+            } as RichTextInputElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const editor = screen.getByRole("textbox");
+    expect(editor.style.minHeight).toBe(min);
+    expect(editor.style.maxHeight).toBe(max);
+  });
+
   /** A rich text input that may dispatch (as in an input block with dispatch_action), typed into. */
   function typed(
     onAction: NonNullable<Parameters<typeof BlockKitProvider>[0]["onAction"]>,
