@@ -119,6 +119,12 @@
   margin: 0;
 }
 
+/* So does a divider block: in a modal it sits 16px from the blocks on either side, not 16px plus
+   its 8px message margins (extra/fidelity/divider/mixed). */
+.sbk-modal .sbk-block--divider > .sbk-divider {
+  margin: 0;
+}
+
 .sbk-modal__footer {
   display: flex;
   align-items: center;
