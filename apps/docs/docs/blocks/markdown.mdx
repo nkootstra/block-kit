@@ -84,6 +84,23 @@ Headings past `###` still render at the same size as `###`. A line of `---` rend
   }}
 />
 
+### Lists and quotes
+
+Bulleted and numbered lists render like `rich_text` lists, with Slack's bullet glyphs and the
+numbers lined up under the bullets. A list, quote or code block gets the same paragraph gap as a
+paragraph before whatever follows it:
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "markdown",
+        text: "- A bullet\n- Another bullet\n  - A nested bullet\n\n1. A numbered item\n2. Another one\n\n> A quote\n\nA closing paragraph.",
+      },
+    ],
+  }}
+/>
+
 ### Fenced code blocks
 
 A fenced code block with a language tag renders with a language label and copy button, the same
