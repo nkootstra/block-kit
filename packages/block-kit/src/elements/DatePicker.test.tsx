@@ -1,5 +1,5 @@
 import type { Datepicker } from "@slack/types";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
 import { Input } from "../blocks/Input";
@@ -275,6 +275,20 @@ describe("<DatePicker>", () => {
         expect.anything(),
       );
       expect(document.activeElement).toBe(input);
+      expect(calendarOpen()).toBe(false);
+    });
+
+    it("leaves the field unfocused after a day picked with a press, as Slack does", async () => {
+      const onAction = vi.fn();
+      const input = open(onAction);
+      await act(async () => {
+        fireEvent.click(screen.getByRole("button", { name: /April 20th, 1990/ }), { detail: 1 });
+      });
+      expect(onAction).toHaveBeenCalledWith(
+        expect.objectContaining({ selected_date: "1990-04-20" }),
+        expect.anything(),
+      );
+      expect(document.activeElement).not.toBe(input);
       expect(calendarOpen()).toBe(false);
     });
 

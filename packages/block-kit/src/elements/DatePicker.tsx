@@ -66,9 +66,15 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function pick(next: string) {
+  /**
+   * A day picked with the keyboard hands focus back to the field. One picked with a press leaves
+   * nothing focused, as Slack's calendar does, so the field doesn't keep its focus ring
+   * (`catalog/actions/datepickers@pick+mobile`).
+   */
+  async function pick(next: string, pointer: boolean) {
     if (!(await ask())) return;
-    close();
+    if (pointer) setOpen(false);
+    else close();
     commit(next);
   }
 
