@@ -28,7 +28,13 @@
     0 0 0 1px var(--sbk-border),
     0 18px 48px rgba(0, 0, 0, 0.35);
   font-family: var(--sbk-font);
-  color: var(--sbk-text);
+  /* Portalled outside .sbk-root, so it sets the root's text rendering itself. The title and text
+     are in Slack's body colour, a little softer than the buttons' in dark
+     (extra/fidelity/confirm/long-content@confirm+dark). */
+  color: var(--sbk-text-body);
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 @keyframes sbk-confirm-dim-in {
@@ -95,8 +101,11 @@
   }
 }
 
+/* Slack's `c-dialog__body--slack_scrollbar` keeps a 4px transparent border on the right for its
+   scrollbar, so long text wraps 4px sooner (extra/fidelity/confirm/long-content@confirm). */
 .sbk-confirm__text {
   padding: 0 24px;
+  border-right: 4px solid transparent;
   font-size: 15px;
   line-height: 22px;
 }
