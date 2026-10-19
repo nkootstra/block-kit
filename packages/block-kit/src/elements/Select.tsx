@@ -588,6 +588,19 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     <span className="sbk-select__chip" key={item.id}>
       {source === "channels" && isUnresolved(item) ? (
         privateChannel("sbk-select__chip-label sbk-select__chip-entity")
+      ) : source === "users" && isUnresolved(item) ? (
+        // A person it can't resolve stays a loading skeleton in its chip too, never its ID
+        // (extra/fidelity/multi-users-select/initial-value).
+        <span
+          className="sbk-select__chip-label sbk-select__chip-label--member sbk-select__chip-skeleton"
+          role="img"
+          aria-label={item.id}
+        >
+          <span className="sbk-select__chip-skeleton-avatar" />
+          <span className="sbk-select__chip-text">
+            <span className="sbk-select__chip-skeleton-name" />
+          </span>
+        </span>
       ) : entryById.has(item.id) ? (
         <ChipEntity entry={entryById.get(item.id)!} />
       ) : (
