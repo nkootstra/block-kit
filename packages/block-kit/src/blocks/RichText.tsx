@@ -11,9 +11,9 @@ import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "../context";
 import { Emoji } from "../emoji";
 import { Link, MentionLink } from "../Link";
-import { LockIcon } from "../Mrkdwn";
+import { PrivateChannel } from "../Mrkdwn";
 import type { BlockProps } from "../types";
-import { UserMention } from "../UserMention";
+import { PrivateUser, UserMention } from "../UserMention";
 import { CopyIcon } from "../icons";
 import { CodeBlock } from "./CodeBlock";
 
@@ -204,7 +204,7 @@ export function renderLeaf(
       content = name ? (
         <UserMention id={el.user_id} name={name} />
       ) : (
-        <span className="sbk-mention--unresolved" aria-label={`@${el.user_id}`} />
+        <PrivateUser id={el.user_id} />
       );
       break;
     }
@@ -226,10 +226,7 @@ export function renderLeaf(
           {`#${name}`}
         </MentionLink>
       ) : (
-        <span className="sbk-mention--private">
-          <LockIcon />
-          Private channel
-        </span>
+        <PrivateChannel />
       );
       break;
     }

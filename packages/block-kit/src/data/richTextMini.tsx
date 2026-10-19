@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useBlockKit } from "../context";
 import type { Json } from "../types";
 import { Link } from "../Link";
-import { UserMention } from "../UserMention";
+import { PrivateUser, UserMention } from "../UserMention";
 
 /**
  * Minimal renderer for the `rich_text` objects embedded as table/plan/task_card cell values
@@ -65,11 +65,7 @@ function RichTextMiniLeaf({ element }: { element: Json }) {
  */
 function RichTextMiniUser({ id }: { id: string }) {
   const name = useBlockKit().resolvers.user?.(id);
-  return name ? (
-    <UserMention id={id} name={name} />
-  ) : (
-    <span className="sbk-mention--unresolved" aria-label={`@${id}`} />
-  );
+  return name ? <UserMention id={id} name={name} /> : <PrivateUser id={id} />;
 }
 
 /** Plain-text extraction of a rich_text value, used for sorting table cells. */

@@ -2,6 +2,7 @@ import { formatSlackDate, type InlineNode, type MrkdwnNode, parse } from "./pars
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
+import { HoverCard } from "./HoverCard";
 import { Link, MentionLink } from "./Link";
 import { UserMention } from "./UserMention";
 
@@ -87,10 +88,7 @@ function renderNode(
           {`#${name}`}
         </MentionLink>
       ) : (
-        <span className="sbk-mention--private">
-          <LockIcon />
-          Private channel
-        </span>
+        <PrivateChannel />
       );
     }
     case "broadcast":
@@ -108,6 +106,24 @@ function renderNode(
     case "emoji":
       return <Emoji name={node.name} skinTone={node.skinTone} size={emojiSize} />;
   }
+}
+
+/**
+ * A channel mention no resolver names: Slack's `c-missing_channel--private` pill, with a hover card
+ * saying why its name isn't shown (extra/fidelity/rich-text-channel/mixed@hover-mention-1).
+ */
+export function PrivateChannel() {
+  return (
+    <HoverCard
+      className="sbk-hover-card--channel"
+      content="You don’t have access to this channel (ex. it’s private or in a workspace you’re not a part of), so its name isn’t shown"
+    >
+      <span className="sbk-mention--private">
+        <LockIcon />
+        Private channel
+      </span>
+    </HoverCard>
+  );
 }
 
 /** Matches the lock glyph Slack shows on an unresolved private channel mention. */
