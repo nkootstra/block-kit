@@ -392,18 +392,9 @@
   "catalog/card-and-carousel/card-image-and-text@focus-link-1+dark": [],
   "catalog/card-and-carousel/card-image-and-text@focus-link-1+mobile": [],
   "catalog/card-and-carousel/card-image-and-text@focus-link-1+mobile+dark": [],
-  "catalog/card-and-carousel/card-image-and-text@hover-link-1+dark": [
-    "missing|Link|0",
-    "missing|http://google.com|0"
-  ],
-  "catalog/card-and-carousel/card-image-and-text@hover-link-1+mobile": [
-    "missing|Link|0",
-    "missing|http://google.com|0"
-  ],
-  "catalog/card-and-carousel/card-image-and-text@hover-link-1+mobile+dark": [
-    "missing|Link|0",
-    "missing|http://google.com|0"
-  ],
+  "catalog/card-and-carousel/card-image-and-text@hover-link-1+dark": [],
+  "catalog/card-and-carousel/card-image-and-text@hover-link-1+mobile": [],
+  "catalog/card-and-carousel/card-image-and-text@hover-link-1+mobile+dark": [],
   "catalog/card-and-carousel/card-image-and-text@mobile": [],
   "catalog/card-and-carousel/card-image-and-text@mobile+dark": [],
   "catalog/card-and-carousel/card-image-only": [],
@@ -2677,8 +2668,6 @@
     "y|mrkdwn|0",
     "missing|const answer = 42;|0",
     "missing|console.log(answer < 100);|0",
-    "missing|Link|0",
-    "missing|https://slack.com|0",
     "extra|const answer = 42; console.log(answer < 100);|0"
   ],
   "message/mrkdwn@mobile": [
