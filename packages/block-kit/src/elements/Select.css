@@ -363,6 +363,14 @@
   line-height: 26px;
 }
 
+/* A person's or channel's name sits in Slack's 15px/26px `c-base_entity__text-contents` instead,
+   off the 18px strut, so those chips are a pixel shorter (28px) than an option's
+   (catalog/input/multi-users-select@pick, extra/fidelity/multi-channels-select/empty@pick). */
+:is(.sbk-select__chip-label--member, .sbk-select__chip-label--channel) .sbk-select__chip-text {
+  font-size: 15px;
+  line-height: 26px;
+}
+
 /* Slack's `c-token--member`: the avatar sits flush with the chip's left edge, its left corners
    rounded (22.222% of 26px), 6px before the name, which is black (900), and 4px after it. */
 .sbk-select__chip-label--member {

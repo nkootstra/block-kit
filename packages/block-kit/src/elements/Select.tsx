@@ -936,7 +936,7 @@ function DirectoryRow({
 function ChipEntity({ entry }: { entry: DirectoryEntry }) {
   if (entry.type === "channel") {
     return (
-      <span className="sbk-select__chip-label">
+      <span className="sbk-select__chip-label sbk-select__chip-label--channel">
         <svg
           className="sbk-select__chip-icon"
           data-icon={entry.private ? "lock" : "hash"}
