@@ -304,6 +304,7 @@
     --sbk-menu-faint-text: rgba(232, 232, 232, 0.7);
     --sbk-composer-bg: #222529;
     --sbk-composer-border: #565856;
+    --sbk-composer-border-focus: #797c81;
     --sbk-composer-toolbar-bg: #222529;
     --sbk-composer-tool: rgba(232, 232, 232, 0.7);
     --sbk-composer-separator: #212428;
@@ -443,6 +444,7 @@
   --sbk-menu-faint-text: rgba(232, 232, 232, 0.7);
   --sbk-composer-bg: #222529;
   --sbk-composer-border: #565856;
+  --sbk-composer-border-focus: #797c81;
   --sbk-composer-toolbar-bg: #222529;
   --sbk-composer-tool: rgba(232, 232, 232, 0.7);
   --sbk-composer-separator: #212428;
