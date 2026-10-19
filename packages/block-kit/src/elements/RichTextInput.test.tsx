@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { RichTextBlock, RichTextInput as RichTextInputElement } from "@slack/types";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -268,6 +270,19 @@ describe("<RichTextInput>", () => {
   });
 
   describe("composer", () => {
+    // fixtures/extra/modal/dispatch-rich-text and contexts/rich_text_input/modal-input@focus-richtext-1+dark
+    it("darkens its border on focus instead of drawing the fields' focus ring, as Slack does", () => {
+      const css = readFileSync(join(__dirname, "..", "base.css"), "utf8");
+      const rules = [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)].map(([, selectors, body]) => ({
+        selectors: selectors!.split(",").map((s) => s.trim()),
+        body: body!,
+      }));
+      const ring = rules.find((r) => /box-shadow:\s*var\(--sbk-focus-shadow\)/.test(r.body));
+      expect(ring?.selectors).not.toContain(".sbk-rich-text-input:focus-within");
+      const focus = rules.find((r) => r.selectors.includes(".sbk-rich-text-input:focus-within"));
+      expect(focus?.body).toContain("border-color: var(--sbk-composer-border-focus)");
+    });
+
     it("shows the formatting bar until Aa hides it, and brings it back", () => {
       renderComposer();
       const aa = screen.getByRole("button", { name: "Show formatting" });
