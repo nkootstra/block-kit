@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
 import { Link } from "./Link";
+import { Tooltip } from "./Tooltip";
 import { useClientLayoutEffect } from "./useClientLayoutEffect";
 
 export interface UserMentionProps {
@@ -153,5 +154,17 @@ export function UserMention({ id, name }: UserMentionProps) {
           document.body,
         )}
     </>
+  );
+}
+
+/**
+ * A user mention no resolver names: Slack's `c-missing_text` skeleton, with a "Private user info"
+ * tooltip while the pointer rests on it (extra/fidelity/data-table/mixed@hover-mention-1).
+ */
+export function PrivateUser({ id }: { id: string }) {
+  return (
+    <Tooltip label="Private user info">
+      <span className="sbk-mention--unresolved" aria-label={`@${id}`} />
+    </Tooltip>
   );
 }

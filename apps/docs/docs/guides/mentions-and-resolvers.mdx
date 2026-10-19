@@ -105,10 +105,13 @@ cached that id yet: not an error, not the raw id:
 - **A user mention in mrkdwn or a Home tab/modal's plain mrkdwn text** (`<@U0123>` with no
   resolver hit) falls back to plain `@U0123` text. Slack doesn't show a loading pill for it either.
 - **A user or usergroup mention in a `rich_text` block** shows an empty loading pill (a small pulsing
-  bar), matching Slack's Builder while it's still resolving a mention it hasn't seen before.
+  bar), matching Slack's Builder while it's still resolving a mention it hasn't seen before. Resting
+  the pointer on a user's pill shows Slack's "Private user info" tooltip.
 - **A channel mention with no `channel` resolver hit and no inline label** (`<#C0123>` without
   `|name`) renders as a locked "Private channel" pill, since Slack can't show a name for a channel the
-  viewer isn't in either.
+  viewer isn't in either. Resting the pointer on it shows Slack's hover card explaining why: "You
+  don't have access to this channel (ex. it's private or in a workspace you're not a part of), so
+  its name isn't shown".
 - **A usergroup mention** always shows the loading state until resolved. There's no unresolved
   fallback text for subteams, matching Slack.
 

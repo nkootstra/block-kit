@@ -1,0 +1,18 @@
+/* Slack's hover card (HoverCard.tsx): `elevation_3 sk_primary_background rounded-lg`, the menu
+   background with the popover shadow, in the body text colour (#d1d2d3 in the dark theme). */
+.sbk-hover-card {
+  box-sizing: border-box;
+  font-size: 15px;
+  line-height: 1.46668;
+  color: var(--sbk-text-body);
+  background: var(--sbk-menu-bg);
+  border-radius: 8px;
+  box-shadow: var(--sbk-popover-shadow);
+}
+
+/* An unresolved channel mention's card: `padding_100`, 340px wide
+   (extra/fidelity/rich-text-channel/mixed@hover-mention-1). */
+.sbk-hover-card--channel {
+  width: 340px;
+  padding: 16px;
+}

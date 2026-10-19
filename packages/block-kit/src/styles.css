@@ -2,6 +2,7 @@
 @import "./base.css";
 @import "./Message.css";
 @import "./UserMention.css";
+@import "./HoverCard.css";
 @import "./confirm/ConfirmDialog.css";
 @import "./data/HoverActions.css";
 @import "./blocks/Actions.css";

@@ -341,8 +341,9 @@ syntax-highlighted fenced code block instead:
 A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to render. The preview
 resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DESIGN` for you (see
 [Mentions and resolvers](/guides/mentions-and-resolvers) for how resolvers work in your own app). An unresolved
-`channel` renders as a locked "Private channel" placeholder; an unresolved `user` or `usergroup`
-renders a loading placeholder instead.
+`channel` renders as a locked "Private channel" placeholder, with Slack's hover card saying why its
+name isn't shown; an unresolved `user` or `usergroup` renders a loading placeholder instead, a
+user's with a "Private user info" tooltip.
 :::
 
 ### Emoji
