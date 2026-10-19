@@ -10,6 +10,7 @@ import { formatSlackDate } from "../parser";
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "../context";
 import { Emoji } from "../emoji";
+import { LinkHoverCard } from "../HoverCard";
 import { Link, MentionLink } from "../Link";
 import { PrivateChannel } from "../Mrkdwn";
 import type { BlockProps } from "../types";
@@ -189,9 +190,11 @@ export function renderLeaf(
       break;
     case "link":
       content = (
-        <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
-          {el.text || el.url}
-        </Link>
+        <LinkHoverCard url={el.url}>
+          <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
+            {el.text || el.url}
+          </Link>
+        </LinkHoverCard>
       );
       break;
     case "emoji": {
@@ -323,9 +326,11 @@ function renderPreformattedLines(
       return (
         <Fragment key={i}>
           {applyStyle(
-            <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
-              {el.text || el.url}
-            </Link>,
+            <LinkHoverCard url={el.url}>
+              <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
+                {el.text || el.url}
+              </Link>
+            </LinkHoverCard>,
             el.style,
           )}
         </Fragment>

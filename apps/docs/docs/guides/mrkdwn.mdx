@@ -79,9 +79,13 @@ that's what Slack itself restricts it to.
     },
     "<url|label>": {
       type: "Link",
-      description: "Renders as label; falls back to showing the raw url with no |label part.",
+      description:
+        "Renders as label; falls back to showing the raw url with no |label part. Hovering it shows Slack's link card: the url, with Open in new tab and Copy link buttons.",
     },
-    "bare url": { type: "Auto-link", description: "Linked automatically unless verbatim is true." },
+    "bare url": {
+      type: "Auto-link",
+      description: "Linked automatically unless verbatim is true, with the same hover card.",
+    },
     "<@U123>": { type: "User mention" },
     "<#C123>": {
       type: "Channel mention",

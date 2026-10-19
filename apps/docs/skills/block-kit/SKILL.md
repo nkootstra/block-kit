@@ -197,6 +197,10 @@ These props, and `resolvers`, are functions:
   `onAction`: a chart's View as table (a modal) and Download chart data (a `.tsv`), with Copy as
   image disabled; an image's Copy link and Hide image; a table's Copy table and Download table.
   Downloaded files prefix a cell that would run as a spreadsheet formula with `'`.
+- **Hover cards on links and unresolved mentions**, as in Slack, open on pointer hover only (not
+  keyboard focus) and close on Escape. A mrkdwn or rich text link shows its URL with Open in new tab
+  and Copy link buttons (the link sits in a `<span>` that takes the pointer events, so
+  `linkComponent` needn't forward them); an unresolved channel mention says why its name is hidden.
 - **Charts** are never narrower than 400px, as in Slack: in a narrower message the card scrolls
   sideways inside the block, its More actions button with it (the page doesn't scroll sideways).
   Hovering a bar, point or slice shows Slack's tooltip, which slides after the pointer and fades in

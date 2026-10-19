@@ -16,3 +16,63 @@
   width: 340px;
   padding: 16px;
 }
+
+/* A link's card (`urlHoverCardContainer`, message/mrkdwn@hover-link-1): as wide as its content
+   between 280px and 400px, a 28px heading row over the URL, 8px apart. */
+.sbk-link-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 280px;
+  max-width: 400px;
+  padding: 16px;
+}
+
+.sbk-link-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  height: 28px;
+  font-weight: 700;
+}
+
+.sbk-link-card__label {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.sbk-link-card__label svg {
+  display: block;
+  flex: none;
+}
+
+.sbk-link-card__actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+/* `c-icon_button--size_small`: a 28px square with a 16px glyph. */
+.sbk-link-card .sbk-link-card__action {
+  width: 28px;
+  height: 28px;
+}
+
+.sbk-link-card .sbk-link-card__action svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* `c-truncate--break_words`: a long URL breaks anywhere and stops after five lines. */
+.sbk-link-card__url {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
