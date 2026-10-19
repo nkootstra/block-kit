@@ -397,6 +397,28 @@
   font-weight: 900;
 }
 
+/* A person the chip can't resolve: Slack's `c-missing_icon` and `c-missing_text`, a 20px blank
+   avatar 6px before a 120px name bar on the name's baseline, as the single select's skeleton. */
+.sbk-select__chip-skeleton {
+  align-items: center;
+}
+
+.sbk-select__chip-skeleton-avatar {
+  flex: 0 0 20px;
+  height: 20px;
+  margin-right: 6px;
+  background: var(--sbk-skeleton-bg);
+  border-radius: clamp(4px, min(22.222%, 12px), 12px);
+}
+
+.sbk-select__chip-text > .sbk-select__chip-skeleton-name {
+  display: inline-block;
+  width: 120px;
+  height: 8px;
+  background: var(--sbk-skeleton-bg);
+  border-radius: 1000px;
+}
+
 /* Slack's `c-token_channel`: the 18px hash or lock, 2px before the name. */
 .sbk-select__chip-icon {
   flex: 0 0 18px;
