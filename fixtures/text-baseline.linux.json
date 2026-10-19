@@ -1969,47 +1969,25 @@
   "extra/fidelity/multi-static-select/mixed@mobile+dark": [],
   "extra/fidelity/multi-static-select/mixed@open": [],
   "extra/fidelity/multi-static-select/mixed@open+dark": [],
-  "extra/fidelity/multi-users-select/initial-value": [
-    "extra|U0123456789|0"
-  ],
-  "extra/fidelity/multi-users-select/initial-value@dark": [
-    "extra|U0123456789|0"
-  ],
-  "extra/fidelity/multi-users-select/initial-value@mobile": [
-    "extra|U0123456789|0"
-  ],
-  "extra/fidelity/multi-users-select/initial-value@mobile+dark": [
-    "extra|U0123456789|0"
-  ],
+  "extra/fidelity/multi-users-select/initial-value": [],
+  "extra/fidelity/multi-users-select/initial-value@dark": [],
+  "extra/fidelity/multi-users-select/initial-value@mobile": [],
+  "extra/fidelity/multi-users-select/initial-value@mobile+dark": [],
   "extra/fidelity/multi-users-select/initial-value@open": [
-    "y|User One|0",
-    "y|(you)|0",
-    "y|User Two|0",
-    "y|User Three|0",
-    "y|User Three|1",
-    "y|User Four|0",
     "x|AGENT|0",
     "y|AGENT|0",
     "missing|User Four|1",
     "extra|U0123456789|0",
     "extra|User Two|1",
-    "extra|Selected|0",
-    "extra|U0123456789|1"
+    "extra|Selected|0"
   ],
   "extra/fidelity/multi-users-select/initial-value@open+dark": [
-    "y|User One|0",
-    "y|(you)|0",
-    "y|User Two|0",
-    "y|User Three|0",
-    "y|User Three|1",
-    "y|User Four|0",
     "x|AGENT|0",
     "y|AGENT|0",
     "missing|User Four|1",
     "extra|U0123456789|0",
     "extra|User Two|1",
-    "extra|Selected|0",
-    "extra|U0123456789|1"
+    "extra|Selected|0"
   ],
   "extra/fidelity/multi-users-select/long-content": [
     "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
@@ -2338,22 +2316,10 @@
   "extra/fidelity/rich-text-rich-text-quote/long-content@dark": [],
   "extra/fidelity/rich-text-rich-text-quote/long-content@mobile": [],
   "extra/fidelity/rich-text-rich-text-quote/long-content@mobile+dark": [],
-  "extra/fidelity/rich-text-salesforce-data-field/default": [
-    "y|See|0",
-    "missing|Record was deleted|0"
-  ],
-  "extra/fidelity/rich-text-salesforce-data-field/default@dark": [
-    "y|See|0",
-    "missing|Record was deleted|0"
-  ],
-  "extra/fidelity/rich-text-salesforce-data-field/default@mobile": [
-    "y|See|0",
-    "missing|Record was deleted|0"
-  ],
-  "extra/fidelity/rich-text-salesforce-data-field/default@mobile+dark": [
-    "y|See|0",
-    "missing|Record was deleted|0"
-  ],
+  "extra/fidelity/rich-text-salesforce-data-field/default": [],
+  "extra/fidelity/rich-text-salesforce-data-field/default@dark": [],
+  "extra/fidelity/rich-text-salesforce-data-field/default@mobile": [],
+  "extra/fidelity/rich-text-salesforce-data-field/default@mobile+dark": [],
   "extra/fidelity/rich-text-tag/default": [],
   "extra/fidelity/rich-text-tag/default@dark": [],
   "extra/fidelity/rich-text-tag/default@mobile": [],
