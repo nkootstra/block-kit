@@ -85,6 +85,76 @@ describe("<HoverCard>", () => {
     expect(pill.getAttribute("aria-describedby")).toBe(card()?.id);
   });
 
+  it("shows a mrkdwn link's URL with buttons to open and copy it", () => {
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+    const open = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <Message
+        blocks={[
+          { type: "section", text: { type: "mrkdwn", text: "Photo by <http://google.com|Ada>" } },
+        ]}
+      />,
+    );
+    const link = screen.getByRole("link", { name: "Ada" });
+    fireEvent.mouseEnter(link);
+    act(() => vi.advanceTimersByTime(300));
+    expect(card()?.querySelector(".sbk-link-card__url")?.textContent).toBe("http://google.com");
+    expect(card()?.textContent).toContain("Link");
+    // The card has controls of its own, so it doesn't describe the link.
+    expect(link.hasAttribute("aria-describedby")).toBe(false);
+    expect(link.parentElement?.hasAttribute("aria-describedby")).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
+    expect(writeText).toHaveBeenCalledWith("http://google.com");
+    fireEvent.click(screen.getByRole("button", { name: "Open in new tab" }));
+    expect(open).toHaveBeenCalledWith("http://google.com", "_blank", "noopener,noreferrer");
+    open.mockRestore();
+  });
+
+  it("shows the card on a rich text link too", () => {
+    render(
+      <Message
+        blocks={[
+          {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [{ type: "link", url: "https://example.com/docs", text: "docs" }],
+              },
+            ],
+          },
+        ]}
+      />,
+    );
+    fireEvent.mouseEnter(screen.getByRole("link", { name: "docs" }));
+    act(() => vi.advanceTimersByTime(300));
+    expect(card()?.querySelector(".sbk-link-card__url")?.textContent).toBe(
+      "https://example.com/docs",
+    );
+  });
+
+  it("gives a link it won't follow no card", () => {
+    render(
+      <Message
+        blocks={[
+          {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [{ type: "link", url: "javascript:alert(1)", text: "unsafe" }],
+              },
+            ],
+          },
+        ]}
+      />,
+    );
+    fireEvent.mouseEnter(screen.getByText("unsafe"));
+    act(() => vi.advanceTimersByTime(300));
+    expect(card()).toBeNull();
+  });
+
   it("names a user mention it can't resolve as private in a tooltip", () => {
     render(
       <Message

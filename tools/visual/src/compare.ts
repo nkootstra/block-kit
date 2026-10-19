@@ -131,6 +131,8 @@ interface Meta {
 
 /** Where our open menus and dialogs render: portalled to <body>, outside #sbk-render. */
 const OUR_POPOVERS = ".sbk-popover > *, .sbk-tooltip";
+/** Above anything in the frozen preview; snapshot.js writes the same on new captures. */
+const POPOVER_LAYER_Z = 1000;
 const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog";
 
 const names = shard(
@@ -383,7 +385,11 @@ for (const name of names) {
   const refPage = popovers ? await context.newPage() : page;
   if (popovers) {
     await refPage.setContent(html, { waitUntil: "load" });
-    await refPage.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
+    // Slack draws popovers in a layer above the preview; frozen beside it with no z-index, one
+    // would paint under a hovered block (`p-bkb_preview__rendered-block`, z-index 1).
+    await refPage.addStyleTag({
+      content: `${fontFaces}${SCROLLBAR_CSS}[data-sbk-layer="popover"]{z-index:${POPOVER_LAYER_Z}}`,
+    });
     await settle(refPage);
     await restoreSelection(refPage);
     await restoreScroll(refPage, meta.scrollers ?? []);

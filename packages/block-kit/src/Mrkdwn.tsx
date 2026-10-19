@@ -2,7 +2,7 @@ import { formatSlackDate, type InlineNode, type MrkdwnNode, parse } from "./pars
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
-import { HoverCard } from "./HoverCard";
+import { HoverCard, LinkHoverCard } from "./HoverCard";
 import { Link, MentionLink } from "./Link";
 import { UserMention } from "./UserMention";
 
@@ -61,9 +61,11 @@ function renderNode(
       );
     case "link":
       return (
-        <Link className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
-          {node.children ? renderNodes(node.children, resolvers, timeZone, emojiSize) : node.url}
-        </Link>
+        <LinkHoverCard url={node.url}>
+          <Link className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
+            {node.children ? renderNodes(node.children, resolvers, timeZone, emojiSize) : node.url}
+          </Link>
+        </LinkHoverCard>
       );
     case "user": {
       const name = resolvers.user?.(node.id);

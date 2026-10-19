@@ -337,6 +337,32 @@ export function CopyIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Slack's `link` glyph (two chain links), as the link hover card's heading draws it. */
+export function LinkIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        d="M12.306 3.756a2.75 2.75 0 0 1 3.889 0l.05.05a2.75 2.75 0 0 1 0 3.889l-3.18 3.18a2.75 2.75 0 0 1-3.98-.095l-.03-.034a.75.75 0 0 0-1.11 1.009l.03.034a4.25 4.25 0 0 0 6.15.146l3.18-3.18a4.25 4.25 0 0 0 0-6.01l-.05-.05a4.25 4.25 0 0 0-6.01 0L9.47 4.47a.75.75 0 1 0 1.06 1.06zm-4.611 12.49a2.75 2.75 0 0 1-3.89 0l-.05-.051a2.75 2.75 0 0 1 0-3.89l3.18-3.179a2.75 2.75 0 0 1 3.98.095l.03.034a.75.75 0 1 0 1.11-1.01l-.03-.033a4.25 4.25 0 0 0-6.15-.146l-3.18 3.18a4.25 4.25 0 0 0 0 6.01l.05.05a4.25 4.25 0 0 0 6.01 0l1.775-1.775a.75.75 0 0 0-1.06-1.06z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+/** Slack's `new-window` glyph ("Open in new tab"). */
+export function NewWindowIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        d="M8.25 4a.75.75 0 0 1 0 1.5h-2.5A2.25 2.25 0 0 0 3.5 7.75v6.5a2.25 2.25 0 0 0 2.25 2.25h6.5a2.25 2.25 0 0 0 2.25-2.25v-2.5a.75.75 0 0 1 1.5 0v2.5A3.75 3.75 0 0 1 12.25 18h-6.5A3.75 3.75 0 0 1 2 14.25v-6.5A3.75 3.75 0 0 1 5.75 4zm9-2a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V4.56l-7.22 7.22a.75.75 0 1 1-1.06-1.06l7.22-7.22h-2.69a.75.75 0 0 1 0-1.5z"
+      />
+    </svg>
+  );
+}
+
 /** Slack's `open-in-window` glyph, from the image action group. */
 export function OpenInWindowIcon(props: SVGProps<SVGSVGElement>) {
   return (

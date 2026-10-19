@@ -74,8 +74,10 @@ It gets `LinkProps`: `href`, `className`, `children`, and `target` and `rel` for
 a new tab, as Slack's do. Pass `className` on: it carries block-kit's styling. The `href` has
 already passed the renderer's [URL safety](/reference/block-kit-provider#url-safety) check, so a
 `javascript:` URL never reaches it. The examples check for `//` as well as `/`, because `//host/path`
-is a link to another site, not a path in your app. Route your own
-paths and leave everything else a plain `<a>`:
+is a link to another site, not a path in your app. A link in mrkdwn or rich text sits in a `<span>`
+that opens Slack's link hover card, so your component doesn't have to forward pointer events; the
+card's Open in new tab button opens the URL in a new tab with `window.open`, not through your
+component. Route your own paths and leave everything else a plain `<a>`:
 
 ```tsx
 import { Link } from "react-router";
