@@ -172,3 +172,29 @@
   color: var(--sbk-tag-text);
   background: var(--sbk-tag-bg);
 }
+
+/* Slack's `p-rich_text_salesforce_data_field` (extra/fidelity/rich-text-salesforce-data-field/default):
+   an inline-flex mention-blue pill 24px tall on a 22px line, bottom-aligned, so it makes the line
+   box 24px and the text beside it sits 2px lower. A record Slack can't reach is `--disabled`:
+   greyed out. */
+.sbk-rich-text__salesforce {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 1px 2px;
+  vertical-align: bottom;
+  color: var(--sbk-link);
+  background: var(--sbk-chip-bg);
+  border-radius: 3px;
+}
+
+.sbk-rich-text__salesforce--disabled {
+  filter: grayscale(1);
+}
+
+.sbk-rich-text__salesforce svg {
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+  margin-right: 4px;
+}
