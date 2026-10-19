@@ -34,6 +34,15 @@ describe("open-state layout", () => {
       left: 126,
       top: 16,
     });
+    // A popover 2px inside the message's left edge would sit at 8px, not 2px, without room.
+    expect(roomFor([{ kind: "popover", x: 2, y: 24, width: 349, height: 372 }])).toEqual({
+      left: 14,
+      top: 16,
+    });
+    expect(roomFor([{ kind: "popover", x: 40, y: 24, width: 349, height: 372 }])).toEqual({
+      left: 0,
+      top: 16,
+    });
     expect(roomFor([])).toEqual({ left: 0, top: 0 });
   });
 });
