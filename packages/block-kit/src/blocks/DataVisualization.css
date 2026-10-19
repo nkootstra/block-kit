@@ -34,6 +34,13 @@
   overflow: auto;
 }
 
+/* Slack's chart wrapper, holding the card and its actions: Slack doesn't narrow a chart below
+   400px, so in a narrower block (a 320px phone message) the card keeps its desktop-like spacing and
+   scrolls sideways, starting with the last category and the menu button out of view. */
+.sbk-dataviz-frame {
+  min-width: 400px;
+}
+
 .sbk-dataviz {
   color: var(--sbk-text);
   display: flex;
@@ -43,10 +50,6 @@
   border: 1px solid var(--sbk-dataviz-border);
   border-radius: 12px;
   overflow: hidden;
-  /* Slack doesn't narrow a chart below 400px: in a narrower block (a 320px phone message) the card
-     keeps its desktop-like spacing and scrolls sideways, starting with the last category out of
-     view. */
-  min-width: 400px;
 }
 
 .sbk-dataviz__title {
