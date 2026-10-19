@@ -4,7 +4,8 @@ import { ordinal } from "../dateFormat";
 export interface CalendarProps {
   /** `YYYY-MM-DD`, or undefined for no selection. */
   value?: string;
-  onSelect: (date: string) => void;
+  /** `pointer` is true for a press with the mouse or a finger, false for Enter or Space. */
+  onSelect: (date: string, pointer: boolean) => void;
   /** When given (and a date is selected), a "Clear selection" footer is shown, as in Slack. */
   onClear?: () => void;
 }
@@ -201,7 +202,8 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
                 aria-label={dayLabel(iso)}
                 tabIndex={iso === tabStop ? 0 : -1}
                 onFocus={() => setFocused(iso)}
-                onClick={() => onSelect(iso)}
+                // A click from Enter or Space has no presses to count (`detail` 0).
+                onClick={(e) => onSelect(iso, e.detail > 0)}
               >
                 {day}
               </button>

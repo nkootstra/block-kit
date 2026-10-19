@@ -8,7 +8,8 @@ export interface CalendarPopoverProps {
   /** The popup itself, so the field can move focus into the calendar while it's open. */
   popupRef: RefObject<HTMLDivElement | null>;
   value?: string;
-  onSelect: (date: string) => void;
+  /** `pointer` is true for a day picked with a press, false for one picked with the keyboard. */
+  onSelect: (date: string, pointer: boolean) => void;
   /** Offered as Slack's "Clear selection" footer while a date is chosen. */
   onClear?: () => void;
   /** A press outside the field and the calendar. */

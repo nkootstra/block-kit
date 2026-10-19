@@ -92,8 +92,13 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
     if (document.activeElement !== dateRef.current) dateRef.current?.focus();
   }
 
-  function pickDate(date: string) {
-    closeCalendar();
+  /**
+   * As in the datepicker, only a day picked with the keyboard hands focus back to the field; a press
+   * leaves nothing focused (`contexts/datetimepicker/actions@pick`).
+   */
+  function pickDate(date: string, pointer: boolean) {
+    if (pointer) setCalendarOpen(false);
+    else closeCalendar();
     // Slack fills an empty time with the current one, to the minute.
     change({ date, time: value?.time ?? now().time });
   }
