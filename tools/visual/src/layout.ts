@@ -32,15 +32,17 @@ const EDGE = 8;
 
 /**
  * How far to move our message from the page's top-left corner so a popover that sticks out of it
- * in Slack has room, and isn't pushed inward by our window-edge clamp.
+ * in Slack has room, and isn't pushed inward by our window-edge clamp. A popover that starts less
+ * than EDGE inside the message's left edge needs the room too: at the page's edge the clamp would
+ * push it right to EDGE.
  */
 export function roomFor(layers: Layer[]): { left: number; top: number } {
   const popovers = layers.filter((l) => l.kind === "popover");
   if (popovers.length === 0) return { left: 0, top: 0 };
-  const overhangLeft = Math.max(0, ...popovers.map((l) => -l.x));
+  const leftmost = Math.min(...popovers.map((l) => l.x));
   const overhangTop = Math.max(0, ...popovers.map((l) => -l.y));
   return {
-    left: overhangLeft > 0 ? overhangLeft + 2 * EDGE : 0,
+    left: leftmost < EDGE ? -leftmost + 2 * EDGE : 0,
     top: overhangTop + 2 * EDGE,
   };
 }
