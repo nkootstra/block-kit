@@ -4569,7 +4569,8 @@ describe.each(engines)("%s", (engine) => {
     // inside a scroller as wide as the block (its scrollContainer: overflow auto, max-width 100%).
     // The last category ("Fri") starts out of view and scrolls into it; the plot inside is laid
     // out as at 400px (bar-single-series@mobile: "Mon" centred 104px into the 374px plot, 117px
-    // from the card's edge).
+    // from the card's edge). The menu button rides on the card, so it starts out of view too
+    // (area-multi-series@hover-menu-1+mobile: Slack's chartActionsGroup sits inside the scroller).
     it("keeps a chart card 400px wide in a narrow message and scrolls it sideways", async () => {
       const page = await harness.open(
         await fixture("catalog/data-visualization/bar-single-series"),
@@ -4589,14 +4590,24 @@ describe.each(engines)("%s", (engine) => {
         };
         const message = document.querySelector(".sbk-message, .sbk-root")!.getBoundingClientRect();
         const fri = ticks.find((t) => t.textContent === "Fri")!.getBoundingClientRect();
+        const menu = document
+          .querySelector(".sbk-hover-actions--chart .sbk-hover-actions__button")!
+          .getBoundingClientRect();
         return {
           width: Math.round(card.width),
           mon: Math.round(centre(ticks.find((t) => t.textContent === "Mon")!)),
           friVisible: fri.x + fri.width / 2 < message.right,
+          menuVisible: menu.right <= message.right,
           pageScrolls: document.documentElement.scrollWidth > window.innerWidth,
         };
       });
-      expect(geometry).toEqual({ width: 400, mon: 117, friVisible: false, pageScrolls: false });
+      expect(geometry).toEqual({
+        width: 400,
+        mon: 117,
+        friVisible: false,
+        menuVisible: false,
+        pageScrolls: false,
+      });
       const scrolled = await page.evaluate(() => {
         const block = document.querySelector(".sbk-block")!.getBoundingClientRect();
         const scroller = document.querySelector<HTMLElement>(".sbk-dataviz-scroll")!;
@@ -4604,16 +4615,21 @@ describe.each(engines)("%s", (engine) => {
         const fri = [...document.querySelectorAll(".sbk-chart__tick")]
           .find((t) => t.textContent === "Fri")!
           .getBoundingClientRect();
+        const menu = document
+          .querySelector(".sbk-hover-actions--chart .sbk-hover-actions__button")!
+          .getBoundingClientRect();
         return {
           scroller: [Math.round(scroller.clientWidth), scroller.scrollWidth],
           blockWidth: Math.round(block.width),
           friVisible: fri.x + fri.width / 2 < block.right,
+          menuVisible: menu.right <= block.right,
         };
       });
       expect(scrolled).toEqual({
         scroller: [scrolled.blockWidth, 400],
         blockWidth: scrolled.blockWidth,
         friVisible: true,
+        menuVisible: true,
       });
     });
 

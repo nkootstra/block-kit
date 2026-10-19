@@ -365,6 +365,12 @@ export function inputState({ input, target }: InputState): State {
       keepPointer: true,
       ours: async (p) => {
         const el = await ourTarget(p, target);
+        // capture.js brings the control into view as little as it can (`nearest`) before pointing
+        // at it; Playwright's own scroll goes further, so a control a scroller hides (a chart's menu
+        // button in a narrow message) would end up somewhere else.
+        await el.evaluate((node) =>
+          (node as Element).scrollIntoView({ block: "nearest", inline: "nearest" }),
+        );
         // An image's or chart's menu button takes the pointer only once its host is hovered, so the
         // first move, past the actionability checks, hovers the host and the second the button.
         await el.hover({ force: true });
