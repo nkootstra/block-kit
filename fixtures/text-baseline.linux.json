@@ -554,28 +554,9 @@
   "catalog/data-visualization/area-multi-series": [],
   "catalog/data-visualization/area-multi-series@dark": [],
   "catalog/data-visualization/area-multi-series@focus-menu-1+dark": [],
-  "catalog/data-visualization/area-multi-series@focus-menu-1+mobile": [
-    "x|More actions|0"
-  ],
+  "catalog/data-visualization/area-multi-series@focus-menu-1+mobile": [],
   "catalog/data-visualization/area-multi-series@full": [],
-  "catalog/data-visualization/area-multi-series@hover-menu-1+mobile": [
-    "x|Concurrent users by platform|0",
-    "x|0|0",
-    "x|1,000|0",
-    "x|2,000|0",
-    "x|3,000|0",
-    "x|4,000|0",
-    "x|Mon|0",
-    "x|Tue|0",
-    "x|Wed|0",
-    "x|Thu|0",
-    "x|Day|0",
-    "x|Desktop|0",
-    "x|Mobile|0",
-    "x|More actions|0",
-    "missing|Fri|0",
-    "extra|Users|0"
-  ],
+  "catalog/data-visualization/area-multi-series@hover-menu-1+mobile": [],
   "catalog/data-visualization/area-multi-series@mobile": [],
   "catalog/data-visualization/area-multi-series@mobile+dark": [],
   "catalog/data-visualization/area-multi-series@mobile+full": [],
@@ -725,12 +706,8 @@
     "missing|User Four|1",
     "extra|User Two|1"
   ],
-  "catalog/input/multi-users-select@pick": [
-    "y|User One|0"
-  ],
-  "catalog/input/multi-users-select@pick+dark": [
-    "y|User One|0"
-  ],
+  "catalog/input/multi-users-select@pick": [],
+  "catalog/input/multi-users-select@pick+dark": [],
   "catalog/input/multiline-plain-text-input": [],
   "catalog/input/multiline-plain-text-input@dark": [],
   "catalog/input/multiline-plain-text-input@mobile": [],
@@ -1642,28 +1619,16 @@
   "extra/actions/more-elements": [],
   "extra/actions/more-elements@confirm": [],
   "extra/actions/more-elements@confirm-focus-tab-1": [],
-  "extra/actions/more-elements@confirm-focus-tab-1+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/actions/more-elements@confirm-focus-tab-1+dark": [],
   "extra/actions/more-elements@confirm-focus-tab-1+mobile": [],
-  "extra/actions/more-elements@confirm-focus-tab-1+mobile+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/actions/more-elements@confirm-focus-tab-1+mobile+dark": [],
   "extra/actions/more-elements@confirm-hover-confirm-1": [],
-  "extra/actions/more-elements@confirm-hover-confirm-1+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/actions/more-elements@confirm-hover-confirm-1+dark": [],
   "extra/actions/more-elements@confirm-hover-confirm-1+mobile": [],
-  "extra/actions/more-elements@confirm-hover-confirm-1+mobile+dark": [
-    "color|Are you sure?|0"
-  ],
-  "extra/actions/more-elements@confirm+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/actions/more-elements@confirm-hover-confirm-1+mobile+dark": [],
+  "extra/actions/more-elements@confirm+dark": [],
   "extra/actions/more-elements@confirm+mobile": [],
-  "extra/actions/more-elements@confirm+mobile+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/actions/more-elements@confirm+mobile+dark": [],
   "extra/actions/more-elements@dark": [],
   "extra/actions/more-elements@mobile": [],
   "extra/actions/more-elements@mobile+dark": [],
@@ -1720,9 +1685,7 @@
   "extra/fidelity/carousel/many-items@scrolled-end+mobile": [],
   "extra/fidelity/channels-select/long-content": [],
   "extra/fidelity/channels-select/long-content@confirm": [],
-  "extra/fidelity/channels-select/long-content@confirm+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/fidelity/channels-select/long-content@confirm+dark": [],
   "extra/fidelity/channels-select/long-content@dark": [],
   "extra/fidelity/channels-select/long-content@mobile": [],
   "extra/fidelity/channels-select/long-content@mobile+dark": [],
@@ -1752,9 +1715,7 @@
   "extra/fidelity/condition/mixed@mobile+dark": [],
   "extra/fidelity/confirm/long-content": [],
   "extra/fidelity/confirm/long-content@confirm": [],
-  "extra/fidelity/confirm/long-content@confirm+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/fidelity/confirm/long-content@confirm+dark": [],
   "extra/fidelity/confirm/long-content@dark": [],
   "extra/fidelity/confirm/long-content@mobile": [],
   "extra/fidelity/confirm/long-content@mobile+dark": [],
@@ -1839,21 +1800,15 @@
   ],
   "extra/fidelity/data-table/mixed": [],
   "extra/fidelity/data-table/mixed@dark": [],
-  "extra/fidelity/data-table/mixed@hover-mention-1": [
-    "missing|Private user info|0"
-  ],
-  "extra/fidelity/data-table/mixed@hover-mention-1+dark": [
-    "missing|Private user info|0"
-  ],
+  "extra/fidelity/data-table/mixed@hover-mention-1": [],
+  "extra/fidelity/data-table/mixed@hover-mention-1+dark": [],
   "extra/fidelity/data-table/mixed@hover-mention-1+mobile": [
     "x|a link|0",
-    "width|a link|0",
-    "missing|Private user info|0"
+    "width|a link|0"
   ],
   "extra/fidelity/data-table/mixed@hover-mention-1+mobile+dark": [
     "x|a link|0",
-    "width|a link|0",
-    "missing|Private user info|0"
+    "width|a link|0"
   ],
   "extra/fidelity/data-table/mixed@mobile": [
     "x|a link|0",
@@ -1900,9 +1855,7 @@
     "extra|Select a date|0"
   ],
   "extra/fidelity/datetimepicker/empty@confirm": [],
-  "extra/fidelity/datetimepicker/empty@confirm+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/fidelity/datetimepicker/empty@confirm+dark": [],
   "extra/fidelity/datetimepicker/empty@dark": [
     "extra|Select a date|0"
   ],
@@ -1948,10 +1901,7 @@
   "extra/fidelity/header/long-content@mobile+dark": [],
   "extra/fidelity/icon-button/mixed": [],
   "extra/fidelity/icon-button/mixed@confirm": [],
-  "extra/fidelity/icon-button/mixed@confirm+dark": [
-    "color|Remove it?|0",
-    "color|This can't be undone.|0"
-  ],
+  "extra/fidelity/icon-button/mixed@confirm+dark": [],
   "extra/fidelity/icon-button/mixed@dark": [],
   "extra/fidelity/icon-button/mixed@mobile": [],
   "extra/fidelity/icon-button/mixed@mobile+dark": [],
@@ -1998,12 +1948,8 @@
   "extra/fidelity/multi-channels-select/empty@open+dark": [],
   "extra/fidelity/multi-channels-select/empty@open+mobile": [],
   "extra/fidelity/multi-channels-select/empty@open+mobile+dark": [],
-  "extra/fidelity/multi-channels-select/empty@pick": [
-    "y|channel-one|0"
-  ],
-  "extra/fidelity/multi-channels-select/empty@pick+dark": [
-    "y|channel-one|0"
-  ],
+  "extra/fidelity/multi-channels-select/empty@pick": [],
+  "extra/fidelity/multi-channels-select/empty@pick+dark": [],
   "extra/fidelity/multi-channels-select/long-content": [],
   "extra/fidelity/multi-channels-select/long-content@dark": [],
   "extra/fidelity/multi-channels-select/long-content@mobile": [],
@@ -2204,9 +2150,7 @@
   "extra/fidelity/option-group/many-items@open+dark": [],
   "extra/fidelity/option/long-content": [],
   "extra/fidelity/option/long-content@confirm": [],
-  "extra/fidelity/option/long-content@confirm+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/fidelity/option/long-content@confirm+dark": [],
   "extra/fidelity/option/long-content@dark": [],
   "extra/fidelity/option/long-content@mobile": [],
   "extra/fidelity/option/long-content@mobile+dark": [],
@@ -2222,9 +2166,7 @@
   "extra/fidelity/option/mixed@open+dark": [],
   "extra/fidelity/overflow/many-items": [],
   "extra/fidelity/overflow/many-items@confirm": [],
-  "extra/fidelity/overflow/many-items@confirm+dark": [
-    "color|Are you sure?|0"
-  ],
+  "extra/fidelity/overflow/many-items@confirm+dark": [],
   "extra/fidelity/overflow/many-items@dark": [],
   "extra/fidelity/overflow/many-items@mobile": [],
   "extra/fidelity/overflow/many-items@mobile+dark": [],
@@ -2344,18 +2286,10 @@
   ],
   "extra/fidelity/rich-text-channel/mixed": [],
   "extra/fidelity/rich-text-channel/mixed@dark": [],
-  "extra/fidelity/rich-text-channel/mixed@hover-mention-1": [
-    "missing|You don’t have access to this channel (ex. it’s private or in a workspace you’re not a part of), so its name isn’t shown|0"
-  ],
-  "extra/fidelity/rich-text-channel/mixed@hover-mention-1+dark": [
-    "missing|You don’t have access to this channel (ex. it’s private or in a workspace you’re not a part of), so its name isn’t shown|0"
-  ],
-  "extra/fidelity/rich-text-channel/mixed@hover-mention-1+mobile": [
-    "missing|You don’t have access to this channel (ex. it’s private or in a workspace you’re not a part of), so its name isn’t shown|0"
-  ],
-  "extra/fidelity/rich-text-channel/mixed@hover-mention-1+mobile+dark": [
-    "missing|You don’t have access to this channel (ex. it’s private or in a workspace you’re not a part of), so its name isn’t shown|0"
-  ],
+  "extra/fidelity/rich-text-channel/mixed@hover-mention-1": [],
+  "extra/fidelity/rich-text-channel/mixed@hover-mention-1+dark": [],
+  "extra/fidelity/rich-text-channel/mixed@hover-mention-1+mobile": [],
+  "extra/fidelity/rich-text-channel/mixed@hover-mention-1+mobile+dark": [],
   "extra/fidelity/rich-text-channel/mixed@mobile": [],
   "extra/fidelity/rich-text-channel/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-citation/default": [
