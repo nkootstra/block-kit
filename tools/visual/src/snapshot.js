@@ -669,8 +669,9 @@ async (win = window, options = {}) => {
     content && win.getComputedStyle(content).backgroundColor !== TRANSPARENT
       ? win.getComputedStyle(content).backgroundColor
       : backgroundOf(root);
-  // Popovers sit in #sbk-reference at their offset from the preview; the page is padded so one
-  // that stuck out to the left of (or above) the preview still lands on the page.
+  // Popovers sit in #sbk-reference at their offset from the preview, above it as in Slack (a
+  // hovered block has z-index 1); the page is padded so one that stuck out to the left of (or
+  // above) the preview still lands on the page.
   const popovers = layers.filter((l) => l.kind === "popover");
   const dialogs = layers.filter((l) => l.kind === "dialog");
   const padLeft = Math.max(0, ...popovers.map((l) => -l.x));
@@ -678,7 +679,7 @@ async (win = window, options = {}) => {
   const layerHtml = popovers
     .map(
       (l) =>
-        `<div data-sbk-layer="popover" style="position:absolute;left:${l.x}px;top:${l.y}px">${l.el.outerHTML}</div>`,
+        `<div data-sbk-layer="popover" style="position:absolute;z-index:1000;left:${l.x}px;top:${l.y}px">${l.el.outerHTML}</div>`,
     )
     .join("");
   const dialogHtml = dialogs
