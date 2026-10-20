@@ -35,6 +35,23 @@
   cursor: pointer;
 }
 
+/* Slack rings a focused collapsible header like its buttons: rounded 8px, with the same 1px ring
+   and 5px halo, which the card's `overflow: hidden` clips at its edges
+   (catalog/container/collapsible@focus-collapse-1). */
+.sbk-container__header--button:focus-visible {
+  outline: none;
+  border-radius: 8px;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-container__header--button:focus-visible {
+    outline: 2px solid;
+    outline-offset: -2px;
+  }
+}
+
 .sbk-container__header--divider {
   margin-bottom: 12px;
   border-bottom: 1px solid var(--sbk-outline-ter);
