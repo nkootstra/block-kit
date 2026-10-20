@@ -282,7 +282,8 @@
   vertical-align: -1.625px;
 }
 
-/* ... and c-small_member_list_entity while the member loads: a blank avatar and a name bar,
+/* ... and c-small_member_list_entity while the member loads: a blank avatar and a name bar, both
+   Slack's `c-missing_icon` grey (#eaeaea, #212428 in dark),
    clipped square where the name's box ends. */
 .sbk-select__skeleton {
   display: flex;
@@ -295,7 +296,7 @@
   width: 20px;
   height: 20px;
   margin: 0 8px 0 6px;
-  background: rgb(234, 234, 234);
+  background: var(--sbk-select-avatar-bg);
   border-radius: clamp(4px, min(22.222%, 12px), 12px);
 }
 
@@ -312,7 +313,7 @@
   display: block;
   width: 120px;
   height: 8px;
-  background: rgb(234, 234, 234);
+  background: var(--sbk-select-avatar-bg);
   border-radius: 1000px;
 }
 
