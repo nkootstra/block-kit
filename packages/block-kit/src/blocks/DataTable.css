@@ -123,10 +123,20 @@
   cursor: pointer;
 }
 
-/* Slack hides the unsorted caret until the header is hovered or focused, and tints the header
-   with the same 6% overlay as its other hoverable table chrome. */
+/* Slack tints a hovered header with the same 6% overlay as its other hoverable table chrome. A
+   focused one keeps its background and gets Slack's button ring instead
+   (catalog/table/basic-data-table@focus-column-1). */
 .sbk-data-table__col-header button:focus-visible {
-  background-color: var(--sbk-hover-overlay);
+  outline: none;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-data-table__col-header button:focus-visible {
+    outline: 2px solid;
+    outline-offset: -2px;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
