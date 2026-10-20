@@ -673,6 +673,14 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
     expect(skeleton.querySelector(".sbk-select__chip-skeleton-name")).toBeTruthy();
   });
 
+  it("lists only the directory when open, with no group repeating the chosen people", () => {
+    renderDirectory("multi_users_select", vi.fn(), { initial_users: ["U0UNKNOWN", "U03"] });
+    fireEvent.click(screen.getByRole("button", { expanded: false }));
+    expect(screen.queryByText("Selected")).toBeNull();
+    expect(document.querySelector(".sbk-select__group-label")).toBeNull();
+    expect(screen.getAllByRole("option").length).toBe(3);
+  });
+
   it("filters by the start of a word in the name or full name", () => {
     renderDirectory("users_select");
     const input = screen.getByRole("combobox");

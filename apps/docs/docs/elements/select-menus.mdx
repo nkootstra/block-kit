@@ -136,7 +136,8 @@ The single users, conversations and channels selects are typed into the same way
 multi-selects open from a button, with a search box where there's something to search, except
 `multi_external_select`: as in Slack, you type into its field after the chosen options, and its list
 shows only the app's options or the minimum-query hint. A
-multi-select ticks the options it already has; in an `input` block its list is a little wider than
+multi-select ticks the options it already has, in place; like Slack's, its list doesn't repeat them
+in a separate "Selected" group. In an `input` block its list is a little wider than
 the field. Tabbing into a multi-select in an `input` block opens its list, as Slack's does. Picking
 with Enter keeps a multi-select's list open for the next pick; a click closes it and leaves the field
 focused, with its focus ring. A single static select also stays focused after a click pick, as

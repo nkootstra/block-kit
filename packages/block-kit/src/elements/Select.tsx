@@ -569,17 +569,6 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             </span>
           </div>
         )}
-        {showSearchOnly && items.length > 0 && multi && !fieldTyped && (
-          <div className="sbk-select__group-label">Selected</div>
-        )}
-        {showSearchOnly &&
-          multi &&
-          !fieldTyped &&
-          items.map((item) => (
-            <div className="sbk-select__option sbk-select__option--selected" key={item.id}>
-              {item.label || resolveLabel(item.id)}
-            </div>
-          ))}
       </div>
     </Popover>
   );
