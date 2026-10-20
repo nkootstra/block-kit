@@ -716,7 +716,8 @@ h2 {
   position: relative;
   max-width: 512px;
   margin: 0 auto;
-  background: #fff;
+  /* What each capture was taken on: white, and Slack's dark message background. */
+  background: var(--frame-bg);
   touch-action: pan-y;
   cursor: ew-resize;
   user-select: none;
@@ -731,6 +732,24 @@ h2 {
 
 .compare img[hidden] {
   display: none;
+}
+
+/* One set of captures per Slack theme, each shown with the page's theme (the caption too). */
+.compare__set {
+  position: relative;
+}
+
+[data-compare-theme="dark"],
+:root[data-theme="dark"] [data-compare-theme="light"] {
+  display: none;
+}
+
+:root[data-theme="dark"] .compare__set[data-compare-theme="dark"] {
+  display: block;
+}
+
+:root[data-theme="dark"] span[data-compare-theme="dark"] {
+  display: inline;
 }
 
 .compare__top {
@@ -786,8 +805,7 @@ h2 {
   transform: translateY(-50%) rotate(-135deg);
 }
 
-/* The captures are Slack's light theme at 512px: shown at that size on white inside a frame that
-   follows the page's theme. */
+/* The captures are 512px wide, shown at that size inside a frame that follows the page's theme. */
 .compare__frame {
   padding: 12px;
 }

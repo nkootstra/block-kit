@@ -19,7 +19,8 @@ bun run compare
 
 - `bun run compare -- catalog/container` compares only fixtures under a prefix.
 - `--scale=2` renders both sides at twice the pixel density, for sharp images such as the landing
-  page's comparison (`apps/site/src/assets/proof`). Baselines are recorded at 1x, so it can't be
+  page's comparison (`apps/site/src/assets/proof`, one set from `message/approval` and one from
+  `message/approval@dark`, shown with the page's theme). Baselines are recorded at 1x, so it can't be
   combined with `--check` or `--update-baseline`.
 - `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
 - `--shard=2/4` compares one slice of the fixtures: every fourth one, starting from the second.
