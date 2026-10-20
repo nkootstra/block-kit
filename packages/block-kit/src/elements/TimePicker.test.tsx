@@ -94,6 +94,25 @@ describe("<TimePicker>", () => {
     expect((screen.getByRole("combobox") as HTMLInputElement).value).toBe("2:00 PM");
   });
 
+  // Recorded in Block Kit Builder: a clicked time leaves nothing focused, Enter keeps the field
+  // focused (contexts/timepicker/actions@click-pick, actions@keyboard).
+  it("lets go of focus after a clicked time, as Slack does", async () => {
+    const { input } = renderPicker();
+    input.focus();
+    fireEvent.click(input);
+    await clickAsync(screen.getByRole("option", { name: "1:00 AM" }));
+    expect(document.activeElement).not.toBe(input);
+  });
+
+  it("keeps focus after a time chosen with Enter", async () => {
+    const { input } = renderPicker();
+    input.focus();
+    fireEvent.click(input);
+    await keyDownAsync(input, "ArrowDown");
+    await keyDownAsync(input, "Enter");
+    expect(document.activeElement).toBe(input);
+  });
+
   /** The line under a timepicker with `timezone`. */
   function zoneLine(timezone: string) {
     render(

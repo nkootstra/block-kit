@@ -186,7 +186,13 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
                 aria-selected={row === time}
                 className={`sbk-timepicker__option${row === CLEAR ? " sbk-timepicker__option--clear" : ""}${row === time ? " sbk-timepicker__option--selected" : ""}`}
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => (row === CLEAR ? clear() : pick(row))}
+                onClick={() => {
+                  if (row === CLEAR) return clear();
+                  // A clicked time leaves nothing focused in Slack, so the field drops its ring;
+                  // Enter keeps the focus (contexts/timepicker/actions@click-pick, @keyboard).
+                  combo.inputRef.current?.blur();
+                  pick(row);
+                }}
                 {...combo.optionProps(i)}
               >
                 {row === CLEAR ? "Clear selection" : formatTime(row)}

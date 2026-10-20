@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "click": {
+        "role": "option",
+        "name": "1:00 AM"
+      }
+    }
+  ],
+  "snapshot": true
+}

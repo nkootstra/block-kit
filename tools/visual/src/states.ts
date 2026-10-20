@@ -97,7 +97,9 @@ export const STATES: Record<string, State> = {
   "catalog/actions/selects-with-initial-options@pick": pick((p) => p.getByRole("combobox").nth(2), {
     option: /channel-one/,
   }),
-  "catalog/actions/timepicker@pick": arrowPick((p) => byValue(p, "1:37 PM")),
+  // Recaptured with a click on 12:00 AM, which leaves Slack's field unfocused; Enter would keep it
+  // focused and ringed.
+  "catalog/actions/timepicker@pick": pick((p) => byValue(p, "1:37 PM"), { option: "12:00 AM" }),
   "catalog/agents/message-feedback@pick": { ours: (p) => p.getByRole("radio").first().click() },
   "catalog/container/data-entry-form@pick": pick((p) => p.getByPlaceholder("Select priority"), {
     option: "High",
