@@ -6,11 +6,15 @@ import "../styles/site.css";
 import ActionDemo from "../islands/ActionDemo";
 import AgentDemo from "../islands/AgentDemo";
 // `bun run compare -- message/approval --scale=2`: Slack's capture, ours and their pixel diff, at 2x
-// so they're sharp on high-density screens. The copy below quotes their difference; recount it if
-// they're recaptured.
+// so they're sharp on high-density screens, in Slack's light theme (`message/approval`) and its dark
+// one (`message/approval@dark`), shown with the page's theme. The copy below quotes their
+// difference; recount it if they're recaptured.
 import proofOurs from "../assets/proof/approval.actual.png";
 import proofDiff from "../assets/proof/approval.diff.png";
 import proofSlack from "../assets/proof/approval.reference.png";
+import proofOursDark from "../assets/proof/approval-dark.actual.png";
+import proofDiffDark from "../assets/proof/approval-dark.diff.png";
+import proofSlackDark from "../assets/proof/approval-dark.reference.png";
 import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, PLAYGROUND, SITE_NAME, description, headline, title } from "../lib/site";
 
 // The social card, drawn at build time by pages/og.png.ts.
@@ -229,19 +233,29 @@ const structuredData = {
       <section id="compare" aria-labelledby="compare-title">
         <h2 id="compare-title">Check it against Slack</h2>
         <p class="section__text">
-          Each block is checked, pixel by pixel, against a capture of Slack's own rendering. In this
-          one, 266 of 684,032 pixels differ, in the timestamp and the "y" of Deny. Drag across it, or
-          show the difference.
+          Each block is checked, pixel by pixel, against a capture of Slack's own rendering. This one
+          matches in all of its 684,032 pixels, in Slack's light theme and its dark one. Drag across
+          it, or show the difference.
         </p>
         <div class="section__body">
           <div class="frame compare__frame">
             <div class="compare__legend" aria-hidden="true"><span>Slack</span><span>block-kit</span></div>
             <div class="compare" data-compare>
-              <!-- PNG, never a lossy format: this section is about matching pixels. -->
-              <Image src={proofSlack} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a device request approval message" />
-              <div class="compare__top">
-                <Image src={proofOurs} width={512} densities={[1, 2]} format="png" alt="The same message rendered by block-kit" data-compare-ours />
-                <Image src={proofDiff} width={512} densities={[1, 2]} format="png" alt="Pixel difference between the two renderings" data-compare-diff-image hidden />
+              <!-- PNG, never a lossy format: this section is about matching pixels. One set per
+                   Slack theme; the stylesheet shows the one matching the page's theme. -->
+              <div class="compare__set" data-compare-theme="light">
+                <Image src={proofSlack} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a device request approval message, in its light theme" />
+                <div class="compare__top">
+                  <Image src={proofOurs} width={512} densities={[1, 2]} format="png" alt="The same message rendered by block-kit" data-compare-ours />
+                  <Image src={proofDiff} width={512} densities={[1, 2]} format="png" alt="Pixel difference between the two renderings" data-compare-diff-image hidden />
+                </div>
+              </div>
+              <div class="compare__set" data-compare-theme="dark">
+                <Image src={proofSlackDark} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a device request approval message, in its dark theme" />
+                <div class="compare__top">
+                  <Image src={proofOursDark} width={512} densities={[1, 2]} format="png" alt="The same message rendered by block-kit" data-compare-ours />
+                  <Image src={proofDiffDark} width={512} densities={[1, 2]} format="png" alt="Pixel difference between the two renderings" data-compare-diff-image hidden />
+                </div>
               </div>
               <div class="compare__line" aria-hidden="true"><span class="compare__handle"></span></div>
             </div>
@@ -258,7 +272,10 @@ const structuredData = {
                 data-compare-range
               />
             </div>
-            <p class="compare__caption">Captured in Slack's light theme.</p>
+            <p class="compare__caption">
+              <span data-compare-theme="light">Captured in Slack's light theme.</span>
+              <span data-compare-theme="dark">Captured in Slack's dark theme.</span>
+            </p>
           </div>
           <div class="compare__controls">
             <button type="button" class="ghost" aria-pressed="false" aria-describedby="compare-note" data-compare-diff>
@@ -266,7 +283,8 @@ const structuredData = {
             </button>
           </div>
           <p class="compare__note" id="compare-note" data-compare-note hidden>
-            Red marks pixels that differ from Slack, yellow the ones that differ only in anti-aliasing.
+            Red would mark pixels that differ from Slack, yellow the ones that differ only in
+            anti-aliasing. Here there are none.
           </p>
         </div>
       </section>
@@ -421,10 +439,11 @@ const structuredData = {
       const compare = document.querySelector<HTMLElement>("[data-compare]");
       const range = document.querySelector<HTMLInputElement>("[data-compare-range]");
       const diff = document.querySelector<HTMLButtonElement>("[data-compare-diff]");
-      const ours = document.querySelector<HTMLImageElement>("[data-compare-ours]");
-      const diffImage = document.querySelector<HTMLImageElement>("[data-compare-diff-image]");
+      // One of each per Slack theme; the toggle switches them all so the page's theme can change.
+      const ours = document.querySelectorAll<HTMLImageElement>("[data-compare-ours]");
+      const diffImages = document.querySelectorAll<HTMLImageElement>("[data-compare-diff-image]");
       const note = document.querySelector<HTMLElement>("[data-compare-note]");
-      if (compare && range && diff && ours && diffImage && note) {
+      if (compare && range && diff && ours.length && diffImages.length && note) {
         const setSplit = (percent: number) => {
           const value = Math.round(Math.min(100, Math.max(0, percent)));
           compare.style.setProperty("--split", `${value}%`);
@@ -448,8 +467,8 @@ const structuredData = {
         diff.addEventListener("click", () => {
           const on = diff.getAttribute("aria-pressed") !== "true";
           diff.setAttribute("aria-pressed", String(on));
-          ours.hidden = on;
-          diffImage.hidden = !on;
+          for (const image of ours) image.hidden = on;
+          for (const image of diffImages) image.hidden = !on;
           note.hidden = !on;
         });
       }

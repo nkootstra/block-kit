@@ -71,7 +71,7 @@ import { collectTextRuns } from "./collectTextRuns";
 import { directoryOrder } from "./directoryOrder";
 import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
-import { pad, parseRgb } from "./pad";
+import { pad, parseRgb, type Rgb } from "./pad";
 import { parseReferenceName } from "./names";
 import { type Image, loadImage, routeSamples } from "./samples";
 import { readProbes } from "./probes";
@@ -469,7 +469,12 @@ for (const name of names) {
   const a = pad(reference, width, height, background);
   const b = pad(actual, width, height, background);
   const diff = new PNG({ width, height });
-  const mismatch = pixelmatch(a.data, b.data, diff.data, width, height, { threshold: 0.1 });
+  // Only the differing pixels (red, yellow for anti-aliasing); the rest is drawn by fadeInto.
+  const mismatch = pixelmatch(a.data, b.data, diff.data, width, height, {
+    threshold: 0.1,
+    diffMask: true,
+  });
+  fadeInto(diff, a, background ?? [255, 255, 255]);
 
   const file = (kind: string) => join(OUT, `${name}.${kind}.png`);
   await mkdir(dirname(file("x")), { recursive: true });
@@ -598,6 +603,22 @@ function describeTextRuns(textReport: TextRunReport): string[] {
 }
 
 /** Builder | ours | diff, separated by grey bars; the quickest way to eyeball a fixture. */
+/**
+ * Draws the reference, faded towards its page's background, under a diff mask's marks. pixelmatch
+ * fades towards white, which turns a dark reference's diff into a light panel; fading towards the
+ * background it was captured on keeps the diff readable on either theme.
+ */
+function fadeInto(diff: PNG, reference: PNG, background: Rgb, alpha = 0.1): void {
+  for (let i = 0; i < diff.width * diff.height * 4; i += 4) {
+    if (diff.data[i + 3] !== 0) continue;
+    for (let c = 0; c < 3; c++) {
+      const bg = background[c]!;
+      diff.data[i + c] = Math.round(bg + (reference.data[i + c]! - bg) * alpha);
+    }
+    diff.data[i + 3] = 255;
+  }
+}
+
 function sideBySide(images: PNG[]): PNG {
   const gap = 8;
   const width = images.reduce((w, img) => w + img.width, gap * (images.length - 1));
