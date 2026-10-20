@@ -110,6 +110,8 @@
      separators. */
   --sbk-composer-bg: #fff;
   --sbk-composer-border: rgba(29, 28, 29, 0.13);
+  /* Its border while the editor has focus: Slack darkens it rather than drawing the focus ring. */
+  --sbk-composer-border-focus: rgba(94, 93, 96, 0.45);
   --sbk-composer-toolbar-bg: #f8f8f8;
   --sbk-composer-tool: rgba(29, 28, 29, 0.7);
   --sbk-composer-separator: rgb(234, 234, 234);
@@ -434,7 +436,6 @@ a.sbk-mention {
 }
 
 .sbk-text-input,
-.sbk-rich-text-input,
 .sbk-datepicker__input,
 .sbk-datetimepicker__time-input,
 .sbk-select__control,
@@ -446,7 +447,6 @@ a.sbk-mention {
 }
 
 .sbk-text-input:focus,
-.sbk-rich-text-input:focus-within,
 .sbk-datepicker__input:focus,
 .sbk-datetimepicker__time-input:focus,
 .sbk-select__control:focus-visible,
@@ -460,6 +460,16 @@ a.sbk-mention {
   outline: none;
   border-color: transparent;
   box-shadow: var(--sbk-focus-shadow);
+}
+
+/* The rich text composer (`c-wysiwyg_container--input_focused`) shows focus with a darker border
+   and no ring, like Slack's message composer. */
+.sbk-rich-text-input {
+  transition: box-shadow 80ms linear;
+}
+
+.sbk-rich-text-input:focus-within {
+  border-color: var(--sbk-composer-border-focus);
 }
 
 /* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */

@@ -32,6 +32,20 @@ interface RichTextTag {
   style?: RichTextElement["style"];
 }
 
+/** A field of a Salesforce record, e.g. `{ type: "salesforce_data_field", salesforce_record_id,
+ * salesforce_field_label: "Amount" }`. */
+interface RichTextSalesforceDataField {
+  type: "salesforce_data_field";
+  salesforce_record_id: string;
+  salesforce_field_label?: string;
+  salesforce_include_field_label?: boolean;
+  style?: RichTextElement["style"];
+}
+
+/** Salesforce's cloud, as Slack draws it before a record's field (`sf-cloud-filled`). */
+const SALESFORCE_CLOUD =
+  "M5.959 3.36c1.061.03 2.01.397 2.725 1.03a3.7 3.7 0 0 1 2.083-.639 3.75 3.75 0 0 1 2.897 1.383 4.2 4.2 0 0 1 1.182-.176 4.4 4.4 0 0 1 4.404 4.404 4.4 4.4 0 0 1-4.757 4.39 3.44 3.44 0 0 1-2.715 1.32q-.43-.001-.82-.097a3.79 3.79 0 0 1-3.16 1.664 3.81 3.81 0 0 1-3.322-1.929q-.068.004-.137.004a3.591 3.591 0 0 1-2.32-6.33 4.2 4.2 0 0 1-.127-1.012C1.892 5.16 3.7 3.36 5.937 3.36z";
+
 type Resolvers = ReturnType<typeof useBlockKit>["resolvers"];
 
 export interface RenderCtx {
@@ -178,7 +192,7 @@ function mergeTextRuns(elements: RichTextElement[]): RichTextElement[] {
 /** One inline element of a section, styled. The rich text input's editor draws its initial value
  * with it too. */
 export function renderLeaf(
-  el: RichTextElement | RichTextTag,
+  el: RichTextElement | RichTextTag | RichTextSalesforceDataField,
   ctx: RenderCtx,
   emojiSize: number,
   isFirst = false,
@@ -266,6 +280,22 @@ export function renderLeaf(
       // extra/fidelity/rich-text-tag/default: Slack's `tag-span`, a 24px pill in the tag's colour.
       // Blue is the only colour captured so far; any other draws as blue until it is.
       content = <span className="sbk-rich-text__tag">{el.text}</span>;
+      break;
+    case "salesforce_data_field":
+      // extra/fidelity/rich-text-salesforce-data-field/default: a renderer outside Slack can't
+      // read the record, so the field shows as Slack shows a record it can't reach, a greyed
+      // mention-blue pill with Salesforce's cloud and "Record was deleted".
+      content = (
+        <span
+          className="sbk-rich-text__salesforce sbk-rich-text__salesforce--disabled"
+          data-id={el.salesforce_record_id}
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path fill="currentColor" d={SALESFORCE_CLOUD} />
+          </svg>
+          Record was deleted
+        </span>
+      );
       break;
     default:
       content = null;

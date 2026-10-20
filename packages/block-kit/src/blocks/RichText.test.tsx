@@ -44,6 +44,31 @@ describe("<RichText>", () => {
     expect(tag.className).toBe("sbk-rich-text__tag");
   });
 
+  it("renders a Salesforce data field as Slack's pill for a record it can't reach", () => {
+    const block = {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            { type: "text", text: "See " },
+            {
+              type: "salesforce_data_field",
+              salesforce_record_id: "001000000000001",
+              salesforce_field_label: "Amount",
+              salesforce_include_field_label: true,
+            },
+          ],
+        },
+      ],
+    };
+    render(<RichText block={block as never} blockId="b1" index={0} />);
+    const field = screen.getByText("Record was deleted");
+    expect(field.className).toBe("sbk-rich-text__salesforce sbk-rich-text__salesforce--disabled");
+    expect(field.getAttribute("data-id")).toBe("001000000000001");
+    expect(field.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("renders a link leaf", () => {
     const block = {
       type: "rich_text",

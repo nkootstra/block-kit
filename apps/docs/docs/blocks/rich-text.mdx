@@ -87,8 +87,8 @@ links, mentions, emoji, and dates.
 />
 
 Inline (`RichTextElement`) types: `text` (with `style.bold` / `italic` / `strike` / `code` /
-`underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, `color`, and
-`tag`.
+`underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, `color`,
+`tag` and `salesforce_data_field`.
 
 ## Examples
 
@@ -467,6 +467,37 @@ so its line is 2px taller than plain text. Slack's blue is the only colour captu
             elements: [
               { type: "text", text: "See " },
               { type: "tag", text: "In progress", color: "blue" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### Salesforce data field
+
+A `salesforce_data_field` element (a Builder/undocumented extension) points at a field of a
+Salesforce record. The renderer can't read the record, so it draws the field as Slack draws one it
+can't reach: a greyed pill, 24px tall, with Salesforce's cloud and "Record was deleted". The
+record's ID is on the pill as `data-id`.
+
+<Preview
+  payload={{
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "text", text: "See " },
+              {
+                type: "salesforce_data_field",
+                salesforce_record_id: "001000000000001",
+                salesforce_field_label: "Amount",
+                salesforce_include_field_label: true,
+              },
             ],
           },
         ],

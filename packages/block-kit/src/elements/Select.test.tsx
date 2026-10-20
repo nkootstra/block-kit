@@ -664,6 +664,15 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
     expect(options[2]!.getAttribute("aria-selected")).toBe("true");
   });
 
+  it("draws a chosen person it can't resolve as a skeleton chip, not the raw ID", () => {
+    renderDirectory("multi_users_select", vi.fn(), { initial_users: ["U0UNKNOWN", "U03"] });
+    expect(screen.queryByText("U0UNKNOWN")).toBeNull();
+    const skeleton = screen.getByRole("img", { name: "U0UNKNOWN" });
+    expect(skeleton.className).toContain("sbk-select__chip-skeleton");
+    expect(skeleton.querySelector(".sbk-select__chip-skeleton-avatar")).toBeTruthy();
+    expect(skeleton.querySelector(".sbk-select__chip-skeleton-name")).toBeTruthy();
+  });
+
   it("filters by the start of a word in the name or full name", () => {
     renderDirectory("users_select");
     const input = screen.getByRole("combobox");
