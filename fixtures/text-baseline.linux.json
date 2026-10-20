@@ -1851,26 +1851,14 @@
   "extra/fidelity/multi-channels-select/long-content@dark": [],
   "extra/fidelity/multi-channels-select/long-content@mobile": [],
   "extra/fidelity/multi-channels-select/long-content@mobile+dark": [],
-  "extra/fidelity/multi-channels-select/long-content@open": [
-    "extra|Selected|0",
-    "extra|C0123456789|0"
-  ],
-  "extra/fidelity/multi-channels-select/long-content@open+dark": [
-    "extra|Selected|0",
-    "extra|C0123456789|0"
-  ],
+  "extra/fidelity/multi-channels-select/long-content@open": [],
+  "extra/fidelity/multi-channels-select/long-content@open+dark": [],
   "extra/fidelity/multi-channels-select/open": [],
   "extra/fidelity/multi-channels-select/open@dark": [],
   "extra/fidelity/multi-channels-select/open@mobile": [],
   "extra/fidelity/multi-channels-select/open@mobile+dark": [],
-  "extra/fidelity/multi-channels-select/open@open": [
-    "extra|Selected|0",
-    "extra|C0123456789|0"
-  ],
-  "extra/fidelity/multi-channels-select/open@open+dark": [
-    "extra|Selected|0",
-    "extra|C0123456789|0"
-  ],
+  "extra/fidelity/multi-channels-select/open@open": [],
+  "extra/fidelity/multi-channels-select/open@open+dark": [],
   "extra/fidelity/multi-conversations-select/initial-value": [],
   "extra/fidelity/multi-conversations-select/initial-value@dark": [],
   "extra/fidelity/multi-conversations-select/initial-value@dialog": [],
@@ -1977,17 +1965,13 @@
     "x|AGENT|0",
     "y|AGENT|0",
     "missing|User Four|1",
-    "extra|U0123456789|0",
-    "extra|User Two|1",
-    "extra|Selected|0"
+    "extra|User Two|1"
   ],
   "extra/fidelity/multi-users-select/initial-value@open+dark": [
     "x|AGENT|0",
     "y|AGENT|0",
     "missing|User Four|1",
-    "extra|U0123456789|0",
-    "extra|User Two|1",
-    "extra|Selected|0"
+    "extra|User Two|1"
   ],
   "extra/fidelity/multi-users-select/long-content": [
     "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
