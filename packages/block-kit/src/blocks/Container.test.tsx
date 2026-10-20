@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { Container } from "./Container";
@@ -120,5 +122,15 @@ describe("<Container>", () => {
     };
     const { container } = render(<Container block={block as never} blockId="b1" index={0} />);
     expect(container.querySelector(".sbk-container__header--divider")).toBeTruthy();
+  });
+
+  it("rings a focused collapsible header with the shared focus ring, not the browser outline", () => {
+    // jsdom doesn't apply :focus-visible styles, so read the rule Slack's ring comes from
+    // (catalog/container/collapsible@focus-collapse-1).
+    const css = readFileSync(join(__dirname, "Container.css"), "utf8");
+    const rule = css.match(/\.sbk-container__header--button:focus-visible\s*\{([^}]*)\}/)?.[1];
+    expect(rule).toContain("outline: none");
+    expect(rule).toContain("border-radius: 8px");
+    expect(rule).toContain("box-shadow: var(--sbk-focus-shadow)");
   });
 });
