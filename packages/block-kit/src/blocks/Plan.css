@@ -34,11 +34,14 @@
 }
 
 /* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
-   (`.toggleBarButtonSlim:hover { background-color: transparent }`), leaving only an inset blue ring
-   for keyboard focus. */
+   (`.toggleBarButtonSlim:hover { background-color: transparent }`). Keyboard focus adds an inset
+   2px outline to Slack's button ring, with the corners tightened to 8px
+   (catalog/agents/plan-error@focus-pill-1+dark). */
 .sbk-plan__pill:focus-visible {
   outline: 2px solid var(--sbk-focus-ring);
   outline-offset: -2px;
+  border-radius: 8px;
+  box-shadow: var(--sbk-focus-shadow);
 }
 
 /* A 12px slot, as in Slack: the 13px check and warning overhang it rather than push the title. */
