@@ -1474,6 +1474,7 @@
   "contexts/timepicker/accessory@open": [],
   "contexts/timepicker/accessory@open+dark": [],
   "contexts/timepicker/actions": [],
+  "contexts/timepicker/actions@click-pick": [],
   "contexts/timepicker/actions@dark": [],
   "contexts/timepicker/actions@mobile": [],
   "contexts/timepicker/actions@mobile+dark": [],
