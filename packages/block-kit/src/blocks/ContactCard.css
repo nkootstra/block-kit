@@ -27,7 +27,8 @@
   margin-top: -1px;
   font-size: 13px;
   line-height: 15.6px;
-  color: var(--sbk-muted);
+  /* Slack's meta line: #616061 light, #ababad dark. */
+  color: var(--sbk-text-sec);
 }
 
 .sbk-contact-card__name {
