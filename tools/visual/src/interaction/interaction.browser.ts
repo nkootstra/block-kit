@@ -586,6 +586,55 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  // Slack's `c-truncate--break_words` in a data table cell (fixtures/extra/fidelity/data-table/
+  // long-content.reference.html): the text breaks anywhere and only its first 22px line shows.
+  describe("data table cell text", () => {
+    it("wraps a long cell mid-word and clamps it to one 22px line", async () => {
+      const page = await harness.open(await fixture("extra/fidelity/data-table/long-content"));
+      const cells = await page.evaluate(() =>
+        [
+          ...document.querySelectorAll<HTMLElement>(
+            ".sbk-data-table__body .sbk-data-table__truncate",
+          ),
+        ].map((el) => {
+          const s = getComputedStyle(el);
+          const box = el.parentElement!.getBoundingClientRect();
+          const r = el.getBoundingClientRect();
+          return {
+            text: el.textContent!.slice(0, 5),
+            height: Math.round(r.height),
+            // Slack's text box is only as wide as its text, up to the cell's content box.
+            fits: r.width <= box.width - 24 + 0.5,
+            wraps: el.scrollHeight > r.height,
+            // Slack's computed display: its clamp hides the next line without an ellipsis.
+            display: s.display,
+            lineHeight: s.lineHeight,
+            overflow: s.overflowY,
+            whiteSpace: s.whiteSpaceCollapse,
+            wordBreak: s.wordBreak,
+            clamp: s.webkitLineClamp,
+          };
+        }),
+      );
+      const rule = {
+        height: 22,
+        fits: true,
+        display: "flow-root",
+        lineHeight: "22px",
+        overflow: "hidden",
+        whiteSpace: "break-spaces",
+        wordBreak: "break-all",
+        clamp: "1",
+      };
+      expect(cells).toEqual([
+        { text: "Alpha", ...rule, wraps: false },
+        { text: "This ", ...rule, wraps: true },
+        { text: "Bravo", ...rule, wraps: false },
+        { text: "Short", ...rule, wraps: false },
+      ]);
+    });
+  });
+
   describe("select and time picker triggers", () => {
     const triggers: Mount = {
       blocks: [

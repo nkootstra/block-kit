@@ -113,6 +113,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     },
     { components: ["plain_text_input"], states: ["long-content"], facts: ["behaviour"] },
   ],
+  "data table cell text": [
+    { components: ["data_table"], states: ["long-content"], facts: ["styles"] },
+  ],
   "card icon": [{ components: ["card"], states: ["mixed"], facts: ["styles"] }],
   "overflow menu": [{ components: ["overflow"], states: ["open"], facts: ["styles", "behaviour"] }],
   "popovers in a narrow window": [
