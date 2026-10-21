@@ -306,65 +306,59 @@
   "catalog/agents/task-card@mobile+dark": [
     "extra|, in progress|0"
   ],
-  "catalog/callout/callout": [
-    "missing|Workspace|0",
-    "extra|Contact|0"
-  ],
-  "catalog/callout/callout@dark": [
-    "missing|Workspace|0",
-    "extra|Contact|0"
-  ],
+  "catalog/callout/callout": [],
+  "catalog/callout/callout@dark": [],
   "catalog/callout/callout@focus-menu-1": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@focus-menu-1+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@focus-menu-1+mobile": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@focus-menu-1+mobile+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@hidden+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@hidden+mobile": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@hidden+mobile+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@hover-menu-1+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@hover-menu-1+mobile": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@menu+mobile": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@menu+mobile+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@mobile": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/callout/callout@mobile+dark": [
     "missing|This content could not be displayed.|0",
-    "extra|Contact|0"
+    "extra|Workspace|0"
   ],
   "catalog/card-and-carousel/card": [],
   "catalog/card-and-carousel/card-actions-and-content": [],
@@ -1426,28 +1420,24 @@
   "extra/fidelity/confirm/long-content@open+dark": [],
   "extra/fidelity/confirm/long-content@pick": [],
   "extra/fidelity/contact-card/mixed": [
+    "y|Workspace|0",
     "missing|This content could not be displayed.|0",
-    "missing|Workspace|0",
-    "extra|Contact|0",
-    "extra|Contact|1"
+    "extra|Workspace|1"
   ],
   "extra/fidelity/contact-card/mixed@dark": [
+    "y|Workspace|0",
     "missing|This content could not be displayed.|0",
-    "missing|Workspace|0",
-    "extra|Contact|0",
-    "extra|Contact|1"
+    "extra|Workspace|1"
   ],
   "extra/fidelity/contact-card/mixed@mobile": [
+    "y|Workspace|0",
     "missing|This content could not be displayed.|0",
-    "missing|Workspace|0",
-    "extra|Contact|0",
-    "extra|Contact|1"
+    "extra|Workspace|1"
   ],
   "extra/fidelity/contact-card/mixed@mobile+dark": [
+    "y|Workspace|0",
     "missing|This content could not be displayed.|0",
-    "missing|Workspace|0",
-    "extra|Contact|0",
-    "extra|Contact|1"
+    "extra|Workspace|1"
   ],
   "extra/fidelity/container/long-content": [],
   "extra/fidelity/container/long-content@dark": [],
