@@ -222,9 +222,10 @@ describe("collectTextRuns", () => {
     expect(found.map((r) => r.text)).toEqual(["Colour #1264A3", "Next"]);
   });
 
+  // Widths in `ch` of a monospace font wrap at the same words whichever font the system has.
   it("reads wrapped text as one run per line", async () => {
     const result = await runs(
-      '<p style="margin:0;width:120px;font:15px/20px monospace">alpha beta gamma delta</p>',
+      '<p style="margin:0;width:12ch;font:15px/20px monospace">alpha beta gamma delta</p>',
     );
     expect(result.map((r) => [r.text, r.x])).toEqual([
       ["alpha beta", 0],
@@ -236,7 +237,7 @@ describe("collectTextRuns", () => {
   // A data table cell clamps its text to one line; the lines it cuts off aren't on screen.
   it("drops the lines an overflow ancestor clips off wrapped text", async () => {
     const result = await runs(
-      '<div style="width:120px;height:20px;overflow:hidden;font:15px/20px monospace">alpha beta gamma delta</div>',
+      '<div style="width:12ch;height:20px;overflow:hidden;font:15px/20px monospace">alpha beta gamma delta</div>',
     );
     expect(result.map((r) => r.text)).toEqual(["alpha beta"]);
   });
