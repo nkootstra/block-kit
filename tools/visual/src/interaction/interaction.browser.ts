@@ -4387,6 +4387,18 @@ describe.each(engines)("%s", (engine) => {
         });
       }
     }
+
+    // Block Kit Builder: an email or URL input's text starts 28px in, after its icon, in a modal
+    // as in a message (`contexts/url_text_input/modal-input`, `contexts/email_text_input/modal-input`).
+    for (const type of ["url_text_input", "email_text_input"]) {
+      it(`starts a ${type}'s text 28px in, after its icon, in a modal`, async () => {
+        const page = await harness.open(inModal({ type, action_id: "f" }));
+        const padding = await page
+          .locator(".sbk-text-input")
+          .evaluate((el) => getComputedStyle(el).paddingLeft);
+        expect(padding).toBe("28px");
+      });
+    }
   });
 
   describe("theme colours", () => {

@@ -21,10 +21,6 @@
   font-size: 15px;
 }
 
-.sbk-text-input__wrap--icon .sbk-text-input.sbk-text-input--medium {
-  padding-left: 32px;
-}
-
 /* Slack's textarea is 104px tall on every surface, with less padding below the text than above.
    Block-level, so no inline baseline gap opens up under it. */
 .sbk-text-input--multiline {
@@ -41,6 +37,8 @@
   position: relative;
 }
 
+/* After its icon, an email or URL field's text starts 28px in on every surface (Block Kit Builder,
+   `contexts/url_text_input/modal-input`), though a medium field's other text sits 12px in. */
 .sbk-text-input__wrap--icon .sbk-text-input {
   padding-left: 28px;
 }
