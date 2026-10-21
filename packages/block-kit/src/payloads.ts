@@ -35,6 +35,11 @@ export interface PayloadIdentity {
   responseUrl?: string;
   /** Whether the app is installed org-wide on an Enterprise Grid org (`is_enterprise_install`). */
   isEnterpriseInstall?: boolean;
+  /**
+   * The workspace's name, which Slack shows under the name on a `contact_card`. Without it the
+   * card says "Contact". Display only: no payload carries it.
+   */
+  teamName?: string;
 }
 
 const DEFAULT_IDENTITY = {

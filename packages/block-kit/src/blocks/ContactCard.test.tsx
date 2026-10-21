@@ -22,16 +22,39 @@ describe("<ContactCard>", () => {
       </BlockKitProvider>,
     );
     expect(screen.getByText("Ada Lovelace")).toBeTruthy();
-    expect(screen.queryByText("Contact")).toBeTruthy();
+    expect(screen.getByText("Contact")).toBeTruthy();
   });
 
-  it("falls back to the skeleton when the resolver returns undefined for this id", () => {
+  it("shows Slack's notice when resolvers.user doesn't know the id, outside a container too", () => {
     const block = { type: "contact_card", contact_user_id: "U999" };
     const { container } = render(
       <BlockKitProvider resolvers={{ user: (id) => (id === "U123" ? "Ada Lovelace" : undefined) }}>
         <ContactCard block={block as never} blockId="b1" index={0} />
       </BlockKitProvider>,
     );
-    expect(container.querySelector(".sbk-contact-card__name--unknown")).toBeTruthy();
+    expect(screen.getByText("This content could not be displayed.")).toBeTruthy();
+    expect(container.querySelector(".sbk-contact-card")).toBeNull();
+  });
+
+  it("keeps the skeleton when only other resolvers are given", () => {
+    const block = { type: "contact_card", contact_user_id: "U0123456789" };
+    const { container } = render(
+      <BlockKitProvider resolvers={{ channel: () => "general" }}>
+        <ContactCard block={block as never} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelector(".sbk-contact-card__skeleton")).toBeTruthy();
+    expect(screen.queryByText("This content could not be displayed.")).toBeNull();
+  });
+
+  it("shows the workspace name from identity.teamName on the meta line", () => {
+    const block = { type: "contact_card", contact_user_id: "U0123456789" };
+    const { container } = render(
+      <BlockKitProvider identity={{ teamName: "Workspace" }}>
+        <ContactCard block={block as never} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelector(".sbk-contact-card__meta")?.textContent).toBe("Workspace");
+    expect(screen.queryByText("Contact")).toBeNull();
   });
 });

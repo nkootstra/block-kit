@@ -44,7 +44,16 @@ resolve to real names. The lookups run on your server, through a resolver relay 
 renders, so the bot token never reaches the browser: see
 [Keep the bot token on the server](/guides/mentions-and-resolvers#keep-the-bot-token-on-the-server).
 
-### Unresolved user
+### Workspace name
+
+Under the name, Slack shows the contact's workspace. Pass it as `identity.teamName` on
+[`BlockKitProvider`](/reference/block-kit-provider); without it the card says "Contact".
+
+```tsx
+<BlockKitProvider identity={{ teamName: "Acme" }} resolvers={resolvers}>
+```
+
+### Unknown user
 
 <Preview
   payload={{
@@ -52,9 +61,10 @@ renders, so the bot token never reaches the browser: see
   }}
 />
 
-When a user id can't be resolved (no resolver configured, or the resolver doesn't know that id), the
-card shows a placeholder skeleton in place of the name, the same way Slack's own Builder does for an
-id it can't look up.
+When `resolvers.user` is given and doesn't know the id, the user doesn't exist as far as the card
+can tell, so it shows "This content could not be displayed.", as Slack does for a user that doesn't
+exist. With no `resolvers.user` at all, the lookup counts as pending, and the card shows the
+placeholder skeleton Slack shows while it looks the user up.
 
 ### Inside a container
 
