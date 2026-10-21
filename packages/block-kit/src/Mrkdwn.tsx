@@ -69,7 +69,13 @@ function renderNode(
       );
     case "user": {
       const name = resolvers.user?.(node.id);
-      return name ? <UserMention id={node.id} name={name} /> : <Fragment>{`@${node.id}`}</Fragment>;
+      // Unresolved, Slack draws "@U123" in a bare `c-member_slug` span that takes the surrounding
+      // text's colour and weight: no pill, no hover, but its own element and text run.
+      return name ? (
+        <UserMention id={node.id} name={name} />
+      ) : (
+        <span className="sbk-mrkdwn__member">{`@${node.id}`}</span>
+      );
     }
     case "usergroup": {
       // The Builder shows an empty loading pill for subteam mentions it can't resolve live, even
