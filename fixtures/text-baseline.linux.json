@@ -1822,25 +1822,13 @@
   "extra/fidelity/overflow/many-items@open": [],
   "extra/fidelity/overflow/many-items@open+dark": [],
   "extra/fidelity/plain-text-input/long-content": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0",
-    "extra|20|0",
-    "extra|20 characters remaining|0"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0"
   ],
   "extra/fidelity/plain-text-input/long-content@dark": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0",
-    "extra|20|0",
-    "extra|20 characters remaining|0"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0"
   ],
-  "extra/fidelity/plain-text-input/long-content@mobile": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0",
-    "extra|20|0",
-    "extra|20 characters remaining|0"
-  ],
-  "extra/fidelity/plain-text-input/long-content@mobile+dark": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0",
-    "extra|20|0",
-    "extra|20 characters remaining|0"
-  ],
+  "extra/fidelity/plain-text-input/long-content@mobile": [],
+  "extra/fidelity/plain-text-input/long-content@mobile+dark": [],
   "extra/fidelity/plan/long-content": [
     "extra|, complete|0"
   ],
@@ -1873,26 +1861,10 @@
   "extra/fidelity/radio-buttons/many-items@dark": [],
   "extra/fidelity/radio-buttons/many-items@mobile": [],
   "extra/fidelity/radio-buttons/many-items@mobile+dark": [],
-  "extra/fidelity/radio-buttons/mixed": [
-    "color|Description 1|0",
-    "color|Description 2|0",
-    "color|Description 3|0"
-  ],
-  "extra/fidelity/radio-buttons/mixed@dark": [
-    "color|Description 1|0",
-    "color|Description 2|0",
-    "color|Description 3|0"
-  ],
-  "extra/fidelity/radio-buttons/mixed@mobile": [
-    "color|Description 1|0",
-    "color|Description 2|0",
-    "color|Description 3|0"
-  ],
-  "extra/fidelity/radio-buttons/mixed@mobile+dark": [
-    "color|Description 1|0",
-    "color|Description 2|0",
-    "color|Description 3|0"
-  ],
+  "extra/fidelity/radio-buttons/mixed": [],
+  "extra/fidelity/radio-buttons/mixed@dark": [],
+  "extra/fidelity/radio-buttons/mixed@mobile": [],
+  "extra/fidelity/radio-buttons/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-attachment-mention/default": [
     "missing|An attachment|0"
   ],
