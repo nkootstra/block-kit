@@ -431,7 +431,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     };
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const placeholder = element.placeholder?.text ?? "Select an item";
+  // Slack's static select without a placeholder reads "Pick an option" (Block Kit Builder,
+  // `extra/modal/form@open`); the other selects' defaults aren't recorded yet.
+  const placeholder =
+    element.placeholder?.text ??
+    (source === "static" && !multi ? "Pick an option" : "Select an item");
 
   const combo = useCombobox({
     open,
