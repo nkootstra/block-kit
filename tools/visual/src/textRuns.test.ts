@@ -53,6 +53,16 @@ describe("compareTextRuns motion", () => {
 });
 
 describe("compareTextRuns", () => {
+  // A reference captured before snapshots kept placeholder colours paints them in the browser's
+  // grey, which says nothing about Slack's.
+  it("leaves out the colour of a run whose colour the reference didn't record", () => {
+    const report = compareTextRuns(
+      [run("Select a date", { color: "rgb(117, 117, 117)", colorUnknown: true })],
+      [run("Select a date", { color: "rgb(97, 96, 97)" })],
+    );
+    expect(report.findings).toEqual([]);
+  });
+
   it("matches identical runs without flagging anything", () => {
     const report = compareTextRuns([run("Hello")], [run("Hello")]);
     expect(report.matched).toBe(1);

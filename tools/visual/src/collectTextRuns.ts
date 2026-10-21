@@ -1,7 +1,7 @@
 import type { TextRun } from "./textRuns";
 
 /**
- * Reads every visible text node under the elements `selector` matches as a `TextRun`, positioned
+ * Reads each line of visible text under the elements `selector` matches as a `TextRun`, positioned
  * relative to the first of them: the message, then any menu or calendar open over it (a list such
  * as `#sbk-render > *, .sbk-popover > *`). Runs in the page through `page.evaluate`, so it must
  * stay self-contained.
@@ -81,7 +81,7 @@ export function collectTextRuns(selector: string): TextRun[] {
   // how it renders, so such runs aren't read; one an edge only cuts through still is.
   // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
   const clipped = (el: Element, rect: DOMRect): boolean => {
-    for (let e = el.parentElement; e; e = e.parentElement) {
+    for (let e: Element | null = el; e; e = e.parentElement) {
       const s = getComputedStyle(e);
       const clipsX = s.overflowX !== "visible";
       const clipsY = s.overflowY !== "visible";
@@ -93,6 +93,78 @@ export function collectTextRuns(selector: string): TextRun[] {
       if (clipsY && (rect.bottom <= top || rect.top >= top + e.clientHeight)) return true;
     }
     return false;
+  };
+
+  // Text only a screen reader gets (our .sbk-visually-hidden, the usual sr-only patterns): an
+  // element or ancestor clipped to nothing by `clip-path: inset(50%)` or a collapsed `clip`, or
+  // shrunk to a box of a pixel or less that doesn't show its overflow.
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
+  const visuallyHidden = (el: Element): boolean => {
+    for (let e: Element | null = el; e; e = e.parentElement) {
+      const s = getComputedStyle(e);
+      if (s.clipPath.startsWith("inset(50%")) return true;
+      const clip = s.clip
+        .match(/^rect\(([^)]*)\)$/)?.[1]
+        ?.split(/[\s,]+/)
+        .map(Number.parseFloat);
+      if (clip?.length === 4 && clip.every(Number.isFinite)) {
+        const [top = 0, right = 0, bottom = 0, left = 0] = clip;
+        if (right - left <= 1 || bottom - top <= 1) return true;
+      }
+      if (s.overflowX !== "visible" || s.overflowY !== "visible") {
+        const box = e.getBoundingClientRect();
+        if (box.width <= 1 || box.height <= 1) return true;
+      }
+    }
+    return false;
+  };
+
+  // The product of the element's and its ancestors' opacities.
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
+  const opacityOf = (el: Element): number => {
+    let opacity = 1;
+    for (let e: Element | null = el; e; e = e.parentElement)
+      opacity *= Number(getComputedStyle(e).opacity);
+    return opacity;
+  };
+
+  // One range per line the text paints on, from its first visible character to its last: wrapped
+  // text and a <pre>'s newlines read line by line, as Slack's <br>-broken lines do, and a line an
+  // ancestor clips away (a table cell clamped to one line) can be left out on its own. Measuring
+  // the glyphs, not the spaces around them, keeps a space inside a text node or in a node of its
+  // own from moving the run's edge by a space's width.
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- page.evaluate only sends this function
+  const lineRanges = (nodes: Text[]): Range[] => {
+    const lines: Array<{ range: Range; top: number; bottom: number }> = [];
+    const probe = document.createRange();
+    for (const textNode of nodes) {
+      const data = textNode.data;
+      for (let i = 0; i < data.length;) {
+        const code = data.codePointAt(i) ?? 0;
+        const end = i + (code > 0xffff ? 2 : 1);
+        if (!/\s/.test(data.slice(i, end))) {
+          probe.setStart(textNode, i);
+          probe.setEnd(textNode, end);
+          const box = [...probe.getClientRects()].find((r) => r.width > 0 || r.height > 0);
+          if (box) {
+            const middle = box.top + box.height / 2;
+            const line = lines.at(-1);
+            if (line && middle >= line.top && middle <= line.bottom) {
+              line.range.setEnd(textNode, end);
+              line.top = Math.min(line.top, box.top);
+              line.bottom = Math.max(line.bottom, box.bottom);
+            } else {
+              const range = document.createRange();
+              range.setStart(textNode, i);
+              range.setEnd(textNode, end);
+              lines.push({ range, top: box.top, bottom: box.bottom });
+            }
+          }
+        }
+        i = end;
+      }
+    }
+    return lines.map((line) => line.range);
   };
 
   const runs: TextRun[] = [];
@@ -159,23 +231,48 @@ export function collectTextRuns(selector: string): TextRun[] {
     return rect;
   };
 
+  // A reference keeps each placeholder's colour in a `[data-ref="…"]::placeholder` rule; one
+  // captured before snapshots did paints placeholders in the browser's grey, not Slack's colour.
+  let recordedPlaceholders: Set<string> | undefined;
+  const placeholderColorKnown = (field: Element): boolean => {
+    if (!metaElement) return true;
+    if (!recordedPlaceholders) {
+      recordedPlaceholders = new Set();
+      for (const sheet of document.styleSheets) {
+        for (const rule of sheet.cssRules) {
+          const ref = (rule as CSSStyleRule).selectorText?.match(
+            /^\[data-ref="([^"]+)"\]::placeholder$/,
+          )?.[1];
+          if (ref) recordedPlaceholders.add(ref);
+        }
+      }
+    }
+    return recordedPlaceholders.has(field.getAttribute("data-ref") ?? "");
+  };
+
   const fieldRun = (field: HTMLInputElement | HTMLTextAreaElement, root: Element) => {
     if (
       !(
         field.localName === "textarea" ||
         /^(text|search|email|url|tel|number|)$/.test((field as HTMLInputElement).type)
       ) ||
-      typeof field.value !== "string" ||
-      field.value.trim() === ""
+      typeof field.value !== "string"
     )
       return;
+    // An empty field shows its placeholder instead, painted in the ::placeholder colour (Slack's
+    // empty date field, where we draw a span).
+    const empty = field.value === "";
+    const shown = empty ? (field.getAttribute("placeholder") ?? "") : field.value;
+    if (shown.trim() === "") return;
     const style = getComputedStyle(field);
     if (style.visibility !== "visible" || style.display === "none") return;
+    if (visuallyHidden(field)) return;
+    const paint = empty ? getComputedStyle(field, "::placeholder") : style;
     // A typeable select paints its value in a layer over the field and hides the input's own
     // text; that layer's text node is the run.
-    const fill = parse(style.getPropertyValue("-webkit-text-fill-color")) ?? parse(style.color);
-    if (!fill || (fill[3] ?? 1) === 0 || Number(style.opacity) === 0) return;
-    const text = field.value.replace(/\s+/g, " ").trim();
+    const fill = parse(paint.getPropertyValue("-webkit-text-fill-color")) ?? parse(paint.color);
+    if (!fill || (fill[3] ?? 1) === 0 || opacityOf(field) === 0) return;
+    const text = shown.replace(/\s+/g, " ").trim();
     const rect = fieldValueRect(field, text);
     if (rect.width === 0 || rect.height === 0 || clipped(field, rect)) return;
     runs.push({
@@ -186,7 +283,8 @@ export function collectTextRuns(selector: string): TextRun[] {
       fontSize: Number.parseFloat(style.fontSize),
       fontWeight: Number(style.fontWeight),
       fontStyle: style.fontStyle,
-      color: style.color,
+      color: paint.color,
+      ...(empty && !placeholderColorKnown(field) && { colorUnknown: true }),
       opacity: Number(style.opacity),
       background: style.backgroundColor,
       motion: motionOf(field, root),
@@ -203,28 +301,23 @@ export function collectTextRuns(selector: string): TextRun[] {
           fieldRun(node as HTMLInputElement | HTMLTextAreaElement, root);
         continue;
       }
-      const text = (node.textContent ?? "").replace(/\s+/g, " ").trim();
+      // Text nodes side by side in one element paint as one string (React can split
+      // " · colour #1264A3" in two where Slack has one), so they're read together.
+      const nodes: Text[] = [node as Text];
+      for (let next = node.nextSibling; next?.nodeType === Node.TEXT_NODE; next = next.nextSibling)
+        nodes.push(next as Text);
+      walker.currentNode = nodes.at(-1) as Text;
       const el = node.parentElement;
-      if (!text || !el) continue;
+      if (!el || nodes.every((n) => !/\S/.test(n.data))) continue;
       const style = getComputedStyle(el);
-      if (style.visibility !== "visible") continue;
-      // Measure the glyphs, not the spaces around them: a space inside a text node or in a node of
-      // its own renders the same, but would move the run's edge by a space's width.
-      const raw = node.textContent ?? "";
-      range.setStart(node, raw.search(/\S/));
-      range.setEnd(node, raw.trimEnd().length);
-      const rect = range.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0 || clipped(el, rect)) continue;
+      if (style.visibility !== "visible" || visuallyHidden(el)) continue;
+      const opacity = opacityOf(el);
+      if (opacity === 0) continue;
 
-      // Multiply the opacities up the tree and stack the background colours, outermost first, on
-      // the white page.
-      let opacity = 1;
+      // Stack the background colours, outermost first, on the white page.
       const layers: string[] = [];
-      for (let e: Element | null = el; e; e = e.parentElement) {
-        const s = getComputedStyle(e);
-        opacity *= Number(s.opacity);
-        layers.push(s.backgroundColor);
-      }
+      for (let e: Element | null = el; e; e = e.parentElement)
+        layers.push(getComputedStyle(e).backgroundColor);
       let background = [255, 255, 255];
       for (const layer of layers.toReversed()) {
         const c = parse(layer);
@@ -233,19 +326,24 @@ export function collectTextRuns(selector: string): TextRun[] {
         background = background.map((channel, k) => (c[k] ?? 0) * a + channel * (1 - a));
       }
 
-      runs.push({
-        text,
-        x: rect.x - origin.x,
-        y: rect.y - origin.y,
-        width: rect.width,
-        fontSize: Number.parseFloat(style.fontSize),
-        fontWeight: Number(style.fontWeight),
-        fontStyle: style.fontStyle,
-        color: style.color,
-        opacity,
-        background: `rgb(${background.map(Math.round).join(", ")})`,
-        motion: motionOf(el, root),
-      });
+      for (const line of lineRanges(nodes)) {
+        const text = line.toString().replace(/\s+/g, " ").trim();
+        const rect = line.getBoundingClientRect();
+        if (!text || rect.width === 0 || rect.height === 0 || clipped(el, rect)) continue;
+        runs.push({
+          text,
+          x: rect.x - origin.x,
+          y: rect.y - origin.y,
+          width: rect.width,
+          fontSize: Number.parseFloat(style.fontSize),
+          fontWeight: Number(style.fontWeight),
+          fontStyle: style.fontStyle,
+          color: style.color,
+          opacity,
+          background: `rgb(${background.map(Math.round).join(", ")})`,
+          motion: motionOf(el, root),
+        });
+      }
     }
   }
   return runs;
