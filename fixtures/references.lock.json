@@ -931,12 +931,12 @@
   },
   "catalog/callout/callout@mobile": {
     "payload": "e96a4d26bf9e12de2b3416fd5d6ae12669857d0af888b1d724f5d5754c60690b",
-    "reference": "164745e743c34d8295e0b4242a2bd5f0bedf7f960de71a52dc0de52cf2b5372f",
+    "reference": "0be91a36edae2d557be5aad5cbb774b2b3d422bf85f56cded491dd2348b118ae",
     "captured": "2026-10-21"
   },
   "catalog/callout/callout@mobile+dark": {
     "payload": "e96a4d26bf9e12de2b3416fd5d6ae12669857d0af888b1d724f5d5754c60690b",
-    "reference": "c87f2846f25397c39267695665bd314738a9f4eada6d2e41e2bc677d1d442669",
+    "reference": "8c00d280ec0cabb795f66f2809447f6693d093e8c89ddbfb09623c0dc0c15cff",
     "captured": "2026-10-21"
   },
   "catalog/card-and-carousel/card": {
