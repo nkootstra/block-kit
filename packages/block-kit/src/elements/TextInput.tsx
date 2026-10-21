@@ -45,6 +45,8 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // or Home tab form; the message-surface preview uses a smaller 28px control.
   const sizeClass = surface === "message" ? "" : " sbk-text-input--medium";
   const [value, setLocalValue] = useState(element.initial_value ?? "");
+  // Slack counts only once the text has been edited: an untouched initial_value shows no count.
+  const [edited, setEdited] = useState(false);
   const invalid = useInvalidProps();
   const focusRef = useFocusOnLoad<HTMLInputElement & HTMLTextAreaElement>(
     element as { focus_on_load?: boolean },
@@ -84,6 +86,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
       if (next !== "" && !pattern.test(next)) return;
     }
     setLocalValue(next);
+    setEdited(true);
     report(next);
     if (dispatchEnabled && triggers.includes("on_character_entered")) fireAfterPause(next);
   }
@@ -97,12 +100,15 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   const outOfBounds = tooLong || tooShort;
   const remaining =
     element.max_length !== undefined && length > 0 ? element.max_length - length : undefined;
+  // Slack reserves the count's room and points aria-describedby at it from the start, but leaves
+  // the count itself (and its "N characters remaining" text) out until the text is edited.
+  const showCount = remaining !== undefined && edited;
   // Slack widens the field's right padding to the count's width, so text never runs under it.
   const countRef = useRef<HTMLSpanElement>(null);
   const [countWidth, setCountWidth] = useState<number | undefined>(undefined);
   useClientLayoutEffect(() => {
     setCountWidth(countRef.current?.getBoundingClientRect().width);
-  }, [remaining]);
+  }, [remaining, showCount]);
   const countId = useId();
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -142,7 +148,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // The visible count is the bare number; screen readers get "N characters remaining" through
   // aria-describedby, as in Slack.
   const count =
-    remaining !== undefined ? (
+    remaining !== undefined && showCount ? (
       <>
         <span
           ref={countRef}
