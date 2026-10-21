@@ -142,6 +142,10 @@ function builderResolvers(listed: string[]): Resolvers {
       : entry;
   return {
     ...BUILDER_SAMPLE_FILES,
+    // The Builder's workspace has none of the fixtures' made-up members: once its lookup settles, a
+    // contact card for one shows "This content could not be displayed.", as a renderer does when its
+    // user resolver doesn't know the id.
+    user: () => undefined,
     directory: (source) =>
       listed.length === 0
         ? builderDirectory(source)
