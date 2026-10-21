@@ -151,6 +151,12 @@ function builderResolvers(listed: string[]): Resolvers {
   };
 }
 
+/**
+ * A reference's workspace name is redacted to "Workspace" (a contact card's meta line), so the
+ * render names the workspace the same.
+ */
+const BUILDER_IDENTITY = { teamName: "Workspace" };
+
 export function RenderOnly({ params }: { params: URLSearchParams }) {
   const name = params.get("render") ?? "";
   // Left unset for light, so the existing references render exactly as before.
@@ -177,6 +183,7 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
         surface={viewType}
         theme={theme}
         resolvers={resolvers}
+        identity={BUILDER_IDENTITY}
       >
         <div id="sbk-render" style={{ width }}>
           <View view={view} icon={params.get("icon") ?? undefined} />
@@ -191,7 +198,12 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
   const width = Number(params.get("width")) - 36 || undefined;
   return (
     // References were captured in Europe/Amsterdam; their message time was pinned to 12:00 PM.
-    <BlockKitProvider timeZone="Europe/Amsterdam" theme={theme} resolvers={resolvers}>
+    <BlockKitProvider
+      timeZone="Europe/Amsterdam"
+      theme={theme}
+      resolvers={resolvers}
+      identity={BUILDER_IDENTITY}
+    >
       <div id="sbk-render" style={{ width }}>
         <Message
           blocks={result.blocks}
