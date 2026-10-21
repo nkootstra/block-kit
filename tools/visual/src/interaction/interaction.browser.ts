@@ -4299,6 +4299,44 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // A callout's fill and border as catalog/callout/callout (green) and catalog/container/with-callout
+  // (blue) compute them, and their @dark references. The text-run check sees a wrong fill through the
+  // half-opacity "This content could not be displayed." notice painted over it.
+  describe("callout colours in both themes", () => {
+    const WANT = {
+      light: {
+        green: "rgb(244, 255, 219)",
+        blue: "rgb(227, 248, 255)",
+        border: "rgba(94, 93, 96, 0.13)",
+      },
+      dark: { green: "rgb(21, 34, 3)", blue: "rgb(0, 26, 45)", border: "rgba(121, 124, 129, 0.5)" },
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      describe(theme, () => {
+        for (const colour of ["green", "blue"] as const) {
+          it(`fills a ${colour} callout and draws its border`, async () => {
+            const page = await harness.open({
+              theme,
+              blocks: [
+                {
+                  type: "callout",
+                  background_color: colour,
+                  child_blocks: [{ type: "section", text: plain("Heads up") }],
+                },
+              ],
+            });
+            const s = await style(page, ".sbk-callout");
+            expect({ fill: s.backgroundColor, border: s.borderTopColor }).toEqual({
+              fill: WANT[theme][colour],
+              border: WANT[theme].border,
+            });
+          });
+        }
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (contexts/{datepicker,timepicker}/{actions,home,modal-input}):
   // Slack draws date and time fields in its small size (28px, 13px text) in messages, and in its
   // medium size (36px, 15px text) in modals and on App Home.

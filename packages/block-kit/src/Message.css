@@ -343,9 +343,9 @@
     --sbk-alert-warning-icon: #e8a723;
     --sbk-alert-error-icon: #d94c75;
     --sbk-alert-success-icon: #3daa7c;
-    --sbk-callout-border: #797c814d;
-    --sbk-callout-green-bg: #203430;
-    --sbk-callout-blue-bg: #1d333d;
+    --sbk-callout-border: #797c8180;
+    --sbk-callout-green-bg: #152203;
+    --sbk-callout-blue-bg: #001a2d;
     --sbk-callout-red-bg: #39252e;
     --sbk-callout-yellow-bg: #3b3321;
     --sbk-callout-purple-bg: #312c3f;
@@ -484,9 +484,9 @@
   --sbk-alert-warning-icon: #e8a723;
   --sbk-alert-error-icon: #d94c75;
   --sbk-alert-success-icon: #3daa7c;
-  --sbk-callout-border: #797c814d;
-  --sbk-callout-green-bg: #203430;
-  --sbk-callout-blue-bg: #1d333d;
+  --sbk-callout-border: #797c8180;
+  --sbk-callout-green-bg: #152203;
+  --sbk-callout-blue-bg: #001a2d;
   --sbk-callout-red-bg: #39252e;
   --sbk-callout-yellow-bg: #3b3321;
   --sbk-callout-purple-bg: #312c3f;

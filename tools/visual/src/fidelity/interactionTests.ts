@@ -247,6 +247,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
       themes: BOTH,
     },
   ],
+  "callout colours in both themes": [
+    { components: ["callout"], states: ["default"], facts: ["styles"], themes: BOTH },
+  ],
   "date and time fields by surface": [
     { components: ["datepicker", "timepicker"], states: ["default"], facts: ["styles"] },
   ],
