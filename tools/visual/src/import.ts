@@ -15,6 +15,7 @@
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { prepareReferences, readCaptureFile } from "./captured";
 import {
   FIXTURES,
   hashPayload,
@@ -24,12 +25,9 @@ import {
   sha256,
   writeLock,
 } from "./lock";
-import { isReferenceName } from "./names";
-import { normalize } from "./normalize";
 import {
   isRecordingName,
   lastAction,
-  parseCaptureFile,
   recordingLeaks,
   redactBehaviour,
   redactor,
@@ -38,24 +36,14 @@ import { readRedactions } from "./redact";
 
 const source = process.argv[2];
 const redactions = await readRedactions();
-const capture = parseCaptureFile(
-  JSON.parse(source ? await Bun.file(source).text() : await Bun.stdin.text()),
-);
+const capture = await readCaptureFile(source);
 const [lock, payloads] = await Promise.all([readLock(), readPayloads()]);
 const captured = new Date().toISOString().slice(0, 10);
+const { prepared, skipped } = prepareReferences(capture.references, payloads, redactions);
+for (const { message } of skipped) console.warn(message);
 let written = 0;
-for (const [name, html] of Object.entries(capture.references)) {
-  if (!isReferenceName(name)) {
-    console.warn(`skipping invalid name ${JSON.stringify(name)}`);
-    continue;
-  }
-  const payload = payloads.get(payloadName(name));
-  if (payload === undefined) {
-    console.warn(`skipping ${name}: no fixture ${payloadName(name)}.json`);
-    continue;
-  }
+for (const { name, normalized, payload } of prepared) {
   const file = join(FIXTURES, `${name}.reference.html`);
-  const normalized = normalize(html, redactions);
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, normalized);
   lock[name] = { payload: hashPayload(payload), reference: sha256(normalized), captured };
