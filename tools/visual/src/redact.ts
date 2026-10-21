@@ -284,17 +284,117 @@ function releaseNameWidths(html: string): string {
   return out + html.slice(at);
 }
 
-/**
- * Swaps the workspace's members, channels, name, avatars and IDs for stable placeholders: the
- * same name gets the same placeholder in every theme and width of a fixture. Idempotent.
- */
-export function redact(html: string, mapping: Record<string, string> = {}): string {
+const applyMapping = (html: string, mapping: Record<string, string>) => {
   let out = html;
   for (const [real, placeholder] of Object.entries(mapping))
     out = outsideDataUris(out, (part) => part.replaceAll(real, placeholder));
+  return out;
+};
 
-  const members = distinct(out, MEMBER_NAME, (n) => MEMBER_PLACEHOLDER.test(n));
-  const channels = distinct(out, CHANNEL_NAME, (n) => CHANNEL_PLACEHOLDER.test(n));
+/** A member or channel a capture shows, with the Slack ID its row carries, if it carries one. */
+export interface Sighting {
+  kind: "member" | "channel";
+  name: string;
+  id?: string;
+  /** The signed-in member, marked "(you)". */
+  self: boolean;
+}
+
+/** Where a select's option or a picked token starts: the row a name and its ID share. */
+const ROW_START = /\bclass="(?:c-select_options_list__option|c-token)[\s"]/g;
+const SIGHTED = [
+  ["member", MEMBER_NAME, MEMBER_PLACEHOLDER, /^(?:[UW]0|USLACK)/],
+  ["channel", CHANNEL_NAME, CHANNEL_PLACEHOLDER, /^C0/],
+] as const;
+
+/**
+ * The members and channels `html` shows, each with the Slack ID of its row: the option label's
+ * `data-qa` and the avatar's URL carry it, ahead of the name. A name outside a row, or a second
+ * name in one, has no ID. Read from a capture before it is redacted, never written anywhere.
+ */
+export function sightings(html: string, mapping: Record<string, string> = {}): Sighting[] {
+  const text = applyMapping(html, mapping);
+  const own = fixtureIds(text);
+  const rows = [...text.matchAll(ROW_START)].map((m) => m.index);
+  const found: Sighting[] = [];
+  for (const [kind, pattern, placeholder, ofKind] of SIGHTED) {
+    let previous = 0;
+    for (const m of text.matchAll(pattern)) {
+      const name = unescapeHtml(m[1] ?? "").trim();
+      const row = rows.findLast((at) => at < m.index) ?? -1;
+      const from = previous;
+      previous = m.index + m[0].length;
+      if (!name || placeholder.test(name)) continue;
+      const id =
+        row >= from
+          ? [...text.slice(row, m.index).matchAll(SLACK_ID)]
+              .map(([candidate]) => candidate)
+              .findLast((candidate) => ofKind.test(candidate) && !own.has(candidate))
+          : undefined;
+      const self =
+        kind === "member" &&
+        /^<span\b[^>]*data-qa="member_name__you"/.test(text.slice(previous - 1));
+      found.push({ kind, name, ...(id && { id }), self });
+    }
+  }
+  return found;
+}
+
+/**
+ * The placeholder number of each member and channel, keyed by Slack ID: the signed-in member
+ * first, then the rest in the order of their IDs, so the same person gets the same number however
+ * the Builder ordered its list. A name no row tied to an ID numbers after them, as it appears.
+ */
+function numbering(seen: Sighting[], kind: Sighting["kind"]) {
+  const byName = new Map<string, string>();
+  const self = new Set<string>();
+  for (const s of seen) {
+    if (s.kind !== kind || !s.id) continue;
+    if (!byName.has(s.name)) byName.set(s.name, s.id);
+    if (s.self) self.add(s.id);
+  }
+  const ids = [...new Set(byName.values())].toSorted(
+    (a, b) => Number(self.has(b)) - Number(self.has(a)) || (a < b ? -1 : a > b ? 1 : 0),
+  );
+  return { byName, rank: new Map(ids.map((id, i) => [id, i])) };
+}
+
+const placeholderId = (kind: string, n: number) => `${kind}0${String(n).padStart(6, "0")}`;
+
+/** Numbers `names`: by their ID's rank where known, the rest after them in order. */
+function numbered(names: string[], { byName, rank }: ReturnType<typeof numbering>) {
+  let next = rank.size;
+  return names.map((name) => {
+    const id = byName.get(name);
+    return [name, id === undefined ? next++ : (rank.get(id) as number)] as const;
+  });
+}
+
+/**
+ * Swaps the workspace's members, channels, name, avatars and IDs for stable placeholders: the
+ * same member or channel gets the same placeholder in every reference, whichever order the
+ * Builder listed them in, keyed by its Slack ID. `known` are what the capture's other references
+ * show (`sightings`), so a reference that shows a member without an ID, or only some of them,
+ * numbers them the same way. Idempotent.
+ */
+export function redact(
+  html: string,
+  mapping: Record<string, string> = {},
+  known: Sighting[] = [],
+): string {
+  let out = applyMapping(html, mapping);
+
+  const seen = [...sightings(out), ...known];
+  const memberNumbers = numbering(seen, "member");
+  const channelNumbers = numbering(seen, "channel");
+  const members = numbered(
+    distinct(out, MEMBER_NAME, (n) => MEMBER_PLACEHOLDER.test(n)),
+    memberNumbers,
+  );
+  const channels = numbered(
+    distinct(out, CHANNEL_NAME, (n) => CHANNEL_PLACEHOLDER.test(n)),
+    channelNumbers,
+  );
   const workspaces = distinct(out, WORKSPACE_NAME, (n) => n === WORKSPACE_PLACEHOLDER);
   out = outsideDataUris(out, (part) => {
     let next = part
@@ -303,26 +403,32 @@ export function redact(html: string, mapping: Record<string, string> = {}): stri
       .replace(FILE_URL, SLACK_FILE_PLACEHOLDER)
       .replace(ENCODED_FILE_URL, encodeURIComponent(SLACK_FILE_PLACEHOLDER))
       .replace(WORKSPACE_DOMAIN, (url, host: string) => url.replace(`${host}.`, "workspace."));
-    members.forEach((name, i) => (next = replaceName(next, name, `User ${ordinal(i)}`)));
-    channels.forEach(
-      (name, i) => (next = replaceName(next, name, `channel-${ordinal(i).toLowerCase()}`)),
-    );
+    for (const [name, i] of members) next = replaceName(next, name, `User ${ordinal(i)}`);
+    for (const [name, i] of channels)
+      next = replaceName(next, name, `channel-${ordinal(i).toLowerCase()}`);
     for (const name of workspaces) next = replaceName(next, name, WORKSPACE_PLACEHOLDER);
     return next;
   });
 
   out = releaseNameWidths(out);
 
+  // A member's or channel's ID takes its placeholder's number; any other ID the next free one.
   const own = fixtureIds(out);
   const ids = new Map<string, string>();
+  for (const { rank } of [memberNumbers, channelNumbers])
+    for (const [id, i] of rank) ids.set(id, placeholderId(id.charAt(0), i + 1));
   const counters: Record<string, number> = {};
+  for (const placeholder of ids.values()) {
+    const kind = placeholder.charAt(0);
+    counters[kind] = Math.max(counters[kind] ?? 0, Number(placeholder.slice(2)));
+  }
   return outsideDataUris(out, (part) =>
     part.replace(SLACK_ID, (id) => {
       if (own.has(id)) return id;
       if (!ids.has(id)) {
         const kind = id.charAt(0);
         const n = (counters[kind] = (counters[kind] ?? 0) + 1);
-        ids.set(id, `${kind}0${String(n).padStart(6, "0")}`);
+        ids.set(id, placeholderId(kind, n));
       }
       return ids.get(id) as string;
     }),
