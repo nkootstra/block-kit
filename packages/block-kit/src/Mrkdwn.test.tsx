@@ -20,6 +20,12 @@ describe("<Mrkdwn>", () => {
     // unlike a `rich_text` block's structured `user` element (see RichText.test.tsx).
     expect(screen.getByText(/@U123/)).toBeTruthy();
     expect(container.querySelector(".sbk-mention--unresolved")).toBeNull();
+    // Slack still draws it in its own `c-member_slug` span, so "Mentions: " and "@U123" are two
+    // text runs rather than one (fixtures/message/mrkdwn).
+    const slug = container.querySelector(".sbk-mrkdwn__member");
+    expect(slug?.tagName).toBe("SPAN");
+    expect(slug?.textContent).toBe("@U123");
+    expect(slug?.getAttribute("aria-label")).toBeNull();
     expect(screen.getByText("Private channel")).toBeTruthy();
     expect(screen.getByText("@here").className).toContain("sbk-mention--broadcast");
     // Subteam mentions show an empty loading pill even though a `|label` was given.

@@ -30,7 +30,8 @@
   top: -1px;
 }
 
+/* Slack paints a radio option's description in `content-ter`, a shade lighter than a checkbox's. */
 .sbk-radio-buttons__description,
 .sbk-radio-buttons__description .sbk-mrkdwn {
-  color: var(--sbk-content-sec);
+  color: var(--sbk-content-ter);
 }

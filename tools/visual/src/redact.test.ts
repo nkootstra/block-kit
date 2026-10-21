@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { leaks, redact, SLACK_FILE_PLACEHOLDER } from "./redact";
+import { leaks, redact, SLACK_FILE_PLACEHOLDER, sightings } from "./redact";
 
 const meta = (payload: unknown) =>
   `<script type="application/json" id="sbk-reference-meta">${JSON.stringify({
@@ -235,5 +235,94 @@ describe("redact, on the widths frozen around a name", () => {
       "overflow-x:hidden;text-overflow:ellipsis",
     ]);
     expect(redact(out)).toBe(out);
+  });
+});
+
+// The Builder lists members and channels by the workspace's recent activity, so two capture
+// sessions list them in different orders. Numbered as they appeared, the same person was "User Two"
+// in one variant of a fixture and "User Four" in another. A placeholder follows the Slack ID.
+describe("redact, across captures that list the members in different orders", () => {
+  const people: Record<string, string> = {
+    U0EXAMPLE0A: "Ada Lovelace",
+    U0EXAMPLE0B: "Grace Hopper",
+    U0EXAMPLE0C: "Alan Turing",
+    U0EXAMPLE0D: "Edsger Dijkstra",
+  };
+  const channels: Record<string, string> = { C0EXAMPLE0E: "secret-plans", C0EXAMPLE0F: "ops" };
+  const row = (id: string) =>
+    `<div aria-selected="false" class="c-select_options_list__option" role="option">` +
+    `<span data-qa="${id}" class="c-select_options_list__option_label">` +
+    (id in channels
+      ? `<span class="c-channel_entity__name">${channels[id]}</span>`
+      : `<img src="https://ca.slack-edge.com/T0EXAMPLE01-${id}-0123abcdef-24" alt="">` +
+        `<strong class="" data-qa="member_name">${people[id]}` +
+        (id === "U0EXAMPLE0C"
+          ? `<span class="c-member_name__indicator" data-qa="member_name__you">(you)</span>`
+          : "") +
+        `</strong>`) +
+    `</span></div>`;
+  const list = (ids: string[]) =>
+    `${meta(payload)}<div role="listbox">${ids.map(row).join("")}</div>`;
+  /** Each row's placeholder ID and name, by the real ID it was captured with. */
+  const placeholders = (ids: string[], html: string) =>
+    Object.fromEntries(
+      [
+        ...html.matchAll(
+          /data-qa="([UC]0\d+)"[\s\S]*?(?:data-qa="member_name"|class="c-channel_entity__name")>([^<]+)</g,
+        ),
+      ].map((m, i) => [ids[i], `${m[1]} ${m[2]}`]),
+    );
+
+  const first = "U0EXAMPLE0C U0EXAMPLE0B C0EXAMPLE0E U0EXAMPLE0D C0EXAMPLE0F U0EXAMPLE0A".split(
+    " ",
+  );
+  const second = "U0EXAMPLE0C C0EXAMPLE0F U0EXAMPLE0D U0EXAMPLE0A U0EXAMPLE0B C0EXAMPLE0E".split(
+    " ",
+  );
+
+  it("gives the same member or channel the same placeholder in both", () => {
+    const a = placeholders(first, redact(list(first)));
+    const b = placeholders(second, redact(list(second)));
+    expect(Object.keys(a)).toHaveLength(6);
+    expect(b).toEqual(a);
+  });
+
+  it("gives different members different placeholders, the signed-in member User One", () => {
+    const out = placeholders(first, redact(list(first)));
+    expect(new Set(Object.values(out)).size).toBe(6);
+    expect(out.U0EXAMPLE0C).toBe("U0000001 User One");
+  });
+
+  it("keeps the real IDs and names out", () => {
+    for (const ids of [first, second]) {
+      const out = redact(list(ids));
+      for (const [id, name] of Object.entries({ ...people, ...channels })) {
+        expect(out).not.toContain(id);
+        expect(out).not.toContain(`>${name}<`);
+      }
+      expect(leaks(out)).toEqual([]);
+      expect(redact(out)).toBe(out);
+    }
+  });
+
+  // A picked member's token may carry no ID (Slackbot's avatar is Slack's own artwork), and a
+  // reference may show only some of the members. The capture's other references name them.
+  it("names a member shown without an ID as the capture's other references do", () => {
+    const tokens =
+      `${meta(payload)}<span class="c-token"><strong data-qa="member_name">Edsger Dijkstra</strong></span>` +
+      `<span class="c-token"><strong data-qa="member_name">Grace Hopper</strong></span>`;
+    const known = [...sightings(list(first)), ...sightings(list(second))];
+    const open = placeholders(first, redact(list(first), {}, known));
+    const out = redact(tokens, {}, known);
+    expect(out).toContain(`>${open.U0EXAMPLE0D?.slice(9)}<`);
+    expect(out).toContain(`>${open.U0EXAMPLE0B?.slice(9)}<`);
+    expect(out).not.toContain("Dijkstra");
+    expect(out).not.toContain("Hopper");
+    expect(sightings(list(first))).toEqual(
+      expect.arrayContaining([
+        { kind: "member", name: "Alan Turing", id: "U0EXAMPLE0C", self: true },
+        { kind: "channel", name: "ops", id: "C0EXAMPLE0F", self: false },
+      ]),
+    );
   });
 });

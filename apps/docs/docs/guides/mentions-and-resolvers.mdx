@@ -103,7 +103,8 @@ An id a resolver returns `undefined` for renders exactly like Slack's client doe
 cached that id yet: not an error, not the raw id:
 
 - **A user mention in mrkdwn or a Home tab/modal's plain mrkdwn text** (`<@U0123>` with no
-  resolver hit) falls back to plain `@U0123` text. Slack doesn't show a loading pill for it either.
+  resolver hit) falls back to `@U0123` in the surrounding text's colour and weight, in a span of its
+  own as in Slack. Slack doesn't show a loading pill for it either.
 - **A user or usergroup mention in a `rich_text` block** shows an empty loading pill (a small pulsing
   bar), matching Slack's Builder while it's still resolving a mention it hasn't seen before. Resting
   the pointer on a user's pill shows Slack's "Private user info" tooltip.

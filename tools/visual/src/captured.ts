@@ -7,6 +7,7 @@ import { payloadName } from "./lock";
 import { isReferenceName } from "./names";
 import { normalize } from "./normalize";
 import { type CaptureFile, parseCaptureFile } from "./recordings";
+import { sightings } from "./redact";
 
 /** The capture file at `source`, or the one piped to stdin. */
 export async function readCaptureFile(source?: string): Promise<CaptureFile> {
@@ -36,6 +37,9 @@ export function prepareReferences(
 ): { prepared: CapturedReference[]; skipped: Skipped[] } {
   const prepared: CapturedReference[] = [];
   const skipped: Skipped[] = [];
+  // Who each member and channel is, by Slack ID, across the whole capture: a reference that shows
+  // only some of them, or a token without an ID, numbers them as the open lists do. Kept in memory.
+  const known = Object.values(references).flatMap((html) => sightings(html, redactions));
   for (const [name, html] of Object.entries(references)) {
     if (!isReferenceName(name)) {
       skipped.push({ name, message: `skipping invalid name ${JSON.stringify(name)}` });
@@ -46,7 +50,7 @@ export function prepareReferences(
       skipped.push({ name, message: `skipping ${name}: no fixture ${payloadName(name)}.json` });
       continue;
     }
-    prepared.push({ name, normalized: normalize(html, redactions), payload });
+    prepared.push({ name, normalized: normalize(html, redactions, known), payload });
   }
   return { prepared, skipped };
 }

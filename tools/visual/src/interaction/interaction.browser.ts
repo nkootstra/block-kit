@@ -339,6 +339,28 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // From extra/fidelity/radio-buttons/mixed(@dark): Slack paints a radio option's description in
+  // `content-ter`, while a checkbox option's stays `content-sec`.
+  describe("option descriptions", () => {
+    for (const [theme, radio, checkbox] of [
+      ["light", CONTENT_TER, CONTENT_SEC],
+      ["dark", "rgb(154, 155, 158)", "rgb(185, 186, 189)"],
+    ] as const) {
+      it(`colours radio and checkbox descriptions as Slack does (${theme})`, async () => {
+        const page = await harness.open({
+          ...(await fixture("extra/fidelity/radio-buttons/mixed")),
+          theme,
+        });
+        const colors = (selector: string) =>
+          page.$$eval(selector, (els) => [...new Set(els.map((el) => getComputedStyle(el).color))]);
+        expect({
+          radio: await colors(".sbk-radio-buttons__description, .sbk-radio-buttons__description *"),
+          checkbox: await colors(".sbk-checkboxes__description, .sbk-checkboxes__description *"),
+        }).toEqual({ radio: [radio], checkbox: [checkbox] });
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (redacted references in fixtures/contexts/*_select): Slack's
   // `c-member` and `c-small_channel_entity` rows inside its 28px option rows.
   describe("directory select rows", () => {
@@ -583,6 +605,55 @@ describe.each(engines)("%s", (engine) => {
       await page.hover(".sbk-data-table__col-header button");
       await settle(page);
       expect((await style(page, ".sbk-data-table__sort-caret")).opacity).toBe("0");
+    });
+  });
+
+  // Slack's `c-truncate--break_words` in a data table cell (fixtures/extra/fidelity/data-table/
+  // long-content.reference.html): the text breaks anywhere and only its first 22px line shows.
+  describe("data table cell text", () => {
+    it("wraps a long cell mid-word and clamps it to one 22px line", async () => {
+      const page = await harness.open(await fixture("extra/fidelity/data-table/long-content"));
+      const cells = await page.evaluate(() =>
+        [
+          ...document.querySelectorAll<HTMLElement>(
+            ".sbk-data-table__body .sbk-data-table__truncate",
+          ),
+        ].map((el) => {
+          const s = getComputedStyle(el);
+          const box = el.parentElement!.getBoundingClientRect();
+          const r = el.getBoundingClientRect();
+          return {
+            text: el.textContent!.slice(0, 5),
+            height: Math.round(r.height),
+            // Slack's text box is only as wide as its text, up to the cell's content box.
+            fits: r.width <= box.width - 24 + 0.5,
+            wraps: el.scrollHeight > r.height,
+            // Slack's computed display: its clamp hides the next line without an ellipsis.
+            display: s.display,
+            lineHeight: s.lineHeight,
+            overflow: s.overflowY,
+            whiteSpace: s.whiteSpaceCollapse,
+            wordBreak: s.wordBreak,
+            clamp: s.webkitLineClamp,
+          };
+        }),
+      );
+      const rule = {
+        height: 22,
+        fits: true,
+        display: "flow-root",
+        lineHeight: "22px",
+        overflow: "hidden",
+        whiteSpace: "break-spaces",
+        wordBreak: "break-all",
+        clamp: "1",
+      };
+      expect(cells).toEqual([
+        { text: "Alpha", ...rule, wraps: false },
+        { text: "This ", ...rule, wraps: true },
+        { text: "Bravo", ...rule, wraps: false },
+        { text: "Short", ...rule, wraps: false },
+      ]);
     });
   });
 

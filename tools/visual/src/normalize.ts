@@ -1,4 +1,4 @@
-import { redact } from "./redact";
+import { redact, type Sighting } from "./redact";
 
 /**
  * Fixes known artifacts of the snapshot so references render the way the Builder did:
@@ -27,9 +27,14 @@ import { redact } from "./redact";
  * - Older snapshots froze a field without a string value as `value="undefined"`, which the
  *   reference then draws as text.
  * - The Builder workspace's members, channels, name and IDs are swapped for placeholders
- *   (redact.ts); `mapping` adds the maintainer's local redact.local.json.
+ *   (redact.ts); `mapping` adds the maintainer's local redact.local.json, and `known` the members
+ *   and channels the capture's other references show, so each gets the same placeholder in all.
  */
-export function normalize(html: string, mapping: Record<string, string> = {}): string {
+export function normalize(
+  html: string,
+  mapping: Record<string, string> = {},
+  known: Sighting[] = [],
+): string {
   return redact(
     uprightPseudos(wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))))
       .replace(/<span\b[^>]*>/g, (tag) =>
@@ -63,6 +68,7 @@ export function normalize(html: string, mapping: Record<string, string> = {}): s
         ).replace(/\svalue="undefined"/, ' value=""'),
       ),
     mapping,
+    known,
   );
 }
 
