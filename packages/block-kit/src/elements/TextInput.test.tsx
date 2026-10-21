@@ -266,6 +266,29 @@ describe("<TextInput>", () => {
       expect(counter()).toBeNull();
     });
 
+    it("shows no count for an untouched initial_value, but keeps the room and the description", () => {
+      const input = limited({ max_length: 10, initial_value: "abcd" });
+      expect(counter()).toBeNull();
+      expect(screen.queryByText(/characters remaining/)).toBeNull();
+      // Slack keeps `--with_character_count` and points aria-describedby at the count's id.
+      expect(input.classList.contains("sbk-text-input--counted")).toBe(true);
+      expect(input.getAttribute("aria-describedby")).toBeTruthy();
+    });
+
+    it("counts once an initial_value has been edited", () => {
+      const input = limited({ max_length: 10, initial_value: "abcd" });
+      fireEvent.change(input, { target: { value: "abcde" } });
+      expect(counter()).toBe("5");
+      const described = document.getElementById(input.getAttribute("aria-describedby") ?? "");
+      expect(described?.textContent).toBe("5 characters remaining");
+    });
+
+    it("still marks an untouched initial_value past max_length invalid", () => {
+      const input = limited({ max_length: 3, initial_value: "abcde" });
+      expect(counter()).toBeNull();
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+    });
+
     it("counts the characters left while typing", () => {
       const input = limited({ max_length: 10 });
       fireEvent.change(input, { target: { value: "abcd" } });

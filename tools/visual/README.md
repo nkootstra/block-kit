@@ -464,9 +464,14 @@ element at the real name's width, so redaction also releases the width, `flex-ba
 and `min-width` on a placeholder's own element and on a wrapper holding only it; the placeholder
 lays out at its own width, and whatever follows it (a presence dot) moves with it.
 
-The Builder lists members and channels by the workspace's recent activity, and redaction numbers
-them in the order they appear, so the order of an open list, and which of its channels are
-private, differ between capture sessions. The comparison reads both from the reference's open list
+The Builder lists members and channels by the workspace's recent activity, so the order of an
+open list, and which of its channels are private, differ between capture sessions. Redaction
+numbers them by their Slack ID rather than by where they appear: the signed-in member is
+"User One", the rest follow in the order of their IDs, and `import.ts` reads the IDs from every
+reference of the capture first, so a picked token without an ID, or a list showing only some of
+them, gets the same placeholder as the open list. The IDs are only held in memory while
+importing. References captured before this numbered members as they appeared, and nothing in them
+says who is who any more, so they keep their numbering until they are captured again. The comparison reads both from the reference's open list
 (`directoryOrder.ts`) and passes them to the render page as `&directory=User One,channel-one:private,…`,
 which lists its placeholder directory the same way.
 

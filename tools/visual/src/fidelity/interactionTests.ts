@@ -56,6 +56,14 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
       facts: ["styles"],
     },
   ],
+  "option descriptions": [
+    {
+      components: ["checkboxes", "radio_buttons"],
+      states: ["mixed"],
+      facts: ["styles"],
+      themes: BOTH,
+    },
+  ],
   "directory select rows": [
     { components: DIRECTORY, states: ["open"], facts: ["styles"], themes: BOTH },
     { components: DIRECTORY, states: ["many-items"], facts: ["behaviour"] },
@@ -112,6 +120,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
       themes: BOTH,
     },
     { components: ["plain_text_input"], states: ["long-content"], facts: ["behaviour"] },
+  ],
+  "data table cell text": [
+    { components: ["data_table"], states: ["long-content"], facts: ["styles"] },
   ],
   "card icon": [{ components: ["card"], states: ["mixed"], facts: ["styles"] }],
   "overflow menu": [{ components: ["overflow"], states: ["open"], facts: ["styles", "behaviour"] }],

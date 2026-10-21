@@ -34,7 +34,7 @@ import {
   redactBehaviour,
   redactor,
 } from "./recordings";
-import { readRedactions } from "./redact";
+import { readRedactions, sightings } from "./redact";
 
 const source = process.argv[2];
 const redactions = await readRedactions();
@@ -43,6 +43,9 @@ const capture = parseCaptureFile(
 );
 const [lock, payloads] = await Promise.all([readLock(), readPayloads()]);
 const captured = new Date().toISOString().slice(0, 10);
+// Who each member and channel is, by Slack ID, across the whole capture: a reference that shows
+// only some of them, or a token without an ID, numbers them as the open lists do. Kept in memory.
+const known = Object.values(capture.references).flatMap((html) => sightings(html, redactions));
 let written = 0;
 for (const [name, html] of Object.entries(capture.references)) {
   if (!isReferenceName(name)) {
@@ -55,7 +58,7 @@ for (const [name, html] of Object.entries(capture.references)) {
     continue;
   }
   const file = join(FIXTURES, `${name}.reference.html`);
-  const normalized = normalize(html, redactions);
+  const normalized = normalize(html, redactions, known);
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, normalized);
   lock[name] = { payload: hashPayload(payload), reference: sha256(normalized), captured };
