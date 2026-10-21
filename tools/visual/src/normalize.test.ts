@@ -52,6 +52,23 @@ describe("normalize", () => {
     expect(normalize(bar("80px"))).toBe(bar("120px"));
   });
 
+  it("lets the lines around a resized placeholder lay out again, without the heights they froze", () => {
+    // extra/fidelity/rich-text-rich-text-list/many-items@mobile: the user group's bar was 160px
+    // live (its transform origin is still 80px), which wrapped the paragraph onto a sixth line, and
+    // every box around it froze that height. At 120px the bar fits the first line; with the frozen
+    // heights kept, the reference left a blank line below the paragraph.
+    const html = (bar: string, height: string) =>
+      `<div class="p-rich_text_block" style="display:block;height:${height}px;width:320px"><div class="p-rich_text_section" style="height:${height}px;min-height:auto;width:320px">Hey ${bar}</div></div><div class="p-rich_text_section" style="height:22px;width:320px">Next</div>`;
+    const bar = (width: number, origin: number) =>
+      `<span class="c-missing_text c-missing_text--non-existent" style="display:inline-block;height:8px;perspective-origin:${origin}px 4px;transform-origin:${origin}px 4px;width:${width}px"></span>`;
+    const released = `<div class="p-rich_text_block" style="display:block;width:320px"><div class="p-rich_text_section" style="min-height:auto;width:320px">Hey ${bar(120, 60)}</div></div><div class="p-rich_text_section" style="height:22px;width:320px">Next</div>`;
+    expect(normalize(html(bar(120, 80), "132"))).toBe(released);
+    expect(normalize(html(bar(80, 40), "110"))).toBe(released);
+    // Normalizing again changes nothing, and a bar that was already 120px keeps its boxes' heights.
+    expect(normalize(released)).toBe(released);
+    expect(normalize(html(bar(120, 60), "110"))).toBe(html(bar(120, 60), "110"));
+  });
+
   it("keeps box shadows that belong to the blocks themselves", () => {
     const html =
       '<div class="c-link" style="box-shadow:rgba(0, 0, 0, 0.1) 0px 0px 0px 1px inset"></div>';
