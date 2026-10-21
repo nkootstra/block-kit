@@ -56,8 +56,35 @@ describe("collectTextRuns", () => {
     expect(found.map((r) => r.text)).toEqual(["Before", "Middle", "After"]);
   });
 
-  it("reads nothing from an empty input or its placeholder", async () => {
-    expect(await runs('<input value="" placeholder="Select a date">')).toEqual([]);
+  // Slack's empty date field is an <input> with a placeholder where we draw a span: both read as
+  // the same run, in the placeholder's own colour.
+  it("reads an empty input's placeholder as a run, in its placeholder colour", async () => {
+    await page.setContent(
+      `<style>input::placeholder{color:rgb(97, 96, 97)}</style><body style="margin:0;font:15px sans-serif"><div id="root"><input value="" placeholder="Select a date" style="color:rgb(29, 28, 29)"></div></body>`,
+    );
+    const found = await page.evaluate(collectTextRuns, "#root");
+    expect(found.map((r) => [r.text, r.color])).toEqual([["Select a date", "rgb(97, 96, 97)"]]);
+  });
+
+  it("marks a placeholder's colour unknown in a reference that didn't record it", async () => {
+    const field = '<input data-ref="2" value="" placeholder="Select a date">';
+    const meta = '<script type="application/json" id="sbk-reference-meta">{"width":400}</script>';
+    await page.setContent(`${meta}<div id="root">${field}</div>`);
+    const [unrecorded] = await page.evaluate(collectTextRuns, "#root");
+    await page.setContent(
+      `<style>[data-ref="2"]::placeholder{color:rgb(94, 93, 96)}</style>${meta}<div id="root">${field}</div>`,
+    );
+    const [recorded] = await page.evaluate(collectTextRuns, "#root");
+    expect([unrecorded?.colorUnknown, recorded?.colorUnknown, recorded?.color]).toEqual([
+      true,
+      undefined,
+      "rgb(94, 93, 96)",
+    ]);
+  });
+
+  it("reads only the value of an input that has one, not its placeholder", async () => {
+    const found = await runs('<input value="Monday" placeholder="Select a date">');
+    expect(found.map((r) => r.text)).toEqual(["Monday"]);
   });
 
   it("reads nothing from a field whose value isn't a string", async () => {
@@ -160,6 +187,70 @@ describe("collectTextRuns", () => {
       '<div style="height:20px;overflow:hidden"><p style="margin:0">Shown</p><input value="Hidden value" style="margin-top:40px"></div>',
     );
     expect(result.map((r) => r.text)).toEqual(["Shown"]);
+  });
+
+  // Screen-reader-only text (our .sbk-visually-hidden: a task's ", in progress", a field's
+  // "N characters remaining") isn't on screen, whichever way it's hidden.
+  it("skips visually hidden text, on its own element or an ancestor", async () => {
+    const result = await runs(
+      '<span style="position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap">, in progress</span>' +
+        '<span style="position:absolute;clip:rect(0px, 0px, 0px, 0px)">Clipped</span>' +
+        '<div style="width:1px;height:1px;overflow:hidden"><span>Tiny box</span></div>' +
+        '<div style="clip-path:inset(50%)"><span>Nested</span></div>' +
+        "<p>Shown</p>",
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown"]);
+  });
+
+  // The Builder keeps a "Markdown" label over the preview at opacity 0.
+  it("skips text whose opacity multiplies to 0", async () => {
+    const result = await runs(
+      '<div style="opacity:0"><span style="opacity:1">Markdown</span></div><p>Shown</p>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["Shown"]);
+  });
+
+  // React can emit " · colour " and "#1264A3" as two text nodes of one element; Slack one.
+  it("reads adjacent text nodes of one element as one run", async () => {
+    await page.setContent(
+      `<body style="margin:0;font:15px sans-serif"><div id="root"><span id="s"></span><span>Next</span></div></body>`,
+    );
+    await page.evaluate(() => {
+      document.getElementById("s")?.append("Colour ", "#1264A3");
+    });
+    const found = await page.evaluate(collectTextRuns, "#root");
+    expect(found.map((r) => r.text)).toEqual(["Colour #1264A3", "Next"]);
+  });
+
+  it("reads wrapped text as one run per line", async () => {
+    const result = await runs(
+      '<p style="margin:0;width:120px;font:15px/20px monospace">alpha beta gamma delta</p>',
+    );
+    expect(result.map((r) => [r.text, r.x])).toEqual([
+      ["alpha beta", 0],
+      ["gamma delta", 0],
+    ]);
+    expect((result[1]?.y ?? 0) - (result[0]?.y ?? 0)).toBe(20);
+  });
+
+  // A data table cell clamps its text to one line; the lines it cuts off aren't on screen.
+  it("drops the lines an overflow ancestor clips off wrapped text", async () => {
+    const result = await runs(
+      '<div style="width:120px;height:20px;overflow:hidden;font:15px/20px monospace">alpha beta gamma delta</div>',
+    );
+    expect(result.map((r) => r.text)).toEqual(["alpha beta"]);
+  });
+
+  // We render a code block's lines as a <pre> with newlines, Slack with <br>.
+  it("reads a <pre>'s lines as it reads lines broken by <br>", async () => {
+    const pre = await runs('<pre style="margin:0;font:15px/20px monospace">one\ntwo</pre>');
+    const br = await runs(
+      '<div style="margin:0;font:15px/20px monospace;white-space:pre-wrap">one<br>two</div>',
+    );
+    expect(pre.map((r) => r.text)).toEqual(["one", "two"]);
+    expect(pre.map((r) => [r.text, r.x, r.y, r.width])).toEqual(
+      br.map((r) => [r.text, r.x, r.y, r.width]),
+    );
   });
 
   it("reads the motion of the nearest element that transitions or animates", async () => {

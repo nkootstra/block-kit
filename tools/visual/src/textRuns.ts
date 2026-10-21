@@ -4,7 +4,7 @@
  * threshold, so it can't see a colour a few RGB steps off or a run that moved by a pixel or two.
  */
 
-/** One text node as laid out, relative to the rendered root. Collected by `collectTextRuns`. */
+/** One line of text as laid out, relative to the rendered root. Collected by `collectTextRuns`. */
 export interface TextRun {
   text: string;
   x: number;
@@ -15,6 +15,11 @@ export interface TextRun {
   fontStyle: string;
   /** The computed `color`, which may be translucent. */
   color: string;
+  /**
+   * Set when the reference didn't record the colour: a placeholder in one captured before
+   * snapshots kept placeholder colours paints in the browser's grey. Its colour isn't compared.
+   */
+  colorUnknown?: boolean;
   /** The product of the element's and its ancestors' `opacity`. */
   opacity: number;
   /** The opaque colour the run is painted over. */
@@ -195,6 +200,7 @@ function compareRun(reference: TextRun, ours: TextRun): TextRunDifference[] {
   exact("font-size", formatNumber(reference.fontSize), formatNumber(ours.fontSize));
   exact("font-weight", String(reference.fontWeight), String(ours.fontWeight));
   exact("font-style", reference.fontStyle, ours.fontStyle);
+  if (reference.colorUnknown || ours.colorUnknown) return out;
   const a = paintedColor(reference);
   const b = paintedColor(ours);
   if (a.some((channel, k) => Math.abs(channel - (b[k] as number)) > COLOR_TOLERANCE)) {

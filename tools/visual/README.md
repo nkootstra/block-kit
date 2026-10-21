@@ -48,10 +48,17 @@ The pixel diff scores a whole fixture with a per-pixel threshold, so it can't se
 steps off, a 0.5px border or a run that moved by a pixel or two. Every fixture therefore also gets a
 text-run check (`src/textRuns.ts`):
 
-1. Every visible text node on both sides becomes a run, positioned relative to the rendered root
-   (`src/collectTextRuns.ts`). Text an ancestor with `overflow: hidden`, `auto` or `scroll` cuts
-   off entirely (a time list's options scrolled out of its box) isn't on screen and isn't read;
-   text an edge only cuts through still is.
+1. The text a person sees on both sides becomes runs, positioned relative to the rendered root
+   (`src/collectTextRuns.ts`): one run per line a text node paints on, so wrapped text, a `<pre>`'s
+   newlines and lines broken by `<br>` all compare line by line. Text nodes side by side in one
+   element read as one. Text an ancestor (or its own element) with `overflow: hidden`, `auto` or
+   `scroll` cuts off entirely (a time list's options scrolled out of its box, the lines a clamped
+   table cell hides) isn't on screen and isn't read; a line an edge only cuts through still is.
+   Neither is visually hidden text (`clip-path: inset(50%)`, a collapsed `clip`, a box of 1px or
+   less that hides its overflow) or text whose opacity multiplies to 0. A field reads its value,
+   or its placeholder in the `::placeholder` colour while it's empty; a reference captured before
+   snapshots kept placeholder colours paints them in the browser's grey, so their colour isn't
+   compared.
 2. Runs are matched in order by their text, with a longest common subsequence, so a run only one
    side has doesn't shift the rest.
 3. Each pair is compared by position and width (±0.5px), font size, weight and style, and colour as
