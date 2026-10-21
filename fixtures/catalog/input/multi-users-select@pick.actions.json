@@ -24,9 +24,7 @@
       "<block_id>": {
         "multi_users_select-action": {
           "type": "multi_users_select",
-          "selected_users": [
-            "U0000001"
-          ]
+          "selected_users": ["U0000001"]
         }
       }
     }
@@ -37,9 +35,7 @@
       "type": "multi_users_select",
       "block_id": "<block_id>",
       "action_id": "multi_users_select-action",
-      "selected_users": [
-        "U0000001"
-      ],
+      "selected_users": ["U0000001"],
       "action_ts": "<action_ts>"
     }
   ]
