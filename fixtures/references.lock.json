@@ -2371,18 +2371,18 @@
   },
   "catalog/input/multi-users-select@hover-field-1": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "c109e23df9ccfad7a35de250f82bce5343362ee1ee9f18af079690ccb0004e7d",
-    "captured": "2026-10-21"
+    "reference": "8f06df74e787c371321f9caca6cfc790cd5b118df04b84eca9ad0d13a0fbb66f",
+    "captured": "2026-10-13"
   },
   "catalog/input/multi-users-select@hover-field-1+dark": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "181093eac56a8066b2e145e3ef7c5e6ea0f02928edd16a7bd849fab82c1f9151",
-    "captured": "2026-10-21"
+    "reference": "a3d4134042e7248d2ff19f4a7b2f041b60a86b2c483fe60e6051ad85e88f195a",
+    "captured": "2026-10-13"
   },
   "catalog/input/multi-users-select@hover-field-1+mobile": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "7568035afaf9e054096871806e615c1434e6186905a46b216ffb7e048cc73b68",
-    "captured": "2026-10-21"
+    "reference": "62b6f8fe8f02663a376338200a88516a7fc538cc40ce74d0b0d0cd891cc058ca",
+    "captured": "2026-10-13"
   },
   "catalog/input/multi-users-select@mobile": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
