@@ -979,230 +979,35 @@
   "catalog/structure/text-and-images@dark": [],
   "catalog/structure/text-and-images@mobile": [],
   "catalog/structure/text-and-images@mobile+dark": [],
-  "catalog/table/basic-data-table": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@focus-column-1": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@focus-column-1+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@focus-column-1+mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@full": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@hover-column-1+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@hover-column-1+mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@menu+mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@menu+mobile+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@mobile+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@mobile+full": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "x|review|0",
-    "width|review|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@mobile+full+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "x|review|0",
-    "width|review|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@scrolled-end+mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "x|review|0",
-    "width|review|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@scrolled-end+mobile+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "x|review|0",
-    "width|review|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0"
-  ],
-  "catalog/table/basic-data-table@sort-asc+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Weather Forecast Integration|0"
-  ],
-  "catalog/table/basic-data-table@sort-asc+mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Weather Forecast Integration|0",
-    "missing|review|0"
-  ],
-  "catalog/table/basic-data-table@sort-asc+mobile+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Global Distribution Network|0",
-    "x|proposal sent|0",
-    "width|proposal sent|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Weather Forecast Integration|0",
-    "missing|review|0"
-  ],
+  "catalog/table/basic-data-table": [],
+  "catalog/table/basic-data-table@dark": [],
+  "catalog/table/basic-data-table@focus-column-1": [],
+  "catalog/table/basic-data-table@focus-column-1+dark": [],
+  "catalog/table/basic-data-table@focus-column-1+mobile": [],
+  "catalog/table/basic-data-table@full": [],
+  "catalog/table/basic-data-table@hover-column-1+dark": [],
+  "catalog/table/basic-data-table@hover-column-1+mobile": [],
+  "catalog/table/basic-data-table@menu+mobile": [],
+  "catalog/table/basic-data-table@menu+mobile+dark": [],
+  "catalog/table/basic-data-table@mobile": [],
+  "catalog/table/basic-data-table@mobile+dark": [],
+  "catalog/table/basic-data-table@mobile+full": [],
+  "catalog/table/basic-data-table@mobile+full+dark": [],
+  "catalog/table/basic-data-table@scrolled-end+mobile": [],
+  "catalog/table/basic-data-table@scrolled-end+mobile+dark": [],
+  "catalog/table/basic-data-table@sort-asc+dark": [],
+  "catalog/table/basic-data-table@sort-asc+mobile": [],
+  "catalog/table/basic-data-table@sort-asc+mobile+dark": [],
   "catalog/table/numeric-sort-data-table": [],
   "catalog/table/numeric-sort-data-table@dark": [],
   "catalog/table/numeric-sort-data-table@mobile": [],
   "catalog/table/numeric-sort-data-table@mobile+dark": [],
   "catalog/table/numeric-sort-data-table@sort-asc": [],
-  "catalog/table/paginated-data-table": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0"
-  ],
-  "catalog/table/paginated-data-table@dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0"
-  ],
-  "catalog/table/paginated-data-table@mobile": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0"
-  ],
-  "catalog/table/paginated-data-table@mobile+dark": [
-    "width|Acme Expansion Deal|0",
-    "width|Weather Forecast Integration|0",
-    "width|Retail Partner Portal|0",
-    "width|Sustainable Materials Sourcing|0",
-    "width|Global Distribution Network|0"
-  ],
-  "catalog/table/paginated-data-table@page-2": [
-    "width|Cloud Migration Project|0",
-    "width|Data Analytics Platform|0"
-  ],
+  "catalog/table/paginated-data-table": [],
+  "catalog/table/paginated-data-table@dark": [],
+  "catalog/table/paginated-data-table@mobile": [],
+  "catalog/table/paginated-data-table@mobile+dark": [],
+  "catalog/table/paginated-data-table@page-2": [],
   "catalog/table/simple-table": [],
   "catalog/table/simple-table@dark": [],
   "catalog/table/simple-table@full": [],
@@ -1681,41 +1486,25 @@
   "extra/fidelity/data-table/empty@mobile": [],
   "extra/fidelity/data-table/empty@mobile+dark": [],
   "extra/fidelity/data-table/long-content": [
-    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0",
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently.|0"
+    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0"
   ],
   "extra/fidelity/data-table/long-content@dark": [
-    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0",
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently.|0"
+    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0"
   ],
   "extra/fidelity/data-table/long-content@mobile": [
-    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0",
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently.|0"
+    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0"
   ],
   "extra/fidelity/data-table/long-content@mobile+dark": [
-    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0",
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently.|0"
+    "width|A caption long enough to wrap in the table's header, to show how Slack lays it out|0"
   ],
   "extra/fidelity/data-table/mixed": [],
   "extra/fidelity/data-table/mixed@dark": [],
   "extra/fidelity/data-table/mixed@hover-mention-1": [],
   "extra/fidelity/data-table/mixed@hover-mention-1+dark": [],
-  "extra/fidelity/data-table/mixed@hover-mention-1+mobile": [
-    "x|a link|0",
-    "width|a link|0"
-  ],
-  "extra/fidelity/data-table/mixed@hover-mention-1+mobile+dark": [
-    "x|a link|0",
-    "width|a link|0"
-  ],
-  "extra/fidelity/data-table/mixed@mobile": [
-    "x|a link|0",
-    "width|a link|0"
-  ],
-  "extra/fidelity/data-table/mixed@mobile+dark": [
-    "x|a link|0",
-    "width|a link|0"
-  ],
+  "extra/fidelity/data-table/mixed@hover-mention-1+mobile": [],
+  "extra/fidelity/data-table/mixed@hover-mention-1+mobile+dark": [],
+  "extra/fidelity/data-table/mixed@mobile": [],
+  "extra/fidelity/data-table/mixed@mobile+dark": [],
   "extra/fidelity/data-visualization/many-items": [],
   "extra/fidelity/data-visualization/many-items@dark": [],
   "extra/fidelity/data-visualization/many-items@mobile": [],
