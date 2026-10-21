@@ -659,6 +659,30 @@ References, the lock file and the baselines are owned by the maintainers (`.gith
 Contributors add or edit fixture payloads and leave the rest to a maintainer, who captures the
 references in Block Kit Builder.
 
+## Checking references against today's Builder
+
+`references:check` proves a reference still shows its fixture's payload, not that Slack still
+renders it that way. Slack changes the Builder without notice, so once a month a maintainer checks
+every reference against what it renders today:
+
+1. `bun tools/visual/src/bundle.ts | pbcopy` bundles every fixture (or pass prefixes for a part).
+2. Capture them in the Builder as in [Capture new references](#capture-new-references), with the
+   names `fixtures/` has and `download: "<session>"`.
+3. `bun tools/visual/src/drift.ts ~/Downloads/block-kit-refs-<session>.json --report=drift.md`
+   (or `bun run drift` from `tools/visual`, or the file piped to stdin). It normalizes and redacts
+   each reference exactly as `import.ts` does, writes nothing to `fixtures/`, and reports each one
+   as unchanged, `drifted` (with how many nodes differ, the first difference, such as
+   `<div.p-bkb_preview__content> style padding-top: 8px -> 10px`, and the meta measurements that
+   moved), `new` (nothing committed under that name), or captured from another payload than the
+   lock records: a fixture change or an old bundle, not Builder drift. Committed references the
+   capture left out are listed too; `--prefix=<prefix>` limits that list to what was bundled.
+   The capture time is ignored. It exits 1 when anything drifted or was captured from another
+   payload; `--exit-zero` always exits 0. `--report` writes the list as Markdown, ready to be an
+   issue's body; it holds only redacted HTML, but read it before posting.
+4. Recapture the drifted references through the normal flow (bundle and capture just those, then
+   `import.ts`), so the unchanged ones keep their capture dates; review the diff and the
+   comparison, and open a pull request.
+
 ## Baselines in CI
 
 The Visual workflow keeps the Linux baseline without anyone editing it by hand:

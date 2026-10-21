@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "import": "bun src/import.ts",
+    "drift": "bun src/drift.ts",
     "compare": "bun src/compare.ts",
     "compare:check": "bun src/compare.ts --check",
     "type-check": "tsc --noEmit",
