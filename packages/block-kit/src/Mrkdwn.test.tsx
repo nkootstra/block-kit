@@ -28,9 +28,10 @@ describe("<Mrkdwn>", () => {
     expect(slug?.getAttribute("aria-label")).toBeNull();
     expect(screen.getByText("Private channel")).toBeTruthy();
     expect(screen.getByText("@here").className).toContain("sbk-mention--broadcast");
-    // Subteam mentions show an empty loading pill even though a `|label` was given.
-    const loading = container.querySelector(".sbk-mention--loading");
-    expect(loading?.textContent).toBe("");
+    // Subteam mentions show Slack's empty outline for a missing user group even though a `|label`
+    // was given (message/mrkdwn).
+    const missing = container.querySelector(".sbk-mention--missing");
+    expect(missing?.textContent).toBe("");
   });
 
   it("resolves mentions through the resolvers option", () => {

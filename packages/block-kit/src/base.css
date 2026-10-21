@@ -351,15 +351,6 @@ a.sbk-mention {
   vertical-align: -0.125em;
 }
 
-.sbk-mention--loading {
-  display: inline-block;
-  vertical-align: middle;
-  width: 120px;
-  height: 8px;
-  border: 1px solid var(--sbk-quote-bar);
-  border-radius: 1000px;
-}
-
 .sbk-emoji {
   display: inline-flex;
   position: relative;

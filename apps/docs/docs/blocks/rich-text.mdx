@@ -347,10 +347,10 @@ A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to re
 resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DESIGN` for you (see
 [Mentions and resolvers](/guides/mentions-and-resolvers) for how resolvers work in your own app). An unresolved
 `channel` renders as a locked "Private channel" placeholder, with Slack's hover card saying why its
-name isn't shown; an unresolved `user` or `usergroup` renders a loading placeholder instead, a
-user's with a "Private user info" tooltip. When `resolvers.user` is given and doesn't know a user,
-the user doesn't exist, and the mention shows Slack's empty outline for a missing user instead of
-the grey loading bar.
+name isn't shown. An unresolved `user` renders a grey loading bar with a "Private user info"
+tooltip; when `resolvers.user` is given and doesn't know the user, the user doesn't exist, and the
+mention shows Slack's empty outline instead. An unresolved `usergroup` shows the same empty
+outline, with an "Unavailable user group info" tooltip.
 :::
 
 ### Emoji

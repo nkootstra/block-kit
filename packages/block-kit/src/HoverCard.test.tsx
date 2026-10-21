@@ -199,4 +199,34 @@ describe("<HoverCard>", () => {
     act(() => vi.advanceTimersByTime(300));
     expect(screen.getByRole("tooltip").textContent).toBe("Private user info");
   });
+
+  it("calls a user group mention it can't resolve unavailable in a tooltip", () => {
+    // extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2
+    const { container } = render(
+      <Message
+        blocks={[
+          {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [{ type: "usergroup", usergroup_id: "S0123456789" }],
+              },
+            ],
+          },
+          { type: "section", text: { type: "mrkdwn", text: "<!subteam^S0123456789|@devs>" } },
+        ]}
+      />,
+    );
+    const outlines = container.querySelectorAll(".sbk-mention--missing");
+    expect(outlines).toHaveLength(2);
+    for (const outline of outlines) {
+      expect(outline.getAttribute("aria-label")).toBe("Unavailable user group");
+      fireEvent.mouseEnter(outline);
+      act(() => vi.advanceTimersByTime(300));
+      expect(screen.getByRole("tooltip").textContent).toBe("Unavailable user group info");
+      fireEvent.mouseLeave(outline);
+      act(() => vi.advanceTimersByTime(300));
+    }
+  });
 });

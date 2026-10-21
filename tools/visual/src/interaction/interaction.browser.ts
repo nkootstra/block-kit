@@ -4267,6 +4267,16 @@ describe.each(engines)("%s", (engine) => {
       ],
     });
 
+    const drawn = (theme: "light" | "dark") => ({
+      display: "inline-block",
+      width: "120px",
+      height: "8px",
+      verticalAlign: "baseline",
+      border: `1px solid ${WANT[theme].border}`,
+      borderRadius: "1000px",
+      background: "rgba(0, 0, 0, 0)",
+    });
+
     for (const theme of ["light", "dark"] as const) {
       describe(theme, () => {
         it("outlines a user the resolver doesn't know", async () => {
@@ -4275,15 +4285,15 @@ describe.each(engines)("%s", (engine) => {
             users: {},
             blocks: [section({ type: "user", user_id: "U0123456789" })],
           });
-          expect(await outline(page, ".sbk-mention--missing")).toEqual({
-            display: "inline-block",
-            width: "120px",
-            height: "8px",
-            verticalAlign: "baseline",
-            border: `1px solid ${WANT[theme].border}`,
-            borderRadius: "1000px",
-            background: "rgba(0, 0, 0, 0)",
+          expect(await outline(page, ".sbk-mention--missing")).toEqual(drawn(theme));
+        });
+
+        it("outlines a user group it can't resolve", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [section({ type: "usergroup", usergroup_id: "S0123456789" })],
           });
+          expect(await outline(page, ".sbk-mention--missing")).toEqual(drawn(theme));
         });
       });
     }

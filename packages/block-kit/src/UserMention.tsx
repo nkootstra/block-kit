@@ -158,6 +158,19 @@ export function UserMention({ id, name }: UserMentionProps) {
 }
 
 /**
+ * A user group mention no resolver names: Slack draws the same empty outline as for a user that
+ * doesn't exist, with an "Unavailable user group info" tooltip, before and after its lookups settle
+ * (extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2, message/mrkdwn).
+ */
+export function UnavailableUsergroup() {
+  return (
+    <Tooltip label="Unavailable user group info">
+      <span className="sbk-mention--missing" aria-label="Unavailable user group" />
+    </Tooltip>
+  );
+}
+
+/**
  * A user mention no resolver names, with a "Private user info" tooltip while the pointer rests on
  * it (extra/fidelity/data-table/mixed@hover-mention-1). Without a `resolvers.user` the lookup
  * counts as pending: Slack's grey `c-missing_text--unknown` skeleton. When `resolvers.user` is
