@@ -149,7 +149,7 @@
 }
 
 .sbk-select__placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 /* Slack draws a chosen value in an unbordered layer 8px in, and its chevron 28px from the right;
@@ -186,7 +186,7 @@
 }
 
 .sbk-select__input::placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
   opacity: 1;
 }
 

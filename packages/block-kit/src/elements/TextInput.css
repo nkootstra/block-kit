@@ -10,7 +10,7 @@
 }
 
 .sbk-text-input::placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 /* Slack's Builder uses a taller "medium" control on a modal/Home tab surface (36px, more

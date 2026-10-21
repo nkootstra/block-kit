@@ -4325,6 +4325,70 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  describe("field placeholders", () => {
+    const inModal = (element: object): Mount => ({
+      view: {
+        type: "modal",
+        title: plain("Fields"),
+        submit: plain("Submit"),
+        blocks: [{ type: "input", label: plain("Label"), element }],
+      },
+    });
+    const inMessage = (...elements: object[]): Mount => ({
+      blocks: [{ type: "actions", elements }],
+    });
+
+    // Every placeholder colour the Builder references record (`[data-ref]::placeholder`, e.g.
+    // `catalog/actions/all-selects@pick`, `extra/fidelity/number-input/long-content`) is Slack's
+    // `content-ter`: #5e5d60 in light and #9a9b9e in dark.
+    const FIELDS: { what: string; mount: Mount; selector: string }[] = [
+      {
+        what: "a users select",
+        mount: inMessage({ type: "users_select", action_id: "u", placeholder: plain("Pick") }),
+        selector: ".sbk-select__input",
+      },
+      {
+        what: "a static select",
+        mount: inMessage({
+          type: "static_select",
+          action_id: "s",
+          options: [option("Alpha")],
+        }),
+        selector: ".sbk-select__input",
+      },
+      {
+        what: "a text input",
+        mount: inModal({ type: "url_text_input", action_id: "url" }),
+        selector: ".sbk-text-input",
+      },
+      {
+        what: "a time picker",
+        mount: inMessage({ type: "timepicker", action_id: "t" }),
+        selector: ".sbk-timepicker__input",
+      },
+      {
+        what: "a date picker",
+        mount: inMessage({ type: "datepicker", action_id: "d" }),
+        selector: ".sbk-datepicker__input",
+      },
+    ];
+    for (const [theme, expected] of [
+      ["light", CONTENT_TER],
+      ["dark", "rgb(154, 155, 158)"],
+    ] as const) {
+      for (const f of FIELDS) {
+        it(`paints ${f.what}'s placeholder in Slack's content-ter in ${theme}`, async () => {
+          const page = await harness.open({ ...f.mount, theme });
+          const color = await page
+            .locator(f.selector)
+            .first()
+            .evaluate((el) => getComputedStyle(el, "::placeholder").color);
+          expect(color).toBe(expected);
+        });
+      }
+    }
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,
