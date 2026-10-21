@@ -47,24 +47,18 @@ describe("renderer", () => {
     }
   });
 
-  it("gives two renderers the same remote images", async () => {
-    const card = await fixture("catalog/card-and-carousel/card");
-    const other = await createRenderer(join(ROOT, "packages/block-kit"));
-    try {
-      const first = await renderer.render(card, "light");
-      const second = await other.render(card, "light");
-      expect(Buffer.compare(first, second)).toBe(0);
-    } finally {
-      await other.close();
-    }
-  });
-
   describe("remote images", () => {
     // A solid red image of any size, so a render can show whether the real pixels got through.
+    // `/changing` is 400x100 the first time it's asked for and 100x400 after that.
+    const hits = new Map<string, number>();
     const server = Bun.serve({
       port: 0,
       fetch(req) {
-        const [width, height] = new URL(req.url).pathname.slice(1).split("x").map(Number);
+        const path = new URL(req.url).pathname.slice(1);
+        const hit = (hits.get(path) ?? 0) + 1;
+        hits.set(path, hit);
+        const size = path === "changing" ? (hit === 1 ? "400x100" : "100x400") : path;
+        const [width, height] = size.split("x").map(Number);
         const image = new PNG({ width, height });
         for (let i = 0; i < image.data.length; i += 4) image.data.set([255, 0, 0, 255], i);
         return new Response(new Uint8Array(PNG.sync.write(image)), {
@@ -101,6 +95,23 @@ describe("renderer", () => {
       const wide = PNG.sync.read(await renderer.render(imageBlock("400x100"), "light"));
       const tall = PNG.sync.read(await renderer.render(imageBlock("100x400"), "light"));
       expect(tall.height - wide.height).toBeGreaterThan(200);
+    });
+
+    // Every renderer in a process gets the same answer for a URL (compare.ts renders the base and
+    // the head with two of them), however the server's answer changes in between.
+    it("gives two renderers the same answer, fetched once", async () => {
+      const other = await createRenderer(join(ROOT, "packages/block-kit"));
+      try {
+        const first = await renderer.render(imageBlock("changing"), "light");
+        const second = await other.render(imageBlock("changing"), "light");
+        expect(hits.get("changing")).toBe(1);
+        expect(Buffer.compare(first, second)).toBe(0);
+        // Both lay out the size the server sent, as an image of that size does.
+        const wide = await renderer.render(imageBlock("400x100"), "light");
+        expect(Buffer.compare(first, wide)).toBe(0);
+      } finally {
+        await other.close();
+      }
     });
   });
 });
