@@ -339,6 +339,28 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // From extra/fidelity/radio-buttons/mixed(@dark): Slack paints a radio option's description in
+  // `content-ter`, while a checkbox option's stays `content-sec`.
+  describe("option descriptions", () => {
+    for (const [theme, radio, checkbox] of [
+      ["light", CONTENT_TER, CONTENT_SEC],
+      ["dark", "rgb(154, 155, 158)", "rgb(185, 186, 189)"],
+    ] as const) {
+      it(`colours radio and checkbox descriptions as Slack does (${theme})`, async () => {
+        const page = await harness.open({
+          ...(await fixture("extra/fidelity/radio-buttons/mixed")),
+          theme,
+        });
+        const colors = (selector: string) =>
+          page.$$eval(selector, (els) => [...new Set(els.map((el) => getComputedStyle(el).color))]);
+        expect({
+          radio: await colors(".sbk-radio-buttons__description, .sbk-radio-buttons__description *"),
+          checkbox: await colors(".sbk-checkboxes__description, .sbk-checkboxes__description *"),
+        }).toEqual({ radio: [radio], checkbox: [checkbox] });
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (redacted references in fixtures/contexts/*_select): Slack's
   // `c-member` and `c-small_channel_entity` rows inside its 28px option rows.
   describe("directory select rows", () => {
