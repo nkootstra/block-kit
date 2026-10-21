@@ -4399,6 +4399,26 @@ describe.each(engines)("%s", (engine) => {
         expect(padding).toBe("28px");
       });
     }
+
+    // Slack's select field is the whole box, with the chevron laid over its right edge, so a long
+    // placeholder runs under the chevron to the field's 8px padding (`catalog/actions/
+    // filtered-conversations-select`: "Select private conversation" fits on one 154px line).
+    it("lets a select's placeholder run under the chevron, as Slack's field does", async () => {
+      const page = await harness.open(
+        inMessage({
+          type: "conversations_select",
+          action_id: "c",
+          placeholder: plain("Select private conversation"),
+        }),
+      );
+      const got = await page.evaluate(() => {
+        const control = document.querySelector(".sbk-select__control")!.getBoundingClientRect();
+        const input = document.querySelector(".sbk-select__input")!.getBoundingClientRect();
+        return { right: Math.round(control.right - input.right) };
+      });
+      // The field ends at the control's 8px padding (1px border + 8px - our 1px overlap).
+      expect(got).toEqual({ right: 9 });
+    });
   });
 
   describe("theme colours", () => {
