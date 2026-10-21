@@ -4236,6 +4236,59 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // Slack's c-missing_text--non-existent, as extra/fidelity/rich-text-rich-text-list/many-items
+  // (and its @dark) computes it once the Builder's lookup settles: an empty 120 x 8 outline sitting
+  // on the baseline, in the quote bar's grey (#ddd, #35373b in dark).
+  describe("unknown mentions in both themes", () => {
+    const WANT = {
+      light: { border: "rgb(221, 221, 221)" },
+      dark: { border: "rgb(53, 55, 59)" },
+    } as const;
+    const outline = (page: Page, selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => {
+          const c = getComputedStyle(el);
+          return {
+            display: c.display,
+            width: c.width,
+            height: c.height,
+            verticalAlign: c.verticalAlign,
+            border: `${c.borderTopWidth} ${c.borderTopStyle} ${c.borderTopColor}`,
+            borderRadius: c.borderTopLeftRadius,
+            background: c.backgroundColor,
+          };
+        });
+    const section = (element: unknown) => ({
+      type: "rich_text",
+      elements: [
+        { type: "rich_text_section", elements: [{ type: "text", text: "Hey " }, element] },
+      ],
+    });
+
+    for (const theme of ["light", "dark"] as const) {
+      describe(theme, () => {
+        it("outlines a user the resolver doesn't know", async () => {
+          const page = await harness.open({
+            theme,
+            users: {},
+            blocks: [section({ type: "user", user_id: "U0123456789" })],
+          });
+          expect(await outline(page, ".sbk-mention--missing")).toEqual({
+            display: "inline-block",
+            width: "120px",
+            height: "8px",
+            verticalAlign: "baseline",
+            border: `1px solid ${WANT[theme].border}`,
+            borderRadius: "1000px",
+            background: "rgba(0, 0, 0, 0)",
+          });
+        });
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (contexts/{datepicker,timepicker}/{actions,home,modal-input}):
   // Slack draws date and time fields in its small size (28px, 13px text) in messages, and in its
   // medium size (36px, 15px text) in modals and on App Home.

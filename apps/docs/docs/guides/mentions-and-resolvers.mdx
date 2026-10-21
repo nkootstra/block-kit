@@ -107,7 +107,10 @@ cached that id yet: not an error, not the raw id:
   own as in Slack. Slack doesn't show a loading pill for it either.
 - **A user or usergroup mention in a `rich_text` block** shows an empty loading pill (a small pulsing
   bar), matching Slack's Builder while it's still resolving a mention it hasn't seen before. Resting
-  the pointer on a user's pill shows Slack's "Private user info" tooltip.
+  the pointer on a user's pill shows Slack's "Private user info" tooltip. That's a user mention with
+  no `user` resolver at all: when `resolvers.user` is given and returns `undefined`, the user
+  doesn't exist, and the mention shows the empty outline Slack draws once its lookup settles on a
+  user it can't find.
 - **A channel mention with no `channel` resolver hit and no inline label** (`<#C0123>` without
   `|name`) renders as a locked "Private channel" pill, since Slack can't show a name for a channel the
   viewer isn't in either. Resting the pointer on it shows Slack's hover card explaining why: "You

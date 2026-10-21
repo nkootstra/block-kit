@@ -348,7 +348,9 @@ resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DE
 [Mentions and resolvers](/guides/mentions-and-resolvers) for how resolvers work in your own app). An unresolved
 `channel` renders as a locked "Private channel" placeholder, with Slack's hover card saying why its
 name isn't shown; an unresolved `user` or `usergroup` renders a loading placeholder instead, a
-user's with a "Private user info" tooltip.
+user's with a "Private user info" tooltip. When `resolvers.user` is given and doesn't know a user,
+the user doesn't exist, and the mention shows Slack's empty outline for a missing user instead of
+the grey loading bar.
 :::
 
 ### Emoji

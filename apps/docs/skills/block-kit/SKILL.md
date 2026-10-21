@@ -117,6 +117,10 @@ pass `resolvers` to the provider. Each resolver is synchronous and returns a nam
 >
 ```
 
+A `rich_text` user mention with no `user` resolver shows Slack's grey loading bar (the lookup is
+pending); with a `user` resolver that returns `undefined`, the user doesn't exist and it shows
+Slack's empty outline instead, as a `contact_card` shows its "could not be displayed" notice.
+
 `slackFile: (file) => ({ url, size })` resolves a `slack_file` image (image block or element) to a
 loadable URL and its size in bytes (shown as Slack's "(400 kB)", decimal kilobytes); an image block
 draws a resolved file at most 400 x 400, as Slack does, and without a resolver shows its alt-text

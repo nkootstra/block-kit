@@ -158,13 +158,21 @@ export function UserMention({ id, name }: UserMentionProps) {
 }
 
 /**
- * A user mention no resolver names: Slack's `c-missing_text` skeleton, with a "Private user info"
- * tooltip while the pointer rests on it (extra/fidelity/data-table/mixed@hover-mention-1).
+ * A user mention no resolver names, with a "Private user info" tooltip while the pointer rests on
+ * it (extra/fidelity/data-table/mixed@hover-mention-1). Without a `resolvers.user` the lookup
+ * counts as pending: Slack's grey `c-missing_text--unknown` skeleton. When `resolvers.user` is
+ * given and doesn't know the id, the user doesn't exist: Slack's empty
+ * `c-missing_text--non-existent` outline, which replaces the skeleton once its lookup settles
+ * (extra/fidelity/rich-text-rich-text-list/many-items).
  */
 export function PrivateUser({ id }: { id: string }) {
+  const looksUp = useBlockKit().resolvers.user !== undefined;
   return (
     <Tooltip label="Private user info">
-      <span className="sbk-mention--unresolved" aria-label={`@${id}`} />
+      <span
+        className={looksUp ? "sbk-mention--missing" : "sbk-mention--unresolved"}
+        aria-label={`@${id}`}
+      />
     </Tooltip>
   );
 }

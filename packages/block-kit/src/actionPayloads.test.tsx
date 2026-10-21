@@ -321,7 +321,7 @@ const OURS: Record<string, string> = {
   cancel: ".sbk-modal__button--secondary",
   link: "a.sbk-link",
   mention:
-    ".sbk-mention, .sbk-mention--broadcast, .sbk-mention--private, .sbk-mention--unresolved, .sbk-mention--loading",
+    ".sbk-mention, .sbk-mention--broadcast, .sbk-mention--private, .sbk-mention--unresolved, .sbk-mention--missing, .sbk-mention--loading",
   card: ".sbk-card",
   arrow:
     '.sbk-carousel button[aria-label="Scroll left"], .sbk-carousel button[aria-label="Scroll right"]',

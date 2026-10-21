@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { BlockKitProvider } from "./context";
 import { HoverCard } from "./HoverCard";
 import { Message } from "./Message";
 
@@ -172,6 +173,29 @@ describe("<HoverCard>", () => {
       />,
     );
     fireEvent.mouseEnter(document.querySelector(".sbk-mention--unresolved")!);
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByRole("tooltip").textContent).toBe("Private user info");
+  });
+
+  it("names a user mention the resolver doesn't know as private in a tooltip", () => {
+    render(
+      <BlockKitProvider resolvers={{ user: () => undefined }}>
+        <Message
+          blocks={[
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "user", user_id: "U0123456789" }],
+                },
+              ],
+            },
+          ]}
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.mouseEnter(document.querySelector(".sbk-mention--missing")!);
     act(() => vi.advanceTimersByTime(300));
     expect(screen.getByRole("tooltip").textContent).toBe("Private user info");
   });

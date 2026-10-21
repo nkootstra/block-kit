@@ -230,6 +230,7 @@
     --sbk-code-border: rgba(232, 232, 232, 0.13);
     --sbk-quote-bar: #797c8180;
     --sbk-skeleton-bg: #35373b;
+    --sbk-missing-border: #35373b;
     --sbk-mention-bg: #03669640;
     --sbk-mention-text: #2ba5ce;
     --sbk-mention-private-bg: rgba(232, 232, 232, 0.13);
@@ -370,6 +371,7 @@
   --sbk-code-border: rgba(232, 232, 232, 0.13);
   --sbk-quote-bar: #797c8180;
   --sbk-skeleton-bg: #35373b;
+  --sbk-missing-border: #35373b;
   --sbk-mention-bg: #03669640;
   --sbk-mention-text: #2ba5ce;
   --sbk-mention-private-bg: rgba(232, 232, 232, 0.13);

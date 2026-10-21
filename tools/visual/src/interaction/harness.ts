@@ -20,6 +20,8 @@ export interface Mount {
   directory?: { type: "user" | "channel"; [key: string]: unknown }[];
   /** What `resolvers.slackFile` answers for a `slack_file`, by its `url` or `id`. */
   slackFiles?: Record<string, { url: string; size?: number }>;
+  /** Names for `resolvers.user`, by user id; given, every other id is a user that doesn't exist. */
+  users?: Record<string, string>;
 }
 
 export const ENGINES = { chromium, firefox, webkit } satisfies Record<string, BrowserType>;
