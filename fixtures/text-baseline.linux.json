@@ -32,22 +32,10 @@
   "catalog/actions/all-selects@open+dark": [],
   "catalog/actions/all-selects@open+mobile": [],
   "catalog/actions/all-selects@open+mobile+dark": [],
-  "catalog/actions/all-selects@pick": [
-    "color|Select a conversation|0",
-    "color|Select a channel|0",
-    "color|Select a user|0"
-  ],
-  "catalog/actions/all-selects@pick-static": [
-    "color|Select a conversation|0",
-    "color|Select a channel|0",
-    "color|Select a user|0"
-  ],
+  "catalog/actions/all-selects@pick": [],
+  "catalog/actions/all-selects@pick-static": [],
   "catalog/actions/all-selects@pick+dark": [],
-  "catalog/actions/all-selects@pick+mobile": [
-    "color|Select a conversation|0",
-    "color|Select a channel|0",
-    "color|Select a user|0"
-  ],
+  "catalog/actions/all-selects@pick+mobile": [],
   "catalog/actions/all-selects@pick+mobile+dark": [],
   "catalog/actions/button": [],
   "catalog/actions/button@dark": [],
@@ -83,30 +71,12 @@
   "catalog/actions/datepickers@open+mobile+dark": [],
   "catalog/actions/datepickers@pick+mobile": [],
   "catalog/actions/datepickers@pick+mobile+dark": [],
-  "catalog/actions/filtered-conversations-select": [
-    "y|Select private conversation|0",
-    "width|Select private conversation|0"
-  ],
-  "catalog/actions/filtered-conversations-select@dark": [
-    "y|Select private conversation|0",
-    "width|Select private conversation|0"
-  ],
-  "catalog/actions/filtered-conversations-select@mobile": [
-    "y|Select private conversation|0",
-    "width|Select private conversation|0"
-  ],
-  "catalog/actions/filtered-conversations-select@mobile+dark": [
-    "y|Select private conversation|0",
-    "width|Select private conversation|0"
-  ],
-  "catalog/actions/filtered-conversations-select@open": [
-    "y|Select private conversation|0",
-    "width|Select private conversation|0"
-  ],
-  "catalog/actions/filtered-conversations-select@open+dark": [
-    "y|Select private conversation|0",
-    "width|Select private conversation|0"
-  ],
+  "catalog/actions/filtered-conversations-select": [],
+  "catalog/actions/filtered-conversations-select@dark": [],
+  "catalog/actions/filtered-conversations-select@mobile": [],
+  "catalog/actions/filtered-conversations-select@mobile+dark": [],
+  "catalog/actions/filtered-conversations-select@open": [],
+  "catalog/actions/filtered-conversations-select@open+dark": [],
   "catalog/actions/filtered-conversations-select@pick+mobile": [],
   "catalog/actions/filtered-conversations-select@pick+mobile+dark": [],
   "catalog/actions/radio-buttons": [],
@@ -379,11 +349,7 @@
   "catalog/container/data-entry-form@open+dark": [],
   "catalog/container/data-entry-form@open+mobile": [],
   "catalog/container/data-entry-form@open+mobile+dark": [],
-  "catalog/container/data-entry-form@pick": [
-    "color|Brief description of the issue|0",
-    "color|Select category|0",
-    "color|Provide details about the issue...|0"
-  ],
+  "catalog/container/data-entry-form@pick": [],
   "catalog/container/full-width": [],
   "catalog/container/full-width@dark": [],
   "catalog/container/full-width@mobile": [],
@@ -758,9 +724,7 @@
   "catalog/section/static-select@dark": [],
   "catalog/section/static-select@mobile": [],
   "catalog/section/static-select@mobile+dark": [],
-  "catalog/section/static-select@open": [
-    "color|Select an item|0"
-  ],
+  "catalog/section/static-select@open": [],
   "catalog/section/static-select@open+dark": [],
   "catalog/section/text-fields": [],
   "catalog/section/text-fields@dark": [],
@@ -940,22 +904,10 @@
     "extra|User Two|1"
   ],
   "contexts/conversations_select/actions@open+dark": [],
-  "contexts/conversations_select/home": [
-    "y|Select a conversation|0",
-    "width|Select a conversation|0"
-  ],
-  "contexts/conversations_select/home@dark": [
-    "y|Select a conversation|0",
-    "width|Select a conversation|0"
-  ],
-  "contexts/conversations_select/home@open": [
-    "y|Select a conversation|0",
-    "width|Select a conversation|0"
-  ],
-  "contexts/conversations_select/home@open+dark": [
-    "y|Select a conversation|0",
-    "width|Select a conversation|0"
-  ],
+  "contexts/conversations_select/home": [],
+  "contexts/conversations_select/home@dark": [],
+  "contexts/conversations_select/home@open": [],
+  "contexts/conversations_select/home@open+dark": [],
   "contexts/conversations_select/modal-input": [],
   "contexts/conversations_select/modal-input@dark": [],
   "contexts/conversations_select/modal-input@open": [],
@@ -1004,26 +956,11 @@
   "contexts/datetimepicker/modal-input@open+dark": [
     "extra|Clear selection|0"
   ],
-  "contexts/email_text_input/modal-input": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "contexts/email_text_input/modal-input@dark": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "contexts/email_text_input/modal-input@focus-input-1": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "contexts/email_text_input/modal-input@hover-input-1": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "contexts/email_text_input/modal-input@hover-input-1+dark": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
+  "contexts/email_text_input/modal-input": [],
+  "contexts/email_text_input/modal-input@dark": [],
+  "contexts/email_text_input/modal-input@focus-input-1": [],
+  "contexts/email_text_input/modal-input@hover-input-1": [],
+  "contexts/email_text_input/modal-input@hover-input-1+dark": [],
   "contexts/external_select/accessory": [],
   "contexts/external_select/accessory@dark": [],
   "contexts/external_select/accessory@focus-field-1+dark": [],
@@ -1176,24 +1113,12 @@
   "contexts/timepicker/modal-input@dark": [],
   "contexts/timepicker/modal-input@open": [],
   "contexts/timepicker/modal-input@open+dark": [],
-  "contexts/url_text_input/modal-input": [
-    "x|Enter a URL|0"
-  ],
-  "contexts/url_text_input/modal-input@dark": [
-    "x|Enter a URL|0"
-  ],
-  "contexts/url_text_input/modal-input@focus-input-1": [
-    "x|Enter a URL|0"
-  ],
-  "contexts/url_text_input/modal-input@focus-input-1+dark": [
-    "x|Enter a URL|0"
-  ],
-  "contexts/url_text_input/modal-input@hover-input-1": [
-    "x|Enter a URL|0"
-  ],
-  "contexts/url_text_input/modal-input@hover-input-1+dark": [
-    "x|Enter a URL|0"
-  ],
+  "contexts/url_text_input/modal-input": [],
+  "contexts/url_text_input/modal-input@dark": [],
+  "contexts/url_text_input/modal-input@focus-input-1": [],
+  "contexts/url_text_input/modal-input@focus-input-1+dark": [],
+  "contexts/url_text_input/modal-input@hover-input-1": [],
+  "contexts/url_text_input/modal-input@hover-input-1+dark": [],
   "contexts/users_select/accessory": [],
   "contexts/users_select/accessory@dark": [],
   "contexts/users_select/accessory@mobile": [],
@@ -1236,13 +1161,9 @@
   "extra/actions/more-elements@open+dark": [
     "color|Type a minimum of 2 characters to see options.|0"
   ],
-  "extra/actions/more-elements@pick": [
-    "color|Search tickets|0"
-  ],
+  "extra/actions/more-elements@pick": [],
   "extra/actions/more-elements@pick+dark": [],
-  "extra/actions/more-elements@pick+mobile": [
-    "color|Search tickets|0"
-  ],
+  "extra/actions/more-elements@pick+mobile": [],
   "extra/context-actions/feedback-row": [],
   "extra/context-actions/feedback-row@dark": [],
   "extra/context-actions/feedback-row@mobile": [],
@@ -1313,9 +1234,7 @@
     "y|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
     "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
-  "extra/fidelity/channels-select/long-content@pick": [
-    "color|Search tickets|0"
-  ],
+  "extra/fidelity/channels-select/long-content@pick": [],
   "extra/fidelity/chart-table-modal/many-items": [],
   "extra/fidelity/chart-table-modal/many-items@dark": [],
   "extra/fidelity/chart-table-modal/many-items@mobile": [],
@@ -1345,9 +1264,7 @@
   "extra/fidelity/confirm/long-content@mobile+dark": [],
   "extra/fidelity/confirm/long-content@open": [],
   "extra/fidelity/confirm/long-content@open+dark": [],
-  "extra/fidelity/confirm/long-content@pick": [
-    "color|Search tickets|0"
-  ],
+  "extra/fidelity/confirm/long-content@pick": [],
   "extra/fidelity/contact-card/mixed": [
     "y|Workspace|0",
     "missing|This content could not be displayed.|0",
@@ -2101,36 +2018,14 @@
   "extra/fidelity/text-object/mixed@dark": [],
   "extra/fidelity/text-object/mixed@mobile": [],
   "extra/fidelity/text-object/mixed@mobile+dark": [],
-  "extra/fidelity/timepicker/empty": [
-    "missing|Time|0",
-    "extra|Select time|0"
-  ],
-  "extra/fidelity/timepicker/empty@dark": [
-    "missing|Time|0",
-    "extra|Select time|0"
-  ],
-  "extra/fidelity/timepicker/empty@mobile": [
-    "missing|Time|0",
-    "extra|Select time|0"
-  ],
-  "extra/fidelity/timepicker/empty@mobile+dark": [
-    "missing|Time|0",
-    "extra|Select time|0"
-  ],
-  "extra/fidelity/timepicker/empty@open": [
-    "missing|Time|0",
-    "extra|Select time|0"
-  ],
-  "extra/fidelity/timepicker/empty@open+dark": [
-    "missing|Time|0",
-    "extra|Select time|0"
-  ],
-  "extra/fidelity/url-text-input/long-content": [
-    "x|https://example.com/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/end|0"
-  ],
-  "extra/fidelity/url-text-input/long-content@dark": [
-    "x|https://example.com/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/a-very-long-path-segment/end|0"
-  ],
+  "extra/fidelity/timepicker/empty": [],
+  "extra/fidelity/timepicker/empty@dark": [],
+  "extra/fidelity/timepicker/empty@mobile": [],
+  "extra/fidelity/timepicker/empty@mobile+dark": [],
+  "extra/fidelity/timepicker/empty@open": [],
+  "extra/fidelity/timepicker/empty@open+dark": [],
+  "extra/fidelity/url-text-input/long-content": [],
+  "extra/fidelity/url-text-input/long-content@dark": [],
   "extra/fidelity/users-select/long-content": [],
   "extra/fidelity/users-select/long-content@dark": [],
   "extra/fidelity/users-select/long-content@mobile": [],
@@ -2218,14 +2113,8 @@
   "extra/modal/dispatch-rich-text@dark": [],
   "extra/modal/form": [],
   "extra/modal/form@dark": [],
-  "extra/modal/form@open": [
-    "missing|Pick an option|0",
-    "extra|Select an item|0"
-  ],
-  "extra/modal/form@open+dark": [
-    "missing|Pick an option|0",
-    "extra|Select an item|0"
-  ],
+  "extra/modal/form@open": [],
+  "extra/modal/form@open+dark": [],
   "extra/modal/optional-inputs": [],
   "extra/modal/optional-inputs@dark": [],
   "extra/modal/optional-inputs@open": [],
@@ -2271,22 +2160,10 @@
   "extra/payloads/choices@dark": [],
   "extra/payloads/choices@mobile": [],
   "extra/payloads/choices@mobile+dark": [],
-  "extra/payloads/dispatch-email": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "extra/payloads/dispatch-email@dark": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "extra/payloads/dispatch-email@mobile": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
-  "extra/payloads/dispatch-email@mobile+dark": [
-    "missing|Enter an email address|0",
-    "extra|Write something|0"
-  ],
+  "extra/payloads/dispatch-email": [],
+  "extra/payloads/dispatch-email@dark": [],
+  "extra/payloads/dispatch-email@mobile": [],
+  "extra/payloads/dispatch-email@mobile+dark": [],
   "extra/payloads/dispatch-inputs": [],
   "extra/payloads/dispatch-inputs@dark": [],
   "extra/payloads/dispatch-inputs@mobile": [],
@@ -2306,9 +2183,7 @@
   "extra/payloads/pickers@pick+mobile": [],
   "extra/payloads/pickers@pick+mobile+dark": [],
   "extra/payloads/selects": [],
-  "extra/payloads/selects@change-single": [
-    "color|Choose|0"
-  ],
+  "extra/payloads/selects@change-single": [],
   "extra/payloads/selects@dark": [],
   "extra/payloads/selects@keyboard-single": [],
   "extra/payloads/selects@mobile": [],
