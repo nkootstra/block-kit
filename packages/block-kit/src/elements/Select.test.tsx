@@ -19,6 +19,26 @@ function sent(value: string, text: string) {
   return { value, text: { type: "plain_text", text, emoji: true } };
 }
 describe("<Select> static_select", () => {
+  // Block Kit Builder: `extra/modal/form@open` opens a static select that sets no placeholder, and
+  // Slack's field reads "Pick an option".
+  it("defaults the placeholder to 'Pick an option' when none is specified", () => {
+    render(
+      <BlockKitProvider>
+        <Select
+          element={
+            {
+              type: "static_select",
+              action_id: "a1",
+              options: [opt("a", "A"), opt("b", "B")],
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByRole("combobox").getAttribute("placeholder")).toBe("Pick an option");
+  });
+
   it("reports initial_option as selected_option on mount", () => {
     let state: StateValues = {};
     render(

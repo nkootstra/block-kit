@@ -42,7 +42,9 @@ describe("<TimePicker>", () => {
     expect(field.placeholder).toBe("Select time");
   });
 
-  it("shows the placeholder when no time is selected", () => {
+  // Block Kit Builder: `extra/fidelity/timepicker/empty` sets no placeholder, and Slack's field
+  // reads "Time", as the datetime picker's time field does.
+  it("shows Slack's Time placeholder when no time is selected", () => {
     render(
       <BlockKitProvider>
         <TimePicker
@@ -51,7 +53,7 @@ describe("<TimePicker>", () => {
         />
       </BlockKitProvider>,
     );
-    expect(screen.getByRole("combobox").getAttribute("placeholder")).toBe("Select time");
+    expect(screen.getByRole("combobox").getAttribute("placeholder")).toBe("Time");
   });
 
   it("formats initial_time like Slack's closed control and reports it as state on mount", () => {

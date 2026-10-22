@@ -144,7 +144,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
 
   const display = time ? formatTime(time) : undefined;
   // Slack names the field "Time" for screen readers, whatever its placeholder.
-  const input = combo.inputProps(display, element.placeholder?.text ?? "Select time", "Time");
+  const input = combo.inputProps(display, element.placeholder?.text ?? "Time", "Time");
   // Slack keeps the chosen time in the input but draws it in a layer over the field
   // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
   const overlay = display !== undefined && !combo.open;

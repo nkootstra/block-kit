@@ -18,6 +18,20 @@ describe("<TextInput>", () => {
     expect(screen.getByPlaceholderText("Write something")).toBeTruthy();
   });
 
+  // Block Kit Builder: `contexts/email_text_input/modal-input` and `extra/payloads/dispatch-email`
+  // set no placeholder, and Slack's field reads "Enter an email address" in a modal and a message.
+  it("defaults an email input's placeholder to 'Enter an email address'", () => {
+    render(
+      <BlockKitProvider>
+        <TextInput
+          element={{ type: "email_text_input", action_id: "a1" } as TextInputElement}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByPlaceholderText("Enter an email address")).toBeTruthy();
+  });
+
   it("uses the configured placeholder when one is specified", () => {
     render(
       <BlockKitProvider>

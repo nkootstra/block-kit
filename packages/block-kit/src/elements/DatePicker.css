@@ -76,7 +76,7 @@
 }
 
 .sbk-datepicker__input::placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 /* Slack anchors the calendar's right edge to the field's, so it opens leftward from it. The layer

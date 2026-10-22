@@ -62,7 +62,7 @@
 }
 
 .sbk-datetimepicker__input::placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
   opacity: 1;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .sbk-datetimepicker__placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 .sbk-datetimepicker__timezone {
