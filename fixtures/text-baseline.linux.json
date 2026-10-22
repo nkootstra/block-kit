@@ -491,18 +491,8 @@
   "catalog/input/multi-static-select@pick+mobile+dark": [],
   "catalog/input/multi-users-select": [],
   "catalog/input/multi-users-select@dark": [],
-  "catalog/input/multi-users-select@focus-field-1+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
-  "catalog/input/multi-users-select@focus-field-1+mobile": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
+  "catalog/input/multi-users-select@focus-field-1+dark": [],
+  "catalog/input/multi-users-select@focus-field-1+mobile": [],
   "catalog/input/multi-users-select@hover-field-1": [],
   "catalog/input/multi-users-select@hover-field-1+dark": [],
   "catalog/input/multi-users-select@hover-field-1+mobile": [],
@@ -510,18 +500,8 @@
   "catalog/input/multi-users-select@mobile+dark": [],
   "catalog/input/multi-users-select@open": [],
   "catalog/input/multi-users-select@open+dark": [],
-  "catalog/input/multi-users-select@open+mobile": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
-  "catalog/input/multi-users-select@open+mobile+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
+  "catalog/input/multi-users-select@open+mobile": [],
+  "catalog/input/multi-users-select@open+mobile+dark": [],
   "catalog/input/multi-users-select@pick": [],
   "catalog/input/multi-users-select@pick+dark": [],
   "catalog/input/multiline-plain-text-input": [],
@@ -719,26 +699,16 @@
   "catalog/section/users-select@mobile+dark": [],
   "catalog/section/users-select@open": [],
   "catalog/section/users-select@open+dark": [],
-  "catalog/section/users-select@open+mobile": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
-  "catalog/section/users-select@open+mobile+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
+  "catalog/section/users-select@open+mobile": [],
+  "catalog/section/users-select@open+mobile+dark": [],
   "catalog/section/users-select@pick+dark": [
-    "missing|User One|1"
+    "missing|(you)|0"
   ],
   "catalog/section/users-select@pick+mobile": [
-    "missing|User One|1"
+    "missing|(you)|0"
   ],
   "catalog/section/users-select@pick+mobile+dark": [
-    "missing|User One|1"
+    "missing|(you)|0"
   ],
   "catalog/structure/default": [],
   "catalog/structure/default@dark": [],
@@ -874,12 +844,7 @@
   "contexts/conversations_select/actions@dark": [],
   "contexts/conversations_select/actions@mobile": [],
   "contexts/conversations_select/actions@mobile+dark": [],
-  "contexts/conversations_select/actions@open": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
+  "contexts/conversations_select/actions@open": [],
   "contexts/conversations_select/actions@open+dark": [],
   "contexts/conversations_select/home": [],
   "contexts/conversations_select/home@dark": [],
@@ -1280,19 +1245,11 @@
   ],
   "extra/fidelity/conversations-select/long-content@open": [
     "y|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/conversations-select/long-content@open+dark": [
     "y|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
+    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/data-table/empty": [],
   "extra/fidelity/data-table/empty@dark": [],
@@ -1578,18 +1535,8 @@
   "extra/fidelity/multi-users-select/initial-value@dark": [],
   "extra/fidelity/multi-users-select/initial-value@mobile": [],
   "extra/fidelity/multi-users-select/initial-value@mobile+dark": [],
-  "extra/fidelity/multi-users-select/initial-value@open": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
-  "extra/fidelity/multi-users-select/initial-value@open+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
+  "extra/fidelity/multi-users-select/initial-value@open": [],
+  "extra/fidelity/multi-users-select/initial-value@open+dark": [],
   "extra/fidelity/multi-users-select/long-content": [
     "missing|This sentence is here to make the text long enough to wrap|0",
     "missing|onto several lines at the desktop width, and further still on a|0",
@@ -1611,22 +1558,14 @@
     "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/multi-users-select/long-content@open": [
-    "x|AGENT|0",
-    "y|AGENT|0",
     "missing|This sentence is here to make the text long enough to wrap|0",
     "missing|onto several lines at the desktop width, and further still on a|0",
-    "missing|User Four|1",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "extra|User Two|1"
+    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/multi-users-select/long-content@open+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
     "missing|This sentence is here to make the text long enough to wrap|0",
     "missing|onto several lines at the desktop width, and further still on a|0",
-    "missing|User Four|1",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
-    "extra|User Two|1"
+    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
   ],
   "extra/fidelity/number-input/long-content": [],
   "extra/fidelity/number-input/long-content@dark": [],
@@ -2022,20 +1961,10 @@
   "extra/fidelity/users-select/long-content@dark": [],
   "extra/fidelity/users-select/long-content@mobile": [],
   "extra/fidelity/users-select/long-content@mobile+dark": [],
-  "extra/fidelity/users-select/long-content@open": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
-  "extra/fidelity/users-select/long-content@open+dark": [
-    "x|AGENT|0",
-    "y|AGENT|0",
-    "missing|User Four|1",
-    "extra|User Two|1"
-  ],
+  "extra/fidelity/users-select/long-content@open": [],
+  "extra/fidelity/users-select/long-content@open+dark": [],
   "extra/fidelity/users-select/long-content@pick": [
-    "missing|User One|1"
+    "missing|(you)|0"
   ],
   "extra/fidelity/video/long-content": [
     "missing|This sentence is here to make the text long enough to wrap onto|0",
