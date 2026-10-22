@@ -73,6 +73,8 @@ const GREY_AVATAR =
 // Slack's bot avatar is Slack's own artwork, so the render shows a drawn stand-in
 // (fixtures/assets/samples/CREDITS.md).
 const SLACKBOT_AVATAR = "https://cdn.block-kit.dev/samples/bot-avatar.3d9f1d46.png";
+// Redaction numbers members by Slack ID, the signed-in one first, so the numbers don't follow the
+// Builder's list order (you, a member, Slackbot, the agent).
 const BUILDER_USERS: DirectoryEntry[] = [
   {
     type: "user",
@@ -84,9 +86,9 @@ const BUILDER_USERS: DirectoryEntry[] = [
   },
   {
     type: "user",
-    id: "USER_TWO",
-    name: "User Two",
-    realName: "User Two",
+    id: "USER_FOUR",
+    name: "User Four",
+    realName: "User Four",
     presence: "active",
     avatarUrl: GREY_AVATAR,
   },
@@ -100,8 +102,8 @@ const BUILDER_USERS: DirectoryEntry[] = [
   },
   {
     type: "user",
-    id: "USER_FOUR",
-    name: "User Four",
+    id: "USER_TWO",
+    name: "User Two",
     badge: "AGENT",
     bot: true,
     presence: "active",
