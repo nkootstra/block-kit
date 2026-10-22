@@ -4325,6 +4325,102 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  describe("field placeholders", () => {
+    const inModal = (element: object): Mount => ({
+      view: {
+        type: "modal",
+        title: plain("Fields"),
+        submit: plain("Submit"),
+        blocks: [{ type: "input", label: plain("Label"), element }],
+      },
+    });
+    const inMessage = (...elements: object[]): Mount => ({
+      blocks: [{ type: "actions", elements }],
+    });
+
+    // Every placeholder colour the Builder references record (`[data-ref]::placeholder`, e.g.
+    // `catalog/actions/all-selects@pick`, `extra/fidelity/number-input/long-content`) is Slack's
+    // `content-ter`: #5e5d60 in light and #9a9b9e in dark.
+    const FIELDS: { what: string; mount: Mount; selector: string }[] = [
+      {
+        what: "a users select",
+        mount: inMessage({ type: "users_select", action_id: "u", placeholder: plain("Pick") }),
+        selector: ".sbk-select__input",
+      },
+      {
+        what: "a static select",
+        mount: inMessage({
+          type: "static_select",
+          action_id: "s",
+          options: [option("Alpha")],
+        }),
+        selector: ".sbk-select__input",
+      },
+      {
+        what: "a text input",
+        mount: inModal({ type: "url_text_input", action_id: "url" }),
+        selector: ".sbk-text-input",
+      },
+      {
+        what: "a time picker",
+        mount: inMessage({ type: "timepicker", action_id: "t" }),
+        selector: ".sbk-timepicker__input",
+      },
+      {
+        what: "a date picker",
+        mount: inMessage({ type: "datepicker", action_id: "d" }),
+        selector: ".sbk-datepicker__input",
+      },
+    ];
+    for (const [theme, expected] of [
+      ["light", CONTENT_TER],
+      ["dark", "rgb(154, 155, 158)"],
+    ] as const) {
+      for (const f of FIELDS) {
+        it(`paints ${f.what}'s placeholder in Slack's content-ter in ${theme}`, async () => {
+          const page = await harness.open({ ...f.mount, theme });
+          const color = await page
+            .locator(f.selector)
+            .first()
+            .evaluate((el) => getComputedStyle(el, "::placeholder").color);
+          expect(color).toBe(expected);
+        });
+      }
+    }
+
+    // Block Kit Builder: an email or URL input's text starts 28px in, after its icon, in a modal
+    // as in a message (`contexts/url_text_input/modal-input`, `contexts/email_text_input/modal-input`).
+    for (const type of ["url_text_input", "email_text_input"]) {
+      it(`starts a ${type}'s text 28px in, after its icon, in a modal`, async () => {
+        const page = await harness.open(inModal({ type, action_id: "f" }));
+        const padding = await page
+          .locator(".sbk-text-input")
+          .evaluate((el) => getComputedStyle(el).paddingLeft);
+        expect(padding).toBe("28px");
+      });
+    }
+
+    // Slack's select field is the whole box, with the chevron laid over its right edge, so a long
+    // placeholder runs under the chevron to the field's 8px padding (`catalog/actions/
+    // filtered-conversations-select`: "Select private conversation" fits on one 154px line).
+    it("lets a select's placeholder run under the chevron, as Slack's field does", async () => {
+      const page = await harness.open(
+        inMessage({
+          type: "conversations_select",
+          action_id: "c",
+          placeholder: plain("Select private conversation"),
+        }),
+      );
+      const got = await page.evaluate(() => {
+        const control = document.querySelector(".sbk-select__control")!.getBoundingClientRect();
+        const input = document.querySelector(".sbk-select__input")!.getBoundingClientRect();
+        return { right: Math.round(control.right - input.right) };
+      });
+      // The field ends at the control's 8px padding (1px border + 8px - our 1px overlap).
+      expect(got).toEqual({ right: 9 });
+    });
+  });
+
   describe("theme colours", () => {
     const controls = (theme: "light" | "dark"): Mount => ({
       theme,

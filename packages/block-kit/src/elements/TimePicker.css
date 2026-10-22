@@ -84,7 +84,7 @@
 }
 
 .sbk-timepicker__input::placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
   opacity: 1;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .sbk-timepicker__placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 .sbk-timepicker__chevron {

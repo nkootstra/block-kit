@@ -24,10 +24,10 @@ export interface TextInputElement extends Json {
   __dispatchAction?: boolean;
 }
 
-/** The Builder's placeholder for a field that sets none. Slack's email default isn't recorded yet. */
+/** The Builder's placeholder for a field that sets none. */
 const DEFAULT_PLACEHOLDER: Record<TextInputElement["type"], string> = {
   plain_text_input: "Write something",
-  email_text_input: "Write something",
+  email_text_input: "Enter an email address",
   url_text_input: "Enter a URL",
   number_input: "Enter a number",
 };

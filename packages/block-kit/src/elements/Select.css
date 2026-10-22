@@ -149,7 +149,7 @@
 }
 
 .sbk-select__placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
 }
 
 /* Slack draws a chosen value in an unbordered layer 8px in, and its chevron 28px from the right;
@@ -185,8 +185,15 @@
   cursor: inherit;
 }
 
+/* Slack's input is the whole box, so its placeholder or query runs under the chevron to the
+   field's 8px padding (`catalog/actions/filtered-conversations-select`): past the 8px gap and the
+   chevron, less the chevron's 1px pull outwards. */
+.sbk-select:not(.sbk-select--multi) .sbk-select__input {
+  margin-right: -27px;
+}
+
 .sbk-select__input::placeholder {
-  color: var(--sbk-muted);
+  color: var(--sbk-content-ter);
   opacity: 1;
 }
 

@@ -505,11 +505,6 @@ a.sbk-mention {
   box-shadow: var(--sbk-focus-shadow-invalid);
 }
 
-.sbk-text-input:focus::placeholder,
-.sbk-datepicker__input:focus::placeholder {
-  color: var(--sbk-content-ter);
-}
-
 .sbk-button:focus-visible,
 .sbk-modal__button:focus-visible,
 .sbk-overflow__button:focus-visible,

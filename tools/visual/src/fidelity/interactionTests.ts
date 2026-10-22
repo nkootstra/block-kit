@@ -242,6 +242,14 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
   "date and time fields by surface": [
     { components: ["datepicker", "timepicker"], states: ["default"], facts: ["styles"] },
   ],
+  "field placeholders": [
+    {
+      components: ["static_select", "users_select", "url_text_input", "timepicker", "datepicker"],
+      states: ["default"],
+      facts: ["styles"],
+      themes: BOTH,
+    },
+  ],
   "theme colours": [
     {
       components: ["static_select", "timepicker", "datepicker"],

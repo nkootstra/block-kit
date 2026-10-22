@@ -111,7 +111,15 @@ stylesheet to restyle without touching the components. The main tokens:
       description:
         "Secondary text: the timestamp, context, image titles, video bylines and card subtext.",
     },
-    "--sbk-muted": { type: "color", description: "Muted text, e.g. field placeholders." },
+    "--sbk-muted": {
+      type: "color",
+      description: "Muted text, e.g. the (edited) marker and a text input's icon.",
+    },
+    "--sbk-content-ter": {
+      type: "color",
+      description:
+        "Tertiary text: field placeholders, input hints, the (optional) label and card subtitles.",
+    },
     "--sbk-broadcast-text": {
       type: "color",
       description: "The text of @here, @channel and @everyone mentions.",
