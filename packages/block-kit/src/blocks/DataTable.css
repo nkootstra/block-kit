@@ -19,12 +19,16 @@
   gap: 8px;
 }
 
+/* Clamped like a cell: a long caption breaks anywhere and ends its one line in an ellipsis. */
 .sbk-data-table__caption {
   flex: 1 1 auto;
-  font-weight: 900;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
   overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 900;
+  white-space: break-spaces;
+  word-break: break-all;
 }
 
 .sbk-data-table__toolbar {
@@ -298,12 +302,11 @@
 
 /*
  * Slack's `c-truncate--break_words`: overlong text breaks anywhere, even mid-word, and only its first
- * 22px line shows, cut off without an ellipsis. The box is as wide as its text, up to the cell.
- * Slack's computed display is `flow-root`, where the line clamp draws no ellipsis; the max-height
- * clips the lines below in engines that ignore the clamp there.
+ * 22px line shows, ending in an ellipsis. The box is as wide as its text, up to the cell. The
+ * max-height clips the lines below in engines that ignore the clamp.
  */
 .sbk-data-table__truncate {
-  display: flow-root;
+  display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   max-width: 100%;

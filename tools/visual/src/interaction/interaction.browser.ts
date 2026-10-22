@@ -628,8 +628,6 @@ describe.each(engines)("%s", (engine) => {
             // Slack's text box is only as wide as its text, up to the cell's content box.
             fits: r.width <= box.width - 24 + 0.5,
             wraps: el.scrollHeight > r.height,
-            // Slack's computed display: its clamp hides the next line without an ellipsis.
-            display: s.display,
             lineHeight: s.lineHeight,
             overflow: s.overflowY,
             whiteSpace: s.whiteSpaceCollapse,
@@ -641,7 +639,6 @@ describe.each(engines)("%s", (engine) => {
       const rule = {
         height: 22,
         fits: true,
-        display: "flow-root",
         lineHeight: "22px",
         overflow: "hidden",
         whiteSpace: "break-spaces",
@@ -654,6 +651,20 @@ describe.each(engines)("%s", (engine) => {
         { text: "Bravo", ...rule, wraps: false },
         { text: "Short", ...rule, wraps: false },
       ]);
+    });
+
+    // Slack's `.c-truncate` sets `display: -webkit-box`, so the clamp ends the cut line with an
+    // ellipsis ("This sentence is h…"); Chrome reports the box as flow-root either way.
+    it("ends a clamped cell with an ellipsis, as a -webkit-box clamp does", async () => {
+      const page = await harness.open(await fixture("extra/fidelity/data-table/long-content"));
+      const display = await page.evaluate(() => {
+        for (const sheet of document.styleSheets)
+          for (const rule of sheet.cssRules)
+            if (rule instanceof CSSStyleRule && rule.selectorText === ".sbk-data-table__truncate")
+              return rule.style.display;
+        return undefined;
+      });
+      expect(display).toBe("-webkit-box");
     });
   });
 
