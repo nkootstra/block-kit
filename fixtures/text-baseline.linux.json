@@ -681,15 +681,9 @@
   "catalog/section/users-select@open+dark": [],
   "catalog/section/users-select@open+mobile": [],
   "catalog/section/users-select@open+mobile+dark": [],
-  "catalog/section/users-select@pick+dark": [
-    "missing|(you)|0"
-  ],
-  "catalog/section/users-select@pick+mobile": [
-    "missing|(you)|0"
-  ],
-  "catalog/section/users-select@pick+mobile+dark": [
-    "missing|(you)|0"
-  ],
+  "catalog/section/users-select@pick+dark": [],
+  "catalog/section/users-select@pick+mobile": [],
+  "catalog/section/users-select@pick+mobile+dark": [],
   "catalog/structure/default": [],
   "catalog/structure/default@dark": [],
   "catalog/structure/default@mobile": [],
@@ -1887,9 +1881,7 @@
   "extra/fidelity/users-select/long-content@mobile+dark": [],
   "extra/fidelity/users-select/long-content@open": [],
   "extra/fidelity/users-select/long-content@open+dark": [],
-  "extra/fidelity/users-select/long-content@pick": [
-    "missing|(you)|0"
-  ],
+  "extra/fidelity/users-select/long-content@pick": [],
   "extra/fidelity/video/long-content": [
     "missing|This sentence is here to make the text long enough to wrap onto|0",
     "missing|several lines at the desktop width, and further still on a phone, so|0",
