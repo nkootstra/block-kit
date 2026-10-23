@@ -173,36 +173,20 @@
   "catalog/agents/task-card@mobile": [],
   "catalog/agents/task-card@mobile+dark": [],
   "catalog/callout/callout": [],
-  "catalog/callout/callout@dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/callout/callout@dark": [],
   "catalog/callout/callout@focus-menu-1": [],
-  "catalog/callout/callout@focus-menu-1+dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/callout/callout@focus-menu-1+dark": [],
   "catalog/callout/callout@focus-menu-1+mobile": [],
-  "catalog/callout/callout@focus-menu-1+mobile+dark": [
-    "color|This content could not be displayed.|0"
-  ],
-  "catalog/callout/callout@hidden+dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/callout/callout@focus-menu-1+mobile+dark": [],
+  "catalog/callout/callout@hidden+dark": [],
   "catalog/callout/callout@hidden+mobile": [],
-  "catalog/callout/callout@hidden+mobile+dark": [
-    "color|This content could not be displayed.|0"
-  ],
-  "catalog/callout/callout@hover-menu-1+dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/callout/callout@hidden+mobile+dark": [],
+  "catalog/callout/callout@hover-menu-1+dark": [],
   "catalog/callout/callout@hover-menu-1+mobile": [],
   "catalog/callout/callout@menu+mobile": [],
-  "catalog/callout/callout@menu+mobile+dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/callout/callout@menu+mobile+dark": [],
   "catalog/callout/callout@mobile": [],
-  "catalog/callout/callout@mobile+dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/callout/callout@mobile+dark": [],
   "catalog/card-and-carousel/card": [],
   "catalog/card-and-carousel/card-actions-and-content": [],
   "catalog/card-and-carousel/card-actions-and-content@dark": [],
@@ -356,13 +340,9 @@
   "catalog/container/standard-width@mobile": [],
   "catalog/container/standard-width@mobile+dark": [],
   "catalog/container/with-callout": [],
-  "catalog/container/with-callout@dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/container/with-callout@dark": [],
   "catalog/container/with-callout@mobile": [],
-  "catalog/container/with-callout@mobile+dark": [
-    "color|This content could not be displayed.|0"
-  ],
+  "catalog/container/with-callout@mobile+dark": [],
   "catalog/container/with-image": [],
   "catalog/container/with-image@dark": [],
   "catalog/container/with-image@mobile": [],
@@ -1749,77 +1729,21 @@
   "extra/fidelity/rich-text-rich-text-list/many-items": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@dark": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2": [
-    "missing|Unavailable user group info|0"
+    "x|Unavailable user group info|0"
   ],
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+dark": [
-    "missing|Unavailable user group info|0"
+    "x|Unavailable user group info|0"
   ],
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile": [
-    "y|First|0",
-    "y|Second|0",
-    "y|First|1",
-    "y|Second|1",
-    "y|First|2",
-    "y|Second|2",
-    "y|First|3",
-    "y|Second|3",
-    "y|First|4",
-    "y|Second|4",
-    "y|Nested bullet|0",
-    "y|Third (offset)|0",
-    "y|Quoted text|0",
-    "y|npm install @slack-blocks/react|0",
-    "missing|Unavailable user group info|0"
+    "x|Unavailable user group info|0",
+    "y|Unavailable user group info|0"
   ],
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile+dark": [
-    "y|First|0",
-    "y|Second|0",
-    "y|First|1",
-    "y|Second|1",
-    "y|First|2",
-    "y|Second|2",
-    "y|First|3",
-    "y|Second|3",
-    "y|First|4",
-    "y|Second|4",
-    "y|Nested bullet|0",
-    "y|Third (offset)|0",
-    "y|Quoted text|0",
-    "y|npm install @slack-blocks/react|0",
-    "missing|Unavailable user group info|0"
+    "x|Unavailable user group info|0",
+    "y|Unavailable user group info|0"
   ],
-  "extra/fidelity/rich-text-rich-text-list/many-items@mobile": [
-    "y|First|0",
-    "y|Second|0",
-    "y|First|1",
-    "y|Second|1",
-    "y|First|2",
-    "y|Second|2",
-    "y|First|3",
-    "y|Second|3",
-    "y|First|4",
-    "y|Second|4",
-    "y|Nested bullet|0",
-    "y|Third (offset)|0",
-    "y|Quoted text|0",
-    "y|npm install @slack-blocks/react|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-list/many-items@mobile+dark": [
-    "y|First|0",
-    "y|Second|0",
-    "y|First|1",
-    "y|Second|1",
-    "y|First|2",
-    "y|Second|2",
-    "y|First|3",
-    "y|Second|3",
-    "y|First|4",
-    "y|Second|4",
-    "y|Nested bullet|0",
-    "y|Third (offset)|0",
-    "y|Quoted text|0",
-    "y|npm install @slack-blocks/react|0"
-  ],
+  "extra/fidelity/rich-text-rich-text-list/many-items@mobile": [],
+  "extra/fidelity/rich-text-rich-text-list/many-items@mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-preformatted/mixed": [
     "x|Preformatted with a border|0",
     "color|a link|0"
@@ -2136,15 +2060,7 @@
   "message/approval@mobile+dark": [],
   "message/mrkdwn": [],
   "message/mrkdwn@dark": [],
-  "message/mrkdwn@hover-link-1": [
-    "y|A quote that|0",
-    "y|spans two lines|0",
-    "y|const answer = 42;|0",
-    "y|console.log(answer < 100);|0",
-    "y|Context|0",
-    "y|with an image and|0",
-    "y|mrkdwn|0"
-  ],
+  "message/mrkdwn@hover-link-1": [],
   "message/mrkdwn@mobile": [],
   "message/mrkdwn@mobile+dark": [],
   "message/section-accessory": [],
