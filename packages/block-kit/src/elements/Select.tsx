@@ -960,7 +960,10 @@ function ChipEntity({ entry }: { entry: DirectoryEntry }) {
         {entry.avatarUrl && <img src={entry.avatarUrl} alt="" />}
       </span>
       <span className="sbk-select__chip-text">
-        <strong>{entry.name}</strong>
+        <strong>
+          {entry.name}
+          {entry.self && <span className="sbk-select__member-you">(you)</span>}
+        </strong>
       </span>
     </span>
   );

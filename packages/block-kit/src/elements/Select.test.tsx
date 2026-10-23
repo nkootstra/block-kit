@@ -676,6 +676,13 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
     ]);
   });
 
+  it("keeps (you) in the signed-in user's chip, as Slack does", () => {
+    // catalog/input/multi-users-select@pick
+    renderDirectory("multi_users_select", vi.fn(), { initial_users: ["U01"] });
+    const chip = document.querySelector(".sbk-select__chip");
+    expect(chip?.querySelector("strong")?.textContent).toBe("Ada(you)");
+  });
+
   it("lists a chosen person from the directory in place", () => {
     renderDirectory("users_select", vi.fn(), { initial_user: "U03" });
     fireEvent.click(screen.getByRole("combobox"));
