@@ -639,11 +639,11 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
     );
   });
 
-  it("leaves (you) out of a users select's field, as Slack's chosen value does", () => {
+  it("keeps (you) in a users select's field, as Slack does once it has looked the user up", () => {
+    // catalog/section/users-select@pick+dark
     renderDirectory("users_select", vi.fn(), { initial_user: "U01" });
     const content = document.querySelector(".sbk-select__content-entity");
-    expect(content?.querySelector("strong")?.textContent).toBe("Ada");
-    expect(content?.querySelector(".sbk-select__member-you")).toBeNull();
+    expect(content?.querySelector("strong")?.textContent).toBe("Ada(you)");
   });
 
   it("keeps (you) in a conversations select's field, as Slack does", () => {
