@@ -7421,42 +7421,42 @@
   },
   "extra/fidelity/rich-text-rich-text-list/many-items": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "e7665e835119587debadfa996bf601e91b9a01725b31dd566c0025932f49097d",
+    "reference": "cd8641635a4991c130c4216fe06c06b53cc1148cde695b5257e49d372309a516",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@dark": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "1353f85979858aa9a1646a0ab9e603632e6463f6cc66da690051325a10b9b792",
+    "reference": "d23cc05c9ae55d1a1b3dd95e357ccd431815a6fd94be09ab7181925b0b142ab4",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "4a8a58ca2bb2b9c041686422de4d76daea77a5152bc23fcefcee546472191ff4",
+    "reference": "61865228db47a4505c706065ed31349708263dc8ead1ce6761a3550cbb0c900b",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+dark": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "ebbe7bc4488ed04fa76fd07c831a969eda725eb927dfa4cefe023d8086ff998f",
+    "reference": "6c8d00ba78b6bfea9148d38ab1bcdd5c70187f06911159782a615dcc84432bbc",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "d4d38f6fd45e249f99979307654381063c259a1a2f3cc0bb4fbb6fa0b7a1c11d",
+    "reference": "e818f7cf946365217497cdc20d10d8cd3d3fd644709f8bfadf990148590cae12",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile+dark": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "4c826d9703e6aa31e43ce44b92a8b26676ebed54928f01ddc4ebe2427b713665",
+    "reference": "6f8ac45bc5b56d85c6ea4f1d3e8e1db4e74620b60287948ab542ead40e577e0f",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "9b7afb80ee80f96877e81ebf808340f7437d888abf07094bafeff556bd8460d5",
+    "reference": "9f8fe9d8e29c566e7304667f5fb6d88e83ca43c4b15a34755f8d0d6c63e4c9be",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile+dark": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "074a5fae94abafcd74439a8d6b522059be3cdf478c24b946acbbf5e1c51938f1",
+    "reference": "401cd4a81faa704cc31151f856e6db60ac6a23954ca25b0e4170de0ec7e136e1",
     "captured": "2026-10-21"
   },
   "extra/fidelity/rich-text-rich-text-preformatted/mixed": {
@@ -7581,22 +7581,22 @@
   },
   "extra/fidelity/rich-text-usergroup/mixed": {
     "payload": "5934c158325ecf762f0630b248900d5c167072c775aa083dfdf11370b5be6332",
-    "reference": "21597f4bea1b0e99376de89ad8ec03294ec7e2e321b3c89297914f7612f31bfc",
+    "reference": "d2c6a42a9ffdfc820b3cc820ed1ccfc6962ad9531a0a2e7a38ab6687a68497bd",
     "captured": "2026-10-12"
   },
   "extra/fidelity/rich-text-usergroup/mixed@dark": {
     "payload": "5934c158325ecf762f0630b248900d5c167072c775aa083dfdf11370b5be6332",
-    "reference": "bfc108817c0ddebc36b607f41ea0faebeb9f0b75cd6aafd0ec1cd545be6683cf",
+    "reference": "2b72358159eb116bfbcaa12b692317a361e9913db59808364dcb2e14f0666aba",
     "captured": "2026-10-13"
   },
   "extra/fidelity/rich-text-usergroup/mixed@mobile": {
     "payload": "5934c158325ecf762f0630b248900d5c167072c775aa083dfdf11370b5be6332",
-    "reference": "88b43d18eab2b75823239b30662782b036254adf37e70b61073b9718ada6422f",
+    "reference": "0a4f907ad4c5661b1c022cd4009e74bc78773875634b88f2228931bf4edb3afc",
     "captured": "2026-10-13"
   },
   "extra/fidelity/rich-text-usergroup/mixed@mobile+dark": {
     "payload": "5934c158325ecf762f0630b248900d5c167072c775aa083dfdf11370b5be6332",
-    "reference": "8fe4667b4c53cc41e68c5fce4fb632da4ec9399cda9d04b7182b99610fe9450e",
+    "reference": "9cfce4d1c0aacd55db4a9d76cbf98fbad0bad2578501f61619116afda970fdc2",
     "captured": "2026-10-13"
   },
   "extra/fidelity/rich-text-work-object-mention/default": {
@@ -8506,22 +8506,22 @@
   },
   "extra/rich-text/mentions-and-styles": {
     "payload": "5170379412f358b28ec8efe56a0608415cf55ab44bcc5547bc1d3b50e2fe5b4e",
-    "reference": "38367efee145c77f452ce7831c3e9501d27328f45fcf60281295fef0ec03d19f",
+    "reference": "be4cbe20cb700e4b410c344e29bdfaf6eb529af6b6c7737a129b443b431d19d6",
     "captured": "2026-10-21"
   },
   "extra/rich-text/mentions-and-styles@dark": {
     "payload": "5170379412f358b28ec8efe56a0608415cf55ab44bcc5547bc1d3b50e2fe5b4e",
-    "reference": "10cdaaf04c6416e18aacbc5962125f9ae614c6a6912ae10a0ee1891677381d54",
+    "reference": "5ca5bdfb25a61981828e0a24aa9b0ee4fe4dda929340cc57ec4f1b897232b0ca",
     "captured": "2026-10-21"
   },
   "extra/rich-text/mentions-and-styles@mobile": {
     "payload": "5170379412f358b28ec8efe56a0608415cf55ab44bcc5547bc1d3b50e2fe5b4e",
-    "reference": "4a2a8ff7be706f6f0a3120153cda5527cb82483c96d9d9e9a0b36681f5410ef7",
+    "reference": "eb7369176c50a7b92a1000752a06e9daf916c9f3574e1418057c42e178d6aa90",
     "captured": "2026-10-21"
   },
   "extra/rich-text/mentions-and-styles@mobile+dark": {
     "payload": "5170379412f358b28ec8efe56a0608415cf55ab44bcc5547bc1d3b50e2fe5b4e",
-    "reference": "e2d4c62671a801864290232aa803373030a004d36e184e1f2c83c5d4775577ea",
+    "reference": "555056d26035d65f69d85389c0f3c33eb2e88052a37bd8ae16091ce4aefb4627",
     "captured": "2026-10-21"
   },
   "extra/section/text-and-fields": {
@@ -8626,7 +8626,7 @@
   },
   "message/mrkdwn@hover-link-1": {
     "payload": "35715c6f3f0d7551c2168b3bb073af008682339dd647c38b13098b2d4140d412",
-    "reference": "ddc4a5743591545982d8fd6cd04f06725c2e41b6b48e3fb3122b1bba22f5e424",
+    "reference": "15053599a186405d9528fe714199deb31617a8ab234598053a4e94107f75ea81",
     "captured": "2026-10-12"
   },
   "message/mrkdwn@mobile": {

@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { BlockKitProvider } from "./context";
 import { HoverCard } from "./HoverCard";
 import { Message } from "./Message";
 
@@ -174,5 +175,58 @@ describe("<HoverCard>", () => {
     fireEvent.mouseEnter(document.querySelector(".sbk-mention--unresolved")!);
     act(() => vi.advanceTimersByTime(300));
     expect(screen.getByRole("tooltip").textContent).toBe("Private user info");
+  });
+
+  it("names a user mention the resolver doesn't know as private in a tooltip", () => {
+    render(
+      <BlockKitProvider resolvers={{ user: () => undefined }}>
+        <Message
+          blocks={[
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_section",
+                  elements: [{ type: "user", user_id: "U0123456789" }],
+                },
+              ],
+            },
+          ]}
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.mouseEnter(document.querySelector(".sbk-mention--missing")!);
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByRole("tooltip").textContent).toBe("Private user info");
+  });
+
+  it("calls a user group mention it can't resolve unavailable in a tooltip", () => {
+    // extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2
+    const { container } = render(
+      <Message
+        blocks={[
+          {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [{ type: "usergroup", usergroup_id: "S0123456789" }],
+              },
+            ],
+          },
+          { type: "section", text: { type: "mrkdwn", text: "<!subteam^S0123456789|@devs>" } },
+        ]}
+      />,
+    );
+    const outlines = container.querySelectorAll(".sbk-mention--missing");
+    expect(outlines).toHaveLength(2);
+    for (const outline of outlines) {
+      expect(outline.getAttribute("aria-label")).toBe("Unavailable user group");
+      fireEvent.mouseEnter(outline);
+      act(() => vi.advanceTimersByTime(300));
+      expect(screen.getByRole("tooltip").textContent).toBe("Unavailable user group info");
+      fireEvent.mouseLeave(outline);
+      act(() => vi.advanceTimersByTime(300));
+    }
   });
 });

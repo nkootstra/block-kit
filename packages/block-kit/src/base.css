@@ -16,6 +16,8 @@
   --sbk-code-border: rgba(29, 28, 29, 0.13);
   --sbk-quote-bar: #dddddd;
   --sbk-skeleton-bg: #eaeaea;
+  /* The outline Slack draws for a mention of someone who doesn't exist (c-missing_text--non-existent). */
+  --sbk-missing-border: #dddddd;
   --sbk-mention-bg: rgba(29, 155, 209, 0.1);
   --sbk-mention-text: #1264a3;
   --sbk-mention-private-bg: rgba(29, 28, 29, 0.13);
@@ -315,6 +317,16 @@ a.sbk-mention {
   border-radius: 1000px;
 }
 
+/* Slack's c-missing_text--non-existent: an empty outline on the baseline, for a mention of a user
+   (or user group) its lookup found doesn't exist. */
+.sbk-mention--missing {
+  display: inline-block;
+  width: 120px;
+  height: 8px;
+  border: 1px solid var(--sbk-missing-border);
+  border-radius: 1000px;
+}
+
 .sbk-mention--broadcast {
   color: var(--sbk-broadcast-text);
   background: var(--sbk-broadcast-bg);
@@ -337,15 +349,6 @@ a.sbk-mention {
   width: 15px;
   height: 15px;
   vertical-align: -0.125em;
-}
-
-.sbk-mention--loading {
-  display: inline-block;
-  vertical-align: middle;
-  width: 120px;
-  height: 8px;
-  border: 1px solid var(--sbk-quote-bar);
-  border-radius: 1000px;
 }
 
 .sbk-emoji {

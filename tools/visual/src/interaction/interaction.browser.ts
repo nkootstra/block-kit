@@ -4236,6 +4236,107 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // Slack's c-missing_text--non-existent, as extra/fidelity/rich-text-rich-text-list/many-items
+  // (and its @dark) computes it once the Builder's lookup settles: an empty 120 x 8 outline sitting
+  // on the baseline, in the quote bar's grey (#ddd, #35373b in dark).
+  describe("unknown mentions in both themes", () => {
+    const WANT = {
+      light: { border: "rgb(221, 221, 221)" },
+      dark: { border: "rgb(53, 55, 59)" },
+    } as const;
+    const outline = (page: Page, selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((el) => {
+          const c = getComputedStyle(el);
+          return {
+            display: c.display,
+            width: c.width,
+            height: c.height,
+            verticalAlign: c.verticalAlign,
+            border: `${c.borderTopWidth} ${c.borderTopStyle} ${c.borderTopColor}`,
+            borderRadius: c.borderTopLeftRadius,
+            background: c.backgroundColor,
+          };
+        });
+    const section = (element: unknown) => ({
+      type: "rich_text",
+      elements: [
+        { type: "rich_text_section", elements: [{ type: "text", text: "Hey " }, element] },
+      ],
+    });
+
+    const drawn = (theme: "light" | "dark") => ({
+      display: "inline-block",
+      width: "120px",
+      height: "8px",
+      verticalAlign: "baseline",
+      border: `1px solid ${WANT[theme].border}`,
+      borderRadius: "1000px",
+      background: "rgba(0, 0, 0, 0)",
+    });
+
+    for (const theme of ["light", "dark"] as const) {
+      describe(theme, () => {
+        it("outlines a user the resolver doesn't know", async () => {
+          const page = await harness.open({
+            theme,
+            users: {},
+            blocks: [section({ type: "user", user_id: "U0123456789" })],
+          });
+          expect(await outline(page, ".sbk-mention--missing")).toEqual(drawn(theme));
+        });
+
+        it("outlines a user group it can't resolve", async () => {
+          const page = await harness.open({
+            theme,
+            blocks: [section({ type: "usergroup", usergroup_id: "S0123456789" })],
+          });
+          expect(await outline(page, ".sbk-mention--missing")).toEqual(drawn(theme));
+        });
+      });
+    }
+  });
+
+  // A callout's fill and border as catalog/callout/callout (green) and catalog/container/with-callout
+  // (blue) compute them, and their @dark references. The text-run check sees a wrong fill through the
+  // half-opacity "This content could not be displayed." notice painted over it.
+  describe("callout colours in both themes", () => {
+    const WANT = {
+      light: {
+        green: "rgb(244, 255, 219)",
+        blue: "rgb(227, 248, 255)",
+        border: "rgba(94, 93, 96, 0.13)",
+      },
+      dark: { green: "rgb(21, 34, 3)", blue: "rgb(0, 26, 45)", border: "rgba(121, 124, 129, 0.5)" },
+    } as const;
+
+    for (const theme of ["light", "dark"] as const) {
+      describe(theme, () => {
+        for (const colour of ["green", "blue"] as const) {
+          it(`fills a ${colour} callout and draws its border`, async () => {
+            const page = await harness.open({
+              theme,
+              blocks: [
+                {
+                  type: "callout",
+                  background_color: colour,
+                  child_blocks: [{ type: "section", text: plain("Heads up") }],
+                },
+              ],
+            });
+            const s = await style(page, ".sbk-callout");
+            expect({ fill: s.backgroundColor, border: s.borderTopColor }).toEqual({
+              fill: WANT[theme][colour],
+              border: WANT[theme].border,
+            });
+          });
+        }
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (contexts/{datepicker,timepicker}/{actions,home,modal-input}):
   // Slack draws date and time fields in its small size (28px, 13px text) in messages, and in its
   // medium size (36px, 15px text) in modals and on App Home.

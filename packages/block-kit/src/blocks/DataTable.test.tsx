@@ -248,6 +248,16 @@ describe("<DataTable> cells", () => {
       </BlockKitProvider>,
     );
     expect(screen.getByText("@Ada Lovelace")).toBeTruthy();
+    cleanup();
+    // A resolver that doesn't know the id: the user doesn't exist (extra/fidelity/data-table/mixed).
+    const missing = render(
+      <BlockKitProvider resolvers={{ user: () => undefined }}>
+        <DataTable block={asDataTableBlock(block)} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(
+      missing.container.querySelector(".sbk-mention--missing")?.getAttribute("aria-label"),
+    ).toBe("@U0123456789");
   });
 
   it("exposes toolbar buttons with accessible labels including the caption", () => {

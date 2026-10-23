@@ -27,6 +27,7 @@ window.mountBlockKit = ({
   opens,
   directory,
   slackFiles,
+  users,
 }) => {
   const entries = (directory ?? []) as unknown as DirectoryEntry[];
   root.render(
@@ -36,6 +37,7 @@ window.mountBlockKit = ({
       errors={errors}
       resolvers={{
         slackFile: (file) => slackFiles?.[file.url ?? file.id ?? ""],
+        ...(users && { user: (id: string) => users[id] }),
         ...(directory && {
           directory: (source) =>
             entries.filter((e) =>

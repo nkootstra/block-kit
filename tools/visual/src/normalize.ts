@@ -21,7 +21,8 @@ import { redact, type Sighting } from "./redact";
  *   `nowrap` and its carousel cards set `wrap` again, so card bodies rendered as one clipped line.
  * - The same goes for a data table's scroller, whose 8px scrollbar Slack also keeps idle-invisible.
  * - Slack draws a mention it can't resolve as a loading bar of a random width (80, 120 or 160px),
- *   so each capture laid the rest of the line out differently. It's always 120px here.
+ *   so each capture laid the rest of the line out differently. It's always 120px here, and the
+ *   boxes around a bar that was another width let go of the heights they froze around it.
  * - Links were diffed against an <a> without an href, which isn't underlined, so a link Slack
  *   leaves plain never got `text-decoration:none` and picks up the browser's underline here.
  * - Older snapshots froze a field without a string value as `value="undefined"`, which the
@@ -36,7 +37,11 @@ export function normalize(
   known: Sighting[] = [],
 ): string {
   return redact(
-    uprightPseudos(wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))))
+    pinMissingText(
+      uprightPseudos(
+        wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))),
+      ),
+    )
       .replace(/<span\b[^>]*>/g, (tag) =>
         /class="c-timestamp|data-qa="timestamp_label"/.test(tag)
           ? tag.replace(/style="([^"]*)"/, (_, style: string) => {
@@ -51,9 +56,6 @@ export function normalize(
               return `style="${kept.join(";")}"`;
             })
           : tag,
-      )
-      .replace(/<span\b[^>]*\bclass="c-missing_text[^>]*>/g, (tag) =>
-        tag.replace(/(style="(?:[^"]*;)?)width:[\d.]+px/, "$1width:120px"),
       )
       .replace(/<a\b[^>]*\bhref="[^>]*>/g, (tag) =>
         /text-decoration:/.test(tag) ? tag : tag.replace(/style="/, 'style="text-decoration:none;'),
@@ -70,6 +72,72 @@ export function normalize(
     mapping,
     known,
   );
+}
+
+const PINNED_BAR = 120;
+const VOID = /^(?:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i;
+
+/**
+ * Pins every `c-missing_text` bar to 120px. The width a bar had live survives in its transform
+ * origin (half its border box), as the snapshot froze it next to the width. Where that wasn't
+ * 120px, the line around the bar broke differently live, and every box holding it froze the height
+ * of that layout: a 160px bar that wrapped the paragraph onto one more line leaves a blank line
+ * below it at 120px. So those boxes drop their frozen `height` and lay out from their content.
+ */
+function pinMissingText(html: string): string {
+  const tag = /<(\/?)([a-zA-Z][\w-]*)\b[^>]*>/g;
+  const open: { name: string; start: number }[] = [];
+  const release = new Set<number>();
+  const bars: { start: number; end: number }[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = tag.exec(html))) {
+    const name = (match[2] ?? "").toLowerCase();
+    if (match[1] === "/") {
+      const at = open.findLastIndex((e) => e.name === name);
+      if (at !== -1) open.length = at;
+      continue;
+    }
+    if (name === "script" || name === "style") {
+      const end = html.indexOf(`</${name}`, tag.lastIndex);
+      tag.lastIndex = end < 0 ? html.length : end;
+      continue;
+    }
+    if (/^<span\b[^>]*\bclass="c-missing_text/.test(match[0])) {
+      bars.push({ start: match.index, end: tag.lastIndex });
+      const style = match[0].match(/style="([^"]*)"/)?.[1] ?? "";
+      const width = Number(style.match(/(?:^|;)width:([\d.]+)px/)?.[1] ?? PINNED_BAR);
+      const origin = style.match(/(?:^|;)transform-origin:([\d.]+)px/)?.[1];
+      const live = origin === undefined ? width : Number(origin) * 2;
+      if (width !== PINNED_BAR || live !== PINNED_BAR) for (const e of open) release.add(e.start);
+    }
+    if (!VOID.test(name) && !match[0].endsWith("/>")) open.push({ name, start: match.index });
+  }
+  if (bars.length === 0) return html;
+
+  const edits = new Map<number, (tag: string) => string>();
+  for (const start of release) {
+    edits.set(start, (t) =>
+      t.replace(/style="([^"]*)"/, (_, style: string) => {
+        const kept = style.split(";").filter((d) => !/^height:[\d.]+px$/.test(d));
+        return `style="${kept.join(";")}"`;
+      }),
+    );
+  }
+  for (const { start } of bars) {
+    edits.set(start, (t) =>
+      t
+        .replace(/((?:^|[";])width:)[\d.]+px/, `$1${PINNED_BAR}px`)
+        .replace(/((?:^|[";])(?:perspective|transform)-origin:)[\d.]+px/g, `$1${PINNED_BAR / 2}px`),
+    );
+  }
+  let out = "";
+  let last = 0;
+  for (const start of [...edits.keys()].toSorted((a, b) => a - b)) {
+    const end = html.indexOf(">", start) + 1;
+    out += html.slice(last, start) + edits.get(start)!(html.slice(start, end));
+    last = end;
+  }
+  return out + html.slice(last);
 }
 
 /** `content` of Slack's `.c-icon--<type>::before`, as read from its stylesheet. */

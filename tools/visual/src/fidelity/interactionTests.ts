@@ -239,6 +239,17 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     },
     { components: ["rich_text.broadcast"], states: ["default"], facts: ["styles"], themes: BOTH },
   ],
+  "unknown mentions in both themes": [
+    {
+      components: ["rich_text.user", "rich_text.usergroup"],
+      states: ["default"],
+      facts: ["styles"],
+      themes: BOTH,
+    },
+  ],
+  "callout colours in both themes": [
+    { components: ["callout"], states: ["default"], facts: ["styles"], themes: BOTH },
+  ],
   "date and time fields by surface": [
     { components: ["datepicker", "timepicker"], states: ["default"], facts: ["styles"] },
   ],

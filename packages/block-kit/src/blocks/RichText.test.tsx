@@ -216,7 +216,21 @@ describe("<RichText>", () => {
     expect(container.querySelector(".sbk-rich-list")?.getAttribute("start")).toBe("3");
   });
 
-  it("renders an unresolved user mention as an empty skeleton pill, and a resolved one as text", () => {
+  it("draws a user mention as Slack's loading skeleton while there's no user resolver", () => {
+    const block = {
+      type: "rich_text",
+      elements: [{ type: "rich_text_section", elements: [{ type: "user", user_id: "U999" }] }],
+    };
+    const { container } = render(<RichText block={block as never} blockId="b1" index={0} />);
+    const pending = container.querySelector(".sbk-mention--unresolved");
+    expect(pending?.textContent).toBe("");
+    expect(pending?.getAttribute("aria-label")).toBe("@U999");
+    expect(container.querySelector(".sbk-mention--missing")).toBeNull();
+  });
+
+  it("draws a user the resolver doesn't know as Slack's missing-user outline, and a known one as text", () => {
+    // Once Slack's lookup settles on a user that doesn't exist, it swaps the grey skeleton for an
+    // empty outline (c-missing_text--non-existent in extra/fidelity/rich-text-rich-text-list).
     const block = {
       type: "rich_text",
       elements: [
@@ -235,9 +249,10 @@ describe("<RichText>", () => {
         <RichText block={block as never} blockId="b1" index={0} />
       </BlockKitProvider>,
     );
-    const unresolved = container.querySelector(".sbk-mention--unresolved");
-    expect(unresolved?.textContent).toBe("");
-    expect(unresolved?.getAttribute("aria-label")).toBe("@U999");
+    const missing = container.querySelector(".sbk-mention--missing");
+    expect(missing?.textContent).toBe("");
+    expect(missing?.getAttribute("aria-label")).toBe("@U999");
+    expect(container.querySelector(".sbk-mention--unresolved")).toBeNull();
     expect(screen.getByText("@Ada")).toBeTruthy();
   });
 

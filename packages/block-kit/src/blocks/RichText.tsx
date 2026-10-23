@@ -14,7 +14,7 @@ import { LinkHoverCard } from "../HoverCard";
 import { Link, MentionLink } from "../Link";
 import { PrivateChannel } from "../Mrkdwn";
 import type { BlockProps } from "../types";
-import { PrivateUser, UserMention } from "../UserMention";
+import { PrivateUser, UnavailableUsergroup, UserMention } from "../UserMention";
 import { CopyIcon } from "../icons";
 import { CodeBlock } from "./CodeBlock";
 
@@ -232,7 +232,7 @@ export function renderLeaf(
           {`@${name}`}
         </MentionLink>
       ) : (
-        <span className="sbk-mention--loading" aria-label="Loading user group" />
+        <UnavailableUsergroup />
       );
       break;
     }

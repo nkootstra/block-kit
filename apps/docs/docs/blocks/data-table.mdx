@@ -116,7 +116,7 @@ Each cell is one of four shapes, picked by `type`:
     rich_text: {
       type: "RichTextBlock",
       description:
-        'A Slack rich text node: bold, italic, and other inline styles, links, and user mentions (named by `resolvers.user`, else a loading pill with Slack\'s "Private user info" tooltip).',
+        "A Slack rich text node: bold, italic, and other inline styles, links, and user mentions (named by `resolvers.user`, else a loading pill, or the outline of a missing user when `resolvers.user` doesn't know them, with Slack's \"Private user info\" tooltip).",
     },
   }}
 />

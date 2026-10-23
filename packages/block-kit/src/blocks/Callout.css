@@ -1,6 +1,8 @@
 /* Light values measured from Builder references (green, blue); the other light values are
-   extrapolated. Dark values (Message.css) aren't measured: each is its hue from the dark palette
-   at 16% over the dark background (gray: 6% white), like the alert colours. */
+   extrapolated. In dark (Message.css) the green and blue fills and the border are measured
+   (catalog/callout/callout@dark, catalog/container/with-callout@dark); the other dark fills aren't:
+   each is its hue from the dark palette at 16% over the dark background (gray: 6% white), like the
+   alert colours. */
 :root,
 [data-theme="light"] {
   --sbk-callout-border: rgba(94, 93, 96, 0.13);

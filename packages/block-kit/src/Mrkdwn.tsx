@@ -4,7 +4,7 @@ import { useBlockKit } from "./context";
 import { Emoji } from "./emoji";
 import { HoverCard, LinkHoverCard } from "./HoverCard";
 import { Link, MentionLink } from "./Link";
-import { UserMention } from "./UserMention";
+import { UnavailableUsergroup, UserMention } from "./UserMention";
 
 export interface MrkdwnProps {
   text: string;
@@ -78,7 +78,7 @@ function renderNode(
       );
     }
     case "usergroup": {
-      // The Builder shows an empty loading pill for subteam mentions it can't resolve live, even
+      // The Builder shows an empty outline for subteam mentions it can't resolve, even
       // when the message carries a `|label` fallback — the label is ignored for display.
       const name = resolvers.usergroup?.(node.id);
       return name ? (
@@ -86,7 +86,7 @@ function renderNode(
           {`@${name}`}
         </MentionLink>
       ) : (
-        <span className="sbk-mention--loading" aria-label="Loading user group" />
+        <UnavailableUsergroup />
       );
     }
     case "channel": {
