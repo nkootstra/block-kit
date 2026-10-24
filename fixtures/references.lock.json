@@ -1291,13 +1291,13 @@
   },
   "catalog/card-and-carousel/carousel@focus-arrow-2+mobile": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
-    "reference": "a2e04a2fc783a0c3ed518bb27520a972fbc3440fb8f82a137bd92f4343d07d92",
-    "captured": "2026-10-23"
+    "reference": "56044f77708a02aa20ae03a2768cf2713cb008f3b9e363245eb5bd0613187fde",
+    "captured": "2026-10-24"
   },
   "catalog/card-and-carousel/carousel@focus-arrow-2+mobile+dark": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
-    "reference": "70a1800c525434d16119c5f1092316a780d4d26296c71ae3181f5c1a2065a83c",
-    "captured": "2026-10-23"
+    "reference": "4858eebc7c6e361c38a221bac10a0e2ac2b25c1e1360fb134c2f46d7b980d84d",
+    "captured": "2026-10-24"
   },
   "catalog/card-and-carousel/carousel@full": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
@@ -3616,18 +3616,18 @@
   },
   "catalog/table/basic-data-table@focus-column-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "c585b607db33e512c7bd96d27dbe4314d3d1ed9b2d6ae3421af1f8cdddcad4d1",
-    "captured": "2026-10-21"
+    "reference": "6d727790c579038b1d2a28b2dd6ac4dc929960d748bf4a87e51e4b276bad5cb5",
+    "captured": "2026-10-24"
   },
   "catalog/table/basic-data-table@focus-column-1+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "027eabc4da15d3233a1248d62fa59f564cd3d6860ece5ee395d099831a701e55",
-    "captured": "2026-10-21"
+    "reference": "a9186695ec53d575b4c2ef4f0509171ae3a33460885eaf045877613e64307fcd",
+    "captured": "2026-10-24"
   },
   "catalog/table/basic-data-table@focus-column-1+mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "80b17b674fc89148adb9319216ab6374072637c865b3c8b0d8c2913f2e674c43",
-    "captured": "2026-10-21"
+    "reference": "94c6d577cad133f698b8ece140a3d574b6bac2a675618d7ac7d9dbf47cdd1f90",
+    "captured": "2026-10-24"
   },
   "catalog/table/basic-data-table@full": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
