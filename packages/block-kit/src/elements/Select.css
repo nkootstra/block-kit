@@ -405,6 +405,11 @@
   font-weight: 900;
 }
 
+/* Slack's chip keeps its name at 900 but its "(you)" at 700. */
+.sbk-select__chip-text .sbk-select__member-you {
+  font-weight: 700;
+}
+
 /* A person the chip can't resolve: Slack's `c-missing_icon` and `c-missing_text`, a 20px blank
    avatar 6px before a 120px name bar on the name's baseline, as the single select's skeleton. */
 .sbk-select__chip-skeleton {
