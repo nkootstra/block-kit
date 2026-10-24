@@ -1722,20 +1722,10 @@
   ],
   "extra/fidelity/rich-text-rich-text-list/many-items": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@dark": [],
-  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2": [
-    "x|Unavailable user group info|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+dark": [
-    "x|Unavailable user group info|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile": [
-    "x|Unavailable user group info|0",
-    "y|Unavailable user group info|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile+dark": [
-    "x|Unavailable user group info|0",
-    "y|Unavailable user group info|0"
-  ],
+  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2": [],
+  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+dark": [],
+  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile": [],
+  "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-preformatted/mixed": [
