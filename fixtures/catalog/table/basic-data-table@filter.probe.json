@@ -1,0 +1,43 @@
+{
+  "steps": [
+    {
+      "click": {
+        "role": "button",
+        "name": "Search table"
+      }
+    },
+    {
+      "type": "corp"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "snapshot": "filter-match"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "type": "zzz"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "snapshot": "filter-empty"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

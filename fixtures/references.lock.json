@@ -3629,6 +3629,36 @@
     "reference": "1fb3f318f1e15250d0fdbaf769633175fe4c94a776224e279df4a5949ff2c1d0",
     "captured": "2026-10-24"
   },
+  "catalog/table/basic-data-table@filter-empty": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "511e262ca45c72918db48b0e4660577b7c30457f31ec7c543a729dab0be4f036",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@filter-empty+dark": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "b8286baec82b277bce94c30a1ed8ae070b7ddedb52ff7a51132f2dd286479ae8",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@filter-empty+mobile": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "c256bb6e1ce64f9cf8fb76660836cd1c54ae34425e6754b742be77332d5fc1e2",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@filter-match": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "b250a419d5fa053f8a4277edda69f176d3623d25c16ca082819e950b14ad438b",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@filter-match+dark": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "c5c93c53c676747b242c6bb05006c0b4b2881a22e10365f1d78d8ceb36f9e77e",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@filter-match+mobile": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "1ad8345422f7603ae671bbc2f47180e316347aa70b6c2bd06f536fc4d4ead2b3",
+    "captured": "2026-10-24"
+  },
   "catalog/table/basic-data-table@focus-column-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
     "reference": "6d727790c579038b1d2a28b2dd6ac4dc929960d748bf4a87e51e4b276bad5cb5",
