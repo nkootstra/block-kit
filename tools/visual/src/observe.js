@@ -44,6 +44,8 @@
         arrow: 'button[aria-label="Scroll left"], button[aria-label="Scroll right"]',
         menu: '[data-qa="more_attachment_actions"], [class*="chartActionsGroup"] .c-message_actions__button',
         column: '[role="columnheader"] button',
+        cell: '[class*="dataTableBlockCellWrapper"]',
+        cellexpand: '[class*="dataTableBlockCellExpandButton"] button',
         page: '[data-qa^="c-pagination_"]',
         more: '.p-section_block [data-qa="show_more_button"], .p-section_block__show_more',
         action:
@@ -93,6 +95,8 @@
           '.sbk-carousel button[aria-label="Scroll left"], .sbk-carousel button[aria-label="Scroll right"]',
         menu: ".sbk-hover-actions--image .sbk-hover-actions__menu-root > .sbk-hover-actions__button, .sbk-hover-actions--chart .sbk-hover-actions__menu-root > .sbk-hover-actions__button",
         column: ".sbk-data-table__col-header button",
+        cell: ".sbk-data-table__cell",
+        cellexpand: ".sbk-data-table__expand",
         page: ".sbk-data-table__pagination button",
         more: ".sbk-section__toggle",
         action: ".sbk-message-actions__button",

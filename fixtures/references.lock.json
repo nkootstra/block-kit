@@ -3614,6 +3614,21 @@
     "reference": "8117988121bc3ee422683ddd1f0aa23f1c7d8bbb8be159430aded7bfbc15d5c7",
     "captured": "2026-10-21"
   },
+  "catalog/table/basic-data-table@expand-cell-1": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "9497dc078b9c7ae3b6e377f10bb19233d26091ae0821943f090a566fd3ec6cb1",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@expand-cell-1+dark": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "89efe846160b5f7e867146fe1fd29902f8437ebd131f7c3603152153a2ea9655",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@expand-cell-1+mobile": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "1fb3f318f1e15250d0fdbaf769633175fe4c94a776224e279df4a5949ff2c1d0",
+    "captured": "2026-10-24"
+  },
   "catalog/table/basic-data-table@focus-column-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
     "reference": "6d727790c579038b1d2a28b2dd6ac4dc929960d748bf4a87e51e4b276bad5cb5",
@@ -3633,6 +3648,21 @@
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
     "reference": "43636e8bec4fe61d5818bcf1b556226305d78f87810b27a25343cb5a73ac757f",
     "captured": "2026-10-21"
+  },
+  "catalog/table/basic-data-table@hover-cell-1": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "96c870614c31a14ca1beb9822c7709bc63e3b48803a5401c0102ce884d620494",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@hover-cell-1+dark": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "668cefbb1e15b02e94f57811c49b11dab29a54535023a76d2ae8c62046768f17",
+    "captured": "2026-10-24"
+  },
+  "catalog/table/basic-data-table@hover-cell-1+mobile": {
+    "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
+    "reference": "a5432e398eab2d58867c0629aee1ecbafca4add108e65e9eac4ba633e492ece0",
+    "captured": "2026-10-24"
   },
   "catalog/table/basic-data-table@hover-column-1+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",

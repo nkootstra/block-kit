@@ -134,7 +134,14 @@ The toolbar's **More actions** button opens Slack's menu with **Copy table**, wh
 whole table as tab-separated text that pastes into a spreadsheet, and **Download table**, which
 saves it as `table.csv`. Both take every row, header first, in the payload's order, whatever the
 sort or page. In the CSV, a cell a spreadsheet would read as a formula gets a leading `'`, as in the
-[table block](/blocks/table). The search and expand buttons are drawn but don't do anything yet.
+[table block](/blocks/table). The toolbar's search and view buttons are drawn but don't do anything
+yet.
+
+A cell shows one line, cut off with an ellipsis. When its content doesn't fit, hovering the cell
+shows an **Expand cell** button, as in Slack. The button also shows on keyboard focus. It opens the
+whole content in a **Cell content** dialog laid over the cell, as wide as it and scrolling past
+144px. Escape or a click outside closes it. Like the menus, it acts in the page only and never calls
+`onAction`.
 
 ## Examples
 
