@@ -372,3 +372,130 @@ describe("<DataTable> expanding a cell", () => {
     expect(screen.queryByRole("dialog", { name: "Cell content" })).toBeNull();
   });
 });
+
+describe("<DataTable> filtering", () => {
+  const richText = (text: string): Json => ({
+    type: "rich_text",
+    elements: [{ type: "rich_text_section", elements: [{ type: "text", text }] }],
+  });
+  const block = {
+    type: "data_table",
+    caption: "Deals",
+    rows: [
+      [rawText("Name"), rawText("Account"), rawText("Stage")],
+      [rawText("Acme Expansion Deal"), rawText("Acme Inc."), richText("Negotiation")],
+      [rawText("Weather Forecast"), rawText("Nimbus Corp."), richText("Waiting on review")],
+      [rawText("Retail Partner Portal"), rawText("ShopCo Ltd."), richText("Closed Won")],
+    ],
+  };
+  function renderTable() {
+    return render(
+      <BlockKitProvider>
+        <DataTable block={asDataTableBlock(block)} blockId="t" index={0} />
+      </BlockKitProvider>,
+    );
+  }
+  const openFilter = () => {
+    fireEvent.click(screen.getByRole("button", { name: "Search table" }));
+    return screen.getByRole("searchbox", { name: "Filter table…" });
+  };
+
+  it("turns Search into a focused filter box, as Slack does", () => {
+    renderTable();
+    const box = openFilter();
+    expect(document.activeElement).toBe(box);
+    expect(box.getAttribute("placeholder")).toBe("Filter table…");
+    expect(screen.queryByRole("button", { name: "Search table" })).toBeNull();
+  });
+
+  it("keeps the rows with a cell that contains the term, ignoring case, rich text included", () => {
+    const { container } = renderTable();
+    fireEvent.change(openFilter(), { target: { value: "corp" } });
+    expect(bodyRowsText(container).map((row) => row[0])).toEqual(["Weather Forecast"]);
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "WON" } });
+    expect(bodyRowsText(container).map((row) => row[0])).toEqual(["Retail Partner Portal"]);
+  });
+
+  it("says no results were found and offers Clear filter, which brings the rows back", () => {
+    const { container } = renderTable();
+    fireEvent.change(openFilter(), { target: { value: "zzz" } });
+    expect(bodyRowsText(container)).toEqual([]);
+    expect(screen.getByText("No results found.")).toBeTruthy();
+    // Slack drops the column headers along with the rows.
+    expect(screen.queryByRole("columnheader")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Clear filter" }));
+    expect(bodyRowsText(container)).toHaveLength(3);
+    expect(document.activeElement).toBe(screen.getByRole("searchbox", { name: "Filter table…" }));
+  });
+
+  it("clears the term with the box's Clear button and keeps the box focused", () => {
+    const { container } = renderTable();
+    fireEvent.change(openFilter(), { target: { value: "corp" } });
+    fireEvent.click(screen.getByRole("button", { name: "Clear text" }));
+    expect(bodyRowsText(container)).toHaveLength(3);
+    expect(document.activeElement).toBe(screen.getByRole("searchbox", { name: "Filter table…" }));
+  });
+
+  it("clears and closes on Escape, back to the Search button", () => {
+    const { container } = renderTable();
+    const box = openFilter();
+    fireEvent.change(box, { target: { value: "corp" } });
+    fireEvent.keyDown(box, { key: "Escape" });
+    expect(screen.queryByRole("searchbox")).toBeNull();
+    expect(bodyRowsText(container)).toHaveLength(3);
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Search table" }));
+  });
+
+  it("closes an empty box when focus leaves it, and keeps one with a term", () => {
+    renderTable();
+    const box = openFilter();
+    fireEvent.change(box, { target: { value: "corp" } });
+    fireEvent.blur(box);
+    expect(screen.getByRole("searchbox")).toBeTruthy();
+    fireEvent.change(box, { target: { value: "" } });
+    fireEvent.blur(box);
+    expect(screen.queryByRole("searchbox")).toBeNull();
+  });
+});
+
+describe("<DataTable> filter highlight", () => {
+  it("marks the term's first occurrence in each matching cell, across a rich text style change", () => {
+    const { container } = render(
+      <BlockKitProvider>
+        <DataTable
+          block={asDataTableBlock({
+            type: "data_table",
+            rows: [
+              [rawText("Account"), rawText("Stage")],
+              [
+                rawText("Nimbus Corp. corp"),
+                {
+                  type: "rich_text",
+                  elements: [
+                    {
+                      type: "rich_text_section",
+                      elements: [
+                        { type: "text", text: "Waiting on " },
+                        { type: "text", text: "review", style: { italic: true } },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          })}
+          blockId="t"
+          index={0}
+        />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Search table" }));
+    const box = screen.getByRole("searchbox", { name: "Filter table…" });
+    fireEvent.change(box, { target: { value: "corp" } });
+    const marks = () =>
+      Array.from(container.querySelectorAll(".sbk-data-table__match"), (m) => m.textContent);
+    expect(marks()).toEqual(["Corp"]);
+    fireEvent.change(box, { target: { value: "on rev" } });
+    expect(marks()).toEqual(["on ", "rev"]);
+  });
+});

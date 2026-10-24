@@ -335,6 +335,8 @@
     --sbk-data-table-sep: #797c814d;
     --sbk-data-table-active: #177e56;
     --sbk-data-table-active-text: #f8f8f8;
+    --sbk-data-table-match-bg: rgba(160, 115, 0, 0.18);
+    --sbk-data-table-match-text: rgb(222, 167, 0);
     --sbk-plan-text: #9a9b9e;
     --sbk-task-card-text: #9a9b9e;
     --sbk-alert-default-bg: #f8f8f81a;
@@ -476,6 +478,8 @@
   --sbk-data-table-sep: #797c814d;
   --sbk-data-table-active: #177e56;
   --sbk-data-table-active-text: #f8f8f8;
+  --sbk-data-table-match-bg: rgba(160, 115, 0, 0.18);
+  --sbk-data-table-match-text: rgb(222, 167, 0);
   --sbk-plan-text: #9a9b9e;
   --sbk-task-card-text: #9a9b9e;
   --sbk-alert-default-bg: #f8f8f81a;

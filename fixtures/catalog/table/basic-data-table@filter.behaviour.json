@@ -1,0 +1,316 @@
+{
+  "steps": [
+    {
+      "click": {
+        "role": "button",
+        "name": "Search table"
+      }
+    },
+    {
+      "type": "corp"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "snapshot": "filter-match"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "key": "Backspace"
+    },
+    {
+      "type": "zzz"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "snapshot": "filter-empty"
+    },
+    {
+      "key": "Escape"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "searchbox",
+        "name": "Filter table…",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    }
+  ]
+}

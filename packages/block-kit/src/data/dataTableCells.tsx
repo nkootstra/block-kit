@@ -1,13 +1,17 @@
 import type { Json } from "../types";
 import { RichTextMini, richTextMiniToString } from "./richTextMini";
 import { Link } from "../Link";
+import { markText, type TextMark } from "./textMark";
 
-/** Renders a `data_table` cell: `raw_text`, `raw_number`, `url`, or `rich_text`. */
-export function DataTableCell({ cell }: { cell: Json }) {
+/**
+ * Renders a `data_table` cell: `raw_text`, `raw_number`, `url`, or `rich_text`, with `mark` (a
+ * filter's match) highlighted.
+ */
+export function DataTableCell({ cell, mark }: { cell: Json; mark?: TextMark }) {
   if (!cell || typeof cell !== "object") return null;
   switch (cell.type) {
     case "rich_text":
-      return <RichTextMini value={cell} />;
+      return <RichTextMini value={cell} mark={mark} />;
     case "url":
       return (
         <Link
@@ -16,13 +20,17 @@ export function DataTableCell({ cell }: { cell: Json }) {
           target="_blank"
           rel="noreferrer noopener"
         >
-          {typeof cell.text === "string" ? cell.text : String(cell.url ?? "")}
+          {markText(typeof cell.text === "string" ? cell.text : String(cell.url ?? ""), 0, mark)}
         </Link>
       );
     case "raw_number":
-      return <>{typeof cell.text === "string" ? cell.text : String(cell.value ?? "")}</>;
+      return (
+        <>
+          {markText(typeof cell.text === "string" ? cell.text : String(cell.value ?? ""), 0, mark)}
+        </>
+      );
     default:
-      return <>{typeof cell.text === "string" ? cell.text : ""}</>;
+      return <>{markText(typeof cell.text === "string" ? cell.text : "", 0, mark)}</>;
   }
 }
 
