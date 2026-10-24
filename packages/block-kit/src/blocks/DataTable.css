@@ -5,6 +5,8 @@
   --sbk-data-table-sep: rgba(94, 93, 96, 0.13);
   --sbk-data-table-active: #007a5a;
   --sbk-data-table-active-text: #fff;
+  --sbk-data-table-match-bg: rgba(255, 198, 0, 0.18);
+  --sbk-data-table-match-text: inherit;
 }
 
 .sbk-data-table {
@@ -51,10 +53,133 @@
   cursor: pointer;
 }
 
+/*
+ * The filter box Search turns into: Slack's small `c-filter_input`, 28px tall and at most half the
+ * header, with the button focus ring while it has focus. A search glyph leads, and once there's a
+ * term a grey Clear link ends it.
+ */
+/* Slack's Clear link sits beside the box, over its end, rather than inside it. */
+.sbk-data-table__filter-wrap {
+  position: relative;
+  flex: 0 1 212px;
+  max-width: 50%;
+}
+
+.sbk-data-table__filter {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  box-sizing: border-box;
+  padding: 0 4px;
+  font-size: 13px;
+  color: var(--sbk-text);
+  background-color: var(--sbk-bg);
+  border: 1px solid var(--sbk-button-border);
+  border-radius: 8px;
+}
+
+.sbk-data-table__filter:focus-within {
+  border-color: transparent;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sbk-data-table__filter {
+    transition:
+      border 80ms ease-out,
+      box-shadow 80ms ease-out;
+  }
+}
+
+.sbk-data-table__filter > svg {
+  flex: 0 0 20px;
+  width: 14px;
+  height: 14px;
+}
+
+.sbk-data-table__filter-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 16px;
+  padding: 0 4px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.sbk-data-table__filter-input::placeholder {
+  color: var(--sbk-muted);
+}
+
+.sbk-data-table__filter-clear {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sbk-content-ter);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sbk-data-table__filter-clear:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Slack marks the term in each matching cell, at its first occurrence (`c-mrkdwn__highlight`). */
+.sbk-data-table__match {
+  color: var(--sbk-data-table-match-text);
+  background-color: var(--sbk-data-table-match-bg);
+}
+
+/*
+ * No row left: Slack's message and Clear filter link, centred where the header and rows were. The
+ * row keeps the columns' width, so a table too wide for the message still scrolls, and the message
+ * stays centred in the part that shows.
+ */
+.sbk-data-table__empty-state {
+  position: sticky;
+  left: 0;
+  box-sizing: border-box;
+  width: 100cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 32px 16px;
+  color: var(--sbk-content-sec);
+  text-align: center;
+}
+
+.sbk-data-table__clear-filter {
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--sbk-link);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sbk-data-table__clear-filter:hover {
+    text-decoration: underline;
+  }
+}
+
 /* Slack's grey frame holds both the grid and the pagination footer below it, and scrolls them
    sideways together when the columns can't fit. Like Slack's, it's a flex column, so its end
    padding counts as scrollable space. */
 .sbk-data-table__frame {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   overflow-x: auto;
@@ -91,8 +216,9 @@
   min-width: min-content;
 }
 
-/* Without pagination Slack's footer shrinks to a 4px strip. */
-.sbk-data-table__rows:last-child {
+/* Without pagination Slack's footer shrinks to a 4px strip, under a filtered table's padding too. */
+.sbk-data-table__rows:last-child,
+.sbk-data-table__spacer:last-child {
   margin-bottom: 4px;
 }
 
