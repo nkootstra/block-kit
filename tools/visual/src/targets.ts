@@ -47,6 +47,8 @@ export const KINDS = [
   "arrow",
   "menu",
   "column",
+  "cell",
+  "cellexpand",
   "page",
   "more",
   "action",
@@ -107,6 +109,10 @@ export const SLACK: Record<Kind, string> = {
   menu: '[data-qa="more_attachment_actions"], [class*="chartActionsGroup"] .c-message_actions__button',
   // A data table's sortable column header.
   column: '[role="columnheader"] button',
+  // A data table's body cell, and the expand button Slack adds to one whose content overflows once
+  // the pointer has rested on it.
+  cell: '[class*="dataTableBlockCellWrapper"]',
+  cellexpand: '[class*="dataTableBlockCellExpandButton"] button',
   // A data table's pagination: back, each page, forward.
   page: '[data-qa^="c-pagination_"]',
   more: '.p-section_block [data-qa="show_more_button"], .p-section_block__show_more',
@@ -166,6 +172,8 @@ export const OURS: Record<Kind, string> = {
     '.sbk-carousel button[aria-label="Scroll left"], .sbk-carousel button[aria-label="Scroll right"]',
   menu: ".sbk-hover-actions--image .sbk-hover-actions__menu-root > .sbk-hover-actions__button, .sbk-hover-actions--chart .sbk-hover-actions__menu-root > .sbk-hover-actions__button",
   column: ".sbk-data-table__col-header button",
+  cell: ".sbk-data-table__cell",
+  cellexpand: ".sbk-data-table__expand",
   page: ".sbk-data-table__pagination button",
   more: ".sbk-section__toggle",
   // Not drawn yet: <Message>'s optional hover toolbar.
@@ -202,10 +210,11 @@ export const UNVERIFIED: readonly Kind[] = ["more", "action", "tooltip"];
 /**
  * Kinds that take no keyboard focus themselves in Block Kit Builder's preview: the message header's
  * app name and time are plain spans there (the Slack client makes them a button and a link), and a
- * card is a container whose first focusable part is one of its buttons (ours is the same). A
+ * card is a container whose first focusable part is one of its buttons (ours is the same), and a
+ * data table's cell is a box whose only control, its expand button, Slack adds once it's hovered. A
  * `focus-<kind>-<n>` capture of one can't hold, so the capture plan doesn't ask for it.
  */
-export const UNFOCUSABLE: readonly Kind[] = ["sender", "time", "card"];
+export const UNFOCUSABLE: readonly Kind[] = ["sender", "time", "card", "cell"];
 
 /** Where a kind's controls are counted on our side: the message, or the whole page. */
 export const ourRoot = (kind: Kind): string | null =>

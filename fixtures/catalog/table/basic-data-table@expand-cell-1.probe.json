@@ -1,0 +1,17 @@
+{
+  "steps": [
+    {
+      "hover": "cell-1"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "cellexpand-1"
+    },
+    {
+      "wait": 300
+    }
+  ],
+  "snapshot": true
+}

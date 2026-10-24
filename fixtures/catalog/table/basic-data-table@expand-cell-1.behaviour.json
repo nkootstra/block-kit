@@ -1,0 +1,152 @@
+{
+  "steps": [
+    {
+      "hover": "cell-1"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "cellexpand-1"
+    },
+    {
+      "wait": 300
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "cell-1": {
+          "expanded": "false"
+        },
+        "cellexpand-1": {
+          "expanded": "false"
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "cell-1": {
+          "expanded": "false"
+        },
+        "cellexpand-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "cell-1": {
+          "expanded": "false"
+        },
+        "cellexpand-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "dialog",
+        "name": "Cell content",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "dialog",
+        "name": "Cell content",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        }
+      },
+      "action": null
+    }
+  ]
+}
