@@ -48,8 +48,23 @@ describe("normalize", () => {
     // resolve; at 160px it no longer fit message/mrkdwn's line and moved everything below it.
     const bar = (width: string) =>
       `<span class="c-missing_text c-missing_text--non-existent" style="background-color:rgba(29, 28, 29, 0.06);border-top-width:1px;display:inline-block;height:8px;width:${width}"></span>`;
-    expect(normalize(bar("160px"))).toBe(bar("120px"));
-    expect(normalize(bar("80px"))).toBe(bar("120px"));
+    const pinned = (live: string) =>
+      bar("120px").replace("></span>", ` data-sbk-live-width="${live}"></span>`);
+    expect(normalize(bar("160px"))).toBe(pinned("160"));
+    expect(normalize(bar("80px"))).toBe(pinned("80"));
+    expect(normalize(bar("120px"))).toBe(bar("120px"));
+  });
+
+  it("keeps the width Slack drew a resized placeholder at, so a popover over it can follow it", () => {
+    // extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2: Slack centred the user
+    // group's tooltip over a 160px bar; at 120px the bar sits elsewhere, and compare.ts moves the
+    // tooltip with it. Normalizing again keeps the width it recorded.
+    const live = `<span class="c-missing_text c-missing_text--non-existent" style="display:inline-block;height:8px;transform-origin:80px 4px;width:160px"></span>`;
+    const once = normalize(live);
+    expect(once).toBe(
+      `<span class="c-missing_text c-missing_text--non-existent" style="display:inline-block;height:8px;transform-origin:60px 4px;width:120px" data-sbk-live-width="160"></span>`,
+    );
+    expect(normalize(once)).toBe(once);
   });
 
   it("lets the lines around a resized placeholder lay out again, without the heights they froze", () => {
@@ -61,11 +76,12 @@ describe("normalize", () => {
       `<div class="p-rich_text_block" style="display:block;height:${height}px;width:320px"><div class="p-rich_text_section" style="height:${height}px;min-height:auto;width:320px">Hey ${bar}</div></div><div class="p-rich_text_section" style="height:22px;width:320px">Next</div>`;
     const bar = (width: number, origin: number) =>
       `<span class="c-missing_text c-missing_text--non-existent" style="display:inline-block;height:8px;perspective-origin:${origin}px 4px;transform-origin:${origin}px 4px;width:${width}px"></span>`;
-    const released = `<div class="p-rich_text_block" style="display:block;width:320px"><div class="p-rich_text_section" style="min-height:auto;width:320px">Hey ${bar(120, 60)}</div></div><div class="p-rich_text_section" style="height:22px;width:320px">Next</div>`;
-    expect(normalize(html(bar(120, 80), "132"))).toBe(released);
-    expect(normalize(html(bar(80, 40), "110"))).toBe(released);
+    const released = (live: number) =>
+      `<div class="p-rich_text_block" style="display:block;width:320px"><div class="p-rich_text_section" style="min-height:auto;width:320px">Hey ${bar(120, 60).replace("></span>", ` data-sbk-live-width="${live}"></span>`)}</div></div><div class="p-rich_text_section" style="height:22px;width:320px">Next</div>`;
+    expect(normalize(html(bar(120, 80), "132"))).toBe(released(160));
+    expect(normalize(html(bar(80, 40), "110"))).toBe(released(80));
     // Normalizing again changes nothing, and a bar that was already 120px keeps its boxes' heights.
-    expect(normalize(released)).toBe(released);
+    expect(normalize(released(160))).toBe(released(160));
     expect(normalize(html(bar(120, 60), "110"))).toBe(html(bar(120, 60), "110"));
   });
 

@@ -69,6 +69,7 @@ import {
 } from "./baseline";
 import { collectTextRuns } from "./collectTextRuns";
 import { directoryOrder } from "./directoryOrder";
+import { followResizedBars } from "./followBars";
 import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
 import { pad, parseRgb, type Rgb } from "./pad";
@@ -127,6 +128,10 @@ interface Meta {
   scrollers?: Scroller[];
   /** When the reference was captured (snapshot.js). */
   capturedAt?: string;
+  /** Each control address's `data-ref` in the snapshot (snapshot.js). */
+  targets?: Record<string, string>;
+  /** The real input the capture held on a control (capture.js). */
+  input?: { input: string; target: string };
 }
 
 /** Where our open menus and dialogs render: portalled to <body>, outside #sbk-render. */
@@ -394,6 +399,8 @@ for (const name of names) {
     await restoreSelection(refPage);
     await restoreScroll(refPage, meta.scrollers ?? []);
     if (dialog) await layOverDialog(refPage, layers);
+    const anchor = meta.input && meta.targets?.[meta.input.target];
+    await refPage.evaluate(followResizedBars, anchor);
   }
   const refBoxes = popovers ? await boxesOf(refPage, refTarget) : [];
   let reference = popovers ? undefined : await shot(page, refTarget);

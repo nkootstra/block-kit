@@ -83,12 +83,14 @@ const VOID = /^(?:area|base|br|col|embed|hr|img|input|link|meta|param|source|tra
  * 120px, the line around the bar broke differently live, and every box holding it froze the height
  * of that layout: a 160px bar that wrapped the paragraph onto one more line leaves a blank line
  * below it at 120px. So those boxes drop their frozen `height` and lay out from their content.
+ * The bar keeps its live width in `data-sbk-live-width`, so compare.ts can move a popover Slack
+ * placed against that layout (the bar's own tooltip) along with the bar.
  */
 function pinMissingText(html: string): string {
   const tag = /<(\/?)([a-zA-Z][\w-]*)\b[^>]*>/g;
   const open: { name: string; start: number }[] = [];
   const release = new Set<number>();
-  const bars: { start: number; end: number }[] = [];
+  const bars: { start: number; live: number }[] = [];
   let match: RegExpExecArray | null;
   while ((match = tag.exec(html))) {
     const name = (match[2] ?? "").toLowerCase();
@@ -103,11 +105,11 @@ function pinMissingText(html: string): string {
       continue;
     }
     if (/^<span\b[^>]*\bclass="c-missing_text/.test(match[0])) {
-      bars.push({ start: match.index, end: tag.lastIndex });
       const style = match[0].match(/style="([^"]*)"/)?.[1] ?? "";
       const width = Number(style.match(/(?:^|;)width:([\d.]+)px/)?.[1] ?? PINNED_BAR);
       const origin = style.match(/(?:^|;)transform-origin:([\d.]+)px/)?.[1];
       const live = origin === undefined ? width : Number(origin) * 2;
+      bars.push({ start: match.index, live });
       if (width !== PINNED_BAR || live !== PINNED_BAR) for (const e of open) release.add(e.start);
     }
     if (!VOID.test(name) && !match[0].endsWith("/>")) open.push({ name, start: match.index });
@@ -123,12 +125,15 @@ function pinMissingText(html: string): string {
       }),
     );
   }
-  for (const { start } of bars) {
-    edits.set(start, (t) =>
-      t
+  for (const { start, live } of bars) {
+    edits.set(start, (t) => {
+      const pinned = t
         .replace(/((?:^|[";])width:)[\d.]+px/, `$1${PINNED_BAR}px`)
-        .replace(/((?:^|[";])(?:perspective|transform)-origin:)[\d.]+px/g, `$1${PINNED_BAR / 2}px`),
-    );
+        .replace(/((?:^|[";])(?:perspective|transform)-origin:)[\d.]+px/g, `$1${PINNED_BAR / 2}px`);
+      return live === PINNED_BAR || /\sdata-sbk-live-width=/.test(pinned)
+        ? pinned
+        : pinned.replace(/\/?>$/, (end) => ` data-sbk-live-width="${live}"${end}`);
+    });
   }
   let out = "";
   let last = 0;

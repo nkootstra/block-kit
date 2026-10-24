@@ -7431,23 +7431,23 @@
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "61865228db47a4505c706065ed31349708263dc8ead1ce6761a3550cbb0c900b",
-    "captured": "2026-10-21"
+    "reference": "8103e632ff2b634cb13150f5b953d3270d100d505b2be72622342be444dd3cb5",
+    "captured": "2026-10-24"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+dark": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "6c8d00ba78b6bfea9148d38ab1bcdd5c70187f06911159782a615dcc84432bbc",
-    "captured": "2026-10-21"
+    "reference": "814dbce09601395fe221389e897c5fe3db84cc15e706316f503eb0e5be373509",
+    "captured": "2026-10-24"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "e818f7cf946365217497cdc20d10d8cd3d3fd644709f8bfadf990148590cae12",
-    "captured": "2026-10-21"
+    "reference": "26da440c81ef976a582e6577b936079e98c051acd5d7b971e625405fbcc49866",
+    "captured": "2026-10-24"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile+dark": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
-    "reference": "6f8ac45bc5b56d85c6ea4f1d3e8e1db4e74620b60287948ab542ead40e577e0f",
-    "captured": "2026-10-21"
+    "reference": "cad5638838f288a5bc3c8993ddb192797d1717f1d6d7be7142e892ba1c330387",
+    "captured": "2026-10-24"
   },
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile": {
     "payload": "9e19e8f82a74e67112f7e8ee4a0c82b0ac62dd5e7f4d3a4cc0d3e73ecd44a76f",
