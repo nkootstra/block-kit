@@ -274,7 +274,10 @@ to the preview):
   to that day (the `--is_today` date's `data-value`), not the day the comparison runs. A
   datetimepicker fills in the time of day when a date is picked, so a reference with one gets the
   capture time (the meta's `capturedAt`) instead. The comparison runs in UTC, so ours shows that
-  time in UTC, not in the zone it was captured in, but the same on every run.
+  time in UTC, not in the zone it was captured in, but the same on every run. `normalize.ts` pins
+  every unresolved mention's placeholder bar to 120px and keeps the width Slack drew it at in
+  `data-sbk-live-width`; a tooltip Slack placed over the hovered mention against those widths is
+  moved as far as pinning moved the mention, onto another line if need be (`followBars.ts`).
 - A **dialog** (a confirm dialog, the multi-select dialog) is centred in the window, so its position
   says nothing; it's compared on its own, against ours (`.sbk-confirm`, `.sbk-select-dialog`). A
   popover open over a dialog (the multi-select dialog's list) is moved into the dialog's layer at
