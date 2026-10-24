@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
@@ -229,6 +231,12 @@ describe("<TextInput>", () => {
       </BlockKitProvider>,
     );
     expect(urlContainer.querySelector(".sbk-text-input__icon")).toBeTruthy();
+  });
+
+  it("draws the email and URL icons in Slack's secondary content colour", () => {
+    const css = readFileSync(join(__dirname, "TextInput.css"), "utf8");
+    const icon = /\.sbk-text-input__icon\s*\{([^}]*)\}/.exec(css)?.[1];
+    expect(icon).toContain("color: var(--sbk-content-sec)");
   });
 
   it("reports the initial_value on mount", () => {

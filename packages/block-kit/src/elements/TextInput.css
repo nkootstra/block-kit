@@ -43,12 +43,13 @@
   padding-left: 28px;
 }
 
+/* Slack's envelope and link icons take its secondary content colour, darker than a placeholder. */
 .sbk-text-input__icon {
   position: absolute;
   left: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--sbk-muted);
+  color: var(--sbk-content-sec);
   pointer-events: none;
 }
 
