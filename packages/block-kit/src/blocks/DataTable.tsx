@@ -4,6 +4,7 @@ import { copyText, downloadText, MenuAction, toCsv, toTsv } from "../data/HoverA
 import { ChevronIcon, ExpandIcon, KebabIcon, SearchIcon } from "../data/icons";
 import { CopyIcon, DownloadIcon } from "../icons";
 import type { BlockProps, Json } from "../types";
+import { DataTableBodyCell } from "./DataTableBodyCell";
 import { DataTableColumnHeader, type SortDirection } from "./DataTableColumnHeader";
 
 interface DataTableBlock extends Json {
@@ -18,7 +19,8 @@ const ROW_HEIGHT = 48;
 
 /**
  * The `data_table` block: a caption, a sortable/paginated grid of cells (first row is the
- * header), and a small toolbar. Each column header opens a Sort menu (ascending, descending, or back to insertion order);
+ * header), and a small toolbar. Each column header opens a Sort menu (ascending, descending, or back to insertion order),
+ * and a cell cut off at its edge can be expanded to show its whole content;
  * pagination kicks in above `PAGE_SIZE` data rows, matching Slack's Builder.
  */
 export function DataTable({ block }: BlockProps<DataTableBlock>) {
@@ -117,17 +119,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
             {visibleRows.map((row, r) => (
               <div key={r} className="sbk-data-table__row" role="row" style={gridStyle}>
                 {row.map((cell, i) => (
-                  <div
-                    key={i}
-                    className="sbk-data-table__cell"
-                    role={i === 0 ? "rowheader" : "cell"}
-                  >
-                    <div className="sbk-data-table__cell-content">
-                      <span className="sbk-data-table__truncate">
-                        <DataTableCell cell={cell} />
-                      </span>
-                    </div>
-                  </div>
+                  <DataTableBodyCell key={i} cell={cell} rowHeader={i === 0} />
                 ))}
               </div>
             ))}

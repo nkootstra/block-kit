@@ -293,3 +293,82 @@ describe("<DataTable> More actions", () => {
     expect(screen.queryByRole("menu")).toBeNull();
   });
 });
+
+describe("<DataTable> expanding a cell", () => {
+  // jsdom lays nothing out, so this stands in for the browser: a clamped cell whose text runs past
+  // 12 characters wraps onto a second line the clamp hides.
+  const height = (el: HTMLElement, clamped: number) =>
+    el.classList.contains("sbk-data-table__truncate") && (el.textContent ?? "").length > 12
+      ? clamped * 2
+      : clamped;
+  const scrollHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollHeight");
+  const clientHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "clientHeight");
+  function layOut() {
+    Object.defineProperty(HTMLElement.prototype, "scrollHeight", {
+      configurable: true,
+      get(this: HTMLElement) {
+        return height(this, 22);
+      },
+    });
+    Object.defineProperty(HTMLElement.prototype, "clientHeight", {
+      configurable: true,
+      get: () => 22,
+    });
+  }
+  afterEach(() => {
+    if (scrollHeight) Object.defineProperty(HTMLElement.prototype, "scrollHeight", scrollHeight);
+    if (clientHeight) Object.defineProperty(HTMLElement.prototype, "clientHeight", clientHeight);
+  });
+
+  const block = {
+    type: "data_table",
+    rows: [
+      [rawText("Name"), rawText("Account")],
+      [rawText("Acme Expansion Deal"), rawText("Acme Inc.")],
+    ],
+  };
+
+  it("offers Expand cell on a cell whose content is cut off, and not on one that fits", () => {
+    layOut();
+    render(
+      <BlockKitProvider>
+        <DataTable block={asDataTableBlock(block)} blockId="t" index={0} />
+      </BlockKitProvider>,
+    );
+    const buttons = screen.getAllByRole("button", { name: "Expand cell" });
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0]!.closest('[role="rowheader"]')?.textContent).toContain("Acme Expansion Deal");
+  });
+
+  it("shows the whole content in a dialog over the cell, focused, until Escape", () => {
+    layOut();
+    render(
+      <BlockKitProvider>
+        <DataTable block={asDataTableBlock(block)} blockId="t" index={0} />
+      </BlockKitProvider>,
+    );
+    const expand = screen.getByRole("button", { name: "Expand cell" });
+    expect(expand.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(expand);
+    const dialog = screen.getByRole("dialog", { name: "Cell content" });
+    expect(dialog.textContent).toBe("Acme Expansion Deal");
+    expect(document.activeElement).toBe(dialog);
+    // Slack takes the button away while the content is open.
+    expect(screen.queryByRole("button", { name: "Expand cell" })).toBeNull();
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "Cell content" })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Expand cell" }));
+  });
+
+  it("closes the dialog on a press outside it", () => {
+    layOut();
+    render(
+      <BlockKitProvider>
+        <DataTable block={asDataTableBlock(block)} blockId="t" index={0} />
+      </BlockKitProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Expand cell" }));
+    fireEvent.mouseDown(document.body);
+    expect(screen.queryByRole("dialog", { name: "Cell content" })).toBeNull();
+  });
+});

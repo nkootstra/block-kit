@@ -17,6 +17,21 @@ export function SearchIcon() {
   );
 }
 
+/** Two arrows pointing out to opposite corners: Slack's `expand-diagonal`, a data table cell's expand. */
+export function ExpandDiagonalIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true">
+      <path
+        d="M13.25 2.25h4.5v4.5M17.5 2.5l-5.75 5.75M6.75 17.75h-4.5v-4.5M2.5 17.5l5.75-5.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function ExpandIcon() {
   return (
     <svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
