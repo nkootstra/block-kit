@@ -329,6 +329,79 @@ describe("<RichText>", () => {
       expect(screen.getByText("First").closest("blockquote")).toBeNull();
     });
   });
+
+  // extra/fidelity/rich-text-{workflow-mention,message-mention,file,canvas,work-object-mention,
+  // attachment-mention}/default: what Slack shows for each when it can't look the entity up.
+  describe("an entity a renderer outside Slack can't look up", () => {
+    const renderEntity = (leaf: Record<string, unknown>) =>
+      render(
+        <RichText
+          block={
+            {
+              type: "rich_text",
+              elements: [
+                { type: "rich_text_section", elements: [{ type: "text", text: "See " }, leaf] },
+              ],
+            } as never
+          }
+          blockId="b1"
+          index={0}
+        />,
+      );
+
+    it.each([
+      [
+        "a workflow as deleted",
+        { type: "workflow_mention", workflow_id: "Wf0123456789", text: "Run the workflow" },
+        "Deleted workflow",
+      ],
+      [
+        "a message as private",
+        { type: "message_mention", channel_id: "C0123456789", message_ts: "1767261600.000100" },
+        "Private message",
+      ],
+      ["a file as hidden", { type: "file", file_id: "F0123456789", text: "A file" }, "Hidden file"],
+    ])("shows %s, greyed out", (_, leaf, label) => {
+      renderEntity(leaf);
+      const slug = screen.getByText(label).closest(".sbk-rich-text__slug");
+      expect(slug?.classList.contains("sbk-rich-text__slug--disabled")).toBe(true);
+    });
+
+    it("shows Slack's label in place of the payload's text", () => {
+      renderEntity({ type: "workflow_mention", workflow_id: "Wf0123456789", text: "Run it" });
+      expect(screen.queryByText("Run it")).toBeNull();
+    });
+
+    it("shows a canvas as private, in the link colour", () => {
+      renderEntity({ type: "canvas", file_id: "F0123456789", text: "A canvas" });
+      const slug = screen.getByText("Private canvas").closest(".sbk-rich-text__slug");
+      expect(slug).toBeTruthy();
+      expect(slug?.classList.contains("sbk-rich-text__slug--disabled")).toBe(false);
+    });
+
+    it("links a work object to its URL under its text", () => {
+      renderEntity({
+        type: "work_object_mention",
+        entity_id: "E0123456789",
+        app_id: "A0123456789",
+        text: "A work object",
+        url: "https://example.com/work-object",
+      });
+      const link = screen.getByRole("link", { name: "A work object" });
+      expect(link.getAttribute("href")).toBe("https://example.com/work-object");
+      expect(link.querySelector(".sbk-rich-text__slug")).toBeTruthy();
+    });
+
+    it("links an attachment to its URL under its text", () => {
+      renderEntity({
+        type: "attachment_mention",
+        url: "https://example.com/attachment",
+        text: "An attachment",
+      });
+      const link = screen.getByRole("link", { name: "An attachment" });
+      expect(link.getAttribute("href")).toBe("https://example.com/attachment");
+    });
+  });
 });
 
 describe("text nodes, as Slack writes them", () => {

@@ -246,6 +246,7 @@
     --sbk-video-separator: #35373b;
     --sbk-badge-text: #b9babd;
     --sbk-badge-bg: #f8f8f80f;
+    --sbk-slug-disabled-bg: rgba(232, 232, 232, 0.06);
     --sbk-select-avatar-bg: #212428;
     --sbk-border: #797c814d;
     --sbk-divider: #797c8180;
@@ -389,6 +390,7 @@
   --sbk-video-separator: #35373b;
   --sbk-badge-text: #b9babd;
   --sbk-badge-bg: #f8f8f80f;
+  --sbk-slug-disabled-bg: rgba(232, 232, 232, 0.06);
   --sbk-select-avatar-bg: #212428;
   --sbk-border: #797c814d;
   --sbk-divider: #797c8180;
