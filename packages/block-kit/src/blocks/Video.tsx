@@ -55,15 +55,24 @@ export function Video({ block }: BlockProps) {
       )}
       {title && (
         <div className="sbk-video__title">
+          {/* Slack's title sits in a `dir="auto"` span. Isolated, its last word can't be split
+              from the caret that follows: the two wrap together (extra/fidelity/video/long-content). */}
           {titleUrl ? (
             <Link href={titleUrl} target="_blank" rel="noreferrer">
-              <Text text={title} />
+              <span dir="auto">
+                <Text text={title} />
+              </span>
             </Link>
           ) : (
-            <Text text={title} />
+            <span dir="auto">
+              <Text text={title} />
+            </span>
           )}
-          <span className="sbk-video__expand" aria-hidden="true">
-            <CaretDownIcon />
+          <span className="sbk-video__trigger" aria-hidden="true">
+            {" "}
+            <span className="sbk-video__expand">
+              <CaretDownIcon />
+            </span>
           </span>
         </div>
       )}

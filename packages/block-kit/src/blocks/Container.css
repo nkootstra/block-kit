@@ -1,5 +1,7 @@
+/* Every container Builder has rendered since 2026-10-07 keeps 16px above the card and 8px below
+   it, inside its block (catalog/container/media-preview, with-image, data-entry-form). */
 .sbk-container {
-  margin: 16px 0 0;
+  margin: 16px 0 8px;
   background: var(--sbk-bg);
   border: 1px solid var(--sbk-outline-ter);
   border-radius: 12px;
