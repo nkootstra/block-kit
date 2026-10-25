@@ -1371,13 +1371,13 @@
   },
   "catalog/card-and-carousel/carousel@scrolled+mobile": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
-    "reference": "25c29a2b7159c6f94ee4a6ee630adab2f4773a1fb94f3bf51f4179a74be5e076",
-    "captured": "2026-10-23"
+    "reference": "4c0fa18949dcb4add048bf3f0b708f20e01275796ea8d8b00100c58cc9c4acbb",
+    "captured": "2026-10-25"
   },
   "catalog/card-and-carousel/carousel@scrolled+mobile+dark": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
-    "reference": "c923d6ff44bdff9d3ee09912acc68257989c87778853e5d33801c94e8ed11030",
-    "captured": "2026-10-23"
+    "reference": "f6c9429af55ec3dc1eb0f4287cbccf1c8ff3f7326eaab0d986723544fa49df06",
+    "captured": "2026-10-25"
   },
   "catalog/condition/client-platforms": {
     "payload": "2fe5a802fa7dacd362a3e204557237f3375a423542d37b779aad59f45be930c4",
