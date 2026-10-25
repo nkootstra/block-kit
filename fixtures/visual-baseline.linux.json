@@ -139,7 +139,7 @@
   "catalog/agents/plan-error@expanded+dark": 0.05,
   "catalog/agents/plan-error@expanded+mobile": 0.01,
   "catalog/agents/plan-error@expanded+mobile+dark": 0.07,
-  "catalog/agents/plan-error@focus-pill-1+dark": 1.76,
+  "catalog/agents/plan-error@focus-pill-1+dark": 0.02,
   "catalog/agents/plan-error@focus-pill-1+mobile": 2.24,
   "catalog/agents/plan-error@hover-pill-1+dark": 0,
   "catalog/agents/plan-error@hover-pill-1+mobile": 0,
