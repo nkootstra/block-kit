@@ -243,6 +243,20 @@ describe("<RichText>", () => {
     expect(screen.getByText("Continued").closest("li")?.hasAttribute("value")).toBe(false);
   });
 
+  // extra/fidelity/rich-text-rich-text-preformatted/mixed: like a bordered list, Slack draws a
+  // preformatted block with `border: 1` inside a quote.
+  it("draws a preformatted block with a border inside a quote", () => {
+    const pre = (border?: number) => ({
+      type: "rich_text_preformatted",
+      ...(border !== undefined && { border }),
+      elements: [{ type: "text", text: border ? "Bordered" : "Plain" }],
+    });
+    const block = { type: "rich_text", elements: [pre(1), pre()] };
+    render(<RichText block={block as never} blockId="b1" index={0} />);
+    expect(screen.getByText("Bordered").closest("blockquote")).toBeTruthy();
+    expect(screen.getByText("Plain").closest("blockquote")).toBeNull();
+  });
+
   it("draws a user mention as Slack's loading skeleton while there's no user resolver", () => {
     const block = {
       type: "rich_text",

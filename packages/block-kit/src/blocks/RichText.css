@@ -156,6 +156,18 @@
   padding-left: 16px;
 }
 
+/* A bordered preformatted block sits 13px into its quote, with 13px of padding on the left
+   (extra/fidelity/rich-text-rich-text-preformatted/mixed). */
+.sbk-rich-text__quote--group > .sbk-rich-text__pre {
+  margin-left: 13px;
+  padding-left: 13px;
+}
+
+/* A link in a preformatted block keeps the block's text colour, underlined (same fixture). */
+.sbk-rich-text__pre .sbk-link {
+  color: inherit;
+}
+
 .sbk-rich-list--bordered {
   margin-left: 0;
 }
