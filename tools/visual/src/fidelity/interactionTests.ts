@@ -69,6 +69,7 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     { components: DIRECTORY, states: ["many-items"], facts: ["behaviour"] },
   ],
   links: [{ components: ["rich_text.link"], states: ["focus-visible"], facts: ["styles"] }],
+  videos: [{ components: ["video"], states: ["focus-visible"], facts: ["styles"] }],
   "select and time picker triggers": [
     {
       components: ["static_select", "timepicker"],

@@ -91,6 +91,30 @@
   }
 }
 
+/* Slack rings its overlay button, a box the thumbnail's size rounded 8px, and the overlay clips
+   the ring: only its corners, between the rounding and the box's square edge, show. */
+.sbk-video__frame:focus-visible {
+  outline: none;
+}
+
+.sbk-video__frame:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 8px;
+  box-shadow: var(--sbk-focus-shadow);
+}
+
+/* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
+@media (forced-colors: active) {
+  .sbk-video__frame:focus-visible {
+    outline: 2px solid;
+    outline-offset: -2px;
+  }
+}
+
 .sbk-video__thumb {
   position: absolute;
   inset: 0;
