@@ -87,9 +87,12 @@
 
 /* The multi-select field: chips, then the input they're typed after. Slack's sits 14px from the
    header and the footer, 468px wide, and starts its chips 4px in, each 4px after the last
-   (extra/fidelity/multi-conversations-select/initial-value@dialog). */
+   (extra/fidelity/multi-conversations-select/initial-value@dialog). It hides its overflow, so a
+   placeholder too long for one line shows only its first line
+   (extra/fidelity/multi-conversations-select/long-content@dialog). */
 .sbk-select-dialog__field {
   position: relative;
+  overflow: hidden;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

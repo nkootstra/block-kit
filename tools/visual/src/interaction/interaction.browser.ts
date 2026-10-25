@@ -1039,6 +1039,46 @@ describe.each(engines)("%s", (engine) => {
       });
     }
 
+    // extra/fidelity/multi-conversations-select/long-content@dialog: a placeholder too long for one
+    // line wraps inside Slack's 36px field, which hides its overflow, so only the first line shows
+    // and the footer stays where it is.
+    it("clips a long placeholder to the dialog field's single line", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "section",
+            text: plain("Pick some"),
+            accessory: {
+              type: "multi_conversations_select",
+              action_id: "m",
+              placeholder: plain(
+                "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone",
+              ),
+            },
+          },
+        ],
+      });
+      await page.click(".sbk-section__accessory .sbk-select__control");
+      await settle(page);
+      const measured = await page.evaluate(() => {
+        const field = document.querySelector(".sbk-select-dialog__field") as HTMLElement;
+        const label = document.querySelector(".sbk-select-dialog__placeholder") as HTMLElement;
+        const dialog = document.querySelector(".sbk-select-dialog")!.getBoundingClientRect();
+        return {
+          overflow: getComputedStyle(field).overflow,
+          fieldHeight: Math.round(field.getBoundingClientRect().height),
+          wraps: label.getBoundingClientRect().height > 22,
+          dialogHeight: Math.round(dialog.height),
+        };
+      });
+      expect(measured).toEqual({
+        overflow: "hidden",
+        fieldHeight: 36,
+        wraps: true,
+        dialogHeight: 208,
+      });
+    });
+
     it("opens a 520px Select options dialog with its field at rest, and shows the count after Confirm", async () => {
       const page = await harness.open({
         blocks: [
