@@ -1,5 +1,5 @@
 /** How many series colours Slack cycles through. */
-const COLORS = 4;
+const COLORS = 12;
 
 /**
  * A series or segment colour, as a token per theme (DataVisualization.css, and Message.css for

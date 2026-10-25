@@ -165,6 +165,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     { components: ["chart-table-modal"], states: ["open"], facts: ["styles"], themes: BOTH },
     { components: ["chart-table-modal"], states: ["open"], facts: ["behaviour"] },
   ],
+  "chart palette": [
+    { components: ["data_visualization"], states: ["many-items"], facts: ["styles"], themes: BOTH },
+  ],
   "chart hover": [
     {
       components: ["data_visualization"],

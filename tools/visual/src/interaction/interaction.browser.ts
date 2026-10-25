@@ -409,6 +409,103 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  // extra/charts/area-twelve-series and pie-twelve-segments: Slack gives each of twelve series a
+  // colour of its own, and each area its own tint, in either theme.
+  describe("chart palette", () => {
+    const SLACK = {
+      light: {
+        line: [
+          "233, 104, 37",
+          "32, 162, 113",
+          "196, 116, 211",
+          "14, 157, 211",
+          "239, 62, 117",
+          "72, 100, 210",
+          "200, 70, 0",
+          "14, 103, 77",
+          "97, 31, 105",
+          "0, 113, 164",
+          "158, 11, 46",
+          "40, 64, 169",
+        ],
+        area: [
+          "255, 237, 229",
+          "227, 255, 243",
+          "249, 237, 255",
+          "227, 248, 255",
+          "255, 232, 239",
+          "240, 243, 252",
+          "220, 84, 12",
+          "165, 237, 206",
+          "244, 218, 255",
+          "159, 232, 253",
+          "255, 196, 217",
+          "200, 212, 248",
+        ],
+      },
+      dark: {
+        line: [
+          "213, 106, 55",
+          "37, 155, 105",
+          "178, 110, 195",
+          "22, 153, 202",
+          "217, 76, 117",
+          "77, 101, 197",
+          "228, 160, 127",
+          "141, 210, 181",
+          "216, 186, 225",
+          "88, 189, 222",
+          "230, 167, 186",
+          "137, 155, 220",
+        ],
+        area: [
+          "56, 16, 0",
+          "5, 36, 27",
+          "32, 2, 33",
+          "0, 26, 45",
+          "48, 0, 5",
+          "4, 11, 61",
+          "218, 128, 86",
+          "8, 63, 46",
+          "67, 19, 73",
+          "0, 61, 97",
+          "107, 5, 24",
+          "18, 32, 108",
+        ],
+      },
+    };
+    for (const theme of ["light", "dark"] as const) {
+      const rgb = (list: string[]) => list.map((c) => `rgb(${c})`);
+      it(`colours twelve series and their areas as Slack does (${theme})`, async () => {
+        const page = await harness.open({
+          ...(await fixture("extra/charts/area-twelve-series")),
+          theme,
+        });
+        const lines = await page.$$eval(".sbk-chart__line", (els) =>
+          els.map((el) => getComputedStyle(el).stroke),
+        );
+        const areas = await page.$$eval(".sbk-chart__line", (els) =>
+          els.map((el) => getComputedStyle(el.previousElementSibling!).fill),
+        );
+        expect({ lines, areas }).toEqual({
+          lines: rgb(SLACK[theme].line),
+          areas: rgb(SLACK[theme].area),
+        });
+      });
+
+      it(`colours twelve pie segments as Slack does (${theme})`, async () => {
+        const page = await harness.open({
+          ...(await fixture("extra/charts/pie-twelve-segments")),
+          theme,
+        });
+        const slices = await page.$$eval(".sbk-chart__slice", (els) =>
+          els.map((el) => getComputedStyle(el).fill),
+        );
+        expect(slices).toEqual(rgb(SLACK[theme].line));
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (redacted references in fixtures/contexts/*_select): Slack's
   // `c-member` and `c-small_channel_entity` rows inside its 28px option rows.
   describe("directory select rows", () => {

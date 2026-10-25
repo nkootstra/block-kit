@@ -5404,6 +5404,26 @@
     "reference": "f7f415fa784caef52d7cfbd5a0d0aa44cde660d0719740fd8654295e76034f35",
     "captured": "2026-10-18"
   },
+  "extra/charts/area-twelve-series": {
+    "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
+    "reference": "ab6b670f0bc23ef4a4178169471ffc548fea17a8f4438d313e26d53de8790997",
+    "captured": "2026-10-25"
+  },
+  "extra/charts/area-twelve-series@dark": {
+    "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
+    "reference": "170f108b57510eaa1fb350765f5ee6b5d306705190e218ef3fa4eab61e4cd034",
+    "captured": "2026-10-25"
+  },
+  "extra/charts/pie-twelve-segments": {
+    "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
+    "reference": "7142c254f3d130b3bf2ad59e89ecde3dcc836401a6332cacb837d7cfa6753917",
+    "captured": "2026-10-25"
+  },
+  "extra/charts/pie-twelve-segments@dark": {
+    "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
+    "reference": "e84e926585c2b770a990b8b69bb0a58b0fa4a09e9dc8ad7cdbda6a010bf23a82",
+    "captured": "2026-10-25"
+  },
   "extra/context-actions/feedback-row": {
     "payload": "56b49e49f30ad7a650e9c58e5890593602d8d47b8772a2e3668a00074e5cd1a2",
     "reference": "b19b242247e0cdbb0c818c1a5e12c9297914fbf8c503f0ca08d8f0a40ba68ad2",

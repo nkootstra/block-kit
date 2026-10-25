@@ -98,10 +98,10 @@ When the category labels don't fit side by side, as with 20 categories, Slack tu
 gives the plot more room below; this does the same.
 
 :::note
-Colors come from a fixed 4-color palette, a deeper one in dark mode as in Slack, and are assigned by
-series (or segment) index. There's no field to set a series' color, but the palette is themable
-(`--sbk-chart-1` to `-4`, see [Theming](/guides/theming)). A 5th series or segment reuses the first
-color. Bar, line, and area
+Colors come from Slack's fixed 12-color palette, a deeper one in dark mode as in Slack, and are
+assigned by series (or segment) index. There's no field to set a series' color, but the palette is
+themable (`--sbk-chart-1` to `-12`, see [Theming](/guides/theming)). A 13th series or segment
+reuses the first color. Bar, line, and area
 charts always include zero in the y-axis range, so negative values extend below the zero line;
 pie charts clamp negative values to 0.
 :::

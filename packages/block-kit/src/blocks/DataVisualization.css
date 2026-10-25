@@ -1,27 +1,52 @@
 :root,
 [data-theme="light"] {
-  /* Series colours, measured in Block Kit Builder, and the colour each lifts to under the pointer
+  /* Series colours, measured in Block Kit Builder (extra/charts/pie-twelve-segments,
+     extra/fidelity/chart-table-modal/many-items), and the colour each lifts to under the pointer
      (each channel x 1.1, rounded down). Dark values are in Message.css. */
   --sbk-chart-1: rgb(233, 104, 37);
   --sbk-chart-2: rgb(32, 162, 113);
   --sbk-chart-3: rgb(196, 116, 211);
   --sbk-chart-4: rgb(14, 157, 211);
+  --sbk-chart-5: rgb(239, 62, 117);
+  --sbk-chart-6: rgb(72, 100, 210);
+  --sbk-chart-7: rgb(200, 70, 0);
+  --sbk-chart-8: rgb(14, 103, 77);
+  --sbk-chart-9: rgb(97, 31, 105);
+  --sbk-chart-10: rgb(0, 113, 164);
+  --sbk-chart-11: rgb(158, 11, 46);
+  --sbk-chart-12: rgb(40, 64, 169);
   --sbk-chart-1-lift: rgb(255, 114, 40);
   --sbk-chart-2-lift: rgb(35, 178, 124);
   --sbk-chart-3-lift: rgb(215, 127, 232);
   --sbk-chart-4-lift: rgb(15, 172, 232);
+  --sbk-chart-5-lift: rgb(255, 68, 128);
+  --sbk-chart-6-lift: rgb(79, 110, 231);
+  --sbk-chart-7-lift: rgb(220, 77, 0);
+  --sbk-chart-8-lift: rgb(15, 113, 84);
+  --sbk-chart-9-lift: rgb(106, 34, 115);
+  --sbk-chart-10-lift: rgb(0, 124, 180);
+  --sbk-chart-11-lift: rgb(173, 12, 50);
+  --sbk-chart-12-lift: rgb(44, 70, 185);
   /* The hover tooltip's surface (ECharts' tooltip as Slack themes it). */
   --sbk-chart-tooltip-bg: #fff;
   --sbk-chart-tooltip-text: #1d1c1d;
   /* The "View as table" modal's hairline ring (`c-sk-modal`). */
   --sbk-chart-table-ring: rgba(29, 28, 29, 0.13);
-  /* Area fills: measured for the first two series colours, tinted 88% toward white for the
-     others. Dark values (Message.css) aren't measured: the series colour at 30% over the dark
-     background. */
+  /* Area fills, measured in Block Kit Builder for all twelve series
+     (extra/charts/area-twelve-series); dark values are in Message.css. Slack cycles through
+     twelve colours. */
   --sbk-chart-area-1: rgb(255, 237, 229);
   --sbk-chart-area-2: rgb(227, 255, 243);
-  --sbk-chart-area-3: rgb(248, 238, 250);
-  --sbk-chart-area-4: rgb(226, 243, 250);
+  --sbk-chart-area-3: rgb(249, 237, 255);
+  --sbk-chart-area-4: rgb(227, 248, 255);
+  --sbk-chart-area-5: rgb(255, 232, 239);
+  --sbk-chart-area-6: rgb(240, 243, 252);
+  --sbk-chart-area-7: rgb(220, 84, 12);
+  --sbk-chart-area-8: rgb(165, 237, 206);
+  --sbk-chart-area-9: rgb(244, 218, 255);
+  --sbk-chart-area-10: rgb(159, 232, 253);
+  --sbk-chart-area-11: rgb(255, 196, 217);
+  --sbk-chart-area-12: rgb(200, 212, 248);
   --sbk-dataviz-border: rgba(94, 93, 96, 0.13);
   --sbk-dataviz-tick: #5e5d60;
 }
