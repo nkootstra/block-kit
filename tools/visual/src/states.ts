@@ -131,10 +131,9 @@ export const STATES: Record<string, State> = {
     (p) => p.getByRole("combobox", { name: "Select a user", exact: true }),
     { option: /User One/ },
   ),
-  "contexts/datetimepicker/actions@pick": pick(
-    (p) => p.getByRole("button", { name: /January 1st, 2026/ }),
-    { button: /January 14th, 2026/ },
-  ),
+  "contexts/datetimepicker/actions@pick": pick((p) => byValue(p, "January 1st, 2026"), {
+    button: /January 14th, 2026/,
+  }),
   "contexts/multi_static_select/accessory@pick": dialogPick("Select items", /^Option 1$/),
   "contexts/multi_users_select/accessory@pick": dialogPick("Select users", /User One/),
   "extra/actions/more-elements@pick": pick(
@@ -153,7 +152,7 @@ export const STATES: Record<string, State> = {
     { option: /channel-one/ },
   ),
   "extra/fidelity/datetimepicker/empty@pick": pick(
-    (p) => p.getByRole("button", { name: /Select a date/ }),
+    (p) => p.getByPlaceholder("Select a date", { exact: true }),
     { button: /October 15th, 2026/ },
   ),
   "extra/fidelity/multi-channels-select/empty@pick": pick(
@@ -281,12 +280,11 @@ const byValue = (p: Page, value: string) =>
  * in document order, so a capture must open that same control in the Builder (capture.js does).
  */
 export const OPENERS = {
-  /** A select, multi-select, time list, datepicker calendar, datetime picker or overflow menu. */
+  /** A select, multi-select, time list, datepicker or datetime picker calendar, or overflow menu. */
   open: [
     ".sbk-select__control",
     ".sbk-timepicker__control",
     ".sbk-datepicker__input",
-    ".sbk-datetimepicker button",
     ".sbk-overflow button",
   ].join(", "),
   /**

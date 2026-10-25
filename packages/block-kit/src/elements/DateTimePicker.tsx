@@ -2,9 +2,10 @@ import type { DateTimepicker } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
-import { CalendarIcon, ChevronDownIcon, ClockIcon } from "../icons";
+import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
-import { CalendarPopover, focusCalendarDay } from "./calendar/CalendarPopover";
+import { CalendarPopover } from "./calendar/CalendarPopover";
+import { DateField, useDateField } from "./DateField";
 import { fromWallClock, ordinal, timeZoneLabel, wallClock } from "./dateFormat";
 import { MENU_GAP, Popover } from "./Popover";
 import { formatTime, parseTime, TIMES } from "./TimePicker";
@@ -49,16 +50,23 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
       ? wallClock(element.initial_date_time, zone)
       : undefined,
   );
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const dateRef = useFocusOnLoad<HTMLButtonElement>(element);
-  const popupRef = useRef<HTMLDivElement>(null);
+  const dateFieldRef = useRef<HTMLDivElement>(null);
+  const dateRef = useFocusOnLoad<HTMLInputElement>(element);
   const timeFieldRef = useRef<HTMLLabelElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  // Opened with the pointer or a key, the calendar takes focus on its selected day, as the
-  // datepicker's does.
-  const focusCalendar = useRef(false);
   const actionId = element.action_id ?? "";
   const now = () => wallClock(Math.floor(Date.now() / 1000), zone);
+  // The date half is the datepicker's field (`c-date_picker__select_input`,
+  // contexts/datetimepicker/actions.reference.html): typed into, and selected when tabbed into
+  // (`contexts/datetimepicker/actions@focus-field-1+dark`).
+  const dateField = useDateField({
+    inputRef: dateRef,
+    focusOnLoad: element.focus_on_load,
+    display: value ? formatDay(value.date, now().date) : "",
+    onType: async (date) => {
+      if (date !== value?.date) await change({ date, time: value?.time ?? now().time });
+    },
+  });
 
   useEffect(() => {
     if (element.initial_date_time !== undefined) {
@@ -87,18 +95,13 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
     });
   }
 
-  function closeCalendar() {
-    setCalendarOpen(false);
-    if (document.activeElement !== dateRef.current) dateRef.current?.focus();
-  }
-
   /**
    * As in the datepicker, only a day picked with the keyboard hands focus back to the field; a press
    * leaves nothing focused (`contexts/datetimepicker/actions@pick`).
    */
   function pickDate(date: string, pointer: boolean) {
-    if (pointer) setCalendarOpen(false);
-    else closeCalendar();
+    if (pointer) dateField.setOpen(false);
+    else dateField.close();
     // Slack fills an empty time with the current one, to the minute.
     change({ date, time: value?.time ?? now().time });
   }
@@ -109,7 +112,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   }
 
   function clear() {
-    setCalendarOpen(false);
+    dateField.setOpen(false);
     combo.setOpen(false);
     change(undefined);
   }
@@ -144,27 +147,9 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
     <div className="sbk-datetimepicker">
       <div className="sbk-datetimepicker__row">
         <div className="sbk-datetimepicker__column">
-          <button
-            ref={dateRef}
-            type="button"
-            className="sbk-datetimepicker__control sbk-datetimepicker__control--date"
-            onClick={() => {
-              if (calendarOpen) {
-                focusCalendarDay(popupRef.current);
-                return;
-              }
-              focusCalendar.current = true;
-              setCalendarOpen(true);
-            }}
-          >
-            <CalendarIcon className="sbk-datetimepicker__icon" />
-            <span
-              className={value ? "sbk-datetimepicker__value" : "sbk-datetimepicker__placeholder"}
-            >
-              {value ? formatDay(value.date, now().date) : "Select a date"}
-            </span>
-            <ChevronDownIcon className="sbk-datetimepicker__chevron" />
-          </button>
+          <div className="sbk-datepicker sbk-datepicker--medium" ref={dateFieldRef}>
+            <DateField field={dateField} placeholder="Select a date" />
+          </div>
         </div>
         <div className="sbk-datetimepicker__column">
           {/* A label, so a press on the icons or padding lands in the input as on Slack's field. */}
@@ -187,20 +172,13 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
           <p className="sbk-datetimepicker__timezone">{`Time zone: ${timeZoneLabel(zone)}`}</p>
         </div>
       </div>
-      {calendarOpen && (
+      {dateField.open && (
         <CalendarPopover
-          anchorRef={dateRef}
-          popupRef={popupRef}
+          anchorRef={dateFieldRef}
           value={value?.date}
           onSelect={pickDate}
           onClear={value ? clear : undefined}
-          onDismiss={() => setCalendarOpen(false)}
-          onEscape={closeCalendar}
-          focusOnOpen={() => {
-            const focus = focusCalendar.current;
-            focusCalendar.current = false;
-            return focus;
-          }}
+          {...dateField.popoverProps}
           // Measured in Block Kit Builder: here the calendar's right edge sits 4px inside the
           // date field's.
           offsetX={-4}

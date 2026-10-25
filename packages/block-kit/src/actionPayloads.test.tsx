@@ -132,7 +132,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     await keyDownAsync(field, "Enter");
   },
   "extra/payloads/pickers@pick-datetime-date": async () => {
-    fireEvent.click(screen.getByRole("button", { name: "January 1st, 2026" }));
+    fireEvent.click(screen.getByDisplayValue("January 1st, 2026"));
     await clickAsync(screen.getByRole("button", { name: /January 15th, 2026/ }));
   },
   "extra/payloads/pickers@pick-datetime-time": async () => {
@@ -247,7 +247,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   // "Tomorrow" in the calendar, the day after the recording (NOW); Slack fills the empty time
   // with the current one.
   "extra/fidelity/datetimepicker/empty@pick": async () => {
-    fireEvent.click(screen.getByRole("button", { name: /Select a date/ }));
+    fireEvent.click(screen.getByRole("textbox", { name: "Date" }));
     await clickAsync(screen.getByRole("button", { name: /October 15th, 2026/ }));
   },
   // The first private conversation (redacted to C0000001; PROVIDER).
@@ -282,7 +282,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   // January 14th, 2026 in the calendar, keeping the initial 11:00 AM.
   "contexts/datetimepicker/actions@pick": async () => {
-    fireEvent.click(screen.getByRole("button", { name: /January 1st, 2026/ }));
+    fireEvent.click(screen.getByDisplayValue("January 1st, 2026"));
     await clickAsync(screen.getByRole("button", { name: /January 14th, 2026/ }));
   },
   "contexts/multi_static_select/accessory@pick": () => dialogPick("Select items", /^Option 1$/),

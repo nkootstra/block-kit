@@ -10,10 +10,12 @@ seo:
 
 `datetimepicker` shows a date field and a time field side by side, which set a single Unix
 timestamp together. In a message too narrow for both, such as on a phone, the time field moves
-under the date field and each takes the full width, as in Slack. The date field opens the same calendar as the [date picker](/elements/date-picker)
-and the time field the same hourly list as the [time picker](/elements/time-picker), typeable for a
-time off the hour. Slack allows it in `actions` and `input` blocks, in messages and modals; it isn't
-available as a section accessory or in App Home.
+under the date field and each takes the full width, as in Slack. The date field is the
+[date picker](/elements/date-picker)'s field: it opens the same calendar, takes a typed date, and
+selects its date when tabbed into. The time field opens the same hourly list as the
+[time picker](/elements/time-picker), typeable for a time off the hour. Slack allows it in `actions`
+and `input` blocks, in messages and modals; it isn't available as a section accessory or in App
+Home.
 
 <Preview
   actions
@@ -160,9 +162,9 @@ The dialog appears after the user picks a date or a time, before the new value t
 
 ## Interactivity
 
-Every change fires an action straight away, as in Slack: picking a day, picking or typing a time,
-and "Clear selection". `selected_date_time` is a Unix timestamp in seconds, and `null` once cleared.
-When the element has an `initial_date_time`, the action echoes it:
+Every change fires an action straight away, as in Slack: picking or typing a day, picking or typing
+a time, and "Clear selection". `selected_date_time` is a Unix timestamp in seconds, and `null` once
+cleared. When the element has an `initial_date_time`, the action echoes it:
 
 ```json
 {

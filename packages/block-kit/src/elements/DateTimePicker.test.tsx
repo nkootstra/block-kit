@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
 import { DateTimePicker } from "./DateTimePicker";
-import { clickAsync, keyDownAsync } from "./test-utils";
+import { blurAsync, clickAsync, keyDownAsync } from "./test-utils";
 
 afterEach(cleanup);
 
@@ -37,17 +37,19 @@ function renderPicker(
   return { onAction, state: () => state };
 }
 
-const dateButton = () =>
-  document.querySelector(".sbk-datetimepicker__control--date") as HTMLButtonElement;
+const dateInput = () => screen.getByRole("textbox", { name: "Date" }) as HTMLInputElement;
 const timeInput = () => screen.getByRole("combobox") as HTMLInputElement;
-const dateText = () => dateButton().textContent;
+/** What the date field shows: the chosen day, else its placeholder. */
+const dateText = () => dateInput().value || dateInput().placeholder;
+/** Whether the calendar popup is showing. */
+const calendarOpen = () => document.querySelector(".sbk-datepicker__popup") !== null;
 /** What the time field shows: the chosen time while closed, else its placeholder. */
 const timeText = () =>
   document.querySelector(".sbk-datetimepicker__content-text")?.textContent ??
   timeInput().placeholder;
 
 async function pickDay(day: string) {
-  fireEvent.click(dateButton());
+  fireEvent.click(dateInput());
   // Day buttons are named in full ("Saturday, April 28th, 1990"); match on the day's number.
   await clickAsync(screen.getByRole("button", { name: new RegExp(` ${day}(st|nd|rd|th), `) }));
 }
@@ -83,7 +85,7 @@ describe("<DateTimePicker>", () => {
 
   it("has no Apply step: the calendar holds only the month", () => {
     renderPicker();
-    fireEvent.click(dateButton());
+    fireEvent.click(dateInput());
     expect(screen.queryByText("Apply")).toBeNull();
   });
 
@@ -147,6 +149,63 @@ describe("<DateTimePicker>", () => {
     });
   });
 
+  describe("the date field", () => {
+    // Slack's date half is the datepicker's text field (`c-date_picker__select_input`,
+    // contexts/datetimepicker/actions.reference.html).
+    it("is a text field named Date holding the day, with Slack's placeholder", () => {
+      renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
+      expect(dateInput().value).toBe("January 1st, 2026");
+      expect(dateInput().placeholder).toBe("Select a date");
+    });
+
+    it("selects the day when tabbed into, leaves the calendar closed, and ArrowDown opens it", () => {
+      renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
+      const input = dateInput();
+      // Tabbing in: focus lands on the field without a press
+      // (contexts/datetimepicker/actions@focus-field-1+dark selects all 17 characters).
+      input.focus();
+      fireEvent.focus(input);
+      expect(calendarOpen()).toBe(false);
+      expect(input.value.slice(input.selectionStart!, input.selectionEnd!)).toBe(
+        "January 1st, 2026",
+      );
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      expect(calendarOpen()).toBe(true);
+      expect((document.activeElement as HTMLElement).textContent).toBe("1");
+    });
+
+    it("opens the calendar from its own Open calendar button", () => {
+      renderPicker();
+      fireEvent.click(screen.getByRole("button", { name: "Open calendar" }));
+      expect(calendarOpen()).toBe(true);
+    });
+
+    it("takes a typed day on Enter, keeping the chosen time", async () => {
+      const { onAction } = renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
+      fireEvent.click(dateInput());
+      fireEvent.change(dateInput(), { target: { value: "January 5, 2026" } });
+      await keyDownAsync(dateInput(), "Enter");
+      expect(sent(onAction).selected_date_time).toBe(ts("2026-01-05T10:00:00Z"));
+    });
+
+    it("takes a typed day when focus leaves the field, filling the current time", async () => {
+      const { onAction } = renderPicker();
+      fireEvent.change(dateInput(), { target: { value: "10/20/2026" } });
+      await blurAsync(dateInput());
+      expect(sent(onAction).selected_date_time).toBe(ts("2026-10-20T09:31:00Z"));
+      expect([dateText(), timeText()]).toEqual(["October 20th, 2026", "11:31 AM"]);
+    });
+
+    it("sends nothing for text that isn't a date, and puts the day back on Escape", async () => {
+      const { onAction } = renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
+      fireEvent.change(dateInput(), { target: { value: "abc" } });
+      await keyDownAsync(dateInput(), "Enter");
+      expect(onAction).not.toHaveBeenCalled();
+      await keyDownAsync(dateInput(), "Escape");
+      expect(dateText()).toBe("January 1st, 2026");
+    });
+  });
+
   describe("the time list", () => {
     it("lists the hours of the day", () => {
       renderPicker();
@@ -167,7 +226,7 @@ describe("<DateTimePicker>", () => {
       renderPicker();
       fireEvent.click(timeInput());
       expect(screen.queryByRole("option", { name: "Clear selection" })).toBeNull();
-      fireEvent.click(dateButton());
+      fireEvent.click(dateInput());
       expect(screen.queryByText("Clear selection")).toBeNull();
     });
 
@@ -188,7 +247,7 @@ describe("<DateTimePicker>", () => {
 
     it("closes the calendar with a footer that empties both fields", async () => {
       const { onAction } = renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
-      fireEvent.click(dateButton());
+      fireEvent.click(dateInput());
       await clickAsync(screen.getByText("Clear selection"));
       expect([dateText(), timeText()]).toEqual(["Select a date", "Time"]);
       expect(sent(onAction).selected_date_time).toBeNull();
@@ -246,7 +305,7 @@ describe("<DateTimePicker>", () => {
       // 2025-12-31 23:00 UTC is midnight on 1 January in Amsterdam.
       renderPicker({ initial_date_time: ts("2025-12-31T23:00:00Z") });
       expect([dateText(), timeText()]).toEqual(["January 1st, 2026", "12:00 AM"]);
-      fireEvent.click(dateButton());
+      fireEvent.click(dateInput());
       expect(screen.getByRole("button", { pressed: true }).textContent).toBe("1");
     });
 
