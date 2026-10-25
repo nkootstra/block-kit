@@ -454,8 +454,6 @@ function renderPreformattedLines(
 interface ListItem {
   section: RichTextSection;
   children: ListGroup[];
-  /** Explicit start value for this <li>, used to honor a list's `offset`. */
-  value?: number;
 }
 
 interface ListGroup {
@@ -477,13 +475,10 @@ function buildListForest(run: RichTextListExt[]): ListGroup[] {
     }
     let top = stack[stack.length - 1];
 
+    // A list that continues the one before it keeps counting; Slack ignores its offset there
+    // (extra/fidelity/rich-text-rich-text-list/many-items numbers it 11, after ten items).
     if (top && top.indent === indent && top.style === block.style) {
-      const startCount = top.items.length;
       for (const section of block.elements) top.items.push({ section, children: [] });
-      if (block.offset != null && top.style === "ordered") {
-        const firstNew = top.items[startCount];
-        if (firstNew) firstNew.value = block.offset + 1;
-      }
       continue;
     }
 
@@ -531,7 +526,7 @@ function renderListGroup(group: ListGroup, ctx: RenderCtx, key: number, depth: n
       style={ordered ? { listStyleType: ORDERED_MARKERS[depth % 3] } : undefined}
     >
       {group.items.map((item, i) => (
-        <li key={i} value={item.value} className="sbk-rich-list__item">
+        <li key={i} className="sbk-rich-list__item">
           {renderSectionChildren(item.section.elements, ctx)}
           {item.children.map((child, j) => renderListGroup(child, ctx, j, depth + 1))}
         </li>
