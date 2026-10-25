@@ -1727,6 +1727,49 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  describe("card subtitle", () => {
+    // extra/fidelity/card/mixed: Slack clamps a card's title and subtitle to one line
+    // (`-webkit-line-clamp: 1`) rather than cutting it with `nowrap`, so a long subtitle ends
+    // after its last whole word ("two …"), not in the middle of one ("two ac…").
+    it("cuts a long subtitle after its last whole word", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "card",
+            title: { type: "mrkdwn", text: "Card" },
+            subtitle: {
+              type: "mrkdwn",
+              text: "A subtitle with far more words than the card has room for on one line",
+            },
+          },
+        ],
+      });
+      // The characters drawn inside the subtitle's box on its first line: a clamp either wraps
+      // the rest onto hidden lines or drops it, and `nowrap` pushes it past the box's edge.
+      const { text, shown } = await page.$eval(".sbk-card__subtitle", (el) => {
+        const box = el.getBoundingClientRect();
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        let text = "";
+        let shown = 0;
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          for (let i = 0; i < node.textContent!.length; i++) {
+            const range = document.createRange();
+            range.setStart(node, i);
+            range.setEnd(node, i + 1);
+            const r = range.getBoundingClientRect();
+            const inside = r.width > 0 && r.top < box.top + 1 && r.right <= box.right + 0.5;
+            if (inside && shown === text.length) shown++;
+            text += node.textContent![i];
+          }
+        }
+        return { text, shown };
+      });
+      expect(shown).toBeLessThan(text.length);
+      // The cut falls on a space, not between two letters.
+      expect(text.slice(shown - 1, shown + 1)).toMatch(/\s/);
+    });
+  });
+
   describe("overflow menu", () => {
     const overflow: Mount = {
       blocks: [
