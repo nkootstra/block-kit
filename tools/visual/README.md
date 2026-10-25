@@ -227,8 +227,11 @@ select, whose options come from an app's options URL that Block Kit Builder does
 
 **Real input.** `compare.ts` holds the same input on ours: Playwright's pointer rests on the
 control through the screenshot, or the control gets focus the way the capture gave it (a scripted
-focus, after one Tab press when that isn't keyboard focus). A held reference records the input in
-its meta (`input`), its controls' `data-ref`s (`targets`) and, as every snapshot does, its motion.
+focus, after one Tab press when that isn't keyboard focus). In the Builder the capture always asks
+for that Tab: Slack draws a button's focus halo (`c-button--focus-visible`) only for focus that
+follows a key press it saw, and its own clicks between items undo that. A held reference records
+the input in its meta (`input`), its controls' `data-ref`s (`targets`) and, as every snapshot does,
+its motion.
 
 ### Wide content
 
