@@ -1,4 +1,6 @@
-/* The block spans the message; text and box share Slack's column: 360px, or the block less 24px. */
+/* The block spans the message. Its title and description wrap at the block's width, as Slack's sit
+   straight in p-video_block__body (extra/fidelity/video/long-content); only the video box is
+   capped, at 360px or the block less 24px. */
 .sbk-video {
   padding: 8px 0;
   line-height: 22px;
@@ -28,12 +30,10 @@
 }
 
 .sbk-video__description {
-  max-width: min(360px, calc(100% - 24px));
   color: var(--sbk-text-body);
 }
 
 .sbk-video__title {
-  max-width: min(360px, calc(100% - 24px));
   color: var(--sbk-link);
 }
 
@@ -49,10 +49,15 @@
   }
 }
 
-/* Slack's caret that expands the inline player. */
+/* Slack's c-message_attachment__media_trigger: a space and the caret that expands the inline
+   player, kept together and with the title's last word (extra/fidelity/video/long-content). */
+.sbk-video__trigger {
+  white-space: nowrap;
+}
+
 .sbk-video__expand {
   display: inline-block;
-  margin: -4px 0 0 3px;
+  margin: -4px 0 0;
   vertical-align: middle;
   line-height: 15px;
 }

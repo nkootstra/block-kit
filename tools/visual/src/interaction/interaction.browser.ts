@@ -5078,6 +5078,43 @@ describe.each(engines)("%s", (engine) => {
           Math.round(((width * 283) / 360) * 10) / 10,
         ]);
       });
+
+      // extra/fidelity/video/long-content: Slack's title link and description sit straight in
+      // p-video_block__body, so they wrap at the block's width (432px, or 320px on a phone), not
+      // at the video box's.
+      it(`wraps a video's title and description at the block's width on ${label}`, async () => {
+        const page = await harness.open(await fixture("extra/fidelity/video/long-content"), {
+          viewport,
+        });
+        const [block, title, description] = await Promise.all(
+          [".sbk-block", ".sbk-video__title", ".sbk-video__description"].map((s) =>
+            page.locator(s).first().boundingBox(),
+          ),
+        );
+        expect([title!.width, description!.width]).toEqual([block!.width, block!.width]);
+      });
+
+      // extra/fidelity/video/long-content: Slack's caret sits in a nowrap c-message_attachment__
+      // media_trigger after a space, so it takes the title's last word with it onto a new line
+      // ("all") rather than wrapping on its own. Narrowed a pixel at a time, the caret never
+      // starts a line.
+      it(`keeps a video's caret on the line of the title's last word on ${label}`, async () => {
+        const page = await harness.open(await fixture("extra/fidelity/video/long-content"), {
+          viewport,
+        });
+        const alone = await page.evaluate(() => {
+          const video = document.querySelector<HTMLElement>(".sbk-video")!;
+          const widths: number[] = [];
+          for (let width = video.clientWidth; width >= 200; width--) {
+            video.style.width = `${width}px`;
+            const rects = document.querySelector(".sbk-video__title a")!.getClientRects();
+            const caret = document.querySelector(".sbk-video__expand")!.getBoundingClientRect();
+            if (caret.top >= rects[rects.length - 1]!.bottom) widths.push(width);
+          }
+          return widths;
+        });
+        expect(alone).toEqual([]);
+      });
     }
 
     // catalog/data-visualization/*@mobile: Slack keeps a chart card 400px wide in a 320px block,
