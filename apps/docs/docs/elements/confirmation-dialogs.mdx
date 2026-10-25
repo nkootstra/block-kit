@@ -207,9 +207,9 @@ and neither does this library.
 ### Keyboard and screen readers
 
 The dialog draws as Slack's does: 520px wide, with the title and a close button on top, and it
-fades in over 80ms (at once with reduced motion). When it opens, focus moves to the deny button,
-the least destructive choice, and Tab stays inside the dialog until it closes. Closing it gives
-focus back to the element that opened it.
+fades in over 80ms (at once with reduced motion). When it opens, focus moves to the dialog itself,
+as in Slack, so the first Tab reaches the close button, and Tab stays inside the dialog until it
+closes. Closing it gives focus back to the element that opened it.
 
 It's an `alertdialog` with `aria-modal`, named by its title and described by its text, so a screen
 reader reads the question out as it opens. Slack itself marks it `role="dialog"`; `alertdialog` is
