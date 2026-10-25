@@ -300,6 +300,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
       widths: ["mobile"],
     },
   ],
+  "container spacing": [
+    { components: ["container"], states: ["default"], facts: ["styles"], widths: ["desktop"] },
+  ],
   "narrow datetime picker": [
     { components: ["datetimepicker"], states: ["default"], facts: ["styles"], widths: ["mobile"] },
   ],

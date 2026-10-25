@@ -5222,6 +5222,23 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  // Every container captured since 2026-10-07 (catalog/container/media-preview, with-image,
+  // data-entry-form, extra/fidelity/container/*): Slack's containerBlock keeps 16px above and 8px
+  // below the card, inside its block (the block wrapper is 16 + card + 8 tall).
+  describe("container spacing", () => {
+    it("keeps 16px above a container's card and 8px below it", async () => {
+      const page = await harness.open(await fixture("catalog/container/media-preview"));
+      const [block, card] = await Promise.all(
+        [".sbk-block--container", ".sbk-container"].map((s) =>
+          page.locator(s).first().boundingBox(),
+        ),
+      );
+      expect([card!.y - block!.y, block!.y + block!.height - (card!.y + card!.height)]).toEqual([
+        16, 8,
+      ]);
+    });
+  });
+
   // Measured in Block Kit Builder's Mobile preview (400px; blocks 320px wide) against its Desktop
   // one (512px; blocks 432px).
   describe("narrow datetime picker", () => {
