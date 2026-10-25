@@ -1899,7 +1899,11 @@ describe.each(engines)("%s", (engine) => {
         parseFloat(getComputedStyle(el).paddingRight),
       );
       expect(await page.locator(COUNT).count()).toBe(0);
-      expect(padding).toBeCloseTo(41.4, 1);
+      // 41.4px where glyphs keep their fractional advances (macOS, and compare.ts on Linux); Linux
+      // Chromium's default hinting rounds "20" up to 18px, so within a pixel of it, past the 40px
+      // fallback.
+      expect(padding).toBeGreaterThan(40.5);
+      expect(Math.abs(padding - 41.4)).toBeLessThan(1);
     });
 
     it("puts the hint and \"Press 'enter' to submit\" on one line", async () => {
