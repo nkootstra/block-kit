@@ -70,7 +70,7 @@ they don't appear in an `actions` block or as a section accessory.
     max_length: {
       type: "number",
       description:
-        "`plain_text_input` only. Maximum number of characters allowed. As in Slack, typing isn't cut off: once the text is edited, the field counts the characters left on its right (an untouched `initial_value` shows no count), below zero and in red past the limit, turns invalid there, and Enter sends no action.",
+        "`plain_text_input` only. Maximum number of characters allowed. As in Slack, typing isn't cut off: once the text is edited, the field counts the characters left on its right (an untouched `initial_value` shows no count, but its text still wraps clear of where the count goes), below zero and in red past the limit, turns invalid there, and Enter sends no action.",
     },
     is_decimal_allowed: {
       type: "boolean",

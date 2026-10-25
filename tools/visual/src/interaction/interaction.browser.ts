@@ -1876,6 +1876,32 @@ describe.each(engines)("%s", (engine) => {
       expect([c.right, c.top, c.room]).toEqual([0, 0, true]);
     });
 
+    // extra/fidelity/plain-text-input/long-content: an untouched 380-character value under a
+    // max_length of 400 shows no count, yet Slack's 15px textarea keeps 41.4px of right padding,
+    // 12px either side of "20" in the field's own font, so "further" wraps onto line 4 at 320px.
+    it("keeps the hidden count's room in an untouched field, measured in the field's font", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("Notes"),
+            element: {
+              type: "plain_text_input",
+              action_id: "n",
+              multiline: true,
+              max_length: 400,
+              initial_value: "a".repeat(380),
+            },
+          },
+        ],
+      });
+      const padding = await page.$eval(FIELD, (el) =>
+        parseFloat(getComputedStyle(el).paddingRight),
+      );
+      expect(await page.locator(COUNT).count()).toBe(0);
+      expect(padding).toBeCloseTo(41.4, 1);
+    });
+
     it("puts the hint and \"Press 'enter' to submit\" on one line", async () => {
       const page = await harness.open({
         blocks: [
