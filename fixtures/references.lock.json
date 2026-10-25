@@ -251,13 +251,13 @@
   },
   "catalog/actions/checkboxes@focus-checkbox-1+dark": {
     "payload": "f3f37417e30c46da2b5cc96294b007086a70c3f79d0937f7e05b2858c3f12e8d",
-    "reference": "04506af3e3d8aef2461a6effdcf52bf8273956cb4f46b8a4b36d9d3cde4bc84c",
-    "captured": "2026-10-13"
+    "reference": "f440714f00ab1e1afaf4fdb90e00d53d561799ea15f67e622fe55a8af7bf8814",
+    "captured": "2026-10-25"
   },
   "catalog/actions/checkboxes@focus-checkbox-1+mobile": {
     "payload": "f3f37417e30c46da2b5cc96294b007086a70c3f79d0937f7e05b2858c3f12e8d",
-    "reference": "7d8ab4d2e7b424dd0bf573919b976b479a3280a9f67b84f593e59336cb0b21b9",
-    "captured": "2026-10-13"
+    "reference": "dacd97644dbd3fb35f7795911572ba74c6850109fcd09096694e245758b5df96",
+    "captured": "2026-10-25"
   },
   "catalog/actions/checkboxes@hover-checkbox-1+dark": {
     "payload": "f3f37417e30c46da2b5cc96294b007086a70c3f79d0937f7e05b2858c3f12e8d",
@@ -701,8 +701,8 @@
   },
   "catalog/agents/plan-error@focus-pill-1+dark": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
-    "reference": "50574dd0937521ea97daa80bef8fb55b20806bda289b22569f6c44083864541f",
-    "captured": "2026-10-20"
+    "reference": "80bcaac70eff5db37aee79cd468e53347652fcef767b42ea275dd9f1c8d4c385",
+    "captured": "2026-10-25"
   },
   "catalog/agents/plan-error@focus-pill-1+mobile": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
@@ -3616,18 +3616,18 @@
   },
   "catalog/table/basic-data-table@expand-cell-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "9497dc078b9c7ae3b6e377f10bb19233d26091ae0821943f090a566fd3ec6cb1",
-    "captured": "2026-10-24"
+    "reference": "f75038d795d8184cd449fc6782ad8fa3ba8110104dd64514eccd9a9f97ed4400",
+    "captured": "2026-10-25"
   },
   "catalog/table/basic-data-table@expand-cell-1+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "89efe846160b5f7e867146fe1fd29902f8437ebd131f7c3603152153a2ea9655",
-    "captured": "2026-10-24"
+    "reference": "03a9dafce08f9a7215c821c8f8fd993d71d19e3f5a2dfd9fec5cb0eec29dfed2",
+    "captured": "2026-10-25"
   },
   "catalog/table/basic-data-table@expand-cell-1+mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "1fb3f318f1e15250d0fdbaf769633175fe4c94a776224e279df4a5949ff2c1d0",
-    "captured": "2026-10-24"
+    "reference": "74dc75422ee670ae95508262e0eedf420e587c5260c50db33bd8dabfbdc08d80",
+    "captured": "2026-10-25"
   },
   "catalog/table/basic-data-table@filter-empty": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
