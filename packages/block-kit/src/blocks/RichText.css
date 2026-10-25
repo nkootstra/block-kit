@@ -173,6 +173,44 @@
   background: var(--sbk-tag-bg);
 }
 
+/* Slack's `p-rich_text_slug` (extra/fidelity/rich-text-canvas/default and the other entities): an
+   inline pill in the link colour, its 15px glyph 4px before the label. `--disabled`, something
+   the viewer can't open, is in the text colour on a faint grey. */
+.sbk-rich-text__slug {
+  padding: 1px 2px;
+  color: var(--sbk-link);
+  background: var(--sbk-chip-bg);
+  border-radius: 3px;
+}
+
+.sbk-rich-text__slug--disabled {
+  color: var(--sbk-text);
+  background: var(--sbk-slug-disabled-bg);
+}
+
+.sbk-rich-text__slug > svg,
+.sbk-rich-text__slug-app {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 4px;
+  vertical-align: -1.875px;
+}
+
+/* A work object or attachment links without Slack's underline (its `c-link--underline-inherit`). */
+.sbk-rich-text__entity-link {
+  text-decoration: none;
+}
+
+/* A work object's app icon (Slack's is 16px with 2px corners), drawn as a message's placeholder
+   avatar is. */
+.sbk-rich-text__slug-app {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background: #4a154b;
+}
+
 /* Slack's `p-rich_text_salesforce_data_field` (extra/fidelity/rich-text-salesforce-data-field/default):
    an inline-flex mention-blue pill 24px tall on a 22px line, bottom-aligned, so it makes the line
    box 24px and the text beside it sits 2px lower. A record Slack can't reach is `--disabled`:
