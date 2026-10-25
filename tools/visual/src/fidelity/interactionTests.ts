@@ -76,6 +76,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
       themes: BOTH,
     },
   ],
+  "preformatted blocks": [
+    { components: ["rich_text.rich_text_preformatted"], states: ["mixed"], facts: ["styles"] },
+  ],
   links: [{ components: ["rich_text.link"], states: ["focus-visible"], facts: ["styles"] }],
   videos: [{ components: ["video"], states: ["focus-visible"], facts: ["styles"] }],
   "select and time picker triggers": [

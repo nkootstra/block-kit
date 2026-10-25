@@ -137,13 +137,24 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
             .join("");
           nodes.push(<CodeBlock key={key++} language={language} code={code} />);
         } else {
-          nodes.push(
+          const pre = (
             <pre key={key++} className="sbk-rich-text__pre">
               {renderPreformattedLines(el.elements)}
               <span className="sbk-rich-text__pre-copy" aria-label="Copy code">
                 <CopyIcon width={16} height={16} />
               </span>
-            </pre>,
+            </pre>
+          );
+          // Like a bordered list, Slack draws a bordered block inside a quote
+          // (extra/fidelity/rich-text-rich-text-preformatted/mixed).
+          nodes.push(
+            (el as RichTextPreformattedExt).border ? (
+              <blockquote key={key++} className="sbk-rich-text__quote sbk-rich-text__quote--group">
+                {pre}
+              </blockquote>
+            ) : (
+              pre
+            ),
           );
         }
         break;

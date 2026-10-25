@@ -389,6 +389,26 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // extra/fidelity/rich-text-rich-text-preformatted/mixed: a bordered block sits 13px into its
+  // quote with 13px of padding on the left, and a link takes the block's own text colour, underlined.
+  describe("preformatted blocks", () => {
+    it("indents a bordered block in its quote and colours its links like its text", async () => {
+      const page = await harness.open(
+        await fixture("extra/fidelity/rich-text-rich-text-preformatted/mixed"),
+      );
+      const [bordered, plain] = await page.$$eval(".sbk-rich-text__pre", (els) =>
+        els.map((el) => {
+          const s = getComputedStyle(el);
+          return { margin: s.marginLeft, padding: s.paddingLeft, color: s.color };
+        }),
+      );
+      expect(bordered).toMatchObject({ margin: "13px", padding: "13px" });
+      expect(plain).toMatchObject({ margin: "0px", padding: "8px" });
+      const link = await style(page, ".sbk-rich-text__pre .sbk-link");
+      expect([link.color, link.textDecorationLine]).toEqual([plain!.color, "underline"]);
+    });
+  });
+
   // Measured in Block Kit Builder (redacted references in fixtures/contexts/*_select): Slack's
   // `c-member` and `c-small_channel_entity` rows inside its 28px option rows.
   describe("directory select rows", () => {

@@ -79,9 +79,9 @@ links, mentions, emoji, and dates.
       description: "A blockquote with a colored left bar.",
     },
     rich_text_preformatted: {
-      type: '{ type: "rich_text_preformatted"; elements: (RichTextText | RichTextLink)[] }',
+      type: '{ type: "rich_text_preformatted"; border?: number; elements: (RichTextText | RichTextLink)[] }',
       description:
-        "A monospace code block. A `language` renders it as a syntax-highlighted fenced code block with a copy button; without one it's a plain `<pre>`.",
+        "A monospace code block. A `language` renders it as a syntax-highlighted fenced code block with a copy button; without one it's a plain `<pre>`, whose links keep its text colour. `border: 1` draws it inside a quote, as Slack does.",
     },
   }}
 />
