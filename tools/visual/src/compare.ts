@@ -70,6 +70,7 @@ import {
 import { collectTextRuns } from "./collectTextRuns";
 import { directoryOrder } from "./directoryOrder";
 import { followResizedBars } from "./followBars";
+import { loadReference } from "./loadReference";
 import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
 import { pad, parseRgb, type Rgb } from "./pad";
@@ -377,7 +378,7 @@ for (const name of names) {
       ? `#sbk-render > *, ${OUR_POPOVERS}`
       : "#sbk-render > *";
 
-  await page.setContent(html, { waitUntil: "load" });
+  await loadReference(page, html);
   await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
   await settle(page);
   await restoreSelection(page);
