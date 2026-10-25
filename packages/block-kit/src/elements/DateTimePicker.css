@@ -34,10 +34,9 @@
   cursor: pointer;
 }
 
-/* Slack's medium date input: the icon sits 12px in, the text 32px in, and the chevron is centred
-   in a 36px button. Our border is inside the box, so each inset is 1px smaller here. */
-.sbk-datetimepicker__control--date {
-  padding: 4px 7px 4px 11px;
+/* The date box is the datepicker's medium field, as wide as its column. */
+.sbk-datetimepicker .sbk-datepicker {
+  width: 100%;
 }
 
 /* Slack's medium time select: 12px side padding, text on a 22.5px line 33px in. The time is
@@ -98,25 +97,11 @@
   color: var(--sbk-badge-text);
 }
 
-.sbk-datetimepicker__value,
-.sbk-datetimepicker__placeholder {
-  flex: 1;
-  min-width: 0;
-  text-align: left;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
 .sbk-datetimepicker__chevron {
   flex: 0 0 auto;
   width: 20px;
   height: 20px;
   color: var(--sbk-badge-text);
-}
-
-.sbk-datetimepicker__placeholder {
-  color: var(--sbk-content-ter);
 }
 
 .sbk-datetimepicker__timezone {

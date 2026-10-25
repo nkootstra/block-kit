@@ -2793,7 +2793,7 @@ describe.each(engines)("%s", (engine) => {
         },
       ],
     });
-    const DATE = ".sbk-datetimepicker__control--date";
+    const DATE = ".sbk-datetimepicker .sbk-datepicker__input";
     const TIME = ".sbk-datetimepicker__control--time";
     const box = async (page: Page, selector: string) =>
       (await page.locator(selector).first().boundingBox())!;
@@ -2801,7 +2801,8 @@ describe.each(engines)("%s", (engine) => {
     it("shows Slack's placeholders, Select a date and Time", async () => {
       const page = await harness.open(picker());
       const texts = await page.evaluate(() => [
-        document.querySelector(".sbk-datetimepicker__control--date")?.textContent,
+        (document.querySelector(".sbk-datetimepicker .sbk-datepicker__input") as HTMLInputElement)
+          ?.placeholder,
         (document.querySelector(".sbk-datetimepicker__control--time input") as HTMLInputElement)
           ?.placeholder,
       ]);
@@ -5058,7 +5059,7 @@ describe.each(engines)("%s", (engine) => {
         const [picker, date, time] = await Promise.all(
           [
             ".sbk-datetimepicker",
-            ".sbk-datetimepicker__control",
+            ".sbk-datetimepicker .sbk-datepicker__input",
             ".sbk-datetimepicker__column + .sbk-datetimepicker__column .sbk-datetimepicker__control",
           ].map((s) => page.locator(s).first().boundingBox()),
         );

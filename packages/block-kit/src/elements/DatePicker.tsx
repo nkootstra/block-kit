@@ -2,10 +2,10 @@ import type { Datepicker } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
-import { CalendarIcon, ChevronDownIcon } from "../icons";
 import type { ElementProps } from "../types";
-import { CalendarPopover, focusCalendarDay } from "./calendar/CalendarPopover";
-import { ordinal, parseTypedDate } from "./dateFormat";
+import { CalendarPopover } from "./calendar/CalendarPopover";
+import { DateField, useDateField } from "./DateField";
+import { ordinal } from "./dateFormat";
 import { useInClearableInput, useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -33,33 +33,18 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const clearable = useInClearableInput();
   const { ask, dialog } = useConfirm(element.confirm);
   const [date, setDate] = useState<string | undefined>(element.initial_date);
-  const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useFocusOnLoad<HTMLInputElement>(element);
   const invalid = useInvalidProps();
-  // Focus given by `focus_on_load`, or handed back as the calendar closes, shouldn't pop the
-  // calendar open; a user's focus does.
-  const quietFocus = useRef(element.focus_on_load === true);
-  // Opened with the pointer or a key, the calendar takes focus on its selected day, as Slack's
-  // does. Opened by tabbing into the field, it leaves focus there so Tab keeps moving through the
-  // form; ArrowDown then moves into the calendar.
-  const focusCalendar = useRef(false);
-  const popupRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
-  // What's typed into the field, while it differs from the chosen date; null shows the date.
-  const [text, setText] = useState<string | null>(null);
-
-  function focusDay() {
-    focusCalendarDay(popupRef.current);
-  }
-
-  function close() {
-    setOpen(false);
-    const input = inputRef.current;
-    if (!input || document.activeElement === input) return;
-    quietFocus.current = true;
-    input.focus();
-  }
+  const field = useDateField({
+    inputRef,
+    focusOnLoad: element.focus_on_load,
+    display: date ? formatDate(date, inInputBlock) : "",
+    onType: async (next) => {
+      if (next !== date && (await ask())) commit(next);
+    },
+  });
 
   useEffect(() => {
     if (date) setValue(blockId, actionId, { type: "datepicker", selected_date: date });
@@ -73,8 +58,8 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
    */
   async function pick(next: string, pointer: boolean) {
     if (!(await ask())) return;
-    if (pointer) setOpen(false);
-    else close();
+    if (pointer) field.setOpen(false);
+    else field.close();
     commit(next);
   }
 
@@ -92,22 +77,10 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
     });
   }
 
-  /**
-   * A typed date: Enter or leaving the field takes it, as Slack's field does, and anything that
-   * isn't a date is ignored. The calendar stays open after Enter, as in Slack.
-   */
-  async function takeTyped(): Promise<void> {
-    if (text === null) return;
-    const next = parseTypedDate(text);
-    if (!next) return;
-    if (next !== date && !(await ask())) return;
-    if (next !== date) commit(next);
-  }
-
   async function clear() {
     if (!(await ask())) return;
     setDate(undefined);
-    close();
+    field.close();
     setValue(blockId, actionId, { type: "datepicker", selected_date: null });
     dispatch({
       type: "datepicker",
@@ -120,92 +93,21 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
 
   return (
     <div className={`sbk-datepicker${medium ? " sbk-datepicker--medium" : ""}`} ref={rootRef}>
-      <div className="sbk-datepicker__input_wrap">
-        <CalendarIcon className="sbk-datepicker__icon" />
-        <input
-          className="sbk-datepicker__input"
-          type="text"
-          autoComplete="off"
-          spellCheck={false}
-          value={text ?? (date ? formatDate(date, inInputBlock) : "")}
-          placeholder={element.placeholder?.text ?? "Select a date"}
-          aria-label="Date"
-          {...invalid}
-          ref={inputRef}
-          onChange={(e) => {
-            setText(e.target.value);
-            setOpen(true);
-          }}
-          // A press opens the calendar; tabbing in selects the date and leaves it closed, as Slack's
-          // field does (`catalog/actions/datepickers@focus-field-1`). Typing or ArrowDown opens it.
-          onFocus={(e) => {
-            if (quietFocus.current) quietFocus.current = false;
-            else if (focusCalendar.current) setOpen(true);
-            else e.currentTarget.select();
-          }}
-          onBlur={async () => {
-            await takeTyped();
-            setText(null);
-          }}
-          // A press focuses the field before its click, so mark the pointer on the way down.
-          onMouseDown={() => {
-            focusCalendar.current = true;
-          }}
-          onClick={() => {
-            if (open) focusDay();
-            else focusCalendar.current = true;
-            setOpen(true);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              setText(null);
-              setOpen(false);
-            }
-            if (e.key === "Enter") {
-              e.preventDefault();
-              void takeTyped();
-            }
-            if (e.key === "ArrowDown") {
-              e.preventDefault();
-              if (open) focusDay();
-              else {
-                focusCalendar.current = true;
-                setOpen(true);
-              }
-            }
-          }}
-        />
-        {/* Slack's `c-date_picker__select_btn`: its own button, after the field in the tab order. */}
-        <button
-          type="button"
-          className="sbk-datepicker__toggle"
-          aria-label="Open calendar"
-          onClick={() => {
-            focusCalendar.current = true;
-            if (open) focusDay();
-            else setOpen(true);
-          }}
-        >
-          <ChevronDownIcon className="sbk-datepicker__chevron" />
-        </button>
-      </div>
-      {open && (
+      <DateField
+        field={field}
+        placeholder={element.placeholder?.text ?? "Select a date"}
+        invalid={invalid}
+      />
+      {field.open && (
         <CalendarPopover
           anchorRef={rootRef}
-          popupRef={popupRef}
           // Slack's medium field opens its dropdown 4px inside its right edge; the small one lines up.
           offsetX={medium ? -4 : undefined}
           value={date}
           onSelect={pick}
           // Slack offers "Clear selection" only where the date may be left empty.
           onClear={clearable ? clear : undefined}
-          onDismiss={() => setOpen(false)}
-          onEscape={close}
-          focusOnOpen={() => {
-            const focus = focusCalendar.current;
-            focusCalendar.current = false;
-            return focus;
-          }}
+          {...field.popoverProps}
         />
       )}
       {dialog}
