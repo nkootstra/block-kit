@@ -277,14 +277,21 @@ export const COMPONENTS: Component[] = [
         "Its stylesheet variants are file kinds (image, document, slide, remote, external, not found, tombstone), which need real files in the Builder's workspace",
     },
   }),
-  blk("video", "video-block", ALL, 3, ["default", "hover", "pressed", "long-content", "loading"], {
-    unobservable: {
-      pressed: "Playing embeds a third-party player",
-      loading: NO_BACKEND,
-      mixed:
-        "Its stylesheet variants (size-x-small, gallery_v3, too_large, controls) belong to the player chrome around a playable embed, which no payload field selects",
+  blk(
+    "video",
+    "video-block",
+    ALL,
+    3,
+    ["default", "hover", "focus-visible", "pressed", "long-content", "loading"],
+    {
+      unobservable: {
+        pressed: "Playing embeds a third-party player",
+        loading: NO_BACKEND,
+        mixed:
+          "Its stylesheet variants (size-x-small, gallery_v3, too_large, controls) belong to the player chrome around a playable embed, which no payload field selects",
+      },
     },
-  }),
+  ),
   blk("alert", "alert-block", ["modal"], 2, ["default", "mixed", "long-content"]),
   blk(
     "card",

@@ -551,6 +551,47 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  describe("videos", () => {
+    // catalog/container/media-preview@focus-video-1: Slack rings the thumbnail's overlay button,
+    // a box the thumbnail's size rounded 8px, inside an overlay that clips it. Only the ring's
+    // corners, between the rounding and the box's square edge, show.
+    it("rings a thumbnail reached with the keyboard inside its box, rounded 8px", async () => {
+      const page = await harness.open(await fixture("catalog/container/media-preview"));
+      await tabTo(page, ".sbk-video__frame");
+      await settle(page);
+      const frame = await style(page, ".sbk-video__frame");
+      const ring = await page
+        .locator(".sbk-video__frame")
+        .first()
+        .evaluate((el) => {
+          const s = getComputedStyle(el, "::after");
+          const box = el.getBoundingClientRect();
+          return {
+            boxShadow: s.boxShadow,
+            radius: s.borderTopLeftRadius,
+            size: [s.width, s.height],
+            frame: [`${box.width}px`, `${box.height}px`],
+            clip: getComputedStyle(el).overflow,
+          };
+        });
+      expect({
+        outline: frame.outlineStyle,
+        shadow: frame.boxShadow,
+        ring: ring.boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`),
+        radius: ring.radius,
+        size: ring.size,
+        clip: ring.clip,
+      }).toEqual({
+        outline: "none",
+        shadow: "none",
+        ring: true,
+        radius: "8px",
+        size: ring.frame,
+        clip: "hidden",
+      });
+    });
+  });
+
   // Rings drawn with box-shadow vanish in forced-colours mode (Windows High Contrast), which drops
   // shadows, so there the focused control draws an outline in the system colour instead. Everywhere
   // else it keeps Slack's `outline: none`.
