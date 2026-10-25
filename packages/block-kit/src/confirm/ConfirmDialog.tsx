@@ -17,8 +17,8 @@ export interface ConfirmDialogProps {
  *
  * Slack marks it `role="dialog"`; this keeps `alertdialog`, the role WAI-ARIA gives a dialog that
  * interrupts to ask for a confirmation, so screen readers announce its text on open. Focus starts
- * on the deny button, the least destructive choice, stays inside while it's open, and goes back to
- * whatever opened it when it closes.
+ * on the dialog itself, as Slack's does, stays inside while it's open, and goes back to whatever
+ * opened it when it closes.
  */
 export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps) {
   const { theme } = useBlockKit();
@@ -26,11 +26,12 @@ export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps
   const titleId = useId();
   const textId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
-  const denyRef = useRef<HTMLButtonElement>(null);
 
+  // Slack focuses the dialog itself, so the first Tab reaches the close button
+  // (extra/actions/more-elements@confirm-focus-tab-1).
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
-    denyRef.current?.focus();
+    dialogRef.current?.focus();
     return () => {
       if (opener?.isConnected) opener.focus();
     };
@@ -46,7 +47,9 @@ export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps
     const buttons = [...(dialogRef.current?.querySelectorAll("button") ?? [])];
     const first = buttons[0];
     const last = buttons.at(-1);
-    if (event.shiftKey && document.activeElement === first) {
+    const atStart =
+      document.activeElement === first || document.activeElement === dialogRef.current;
+    if (event.shiftKey && atStart) {
       event.preventDefault();
       last?.focus();
     } else if (!event.shiftKey && document.activeElement === last) {
@@ -67,6 +70,7 @@ export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps
         aria-labelledby={confirm.title ? titleId : undefined}
         aria-label={confirm.title ? undefined : (confirm.confirm?.text ?? "Confirm")}
         aria-describedby={textId}
+        tabIndex={-1}
         onKeyDown={onKeyDown}
         // Stop the overlay's onClick (dismiss) from firing for clicks inside the dialog.
         onClick={(event) => event.stopPropagation()}
@@ -86,7 +90,6 @@ export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps
         </div>
         <div className="sbk-confirm__actions">
           <button
-            ref={denyRef}
             type="button"
             className="sbk-confirm__button sbk-confirm__button--deny"
             onClick={onDeny}

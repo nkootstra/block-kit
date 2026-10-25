@@ -3365,12 +3365,18 @@ describe.each(engines)("%s", (engine) => {
 
     // From the keyboard: Safari (and WebKit) don't focus a clicked button, so there would be
     // nothing to give focus back to after a click.
+    // extra/actions/more-elements@confirm-focus-tab-1: Slack focuses the dialog itself, and the
+    // first Tab reaches the close button, which takes the shared ring.
     it("moves focus in on open, denies on Escape and gives focus back", async () => {
       const page = await harness.open(withConfirm);
       await tabTo(page, ".sbk-button");
       await page.keyboard.press("Enter");
       await page.waitForSelector(".sbk-confirm");
-      expect(await page.evaluate(() => document.activeElement?.textContent)).toBe("Cancel");
+      expect(await page.evaluate(() => document.activeElement?.className)).toBe("sbk-confirm");
+      await tabTo(page, ".sbk-confirm__close", 1);
+      const close = await style(page, ".sbk-confirm__close");
+      expect(close.outlineStyle).toBe("none");
+      expect(close.boxShadow).toStartWith(`${BLUE} 0px 0px 0px 1px`);
       await page.keyboard.press("Escape");
       expect(await page.locator(".sbk-confirm").count()).toBe(0);
       expect(await page.evaluate(() => document.activeElement?.className)).toContain("sbk-button");

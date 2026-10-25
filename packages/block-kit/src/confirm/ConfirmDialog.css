@@ -37,6 +37,11 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Focus starts on the dialog itself, which Slack draws no ring around. */
+.sbk-confirm:focus {
+  outline: none;
+}
+
 @keyframes sbk-confirm-dim-in {
   from {
     opacity: 0;

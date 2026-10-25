@@ -430,8 +430,9 @@ a.sbk-mention {
 /* Slack's focus ring (`c-input_text:focus`, `c-select_button:focus`, `c-button--focus-visible`):
    a 1px solid ring plus a 4px 30% halo, replacing the border. Text fields show it on any focus;
    buttons only for keyboard focus. An input block's multi-select is a text field in Slack
-   (`c-multi_select_input`), so it keeps the ring after a click pick hands focus back to it. */
-.sbk-root {
+   (`c-multi_select_input`), so it keeps the ring after a click pick hands focus back to it. The
+   confirm dialog is portalled outside .sbk-root, so it defines them too. */
+:is(.sbk-root, .sbk-confirm__overlay) {
   --sbk-focus-shadow:
     0 0 0 1px var(--sbk-focus-ring),
     0 0 0 5px color-mix(in srgb, var(--sbk-focus-ring) 30%, transparent);
@@ -520,6 +521,7 @@ a.sbk-mention {
 .sbk-calendar__nav:focus-visible,
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__clear:focus-visible,
+.sbk-confirm__close:focus-visible,
 .sbk-link:focus-visible {
   outline: none;
   box-shadow: var(--sbk-focus-shadow);
@@ -537,6 +539,7 @@ a.sbk-mention {
   .sbk-calendar__nav:focus-visible,
   .sbk-calendar__cell:focus-visible,
   .sbk-calendar__clear:focus-visible,
+  .sbk-confirm__close:focus-visible,
   .sbk-link:focus-visible {
     outline: 2px solid;
   }

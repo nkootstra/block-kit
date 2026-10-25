@@ -46,10 +46,19 @@ describe("confirm dialog", () => {
     expect(description?.textContent).toBe("This can't be undone.");
   });
 
-  it("moves focus to the deny button when it opens", async () => {
+  // extra/actions/more-elements@confirm-focus-tab-1: Slack focuses the dialog itself, so the
+  // first Tab reaches its close button.
+  it("focuses the dialog itself when it opens", async () => {
     renderButton();
-    await openDialog();
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Keep it" }));
+    const { dialog } = await openDialog();
+    expect(document.activeElement).toBe(dialog);
+  });
+
+  it("takes Shift+Tab from the dialog itself to its last button", async () => {
+    renderButton();
+    const { dialog } = await openDialog();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Delete it" }));
   });
 
   it("denies on Escape and returns focus to the button that opened it", async () => {
