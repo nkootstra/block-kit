@@ -56,7 +56,7 @@
 /* Slack's `c-input_character_count__characters-remaining`: the characters left, at the field's
    top-right corner (in a textarea too), 13px/18px in content-sec with 8px 12px padding; negative
    and red past max_length. The field's right padding is set to the count's width inline, so text
-   never runs under it; 40px holds the room until it's measured. */
+   never runs under it, hidden count included; 40px holds the room until it's measured. */
 .sbk-text-input--counted {
   padding-right: 40px;
 }

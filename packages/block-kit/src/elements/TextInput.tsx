@@ -39,6 +39,20 @@ const HTML_TYPE: Record<TextInputElement["type"], string> = {
   number_input: "text",
 };
 
+let measureContext: OffscreenCanvasRenderingContext2D | null | undefined;
+
+/** The room Slack keeps for a hidden count: the number in the field's font, plus 12px each side.
+ * Undefined where there's no canvas to measure with, leaving the stylesheet's 40px. */
+function hiddenCountWidth(field: HTMLElement, remaining: number): number | undefined {
+  if (measureContext === undefined)
+    measureContext =
+      typeof OffscreenCanvas === "undefined" ? null : new OffscreenCanvas(0, 0).getContext("2d");
+  if (!measureContext) return undefined;
+  const style = getComputedStyle(field);
+  measureContext.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  return measureContext.measureText(String(remaining)).width + 24;
+}
+
 export function TextInput({ element, blockId }: ElementProps<TextInputElement>) {
   const { setValue, dispatch, surface } = useBlockKit();
   // Slack's Builder uses a taller "medium" control (36px, more horizontal padding) for a modal
@@ -104,10 +118,27 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // the count itself (and its "N characters remaining" text) out until the text is edited.
   const showCount = remaining !== undefined && edited;
   // Slack widens the field's right padding to the count's width, so text never runs under it.
+  // While the count is hidden it still keeps the room: 12px either side of the number in the
+  // field's own font (41.4px for "20" in a 15px textarea, extra/fidelity/plain-text-input/
+  // long-content), so an untouched value wraps where Slack's does.
   const countRef = useRef<HTMLSpanElement>(null);
   const [countWidth, setCountWidth] = useState<number | undefined>(undefined);
   useClientLayoutEffect(() => {
-    setCountWidth(countRef.current?.getBoundingClientRect().width);
+    const measure = () => {
+      const shown = countRef.current?.getBoundingClientRect().width;
+      const field = focusRef.current;
+      setCountWidth(
+        shown ??
+          (remaining !== undefined && field ? hiddenCountWidth(field, remaining) : undefined),
+      );
+    };
+    measure();
+    // A canvas measures in a fallback font until the web font arrives.
+    let current = true;
+    void document.fonts?.ready.then(() => current && measure());
+    return () => {
+      current = false;
+    };
   }, [remaining, showCount]);
   const countId = useId();
 
