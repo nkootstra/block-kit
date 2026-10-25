@@ -90,6 +90,31 @@ describe("verify", () => {
     ]);
   });
 
+  it("flags a scrolled reference whose scroll containers never left the start", () => {
+    const at = (scrollLeft: number) =>
+      `<script type="application/json" id="sbk-reference-meta">{"scrollers":[{"ref":"3","scrollWidth":1408,"clientWidth":320,"scrollLeft":${scrollLeft}}]}</script>${html}`;
+    const unscrolled = at(0);
+    const scrolled = at(300);
+    const result = run(
+      {
+        "divider@scrolled+mobile": { ...entry, reference: sha256(unscrolled) },
+        "divider@scrolled-end": { ...entry, reference: sha256(scrolled) },
+      },
+      [
+        ["divider@scrolled+mobile", unscrolled],
+        ["divider@scrolled-end", scrolled],
+      ],
+      [["divider", payload]],
+    );
+    expect(result.problems).toEqual([
+      {
+        name: "divider@scrolled+mobile",
+        message:
+          "captured before it scrolled: every scroll container is at its start; recapture it in Block Kit Builder",
+      },
+    ]);
+  });
+
   it("flags references missing from the lock, and lock entries without a reference", () => {
     const result = run({ gone: entry }, [["divider", html]], [["divider", payload]]);
     expect(result.problems.map((p) => p.name)).toEqual(["divider", "gone"]);

@@ -115,6 +115,21 @@ function keepsState(name: string): boolean {
   return !interaction || /^(open|confirm|dialog|scrolled-end|hover-.+|focus-.+)$/.test(interaction);
 }
 
+/**
+ * A `@scrolled…` state whose recorded scroll containers all sit at their start: the capture froze
+ * it before the scroll, as a 23 October 2026 recapture of a carousel's mobile `@scrolled` did.
+ */
+function unscrolled(name: string, html: string): boolean {
+  if (!parseReferenceName(name).interaction?.startsWith("scrolled")) return false;
+  const meta = html.match(
+    /<script type="application\/json" id="sbk-reference-meta">(.*?)<\/script>/s,
+  )?.[1];
+  const scrollers = (meta ? JSON.parse(meta).scrollers : undefined) as
+    | { scrollLeft: number }[]
+    | undefined;
+  return !!scrollers?.length && scrollers.every((s) => s.scrollLeft === 0);
+}
+
 export function verify(
   lock: Lock,
   references: Map<string, string>,
@@ -161,6 +176,12 @@ export function verify(
       problems.push({
         name,
         message: `shows state its payload doesn't set (${foreignState(html, payload).join("; ")}): the Builder kept an earlier item's choice; recapture it after a neutral payload`,
+      });
+    } else if (unscrolled(name, html)) {
+      problems.push({
+        name,
+        message:
+          "captured before it scrolled: every scroll container is at its start; recapture it in Block Kit Builder",
       });
     } else if (entry.payload !== hashPayload(payload)) {
       problems.push({

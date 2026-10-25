@@ -131,6 +131,11 @@ A reference is a fixture captured in one state (`names.ts`):
   shows no errors, so this records the submit's behaviour and payload, not Slack's error styles.
 - **`@scrolled-end`:** the first horizontal scroll container that overflows (a chart's card, a
   table, a carousel), scrolled fully to the right.
+- **`@scrolled`:** a carousel scrolled by one press of its right arrow, 356px. The capture waits
+  while you scroll it. In the Builder's Mobile preview the arrow takes focus but doesn't scroll
+  (25 October 2026), so scroll the gallery there by script (`scrollTo({ left: 356 })`) with the
+  pointer off the preview. `references:check` refuses a `@scrolled…` reference whose scroll
+  containers are all at their start.
 - A [behaviour probe](#behaviour-probes) with `"snapshot": true` names its reference after itself
   (`@submit-short`).
 - **`+mobile`:** the Builder's Mobile preview; ours is rendered at that width.
