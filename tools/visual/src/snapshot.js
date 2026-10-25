@@ -228,6 +228,11 @@ async (win = window, options = {}) => {
         out.push(`${prop}:${value}`);
       }
     }
+    // SKIP leaves outline-color out: it follows `color` on every element. An outline that's drawn
+    // keeps its own, or it replays in the text colour (a focused plan pill's ring is Slack's blue).
+    if (cs.getPropertyValue("outline-style") !== "none") {
+      out.push(`outline-color:${cs.getPropertyValue("outline-color")}`);
+    }
     return out.join(";");
   };
 

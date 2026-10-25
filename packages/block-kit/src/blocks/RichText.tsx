@@ -15,7 +15,7 @@ import { Link, MentionLink } from "../Link";
 import { PrivateChannel } from "../Mrkdwn";
 import type { BlockProps } from "../types";
 import { PrivateUser, UnavailableUsergroup, UserMention } from "../UserMention";
-import { CopyIcon } from "../icons";
+import { CopyIcon, EyeClosedIcon, LockFilledIcon, MessageIcon, TrashIcon } from "../icons";
 import { CodeBlock } from "./CodeBlock";
 
 // Builder-only/undocumented extensions to `@slack/types`' definitions.
@@ -41,6 +41,18 @@ interface RichTextSalesforceDataField {
   salesforce_include_field_label?: boolean;
   style?: RichTextElement["style"];
 }
+
+/**
+ * Elements that point at something only Slack can look up: a workflow, a message, a file, a canvas,
+ * an app's work object or an attachment, e.g. `{ type: "canvas", file_id: "F0123456789" }`.
+ */
+type RichTextEntity =
+  | { type: "workflow_mention"; workflow_id: string; text?: string }
+  | { type: "message_mention"; channel_id: string; message_ts: string }
+  | { type: "file" | "canvas"; file_id: string; text?: string }
+  | { type: "work_object_mention"; entity_id: string; app_id?: string; text?: string; url: string }
+  | { type: "attachment_mention"; url: string; text?: string };
+type RichTextEntityLeaf = RichTextEntity & { style?: RichTextElement["style"] };
 
 /** Salesforce's cloud, as Slack draws it before a record's field (`sf-cloud-filled`). */
 const SALESFORCE_CLOUD =
@@ -192,7 +204,7 @@ function mergeTextRuns(elements: RichTextElement[]): RichTextElement[] {
 /** One inline element of a section, styled. The rich text input's editor draws its initial value
  * with it too. */
 export function renderLeaf(
-  el: RichTextElement | RichTextTag | RichTextSalesforceDataField,
+  el: RichTextElement | RichTextTag | RichTextSalesforceDataField | RichTextEntityLeaf,
   ctx: RenderCtx,
   emojiSize: number,
   isFirst = false,
@@ -297,11 +309,72 @@ export function renderLeaf(
         </span>
       );
       break;
+    // extra/fidelity/rich-text-{workflow-mention,message-mention,file,canvas}/default: Slack
+    // can't look these up for the Builder's preview either, and shows what it shows a person
+    // without access, whatever text the payload gives.
+    case "workflow_mention":
+      content = <Slug icon={<TrashIcon />} label="Deleted workflow" disabled />;
+      break;
+    case "message_mention":
+      content = <Slug icon={<MessageIcon />} label="Private message" disabled />;
+      break;
+    case "file":
+      content = <Slug icon={<EyeClosedIcon />} label="Hidden file" disabled />;
+      break;
+    case "canvas":
+      content = <Slug icon={<LockFilledIcon />} label="Private canvas" />;
+      break;
+    // extra/fidelity/rich-text-work-object-mention/default: the payload's text, linked, behind the
+    // app's icon. Without one Slack shows its default app icon, an image we can't use, so the
+    // icon is a square in the colour of a message's placeholder avatar.
+    case "work_object_mention":
+      content = (
+        <Link
+          className="sbk-link sbk-rich-text__entity-link"
+          href={el.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Slug
+            icon={<span className="sbk-rich-text__slug-app" aria-hidden="true" />}
+            label={el.text || el.url}
+          />
+        </Link>
+      );
+      break;
+    // extra/fidelity/rich-text-attachment-mention/default: a plain link.
+    case "attachment_mention":
+      content = (
+        <Link
+          className="sbk-link sbk-rich-text__entity-link"
+          href={el.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {el.text || el.url}
+        </Link>
+      );
+      break;
     default:
       content = null;
   }
 
   return applyStyle(content, el.style);
+}
+
+/** Slack's `p-rich_text_slug`: an entity as an inline pill, its icon before its label. A greyed
+ * out (`--disabled`) one is something the viewer can't open. */
+function Slug({ icon, label, disabled }: { icon: ReactNode; label: string; disabled?: boolean }) {
+  return (
+    <span
+      className={
+        disabled ? "sbk-rich-text__slug sbk-rich-text__slug--disabled" : "sbk-rich-text__slug"
+      }
+    >
+      {icon}
+      <span>{label}</span>
+    </span>
+  );
 }
 
 function applyStyle(content: ReactNode, style: RichTextElement["style"] | undefined): ReactNode {

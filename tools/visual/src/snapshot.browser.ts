@@ -134,6 +134,19 @@ describe("snapshot.js", () => {
     expect(colour).toBe("rgb(154, 155, 158)");
   });
 
+  it("keeps an outline in the colour the page gave it", async () => {
+    // Slack outlines a focused plan pill in its highlight blue (`.toggleBarButton:focus-visible`);
+    // without its colour the references replayed the outline in the text colour.
+    await page.setContent(
+      `<!doctype html><body style="color:rgb(29, 28, 29)"><div class="p-bkb_preview__message"><button id="pill" style="outline:2px solid rgb(18, 100, 163)">Plan</button></div></body>`,
+    );
+    await page.setContent(await snapshot(page));
+    const colour = await page.evaluate(
+      () => getComputedStyle(document.getElementById("pill")!).outlineColor,
+    );
+    expect(colour).toBe("rgb(18, 100, 163)");
+  });
+
   it("keeps a content-sized label on one line when its width is a sub-pixel value", async () => {
     // Slack's input label is a flex item sized to its content. Its used width (100.0625px here)
     // serializes as "100.062px"; frozen at that, the second part no longer fits and wraps.

@@ -725,6 +725,12 @@
   "catalog/table/basic-data-table@expand-cell-1": [],
   "catalog/table/basic-data-table@expand-cell-1+dark": [],
   "catalog/table/basic-data-table@expand-cell-1+mobile": [],
+  "catalog/table/basic-data-table@filter-empty": [],
+  "catalog/table/basic-data-table@filter-empty+dark": [],
+  "catalog/table/basic-data-table@filter-empty+mobile": [],
+  "catalog/table/basic-data-table@filter-match": [],
+  "catalog/table/basic-data-table@filter-match+dark": [],
+  "catalog/table/basic-data-table@filter-match+mobile": [],
   "catalog/table/basic-data-table@focus-column-1": [],
   "catalog/table/basic-data-table@focus-column-1+dark": [],
   "catalog/table/basic-data-table@focus-column-1+mobile": [],
@@ -1607,18 +1613,10 @@
   "extra/fidelity/radio-buttons/mixed@dark": [],
   "extra/fidelity/radio-buttons/mixed@mobile": [],
   "extra/fidelity/radio-buttons/mixed@mobile+dark": [],
-  "extra/fidelity/rich-text-attachment-mention/default": [
-    "missing|An attachment|0"
-  ],
-  "extra/fidelity/rich-text-attachment-mention/default@dark": [
-    "missing|An attachment|0"
-  ],
-  "extra/fidelity/rich-text-attachment-mention/default@mobile": [
-    "missing|An attachment|0"
-  ],
-  "extra/fidelity/rich-text-attachment-mention/default@mobile+dark": [
-    "missing|An attachment|0"
-  ],
+  "extra/fidelity/rich-text-attachment-mention/default": [],
+  "extra/fidelity/rich-text-attachment-mention/default@dark": [],
+  "extra/fidelity/rich-text-attachment-mention/default@mobile": [],
+  "extra/fidelity/rich-text-attachment-mention/default@mobile+dark": [],
   "extra/fidelity/rich-text-broadcast/mixed": [],
   "extra/fidelity/rich-text-broadcast/mixed@dark": [],
   "extra/fidelity/rich-text-broadcast/mixed@hover-mention-1": [],
@@ -1635,18 +1633,10 @@
   "extra/fidelity/rich-text-canvas-user-mention/default@dark": [],
   "extra/fidelity/rich-text-canvas-user-mention/default@mobile": [],
   "extra/fidelity/rich-text-canvas-user-mention/default@mobile+dark": [],
-  "extra/fidelity/rich-text-canvas/default": [
-    "missing|Private canvas|0"
-  ],
-  "extra/fidelity/rich-text-canvas/default@dark": [
-    "missing|Private canvas|0"
-  ],
-  "extra/fidelity/rich-text-canvas/default@mobile": [
-    "missing|Private canvas|0"
-  ],
-  "extra/fidelity/rich-text-canvas/default@mobile+dark": [
-    "missing|Private canvas|0"
-  ],
+  "extra/fidelity/rich-text-canvas/default": [],
+  "extra/fidelity/rich-text-canvas/default@dark": [],
+  "extra/fidelity/rich-text-canvas/default@mobile": [],
+  "extra/fidelity/rich-text-canvas/default@mobile+dark": [],
   "extra/fidelity/rich-text-channel/mixed": [],
   "extra/fidelity/rich-text-channel/mixed@dark": [],
   "extra/fidelity/rich-text-channel/mixed@hover-mention-1": [],
@@ -1683,18 +1673,10 @@
   "extra/fidelity/rich-text-emoji/mixed@dark": [],
   "extra/fidelity/rich-text-emoji/mixed@mobile": [],
   "extra/fidelity/rich-text-emoji/mixed@mobile+dark": [],
-  "extra/fidelity/rich-text-file/default": [
-    "missing|Hidden file|0"
-  ],
-  "extra/fidelity/rich-text-file/default@dark": [
-    "missing|Hidden file|0"
-  ],
-  "extra/fidelity/rich-text-file/default@mobile": [
-    "missing|Hidden file|0"
-  ],
-  "extra/fidelity/rich-text-file/default@mobile+dark": [
-    "missing|Hidden file|0"
-  ],
+  "extra/fidelity/rich-text-file/default": [],
+  "extra/fidelity/rich-text-file/default@dark": [],
+  "extra/fidelity/rich-text-file/default@mobile": [],
+  "extra/fidelity/rich-text-file/default@mobile+dark": [],
   "extra/fidelity/rich-text-input/initial-value": [],
   "extra/fidelity/rich-text-input/initial-value@dark": [],
   "extra/fidelity/rich-text-input/long-content": [],
@@ -1714,18 +1696,10 @@
   "extra/fidelity/rich-text-list-record/default@mobile+dark": [
     "missing|Private list|0"
   ],
-  "extra/fidelity/rich-text-message-mention/default": [
-    "missing|Private message|0"
-  ],
-  "extra/fidelity/rich-text-message-mention/default@dark": [
-    "missing|Private message|0"
-  ],
-  "extra/fidelity/rich-text-message-mention/default@mobile": [
-    "missing|Private message|0"
-  ],
-  "extra/fidelity/rich-text-message-mention/default@mobile+dark": [
-    "missing|Private message|0"
-  ],
+  "extra/fidelity/rich-text-message-mention/default": [],
+  "extra/fidelity/rich-text-message-mention/default@dark": [],
+  "extra/fidelity/rich-text-message-mention/default@mobile": [],
+  "extra/fidelity/rich-text-message-mention/default@mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-list/many-items": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@dark": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2": [],
@@ -1774,30 +1748,14 @@
   "extra/fidelity/rich-text-usergroup/mixed@dark": [],
   "extra/fidelity/rich-text-usergroup/mixed@mobile": [],
   "extra/fidelity/rich-text-usergroup/mixed@mobile+dark": [],
-  "extra/fidelity/rich-text-work-object-mention/default": [
-    "missing|A work object|0"
-  ],
-  "extra/fidelity/rich-text-work-object-mention/default@dark": [
-    "missing|A work object|0"
-  ],
-  "extra/fidelity/rich-text-work-object-mention/default@mobile": [
-    "missing|A work object|0"
-  ],
-  "extra/fidelity/rich-text-work-object-mention/default@mobile+dark": [
-    "missing|A work object|0"
-  ],
-  "extra/fidelity/rich-text-workflow-mention/default": [
-    "missing|Deleted workflow|0"
-  ],
-  "extra/fidelity/rich-text-workflow-mention/default@dark": [
-    "missing|Deleted workflow|0"
-  ],
-  "extra/fidelity/rich-text-workflow-mention/default@mobile": [
-    "missing|Deleted workflow|0"
-  ],
-  "extra/fidelity/rich-text-workflow-mention/default@mobile+dark": [
-    "missing|Deleted workflow|0"
-  ],
+  "extra/fidelity/rich-text-work-object-mention/default": [],
+  "extra/fidelity/rich-text-work-object-mention/default@dark": [],
+  "extra/fidelity/rich-text-work-object-mention/default@mobile": [],
+  "extra/fidelity/rich-text-work-object-mention/default@mobile+dark": [],
+  "extra/fidelity/rich-text-workflow-mention/default": [],
+  "extra/fidelity/rich-text-workflow-mention/default@dark": [],
+  "extra/fidelity/rich-text-workflow-mention/default@mobile": [],
+  "extra/fidelity/rich-text-workflow-mention/default@mobile+dark": [],
   "extra/fidelity/section/long-content": [],
   "extra/fidelity/section/long-content@dark": [],
   "extra/fidelity/section/long-content@mobile": [],

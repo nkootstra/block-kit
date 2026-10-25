@@ -121,6 +121,11 @@ A `rich_text` user mention with no `user` resolver shows Slack's grey loading ba
 pending); with a `user` resolver that returns `undefined`, the user doesn't exist and it shows
 Slack's empty outline instead, as a `contact_card` shows its "could not be displayed" notice.
 
+Rich text elements that point at something only Slack can look up have no resolver: a
+`workflow_mention`, `message_mention`, `file` or `canvas` shows Slack's pill for something the
+viewer can't open ("Deleted workflow", "Private message", "Hidden file", "Private canvas"), whatever
+its `text`; a `work_object_mention` and an `attachment_mention` show their `text` linked to `url`.
+
 `slackFile: (file) => ({ url, size })` resolves a `slack_file` image (image block or element) to a
 loadable URL and its size in bytes (shown as Slack's "(400 kB)", decimal kilobytes); an image block
 draws a resolved file at most 400 x 400, as Slack does, and without a resolver shows its alt-text
