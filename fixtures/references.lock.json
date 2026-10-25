@@ -706,8 +706,8 @@
   },
   "catalog/agents/plan-error@focus-pill-1+mobile": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
-    "reference": "e890fc06d0bcfd04e2309c3f22aea4f37b061ef6bc0101d250280e09d7382906",
-    "captured": "2026-10-13"
+    "reference": "0da0f3743ff1e9103e1b13f55bfef04c558b86e252f1c074bdb1d612bea0560a",
+    "captured": "2026-10-25"
   },
   "catalog/agents/plan-error@hover-pill-1+dark": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
@@ -811,13 +811,13 @@
   },
   "catalog/agents/task-card-statuses@focus-pill-1+dark": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
-    "reference": "6e21d2c406dfbd9716901a8c9fe44cac2cfdfcf09264aef9f2c3f7e4bd210c67",
-    "captured": "2026-10-20"
+    "reference": "2e9906a33ff47540202127e9f75e6f9de514f3f8c38ed217c37e0ea3764ac89f",
+    "captured": "2026-10-25"
   },
   "catalog/agents/task-card-statuses@focus-pill-1+mobile": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
-    "reference": "f538a5c9fa8b1c8a626233c50b19bf653e38f27ca74a3ae784a69eee2d5deaa1",
-    "captured": "2026-10-13"
+    "reference": "1f47a7d10769b1089f11a773e58364b2aae96b6a7c24193f706217845dbb0385",
+    "captured": "2026-10-25"
   },
   "catalog/agents/task-card-statuses@hover-pill-1+dark": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
