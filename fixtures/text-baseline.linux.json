@@ -1565,12 +1565,8 @@
   "extra/fidelity/overflow/many-items@mobile+dark": [],
   "extra/fidelity/overflow/many-items@open": [],
   "extra/fidelity/overflow/many-items@open+dark": [],
-  "extra/fidelity/plain-text-input/long-content": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0"
-  ],
-  "extra/fidelity/plain-text-input/long-content@dark": [
-    "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the line height and any truncation Slack applies all show. It goes on a little longer, past three hundred characters, which is where long text starts to behave differently. This sentence is here to make the text long enough to wrap o|0"
-  ],
+  "extra/fidelity/plain-text-input/long-content": [],
+  "extra/fidelity/plain-text-input/long-content@dark": [],
   "extra/fidelity/plain-text-input/long-content@mobile": [],
   "extra/fidelity/plain-text-input/long-content@mobile+dark": [],
   "extra/fidelity/plan/long-content": [],
@@ -1804,42 +1800,10 @@
   "extra/fidelity/users-select/long-content@open": [],
   "extra/fidelity/users-select/long-content@open+dark": [],
   "extra/fidelity/users-select/long-content@pick": [],
-  "extra/fidelity/video/long-content": [
-    "missing|This sentence is here to make the text long enough to wrap onto|0",
-    "missing|several lines at the desktop width, and further still on a phone, so|0",
-    "missing|the wrapping, the line height and any truncation Slack applies|0",
-    "missing|all|0",
-    "extra|This sentence is here to make the text long enough to|0",
-    "extra|wrap onto several lines at the desktop width, and|0",
-    "extra|further still on a phone, so the wrapping, the line|0",
-    "extra|height and any truncation Slack applies all|0"
-  ],
-  "extra/fidelity/video/long-content@dark": [
-    "missing|This sentence is here to make the text long enough to wrap onto|0",
-    "missing|several lines at the desktop width, and further still on a phone, so|0",
-    "missing|the wrapping, the line height and any truncation Slack applies|0",
-    "missing|all|0",
-    "extra|This sentence is here to make the text long enough to|0",
-    "extra|wrap onto several lines at the desktop width, and|0",
-    "extra|further still on a phone, so the wrapping, the line|0",
-    "extra|height and any truncation Slack applies all|0"
-  ],
-  "extra/fidelity/video/long-content@mobile": [
-    "missing|desktop width, and further still on a phone, so|0",
-    "missing|the wrapping, the line height and any truncation|0",
-    "missing|Slack applies all|0",
-    "extra|desktop width, and further still on a phone,|0",
-    "extra|so the wrapping, the line height and any|0",
-    "extra|truncation Slack applies all|0"
-  ],
-  "extra/fidelity/video/long-content@mobile+dark": [
-    "missing|desktop width, and further still on a phone, so|0",
-    "missing|the wrapping, the line height and any truncation|0",
-    "missing|Slack applies all|0",
-    "extra|desktop width, and further still on a phone,|0",
-    "extra|so the wrapping, the line height and any|0",
-    "extra|truncation Slack applies all|0"
-  ],
+  "extra/fidelity/video/long-content": [],
+  "extra/fidelity/video/long-content@dark": [],
+  "extra/fidelity/video/long-content@mobile": [],
+  "extra/fidelity/video/long-content@mobile+dark": [],
   "extra/home/dashboard": [],
   "extra/home/dashboard@dark": [],
   "extra/home/dashboard@open": [],
