@@ -1692,22 +1692,10 @@
   "extra/fidelity/rich-text-rich-text-list/many-items@hover-mention-2+mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile": [],
   "extra/fidelity/rich-text-rich-text-list/many-items@mobile+dark": [],
-  "extra/fidelity/rich-text-rich-text-preformatted/mixed": [
-    "x|Preformatted with a border|0",
-    "color|a link|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-preformatted/mixed@dark": [
-    "x|Preformatted with a border|0",
-    "color|a link|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-preformatted/mixed@mobile": [
-    "x|Preformatted with a border|0",
-    "color|a link|0"
-  ],
-  "extra/fidelity/rich-text-rich-text-preformatted/mixed@mobile+dark": [
-    "x|Preformatted with a border|0",
-    "color|a link|0"
-  ],
+  "extra/fidelity/rich-text-rich-text-preformatted/mixed": [],
+  "extra/fidelity/rich-text-rich-text-preformatted/mixed@dark": [],
+  "extra/fidelity/rich-text-rich-text-preformatted/mixed@mobile": [],
+  "extra/fidelity/rich-text-rich-text-preformatted/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-quote/long-content": [],
   "extra/fidelity/rich-text-rich-text-quote/long-content@dark": [],
   "extra/fidelity/rich-text-rich-text-quote/long-content@mobile": [],
