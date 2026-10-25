@@ -118,6 +118,8 @@ describe("formatMarkdown", () => {
 });
 
 describe("drift.ts", () => {
+  // Starts the CLI, which reads every reference and fixture: a quarter of a second alone, but past
+  // the 5s default while Turbo runs every workspace's tests at once (CI on #328).
   it("compares a capture file with the committed references without writing to fixtures/", async () => {
     const [name, html] = [...(await readReferences())][0]!;
     const dir = await mkdtemp(join(tmpdir(), "drift-"));
@@ -140,7 +142,7 @@ describe("drift.ts", () => {
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
-  });
+  }, 30_000);
 });
 
 async function listing() {
