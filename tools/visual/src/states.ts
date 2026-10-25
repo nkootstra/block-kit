@@ -180,13 +180,14 @@ export const STATES: Record<string, State> = {
     (p) => p.locator(".sbk-input .sbk-select__control").first(),
     { option: "Option 1" },
   ),
+  // A pointer pick, as the reference's was: after a key press the button the dialog gives focus
+  // back to would show keyboard focus, which Slack's doesn't (its meta: `visible: false`).
   "extra/payloads/accessory-multi-selects@pick": {
     ours: async (p) => {
       await p.getByRole("button", { name: "Select channels", exact: true }).click();
       const field = p.getByRole("dialog").getByRole("combobox");
       await field.click();
-      await p.keyboard.press("ArrowDown");
-      await p.keyboard.press("Enter");
+      await p.getByRole("option").first().click();
       await confirm(p);
     },
   },
