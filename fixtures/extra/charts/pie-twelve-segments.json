@@ -1,0 +1,62 @@
+{
+  "blocks": [
+    {
+      "type": "data_visualization",
+      "block_id": "viz-pie-twelve",
+      "title": "Twelve segments",
+      "chart": {
+        "type": "pie",
+        "segments": [
+          {
+            "label": "Segment 1",
+            "value": 120
+          },
+          {
+            "label": "Segment 2",
+            "value": 112
+          },
+          {
+            "label": "Segment 3",
+            "value": 104
+          },
+          {
+            "label": "Segment 4",
+            "value": 96
+          },
+          {
+            "label": "Segment 5",
+            "value": 88
+          },
+          {
+            "label": "Segment 6",
+            "value": 80
+          },
+          {
+            "label": "Segment 7",
+            "value": 72
+          },
+          {
+            "label": "Segment 8",
+            "value": 64
+          },
+          {
+            "label": "Segment 9",
+            "value": 56
+          },
+          {
+            "label": "Segment 10",
+            "value": 48
+          },
+          {
+            "label": "Segment 11",
+            "value": 40
+          },
+          {
+            "label": "Segment 12",
+            "value": 32
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "blocks": [
+    {
+      "type": "data_visualization",
+      "block_id": "viz-area-twelve",
+      "title": "Twelve series",
+      "chart": {
+        "type": "area",
+        "series": [
+          {
+            "name": "Series 1",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 130
+              },
+              {
+                "label": "Tue",
+                "value": 133
+              },
+              {
+                "label": "Wed",
+                "value": 130
+              },
+              {
+                "label": "Thu",
+                "value": 133
+              },
+              {
+                "label": "Fri",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "name": "Series 2",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 120
+              },
+              {
+                "label": "Tue",
+                "value": 123
+              },
+              {
+                "label": "Wed",
+                "value": 120
+              },
+              {
+                "label": "Thu",
+                "value": 123
+              },
+              {
+                "label": "Fri",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "name": "Series 3",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 110
+              },
+              {
+                "label": "Tue",
+                "value": 113
+              },
+              {
+                "label": "Wed",
+                "value": 110
+              },
+              {
+                "label": "Thu",
+                "value": 113
+              },
+              {
+                "label": "Fri",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "name": "Series 4",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 100
+              },
+              {
+                "label": "Tue",
+                "value": 103
+              },
+              {
+                "label": "Wed",
+                "value": 100
+              },
+              {
+                "label": "Thu",
+                "value": 103
+              },
+              {
+                "label": "Fri",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "name": "Series 5",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 90
+              },
+              {
+                "label": "Tue",
+                "value": 93
+              },
+              {
+                "label": "Wed",
+                "value": 90
+              },
+              {
+                "label": "Thu",
+                "value": 93
+              },
+              {
+                "label": "Fri",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "name": "Series 6",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 80
+              },
+              {
+                "label": "Tue",
+                "value": 83
+              },
+              {
+                "label": "Wed",
+                "value": 80
+              },
+              {
+                "label": "Thu",
+                "value": 83
+              },
+              {
+                "label": "Fri",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "name": "Series 7",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 70
+              },
+              {
+                "label": "Tue",
+                "value": 73
+              },
+              {
+                "label": "Wed",
+                "value": 70
+              },
+              {
+                "label": "Thu",
+                "value": 73
+              },
+              {
+                "label": "Fri",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "name": "Series 8",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 60
+              },
+              {
+                "label": "Tue",
+                "value": 63
+              },
+              {
+                "label": "Wed",
+                "value": 60
+              },
+              {
+                "label": "Thu",
+                "value": 63
+              },
+              {
+                "label": "Fri",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "name": "Series 9",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 50
+              },
+              {
+                "label": "Tue",
+                "value": 53
+              },
+              {
+                "label": "Wed",
+                "value": 50
+              },
+              {
+                "label": "Thu",
+                "value": 53
+              },
+              {
+                "label": "Fri",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "name": "Series 10",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 40
+              },
+              {
+                "label": "Tue",
+                "value": 43
+              },
+              {
+                "label": "Wed",
+                "value": 40
+              },
+              {
+                "label": "Thu",
+                "value": 43
+              },
+              {
+                "label": "Fri",
+                "value": 40
+              }
+            ]
+          },
+          {
+            "name": "Series 11",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 30
+              },
+              {
+                "label": "Tue",
+                "value": 33
+              },
+              {
+                "label": "Wed",
+                "value": 30
+              },
+              {
+                "label": "Thu",
+                "value": 33
+              },
+              {
+                "label": "Fri",
+                "value": 30
+              }
+            ]
+          },
+          {
+            "name": "Series 12",
+            "data": [
+              {
+                "label": "Mon",
+                "value": 20
+              },
+              {
+                "label": "Tue",
+                "value": 23
+              },
+              {
+                "label": "Wed",
+                "value": 20
+              },
+              {
+                "label": "Thu",
+                "value": 23
+              },
+              {
+                "label": "Fri",
+                "value": 20
+              }
+            ]
+          }
+        ],
+        "axis_config": {
+          "categories": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+          "x_label": "Day",
+          "y_label": "Value"
+        }
+      }
+    }
+  ]
+}
