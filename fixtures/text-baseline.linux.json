@@ -1397,20 +1397,12 @@
   "extra/fidelity/multi-conversations-select/initial-value@pick+mobile+dark": [],
   "extra/fidelity/multi-conversations-select/long-content": [],
   "extra/fidelity/multi-conversations-select/long-content@dark": [],
-  "extra/fidelity/multi-conversations-select/long-content@dialog": [
-    "extra|wrapping, the|0"
-  ],
-  "extra/fidelity/multi-conversations-select/long-content@dialog+dark": [
-    "extra|wrapping, the|0"
-  ],
+  "extra/fidelity/multi-conversations-select/long-content@dialog": [],
+  "extra/fidelity/multi-conversations-select/long-content@dialog+dark": [],
   "extra/fidelity/multi-conversations-select/long-content@mobile": [],
   "extra/fidelity/multi-conversations-select/long-content@mobile+dark": [],
-  "extra/fidelity/multi-conversations-select/long-content@open": [
-    "extra|wrapping, the|0"
-  ],
-  "extra/fidelity/multi-conversations-select/long-content@open+dark": [
-    "extra|wrapping, the|0"
-  ],
+  "extra/fidelity/multi-conversations-select/long-content@open": [],
+  "extra/fidelity/multi-conversations-select/long-content@open+dark": [],
   "extra/fidelity/multi-external-select/empty": [],
   "extra/fidelity/multi-external-select/empty@dark": [],
   "extra/fidelity/multi-external-select/empty@focus-field-1+dark": [],
