@@ -70,6 +70,7 @@ import {
 import { collectTextRuns } from "./collectTextRuns";
 import { directoryOrder } from "./directoryOrder";
 import { followResizedBars } from "./followBars";
+import { LAUNCH_OPTIONS } from "./launch";
 import { loadReference } from "./loadReference";
 import { SLACK_FILE_PLACEHOLDER } from "./redact";
 import { type Box, cropBox, type Layer, roomFor } from "./layout";
@@ -148,14 +149,7 @@ const names = shard(
   shardSpec,
 );
 
-// The references were laid out on macOS, which places glyphs at fractional advances, and inline
-// those widths (a sender name is `width: 61.8594px`). Linux Chromium hints fonts by default, which
-// rounds the advances so the same text no longer fits its box and wraps. Turning hinting off gives
-// Linux macOS's metrics; without it every fixture in the Linux baseline was off by about 1%.
-const browser = await chromium.launch({
-  args: ["--font-render-hinting=none"],
-  ignoreDefaultArgs: ["--hide-scrollbars"],
-});
+const browser = await chromium.launch(LAUNCH_OPTIONS);
 const context = await browser.newContext({
   viewport: { width: 1200, height: 900 },
   deviceScaleFactor: scale,
