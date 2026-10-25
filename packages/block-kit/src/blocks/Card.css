@@ -72,12 +72,15 @@
   min-width: 0;
 }
 
+/* extra/fidelity/card/mixed: Slack clamps the title and subtitle to one line rather than cutting
+   them with `nowrap`, so a long one ends after its last whole word and an ellipsis. */
 .sbk-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
   font-weight: 700;
   line-height: 22.5px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Text/mrkdwn content renders its own `.sbk-mrkdwn`/`.sbk-plain-text` span with a fixed
@@ -94,9 +97,10 @@
   font-size: 13px;
   line-height: 16.25px;
   color: var(--sbk-content-ter);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .sbk-card__subtitle .sbk-mrkdwn,

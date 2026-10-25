@@ -77,7 +77,10 @@ describe("<Card>", () => {
     expect(container.querySelector(".sbk-card__header")).toBeNull();
   });
 
-  it("groups danger buttons on the left, keeping the others in order on the right", () => {
+  // catalog/card-and-carousel/card-actions-and-content, card-with-three-actions and
+  // extra/fidelity/card/mixed: Slack orders a card's buttons danger, default, primary, whatever
+  // the payload's order, and pulls the danger ones into a group on the left.
+  it("puts danger buttons on the left and primary buttons last", () => {
     const button = (text: string, style?: string) => ({
       type: "button",
       action_id: text,
@@ -87,12 +90,17 @@ describe("<Card>", () => {
     const block = {
       type: "card",
       title: { type: "plain_text", text: "Card" },
-      actions: [button("Confirm", "primary"), button("Delete", "danger"), button("Cancel")],
+      actions: [
+        button("Confirm", "primary"),
+        button("Delete", "danger"),
+        button("Cancel"),
+        button("Details"),
+      ],
     };
     const { container } = render(<Card block={block as never} blockId="b1" index={0} />);
     const start = container.querySelector(".sbk-card__actions-start") as HTMLElement;
     expect([...start.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Delete"]);
     const all = [...container.querySelectorAll(".sbk-card__actions button")];
-    expect(all.map((b) => b.textContent)).toEqual(["Delete", "Confirm", "Cancel"]);
+    expect(all.map((b) => b.textContent)).toEqual(["Delete", "Cancel", "Details", "Confirm"]);
   });
 });

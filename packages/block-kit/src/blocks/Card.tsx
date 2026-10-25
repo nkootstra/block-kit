@@ -103,8 +103,9 @@ export function Card({ block, blockId }: BlockProps) {
           )}
           {actions && actions.length > 0 && (
             <div className="sbk-card__actions">
-              {/* Slack pulls danger buttons into a left-aligned group; the rest stay right-aligned
-                  in their original order. */}
+              {/* catalog/card-and-carousel/card-actions-and-content and extra/fidelity/card/mixed:
+                  Slack orders a card's buttons danger, default, primary, each keeping the
+                  payload's order, and pulls the danger ones into a left-aligned group. */}
               <div className="sbk-card__actions-start">
                 {actions.map(
                   (action, i) =>
@@ -117,16 +118,18 @@ export function Card({ block, blockId }: BlockProps) {
                     ),
                 )}
               </div>
-              {actions.map(
-                (action, i) =>
-                  action.style !== "danger" && (
-                    <Element
-                      key={(action.action_id as string | undefined) ?? i}
-                      element={action}
-                      blockId={blockId}
-                    />
-                  ),
-              )}
+              {[
+                ...actions.filter(
+                  (action) => action.style !== "danger" && action.style !== "primary",
+                ),
+                ...actions.filter((action) => action.style === "primary"),
+              ].map((action, i) => (
+                <Element
+                  key={(action.action_id as string | undefined) ?? i}
+                  element={action}
+                  blockId={blockId}
+                />
+              ))}
             </div>
           )}
         </div>

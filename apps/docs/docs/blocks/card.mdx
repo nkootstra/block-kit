@@ -67,11 +67,12 @@ text, and buttons) inside a bordered box. It's a library-invented block, not par
     },
     title: {
       type: "PlainTextElement | MrkdwnElement",
-      description: "The card's bold title.",
+      description: "The card's bold title, cut to one line after its last whole word that fits.",
     },
     subtitle: {
       type: "PlainTextElement | MrkdwnElement",
-      description: "Muted text under the title.",
+      description:
+        "Muted text under the title, cut to one line after its last whole word that fits.",
     },
     hero_image: {
       type: '{ type: "image"; image_url: string; alt_text?: string }',
@@ -277,8 +278,9 @@ Dropping `subtitle` centers a lone title on the icon instead of stacking the two
   }}
 />
 
-A `danger`-styled button is always grouped to the left; every other button keeps its original order on
-the right, regardless of where it appears in `actions`.
+Slack orders a card's buttons by style, regardless of where they appear in `actions`: `danger`
+buttons are grouped to the left, then default buttons and finally `primary` ones on the right. Buttons
+with the same style keep their order from `actions`.
 
 ## Interactivity
 
