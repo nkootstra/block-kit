@@ -1110,26 +1110,10 @@
   "extra/fidelity/button/long-content@dark": [],
   "extra/fidelity/button/long-content@mobile": [],
   "extra/fidelity/button/long-content@mobile+dark": [],
-  "extra/fidelity/card/mixed": [
-    "x|Approve|0",
-    "x|Details|0"
-  ],
-  "extra/fidelity/card/mixed@dark": [
-    "x|Approve|0",
-    "x|Details|0"
-  ],
-  "extra/fidelity/card/mixed@mobile": [
-    "x|Approve|0",
-    "x|Details|0",
-    "missing|An icon, a hero image, a body and two|0",
-    "extra|An icon, a hero image, a body and two actions|0"
-  ],
-  "extra/fidelity/card/mixed@mobile+dark": [
-    "x|Approve|0",
-    "x|Details|0",
-    "missing|An icon, a hero image, a body and two|0",
-    "extra|An icon, a hero image, a body and two actions|0"
-  ],
+  "extra/fidelity/card/mixed": [],
+  "extra/fidelity/card/mixed@dark": [],
+  "extra/fidelity/card/mixed@mobile": [],
+  "extra/fidelity/card/mixed@mobile+dark": [],
   "extra/fidelity/carousel/many-items": [],
   "extra/fidelity/carousel/many-items@dark": [],
   "extra/fidelity/carousel/many-items@mobile": [],
