@@ -216,6 +216,33 @@ describe("<RichText>", () => {
     expect(container.querySelector(".sbk-rich-list")?.getAttribute("start")).toBe("3");
   });
 
+  // extra/fidelity/rich-text-rich-text-list/many-items: after ten items, a list with offset 2 that
+  // continues them is numbered 11, not 3.
+  it("keeps counting a list that continues the one before it, whatever its offset", () => {
+    const item = (text: string) => ({
+      type: "rich_text_section",
+      elements: [{ type: "text", text }],
+    });
+    const block = {
+      type: "rich_text",
+      elements: [
+        { type: "rich_text_list", style: "ordered", indent: 0, elements: [item("1"), item("2")] },
+        { type: "rich_text_list", style: "bullet", indent: 1, elements: [item("Nested")] },
+        {
+          type: "rich_text_list",
+          style: "ordered",
+          indent: 0,
+          offset: 7,
+          elements: [item("Continued")],
+        },
+      ],
+    };
+    const { container } = render(<RichText block={block as never} blockId="b1" index={0} />);
+    const lists = container.querySelectorAll("ol.sbk-rich-list");
+    expect(lists).toHaveLength(1);
+    expect(screen.getByText("Continued").closest("li")?.hasAttribute("value")).toBe(false);
+  });
+
   it("draws a user mention as Slack's loading skeleton while there's no user resolver", () => {
     const block = {
       type: "rich_text",

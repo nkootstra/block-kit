@@ -174,9 +174,10 @@ Bold, italic, strikethrough, and inline code each come from a `text` element's `
 ### Indented (nested) list
 
 Consecutive `rich_text_list` elements merge into one outline: a deeper `indent` nests inside the
-previous item, and matching a shallower list's `indent`/`style` continues it. `offset` (a
-Builder/undocumented extension to the public schema) sets the starting number of an `ordered` list
-that continues from an earlier one.
+previous item, and matching a shallower list's `indent`/`style` continues it, numbering on from
+where it left off. `offset` (a Builder/undocumented extension to the public schema) sets the
+starting number of an `ordered` list that starts a new outline; a list that continues an earlier
+one keeps counting and ignores it, as Slack does.
 
 <Preview
   payload={{

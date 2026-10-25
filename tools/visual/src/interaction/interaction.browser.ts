@@ -361,6 +361,34 @@ describe.each(engines)("%s", (engine) => {
     }
   });
 
+  // Every reference with a quote: rgb(221, 221, 221) in light, rgb(185, 186, 189) in dark
+  // (extra/fidelity/rich-text-rich-text-quote/long-content@dark).
+  describe("quote bars", () => {
+    for (const [theme, bar] of [
+      ["light", "rgb(221, 221, 221)"],
+      ["dark", "rgb(185, 186, 189)"],
+    ] as const) {
+      it(`draws a rich text and a mrkdwn quote's bar in Slack's grey (${theme})`, async () => {
+        const page = await harness.open({
+          blocks: [
+            {
+              type: "rich_text",
+              elements: [
+                { type: "rich_text_quote", elements: [{ type: "text", text: "Rich text quote" }] },
+              ],
+            },
+            { type: "section", text: { type: "mrkdwn", text: "&gt; Mrkdwn quote" } },
+          ],
+          theme,
+        });
+        const bars = await page.$$eval(".sbk-rich-text__quote, .sbk-mrkdwn__quote", (els) =>
+          els.map((el) => getComputedStyle(el, "::before").backgroundColor),
+        );
+        expect(bars).toEqual([bar, bar]);
+      });
+    }
+  });
+
   // Measured in Block Kit Builder (redacted references in fixtures/contexts/*_select): Slack's
   // `c-member` and `c-small_channel_entity` rows inside its 28px option rows.
   describe("directory select rows", () => {

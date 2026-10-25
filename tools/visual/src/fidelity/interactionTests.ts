@@ -68,6 +68,14 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     { components: DIRECTORY, states: ["open"], facts: ["styles"], themes: BOTH },
     { components: DIRECTORY, states: ["many-items"], facts: ["behaviour"] },
   ],
+  "quote bars": [
+    {
+      components: ["rich_text.rich_text_quote"],
+      states: ["default"],
+      facts: ["styles"],
+      themes: BOTH,
+    },
+  ],
   links: [{ components: ["rich_text.link"], states: ["focus-visible"], facts: ["styles"] }],
   videos: [{ components: ["video"], states: ["focus-visible"], facts: ["styles"] }],
   "select and time picker triggers": [
