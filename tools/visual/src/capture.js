@@ -944,9 +944,9 @@ async ({
       );
       return () => hovers(el);
     }
-    // A scripted focus matches :focus-visible once the last input was a key press. Ask for one Tab
-    // (anywhere) when it doesn't, then focus the control again. The pointer must be off it, or the
-    // snapshot shows hover and focus together.
+    // Keyboard focus: one real Tab (anywhere), then a scripted focus on the control, which then
+    // matches :focus-visible. The pointer must be off it, or the snapshot shows hover and focus
+    // together.
     if (hovers(el)) await ask(name, { do: "move-away", target: address }, () => !hovers(el));
     // A container that takes no focus itself (a card) would hand it to its first control (a
     // button of the card's): that's a capture of the button, not of the container.
@@ -966,16 +966,18 @@ async ({
       throw new Error(
         `${name}: ${address} can't take focus in the Builder (nothing in it is focusable)`,
       );
-    if (!focusVisible(el)) {
-      const since = trusted.length;
-      await ask(name, { do: "key", key: "Tab", target: address, ...center(el) }, () =>
-        trusted.slice(since).some((e) => e.type === "keydown" && e.key === "Tab"),
-      );
-      await sleep(50);
-      focusable(el).focus({ preventScroll: true });
-      if (!focusVisible(el))
-        throw new Error(`${name}: ${address} took focus without :focus-visible after a Tab`);
-    }
+    // Always one fresh Tab, even when the scripted focus already matches :focus-visible: Slack
+    // marks keyboard focus with its own class (`c-button--focus-visible`, a button's halo) only
+    // after a key press it saw, and the scripted clicks before this item (theme, width, payload)
+    // undo that.
+    const since = trusted.length;
+    await ask(name, { do: "key", key: "Tab", target: address, ...center(el) }, () =>
+      trusted.slice(since).some((e) => e.type === "keydown" && e.key === "Tab"),
+    );
+    await sleep(50);
+    focusable(el).focus({ preventScroll: true });
+    if (!focusVisible(el))
+      throw new Error(`${name}: ${address} took focus without :focus-visible after a Tab`);
     return () => focusVisible(el) && !hovers(el);
   };
 

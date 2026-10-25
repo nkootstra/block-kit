@@ -232,6 +232,22 @@ describe("capture.js holding real input", () => {
     await page.close();
   });
 
+  it("asks for a Tab even when the last input was already a key press", async () => {
+    // Slack adds the class that draws a button's focus halo (`c-button--focus-visible`) only for
+    // focus that follows a key press it saw itself; the scripted clicks between items (theme,
+    // width, payload) reset that. Captured without a fresh Tab, a plan pill kept its outline and
+    // lost its halo.
+    const { page, seen } = await capture(
+      BUILDER,
+      [{ name: "catalog/actions/button@focus-button-2", payload: {} }],
+      {},
+      (p) => p.keyboard.press("Tab"),
+    );
+    expect(seen.map((s) => s.do)).toEqual(["key"]);
+    expect(seen[0]).toMatchObject({ key: "Tab", target: "button-2" });
+    await page.close();
+  });
+
   it("records what each control's state rules change, as the cascade resolves them", async () => {
     const { page, output } = await capture(BUILDER, [
       { name: "catalog/actions/button", payload: {} },
