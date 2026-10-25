@@ -325,10 +325,26 @@
     --sbk-chart-2: rgb(37, 155, 105);
     --sbk-chart-3: rgb(178, 110, 195);
     --sbk-chart-4: rgb(22, 153, 202);
+    --sbk-chart-5: rgb(217, 76, 117);
+    --sbk-chart-6: rgb(77, 101, 197);
+    --sbk-chart-7: rgb(228, 160, 127);
+    --sbk-chart-8: rgb(141, 210, 181);
+    --sbk-chart-9: rgb(216, 186, 225);
+    --sbk-chart-10: rgb(88, 189, 222);
+    --sbk-chart-11: rgb(230, 167, 186);
+    --sbk-chart-12: rgb(137, 155, 220);
     --sbk-chart-1-lift: rgb(234, 116, 60);
     --sbk-chart-2-lift: rgb(40, 170, 115);
     --sbk-chart-3-lift: rgb(195, 121, 214);
     --sbk-chart-4-lift: rgb(24, 168, 222);
+    --sbk-chart-5-lift: rgb(238, 83, 128);
+    --sbk-chart-6-lift: rgb(84, 111, 216);
+    --sbk-chart-7-lift: rgb(250, 176, 139);
+    --sbk-chart-8-lift: rgb(155, 231, 199);
+    --sbk-chart-9-lift: rgb(237, 204, 247);
+    --sbk-chart-10-lift: rgb(96, 207, 244);
+    --sbk-chart-11-lift: rgb(253, 183, 204);
+    --sbk-chart-12-lift: rgb(150, 170, 242);
     --sbk-chart-tooltip-bg: #1a1d21;
     --sbk-chart-tooltip-text: #f8f8f8;
     --sbk-chart-table-ring: rgba(232, 232, 232, 0.13);
@@ -353,12 +369,19 @@
     --sbk-callout-yellow-bg: #3b3321;
     --sbk-callout-purple-bg: #312c3f;
     --sbk-callout-gray-bg: #272a2e;
-    /* Areas 1 and 2 measured in the Builder; 3 and 4 follow the same rule (the series colour
-       at OKLCH lightness 0.236, chroma x0.35), as no Builder chart shows a third area. */
+    /* All twelve measured in the Builder (extra/charts/area-twelve-series@dark). */
     --sbk-chart-area-1: rgb(56, 16, 0);
     --sbk-chart-area-2: rgb(5, 36, 27);
-    --sbk-chart-area-3: rgb(42, 20, 46);
-    --sbk-chart-area-4: rgb(1, 34, 48);
+    --sbk-chart-area-3: rgb(32, 2, 33);
+    --sbk-chart-area-4: rgb(0, 26, 45);
+    --sbk-chart-area-5: rgb(48, 0, 5);
+    --sbk-chart-area-6: rgb(4, 11, 61);
+    --sbk-chart-area-7: rgb(218, 128, 86);
+    --sbk-chart-area-8: rgb(8, 63, 46);
+    --sbk-chart-area-9: rgb(67, 19, 73);
+    --sbk-chart-area-10: rgb(0, 61, 97);
+    --sbk-chart-area-11: rgb(107, 5, 24);
+    --sbk-chart-area-12: rgb(18, 32, 108);
   }
 }
 
@@ -469,10 +492,26 @@
   --sbk-chart-2: rgb(37, 155, 105);
   --sbk-chart-3: rgb(178, 110, 195);
   --sbk-chart-4: rgb(22, 153, 202);
+  --sbk-chart-5: rgb(217, 76, 117);
+  --sbk-chart-6: rgb(77, 101, 197);
+  --sbk-chart-7: rgb(228, 160, 127);
+  --sbk-chart-8: rgb(141, 210, 181);
+  --sbk-chart-9: rgb(216, 186, 225);
+  --sbk-chart-10: rgb(88, 189, 222);
+  --sbk-chart-11: rgb(230, 167, 186);
+  --sbk-chart-12: rgb(137, 155, 220);
   --sbk-chart-1-lift: rgb(234, 116, 60);
   --sbk-chart-2-lift: rgb(40, 170, 115);
   --sbk-chart-3-lift: rgb(195, 121, 214);
   --sbk-chart-4-lift: rgb(24, 168, 222);
+  --sbk-chart-5-lift: rgb(238, 83, 128);
+  --sbk-chart-6-lift: rgb(84, 111, 216);
+  --sbk-chart-7-lift: rgb(250, 176, 139);
+  --sbk-chart-8-lift: rgb(155, 231, 199);
+  --sbk-chart-9-lift: rgb(237, 204, 247);
+  --sbk-chart-10-lift: rgb(96, 207, 244);
+  --sbk-chart-11-lift: rgb(253, 183, 204);
+  --sbk-chart-12-lift: rgb(150, 170, 242);
   --sbk-chart-tooltip-bg: #1a1d21;
   --sbk-chart-tooltip-text: #f8f8f8;
   --sbk-chart-table-ring: rgba(232, 232, 232, 0.13);
@@ -497,10 +536,17 @@
   --sbk-callout-yellow-bg: #3b3321;
   --sbk-callout-purple-bg: #312c3f;
   --sbk-callout-gray-bg: #272a2e;
-  /* Areas 1 and 2 measured in the Builder; 3 and 4 follow the same rule (the series colour
-     at OKLCH lightness 0.236, chroma x0.35), as no Builder chart shows a third area. */
+  /* All twelve measured in the Builder (extra/charts/area-twelve-series@dark). */
   --sbk-chart-area-1: rgb(56, 16, 0);
   --sbk-chart-area-2: rgb(5, 36, 27);
-  --sbk-chart-area-3: rgb(42, 20, 46);
-  --sbk-chart-area-4: rgb(1, 34, 48);
+  --sbk-chart-area-3: rgb(32, 2, 33);
+  --sbk-chart-area-4: rgb(0, 26, 45);
+  --sbk-chart-area-5: rgb(48, 0, 5);
+  --sbk-chart-area-6: rgb(4, 11, 61);
+  --sbk-chart-area-7: rgb(218, 128, 86);
+  --sbk-chart-area-8: rgb(8, 63, 46);
+  --sbk-chart-area-9: rgb(67, 19, 73);
+  --sbk-chart-area-10: rgb(0, 61, 97);
+  --sbk-chart-area-11: rgb(107, 5, 24);
+  --sbk-chart-area-12: rgb(18, 32, 108);
 }
