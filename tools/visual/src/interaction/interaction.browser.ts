@@ -913,6 +913,37 @@ describe.each(engines)("%s", (engine) => {
         expect((await style(page, menu)).backgroundColor).toBe("rgb(26, 29, 33)");
       });
     }
+
+    // Slack wraps a typed multi-select's placeholder across the field and clips it after the
+    // first line, so it ends on a whole word (`extra/fidelity/multi-static-select/long-content`).
+    it("multi-select: shows a long placeholder's first line whole, with no ellipsis", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("Colours"),
+            element: {
+              type: "multi_static_select",
+              action_id: "m",
+              placeholder: plain(
+                "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone",
+              ),
+              options: [option("Alpha")],
+            },
+          },
+        ],
+      });
+      const placeholder = page.locator(".sbk-select__typed .sbk-select__placeholder");
+      const got = await placeholder.evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          textOverflow: s.textOverflow,
+          visibleLines: Math.round(el.clientHeight / parseFloat(s.lineHeight)),
+          wraps: el.scrollHeight > el.clientHeight,
+        };
+      });
+      expect(got).toEqual({ textOverflow: "clip", visibleLines: 1, wraps: true });
+    });
   });
 
   describe("multi-select section accessory", () => {
