@@ -1626,18 +1626,10 @@
   "extra/fidelity/rich-text-input/many-lines": [],
   "extra/fidelity/rich-text-input/mixed": [],
   "extra/fidelity/rich-text-input/mixed@dark": [],
-  "extra/fidelity/rich-text-list-record/default": [
-    "missing|Private list|0"
-  ],
-  "extra/fidelity/rich-text-list-record/default@dark": [
-    "missing|Private list|0"
-  ],
-  "extra/fidelity/rich-text-list-record/default@mobile": [
-    "missing|Private list|0"
-  ],
-  "extra/fidelity/rich-text-list-record/default@mobile+dark": [
-    "missing|Private list|0"
-  ],
+  "extra/fidelity/rich-text-list-record/default": [],
+  "extra/fidelity/rich-text-list-record/default@dark": [],
+  "extra/fidelity/rich-text-list-record/default@mobile": [],
+  "extra/fidelity/rich-text-list-record/default@mobile+dark": [],
   "extra/fidelity/rich-text-message-mention/default": [],
   "extra/fidelity/rich-text-message-mention/default@dark": [],
   "extra/fidelity/rich-text-message-mention/default@mobile": [],
