@@ -418,10 +418,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const inAccessory = useContext(SectionAccessoryContext);
   const inInputBlock = useInInputBlock();
   const dialogMode = inAccessory && multi && source !== "external";
-  // Slack's multi-external select is typed into in its field (`c-multi_select_input`), after the
-  // chips: there's no search box in its list, which shows only the minimum-query hint or the
-  // app's options (`extra/fidelity/multi-external-select/open@open`).
-  const fieldTyped = multi && source === "external" && !inAccessory;
+  // Slack's multi-external and multi-static selects are typed into in their field
+  // (`c-multi_select_input`), after the chips: there's no search box in the list, however many
+  // options it has (`extra/fidelity/multi-external-select/open@open`,
+  // `extra/fidelity/multi-static-select/many-items@open`).
+  const fieldTyped = multi && (source === "external" || source === "static") && !inAccessory;
   const directory = source === "users" || source === "conversations" || source === "channels";
   /** An item as a dialog option: a directory id becomes an option labelled as it's shown. */
   const itemToOption = (item: Item): PlainTextOption =>

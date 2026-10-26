@@ -201,7 +201,7 @@ describe("<Input> block", () => {
           placeholder: plain("Pick some"),
           options: [{ text: plain("One"), value: "1" }],
         },
-        "button",
+        "combobox",
       ],
       ["a time picker", { type: "timepicker", action_id: "a1" }, "combobox"],
     ] as const;

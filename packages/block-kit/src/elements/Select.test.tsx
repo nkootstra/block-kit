@@ -220,14 +220,14 @@ describe("<Select> static_select", () => {
         />
       </BlockKitProvider>,
     );
-    fireEvent.click(screen.getByRole("button", { expanded: false }));
+    fireEvent.click(screen.getByRole("combobox"));
     await clickAsync(screen.getByText("A"));
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({ selected_options: [sent("a", "A")] }),
       expect.anything(),
     );
     // A click pick closes the list, as Slack does.
-    fireEvent.click(screen.getByRole("button", { expanded: false }));
+    fireEvent.click(screen.getByRole("combobox"));
     await clickAsync(screen.getByText("B"));
     expect(onAction).toHaveBeenLastCalledWith(
       expect.objectContaining({ selected_options: [sent("a", "A"), sent("b", "B")] }),
@@ -272,7 +272,7 @@ describe("<Select> multi-select keyboard focus", () => {
         <Select element={element} blockId="b1" />
       </InputBlockContext.Provider>,
     );
-    const trigger = screen.getByRole("button", { expanded: false });
+    const trigger = screen.getByRole("combobox");
     // Tabbing in: keyboard focus, from the element before it.
     const before = screen.getByRole("button", { name: "Before" });
     Object.defineProperty(trigger, "matches", {
@@ -305,7 +305,7 @@ describe("<Select> multi-select picks", () => {
 
   it("closes the list and focuses the field after a click pick", async () => {
     render(<Select element={element} blockId="b1" />);
-    const trigger = screen.getByRole("button", { expanded: false });
+    const trigger = screen.getByRole("combobox");
     fireEvent.click(trigger);
     await clickAsync(screen.getByRole("option", { name: "A" }));
     expect(screen.queryByRole("listbox")).toBeNull();
@@ -315,11 +315,11 @@ describe("<Select> multi-select picks", () => {
 
   it("keeps the list open after an Enter pick", async () => {
     render(<Select element={element} blockId="b1" />);
-    const trigger = screen.getByRole("button", { expanded: false });
+    const trigger = screen.getByRole("combobox");
     fireEvent.click(trigger);
-    const list = screen.getByRole("listbox");
-    fireEvent.keyDown(list, { key: "ArrowDown" });
-    await keyDownAsync(list, "Enter");
+    // Keys go to the field, which keeps focus while the list is open.
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    await keyDownAsync(trigger, "Enter");
     expect(screen.getByRole("listbox")).toBeTruthy();
     expect(screen.getByRole("option", { name: "A" }).getAttribute("aria-selected")).toBe("true");
   });
@@ -973,7 +973,7 @@ describe("<Select> list states", () => {
         />
       </BlockKitProvider>,
     );
-    fireEvent.click(document.querySelector(".sbk-select__control")!);
+    fireEvent.click(screen.getByRole("combobox"));
     const alpha = screen.getByRole("option", { name: /Alpha/ });
     expect(alpha.querySelector(".sbk-select__check")).toBeTruthy();
     expect(
@@ -996,7 +996,7 @@ describe("<Select> list states", () => {
         />
       </BlockKitProvider>,
     );
-    const control = document.querySelector(".sbk-select__control")!;
+    const control = screen.getByRole("combobox");
     // A pointer click (`detail` 1), not the button's Enter or Space.
     fireEvent.click(control, { detail: 1 });
     expect(document.querySelector("[data-active]")).toBeNull();
@@ -1113,7 +1113,7 @@ describe("<Select> max_selected_items", () => {
     );
     // Each click pick closes the list, so it's reopened for the next one.
     for (const name of ["A", "B", "C"]) {
-      fireEvent.click(screen.getByRole("button", { expanded: false }));
+      fireEvent.click(screen.getByRole("combobox"));
       await clickAsync(screen.getByRole("option", { name }));
     }
     expect(onAction).toHaveBeenCalledTimes(2);
@@ -1177,6 +1177,45 @@ describe("<Select> multi_external_select with onOptions", () => {
         type: "multi_external_select",
         selected_options: [sent("x-1", "x one"), sent("y-2", "y two")],
       }),
+      expect.anything(),
+    );
+  });
+});
+
+describe("<Select> multi_static_select typed into", () => {
+  it("filters its options by what's typed into the field, with no search box in the list", async () => {
+    const onAction = vi.fn();
+    render(
+      <BlockKitProvider onAction={onAction}>
+        <Select
+          element={
+            {
+              type: "multi_static_select",
+              action_id: "a1",
+              placeholder: { type: "plain_text", text: "Pick some" },
+              // Slack's list has no search box however many options it has
+              // (`extra/fidelity/multi-static-select/many-items@open`).
+              options: "ABCDEFGHIJ".split("").map((l) => opt(l.toLowerCase(), `Option ${l}`)),
+            } as unknown as SelectElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const field = screen.getByRole("combobox", { name: "Pick some" });
+    fireEvent.click(field);
+    expect(screen.queryByPlaceholderText("Search options")).toBeNull();
+    fireEvent.change(field, { target: { value: "option c" } });
+    expect(
+      screen
+        .getAllByRole("option")
+        .map((o) => o.querySelector(".sbk-select__option-text")?.textContent),
+    ).toEqual(["Option C"]);
+    await clickAsync(screen.getByText("Option C"));
+    expect(document.activeElement).toBe(field);
+    expect((field as HTMLInputElement).value).toBe("");
+    expect(onAction).toHaveBeenLastCalledWith(
+      expect.objectContaining({ selected_options: [sent("c", "Option C")] }),
       expect.anything(),
     );
   });
@@ -1275,7 +1314,7 @@ describe("<Select> multi-select chips", () => {
 
   it("removes only the chip when Enter is pressed on it while the menu has a highlighted option", async () => {
     const onAction = renderChips();
-    fireEvent.click(screen.getByRole("button", { expanded: false }));
+    fireEvent.click(screen.getByRole("combobox"));
     // Highlight Charlie, the one option not yet chosen, so Enter would pick it if it got there.
     fireEvent.keyDown(screen.getByRole("listbox"), { key: "End" });
     await keyDownAsync(screen.getByRole("button", { name: "Remove Alpha" }), "Enter");
