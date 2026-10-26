@@ -129,6 +129,8 @@ A reference is a fixture captured in one state (`names.ts`):
 - **`@submit-errors`:** a modal submitted with its fields as the payload leaves them. Block Kit
   Builder doesn't validate a modal: it sends the `view_submission` with required fields empty and
   shows no errors, so this records the submit's behaviour and payload, not Slack's error styles.
+  Its pixels aren't scored: compare.ts leaves it out of the visual baseline, `--check` and the
+  mean, and checks only its text runs.
 - **`@scrolled-end`:** the first horizontal scroll container that overflows (a chart's card, a
   table, a carousel), scrolled fully to the right.
 - **`@scrolled`:** a carousel scrolled by one press of its right arrow, 356px. The capture waits

@@ -4,6 +4,7 @@
  * fixtures it ran, and merge-baseline.ts, which updates them from the reports of a sharded run.
  */
 import { Glob } from "bun";
+import { parseReferenceName } from "./names";
 import { type TextBaseline, type TextRunReport, updateTextBaseline } from "./textRuns";
 
 export interface Result {
@@ -41,6 +42,14 @@ export async function referenceNames(fixtures: string): Promise<string[]> {
 
 export const percent = (r: Result) => Math.round(r.ratio * 10_000) / 100;
 
+/**
+ * Whether a reference's pixel mismatch counts: recorded in the visual baseline, checked against it
+ * and in the mean. A submitted modal's doesn't: Block Kit Builder doesn't validate a modal, so its
+ * reference shows none of the errors we draw, and only its text findings are recorded.
+ */
+export const scoresPixels = (name: string) =>
+  parseReferenceName(name).interaction !== "submit-errors";
+
 /** The text-run findings of every fixture that rendered. */
 export const textFindingsOf = (results: readonly Result[]): TextBaseline =>
   Object.fromEntries(results.flatMap((r) => (r.text ? [[r.name, r.text.findings] as const] : [])));
@@ -59,6 +68,10 @@ export function updateBaselines(
   const next = full && !lowerOnly ? {} : { ...before.visual };
   for (const r of results) {
     if (r.error) continue;
+    if (!scoresPixels(r.name)) {
+      delete next[r.name];
+      continue;
+    }
     const previous = before.visual[r.name];
     if (lowerOnly && previous !== undefined && percent(r) >= previous - tolerance) continue;
     next[r.name] = percent(r);

@@ -30,6 +30,8 @@
  * the tolerance (in percentage points). --baseline compares against another file (CI passes the
  * base branch's, so a pull request can't loosen its own check) and --allow-increase reports
  * regressions instead of failing. A fixture without a baseline entry is reported, not failed.
+ * A `@submit-errors` reference's pixels aren't scored (baseline.ts `scoresPixels`): Slack's preview
+ * shows none of the errors we draw, so only its text runs are checked.
  * Baselines are per platform because font rasterization differs between operating systems; a
  * platform without one is reported, not failed.
  *
@@ -64,6 +66,7 @@ import {
   percent,
   referenceNames,
   type Result,
+  scoresPixels,
   textFindingsOf,
   updateBaselines,
 } from "./baseline";
@@ -504,7 +507,7 @@ for (const name of names) {
   results.push(result);
   const text = result.text as TextRunReport;
   console.log(
-    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged${text.motion.length > 0 ? `, ${text.motion.length} moving differently` : ""}${stateStyles?.length ? `, ${stateStyles.length} state styles differ` : ""}${scrollers?.length ? `, ${scrollers.length} scroll differences` : ""}`,
+    `${(result.ratio * 100).toFixed(2).padStart(6)}%  ${name}  ref ${reference.width}x${reference.height}  ours ${actual.width}x${actual.height}  text ${text.matched}/${referenceRuns.length} matched, ${text.findings.length} flagged${text.motion.length > 0 ? `, ${text.motion.length} moving differently` : ""}${stateStyles?.length ? `, ${stateStyles.length} state styles differ` : ""}${scrollers?.length ? `, ${scrollers.length} scroll differences` : ""}${scoresPixels(name) ? "" : ", pixels not scored"}`,
   );
   // A filtered run is for iterating on a few fixtures, so it lists what the text check flagged.
   if (prefixes.length > 0) {
@@ -521,8 +524,12 @@ if (prefixes.length === 0) {
   await writeFile(join(OUT, "report.json"), JSON.stringify(results, null, 2));
   await writeFile(join(OUT, "index.html"), report(results));
 }
-const mean = results.reduce((s, r) => s + r.ratio, 0) / Math.max(results.length, 1);
-console.log(`\n${results.length} fixtures, mean mismatch ${(mean * 100).toFixed(2)}%`);
+const scored = results.filter((r) => scoresPixels(r.name));
+const mean = scored.reduce((s, r) => s + r.ratio, 0) / Math.max(scored.length, 1);
+const unscored = results.length - scored.length;
+console.log(
+  `\n${results.length} fixtures, mean mismatch ${(mean * 100).toFixed(2)}%${unscored > 0 ? ` (${unscored} not scored)` : ""}`,
+);
 if (prefixes.length === 0) console.log(`report: ${join(OUT, "index.html")}`);
 
 const readBaseline = async (file: string): Promise<Baseline> =>
@@ -556,6 +563,7 @@ if (check) {
     for (const r of results) {
       const before = baseline[r.name];
       if (r.error) failures.push(`${r.name}: render failed: ${r.error}`);
+      else if (!scoresPixels(r.name)) continue;
       else if (before === undefined) unrecorded.push(`${r.name}: ${percent(r).toFixed(2)}%`);
       else if (percent(r) > before + tolerance) {
         const line = `${r.name}: ${percent(r).toFixed(2)}% (baseline ${before.toFixed(2)}%)`;
@@ -650,7 +658,7 @@ function report(rows: Result[]): string {
 ${sorted
   .map(
     (r) =>
-      `<tr><td>${r.name}</td><td>${r.error ? `render failed: ${r.error}` : `${(r.ratio * 100).toFixed(2)}%`}</td><td><img src="${r.name}.reference.png"></td><td><img src="${r.name}.actual.png"></td><td><img src="${r.name}.diff.png"></td></tr>`,
+      `<tr><td>${r.name}</td><td>${r.error ? `render failed: ${r.error}` : `${(r.ratio * 100).toFixed(2)}%${scoresPixels(r.name) ? "" : " (not scored)"}`}</td><td><img src="${r.name}.reference.png"></td><td><img src="${r.name}.actual.png"></td><td><img src="${r.name}.diff.png"></td></tr>`,
   )
   .join("\n")}
 </table>`;

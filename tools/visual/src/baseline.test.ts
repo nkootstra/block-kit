@@ -1,5 +1,11 @@
 import { describe, expect, it } from "bun:test";
-import { type Baselines, mergeReports, type Result, updateBaselines } from "./baseline";
+import {
+  type Baselines,
+  mergeReports,
+  type Result,
+  scoresPixels,
+  updateBaselines,
+} from "./baseline";
 import { shard } from "./shard";
 
 const result = (
@@ -67,6 +73,27 @@ describe("updateBaselines", () => {
       visual: { a: 1, b: 5, c: 3, removed: 4 },
       text: { a: ["x|a|0"], b: ["q|b|0"], c: [], removed: ["w|r|0"] },
     });
+  });
+
+  it("records only the text findings of a submitted modal, whose errors Slack's preview never shows", () => {
+    const submitted = "m@submit-errors+dark";
+    const next = updateBaselines(
+      { visual: { [submitted]: 5.67 }, text: {} },
+      [result(submitted, 5.67, ["extra|Please complete this required field.|0"])],
+      { full: false, lowerOnly: false, tolerance },
+    );
+    expect(next).toEqual({
+      visual: {},
+      text: { [submitted]: ["extra|Please complete this required field.|0"] },
+    });
+  });
+});
+
+describe("scoresPixels", () => {
+  it("scores every reference but a submitted modal's", () => {
+    expect(
+      ["m", "m@open", "m@submit-errors", "m@submit-errors+mobile+dark"].map(scoresPixels),
+    ).toEqual([true, true, false, false]);
   });
 });
 
