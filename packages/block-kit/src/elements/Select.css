@@ -71,8 +71,13 @@
   margin-left: 0;
 }
 
+/* Slack wraps a long placeholder across the field and clips it after the first line, so it ends on
+   a whole word rather than an ellipsis (`extra/fidelity/multi-static-select/long-content`). */
 .sbk-select__typed .sbk-select__placeholder {
+  height: 1lh;
   color: var(--sbk-content-ter);
+  white-space: normal;
+  text-overflow: clip;
   pointer-events: none;
 }
 
@@ -93,6 +98,12 @@
   font-size: 15px;
   line-height: 22px;
   color: var(--sbk-text-sec);
+}
+
+/* With no chevron, Slack's placeholder runs to the field's right edge (`right: 0`), into the
+   padding the chevron would have. */
+.sbk-input__element .sbk-select--field-typed .sbk-select__placeholder {
+  margin-right: -28px;
 }
 
 /* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
