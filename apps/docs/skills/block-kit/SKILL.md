@@ -122,8 +122,9 @@ pending); with a `user` resolver that returns `undefined`, the user doesn't exis
 Slack's empty outline instead, as a `contact_card` shows its "could not be displayed" notice.
 
 Rich text elements that point at something only Slack can look up have no resolver: a
-`workflow_mention`, `message_mention`, `file` or `canvas` shows Slack's pill for something the
-viewer can't open ("Deleted workflow", "Private message", "Hidden file", "Private canvas"), whatever
+`workflow_mention`, `message_mention`, `file`, `canvas` or `list_record` shows Slack's pill for
+something the viewer can't open ("Deleted workflow", "Private message", "Hidden file", "Private
+canvas", "Private list"), whatever
 its `text`; a `work_object_mention` and an `attachment_mention` show their `text` linked to `url`.
 
 `slackFile: (file) => ({ url, size })` resolves a `slack_file` image (image block or element) to a

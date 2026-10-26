@@ -89,7 +89,7 @@ links, mentions, emoji, and dates.
 Inline (`RichTextElement`) types: `text` (with `style.bold` / `italic` / `strike` / `code` /
 `underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, `color`,
 `tag`, `salesforce_data_field`, `workflow_mention`, `message_mention`, `file`, `canvas`,
-`work_object_mention` and `attachment_mention`.
+`list_record`, `work_object_mention` and `attachment_mention`.
 
 ## Examples
 
@@ -510,7 +510,7 @@ record's ID is on the pill as `data-id`.
   }}
 />
 
-### Workflows, messages, files, canvases and work objects
+### Workflows, messages, files, canvases, lists and work objects
 
 These elements point at something only Slack can look up. The renderer shows each the way Slack
 shows it to someone who can't open it, whatever `text` the payload gives:
@@ -521,6 +521,7 @@ shows it to someone who can't open it, whatever `text` the payload gives:
 | `message_mention`     | A greyed pill with a speech bubble and "Private message"                  |
 | `file`                | A greyed pill with a closed eye and "Hidden file"                         |
 | `canvas`              | A blue pill with a lock and "Private canvas"                              |
+| `list_record`         | A blue pill with a lock and "Private list"                                |
 | `work_object_mention` | A blue pill with the app's icon and the element's `text`, linked to `url` |
 | `attachment_mention`  | The element's `text` as a link to `url`, without an underline             |
 
