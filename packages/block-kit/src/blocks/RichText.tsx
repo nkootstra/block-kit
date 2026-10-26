@@ -44,12 +44,12 @@ interface RichTextSalesforceDataField {
 
 /**
  * Elements that point at something only Slack can look up: a workflow, a message, a file, a canvas,
- * an app's work object or an attachment, e.g. `{ type: "canvas", file_id: "F0123456789" }`.
+ * a list, an app's work object or an attachment, e.g. `{ type: "canvas", file_id: "F0123456789" }`.
  */
 type RichTextEntity =
   | { type: "workflow_mention"; workflow_id: string; text?: string }
   | { type: "message_mention"; channel_id: string; message_ts: string }
-  | { type: "file" | "canvas"; file_id: string; text?: string }
+  | { type: "file" | "canvas" | "list_record"; file_id: string; text?: string }
   | { type: "work_object_mention"; entity_id: string; app_id?: string; text?: string; url: string }
   | { type: "attachment_mention"; url: string; text?: string };
 type RichTextEntityLeaf = RichTextEntity & { style?: RichTextElement["style"] };
@@ -320,7 +320,7 @@ export function renderLeaf(
         </span>
       );
       break;
-    // extra/fidelity/rich-text-{workflow-mention,message-mention,file,canvas}/default: Slack
+    // extra/fidelity/rich-text-{workflow-mention,message-mention,file,canvas,list-record}/default: Slack
     // can't look these up for the Builder's preview either, and shows what it shows a person
     // without access, whatever text the payload gives.
     case "workflow_mention":
@@ -334,6 +334,9 @@ export function renderLeaf(
       break;
     case "canvas":
       content = <Slug icon={<LockFilledIcon />} label="Private canvas" />;
+      break;
+    case "list_record":
+      content = <Slug icon={<LockFilledIcon />} label="Private list" />;
       break;
     // extra/fidelity/rich-text-work-object-mention/default: the payload's text, linked, behind the
     // app's icon. Without one Slack shows its default app icon, an image we can't use, so the

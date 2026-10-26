@@ -413,9 +413,16 @@ describe("<RichText>", () => {
       expect(screen.queryByText("Run it")).toBeNull();
     });
 
-    it("shows a canvas as private, in the link colour", () => {
-      renderEntity({ type: "canvas", file_id: "F0123456789", text: "A canvas" });
-      const slug = screen.getByText("Private canvas").closest(".sbk-rich-text__slug");
+    it.each([
+      ["a canvas", { type: "canvas", file_id: "F0123456789", text: "A canvas" }, "Private canvas"],
+      [
+        "a list",
+        { type: "list_record", file_id: "F0123456789", text: "A list record" },
+        "Private list",
+      ],
+    ] as const)("shows %s as private, in the link colour", (_, leaf, label) => {
+      renderEntity(leaf);
+      const slug = screen.getByText(label).closest(".sbk-rich-text__slug");
       expect(slug).toBeTruthy();
       expect(slug?.classList.contains("sbk-rich-text__slug--disabled")).toBe(false);
     });
