@@ -694,6 +694,24 @@ describe.each(engines)("%s", (engine) => {
       expect(s.boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`)).toBe(true);
       expect(s.textDecorationLine).toBe("none");
     });
+
+    // extra/fidelity/rich-text-citation/default: Slack's citation chip darkens on a blue tint,
+    // brighter text in the dark theme.
+    for (const [theme, text] of [
+      ["light", "rgb(11, 76, 140)"],
+      ["dark", "rgb(64, 179, 228)"],
+    ] as const) {
+      it(`tints a citation under the pointer in the ${theme} theme`, async () => {
+        const page = await harness.open({
+          ...(await fixture("extra/fidelity/rich-text-citation/default")),
+          theme,
+        });
+        await page.hover(".sbk-rich-text__citation");
+        await settle(page);
+        const s = await style(page, ".sbk-rich-text__citation");
+        expect([s.color, s.backgroundColor]).toEqual([text, "rgba(29, 155, 209, 0.2)"]);
+      });
+    }
   });
 
   describe("videos", () => {

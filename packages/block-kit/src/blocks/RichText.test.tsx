@@ -427,6 +427,32 @@ describe("<RichText>", () => {
       expect(slug?.classList.contains("sbk-rich-text__slug--disabled")).toBe(false);
     });
 
+    // extra/fidelity/rich-text-citation/default: "1 · 🔗 example.com", linked to the source.
+    it("links a citation to its source, as its index and the source's name", () => {
+      renderEntity({
+        type: "citation",
+        url: "https://example.com/source",
+        text: "Source",
+        index: 1,
+        details: { citation_type: "web", display_name: "example.com", title: "A cited page" },
+      });
+      const link = screen.getByRole("link");
+      expect(link.getAttribute("href")).toBe("https://example.com/source");
+      expect(link.textContent).toBe("1·example.com");
+      expect(link.querySelector("b")?.textContent).toBe("1");
+      expect(link.querySelector("svg")).toBeTruthy();
+    });
+
+    it("names a citation's source by its text when it has no display name", () => {
+      renderEntity({
+        type: "citation",
+        url: "https://example.com/source",
+        text: "Source",
+        index: 2,
+      });
+      expect(screen.getByRole("link").textContent).toBe("2·Source");
+    });
+
     it("links a work object to its URL under its text", () => {
       renderEntity({
         type: "work_object_mention",

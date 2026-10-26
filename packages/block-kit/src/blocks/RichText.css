@@ -214,6 +214,45 @@
   text-decoration: none;
 }
 
+/* Slack's citation chip: the index, a dot, the link icon and the source's name, in 12px text on
+   the mention tint, sitting 4px above the line's baseline. */
+.sbk-rich-text__citation {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 4px;
+  padding: 1px 2px;
+  font-size: 12px;
+  line-height: 17.6px;
+  color: var(--sbk-link);
+  text-decoration: none;
+  vertical-align: middle;
+  background: var(--sbk-chip-bg);
+  border-radius: 3px;
+}
+
+.sbk-rich-text__citation-contents {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.sbk-rich-text__citation-contents > b {
+  font-weight: 700;
+}
+
+.sbk-rich-text__citation-contents > svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sbk-rich-text__citation:hover {
+    color: var(--sbk-citation-hover-text);
+    background: var(--sbk-citation-hover-bg);
+  }
+}
+
 /* A work object's app icon (Slack's is 16px with 2px corners), drawn as a message's placeholder
    avatar is. */
 .sbk-rich-text__slug-app {

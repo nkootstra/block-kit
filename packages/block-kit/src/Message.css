@@ -262,6 +262,8 @@
     --sbk-row-hover-bg: #f8f8f80f;
     --sbk-mention-hover-bg: #03669673;
     --sbk-mention-hover-text: rgb(136, 187, 226);
+    --sbk-citation-hover-bg: rgba(29, 155, 209, 0.2);
+    --sbk-citation-hover-text: rgb(64, 179, 228);
     --sbk-menu-highlight-bg: #1264a3;
     --sbk-menu-highlight-text: #fff;
     --sbk-focus-ring: #2ba5ce;
@@ -429,6 +431,8 @@
   --sbk-row-hover-bg: #f8f8f80f;
   --sbk-mention-hover-bg: #03669673;
   --sbk-mention-hover-text: rgb(136, 187, 226);
+  --sbk-citation-hover-bg: rgba(29, 155, 209, 0.2);
+  --sbk-citation-hover-text: rgb(64, 179, 228);
   --sbk-menu-highlight-bg: #1264a3;
   --sbk-menu-highlight-text: #fff;
   --sbk-focus-ring: #2ba5ce;
