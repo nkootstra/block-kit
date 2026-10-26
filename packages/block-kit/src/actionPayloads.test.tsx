@@ -219,7 +219,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   "catalog/agents/message-feedback@pick": () => clickAsync(screen.getAllByRole("radio")[0]!),
   "catalog/input/multi-static-select@pick": async () => {
-    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    fireEvent.click(screen.getAllByRole("combobox")[0]!);
     await clickAsync(screen.getByRole("option", { name: "*plain_text option 1*" }));
   },
   // The first channel (redacted to C0000001; PROVIDER) in the "Select channels" dialog.
@@ -296,7 +296,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     dialogPick(/1 selected/, /Slackbot/),
   // Option 1 in the Required modal's first ("Static") multi-select.
   "extra/modal/required-multi-selects@pick": async () => {
-    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    fireEvent.click(screen.getAllByRole("combobox")[0]!);
     await clickAsync(screen.getByRole("option", { name: "Option 1" }));
   },
   "extra/context-actions/feedback-row@pick-positive": () =>
@@ -487,7 +487,9 @@ async function pickColours(...names: string[]) {
   for (const name of names) {
     // The list stays open after a pick, as Slack's does; open it only when it isn't.
     if (!screen.queryByRole("option", { name: new RegExp(name) })) {
-      fireEvent.click(document.querySelector<HTMLElement>(".sbk-input button")!);
+      fireEvent.click(
+        within(document.querySelector<HTMLElement>(".sbk-input")!).getByRole("combobox"),
+      );
     }
     await clickAsync(screen.getByRole("option", { name: new RegExp(name) }));
   }
