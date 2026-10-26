@@ -1434,34 +1434,22 @@
   "extra/fidelity/multi-static-select/initial-value@open": [],
   "extra/fidelity/multi-static-select/initial-value@open+dark": [],
   "extra/fidelity/multi-static-select/long-content": [
-    "missing|This sentence is here to make the text long enough to wrap|0",
-    "missing|onto several lines at the desktop width, and further still on a|0",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
+    "missing|onto several lines at the desktop width, and further still on a|0"
   ],
   "extra/fidelity/multi-static-select/long-content@dark": [
-    "missing|This sentence is here to make the text long enough to wrap|0",
-    "missing|onto several lines at the desktop width, and further still on a|0",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
+    "missing|onto several lines at the desktop width, and further still on a|0"
   ],
   "extra/fidelity/multi-static-select/long-content@mobile": [
-    "missing|This sentence is here to make the text long|0",
-    "missing|enough to wrap onto several lines at the|0",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
+    "missing|enough to wrap onto several lines at the|0"
   ],
   "extra/fidelity/multi-static-select/long-content@mobile+dark": [
-    "missing|This sentence is here to make the text long|0",
-    "missing|enough to wrap onto several lines at the|0",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
+    "missing|enough to wrap onto several lines at the|0"
   ],
   "extra/fidelity/multi-static-select/long-content@open": [
-    "missing|This sentence is here to make the text long enough to wrap|0",
-    "missing|onto several lines at the desktop width, and further still on a|0",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
+    "missing|onto several lines at the desktop width, and further still on a|0"
   ],
   "extra/fidelity/multi-static-select/long-content@open+dark": [
-    "missing|This sentence is here to make the text long enough to wrap|0",
-    "missing|onto several lines at the desktop width, and further still on a|0",
-    "extra|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
+    "missing|onto several lines at the desktop width, and further still on a|0"
   ],
   "extra/fidelity/multi-static-select/many-items": [],
   "extra/fidelity/multi-static-select/many-items@dark": [],
