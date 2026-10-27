@@ -133,7 +133,8 @@ export function App() {
       setLatestPayload(payload);
       setAppReply(null);
     };
-    if (delivery === "demo") {
+    // Only the dev server has the relay, so a build leaves the transport out.
+    if (__RELAY__ !== "ready" || delivery === "demo") {
       return {
         onAction: demoAction,
         onPayload: record,

@@ -1,5 +1,5 @@
-import { Combobox } from "@base-ui/react/combobox";
 import * as stylex from "@stylexjs/stylex";
+import { type PointerEvent, useState } from "react";
 import type { Example } from "../examples";
 import { color } from "../theme/tokens.stylex";
 import { focusRing } from "./ui";
@@ -78,7 +78,7 @@ function fixtureLabel(name: string): string {
 
 const PHONE = "@media (max-width: 800px)";
 
-const styles = stylex.create({
+export const pickerStyles = stylex.create({
   trigger: {
     display: "inline-flex",
     flexGrow: { default: 0, [PHONE]: 1 },
@@ -205,120 +205,88 @@ const styles = stylex.create({
   },
 });
 
-const matches = (item: PickerItem, query: string) => {
+export const matches = (item: PickerItem, query: string) => {
   const q = query.trim().toLowerCase();
   return !q || item.label.toLowerCase().includes(q) || item.value.toLowerCase().includes(q);
 };
 
-export function ExamplePicker({
-  groups,
-  value,
-  onChange,
-}: {
+export interface ExamplePickerProps {
   groups: PickerGroup[];
   value: string;
   onChange: (name: string) => void;
-}) {
-  const items = groups.flatMap((g) => g.items);
-  const selected = items.find((item) => item.value === value) ?? null;
-  // Base UI's grouped items: each group carries its own `items`; the label rides along as `value`.
-  const grouped = groups.map((g) => ({ value: g.label, items: g.items }));
+}
+
+/** The trigger's label and icon, the same before and after the combobox loads. */
+export function TriggerContent({ label }: { label: string | undefined }) {
   return (
-    <Combobox.Root
-      items={grouped}
-      value={selected}
-      onValueChange={(next) => {
-        if (next) onChange(next.value);
+    <>
+      <span {...stylex.props(pickerStyles.value, !label && pickerStyles.placeholder)}>
+        {label ?? "Your payload"}
+      </span>
+      <span {...stylex.props(pickerStyles.icon)}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="m7 15 5 5 5-5M7 9l5-5 5 5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    </>
+  );
+}
+
+type Combobox = typeof import("./ExampleCombobox");
+let combobox: Promise<Combobox> | undefined;
+let loaded: Combobox | undefined;
+const loadCombobox = () =>
+  (combobox ??= import("./ExampleCombobox").then((module) => (loaded = module)));
+
+/**
+ * The example picker. Its combobox (Base UI's, with its search and positioning) is a large share
+ * of the page's JavaScript and is only needed once the picker is used, so until then this renders
+ * the same trigger as a plain button (a popup button rather than a combobox, which it can't be
+ * yet) and loads it on the first hover, focus or press. Focus moves to the combobox's trigger,
+ * and a press before it has loaded opens it when it has, as the press would have.
+ */
+export function ExamplePicker(props: ExamplePickerProps) {
+  const [module, setModule] = useState(loaded);
+  const [focused, setFocused] = useState(false);
+  // How the picker was opened before the combobox loaded: "mouse", "touch", "pen" or "keyboard".
+  const [openedBy, setOpenedBy] = useState<string | null>(null);
+  const [pointerType, setPointerType] = useState("");
+
+  if (module) {
+    return <module.ExampleCombobox {...props} openedBy={openedBy} autoFocus={focused} />;
+  }
+
+  const load = () => void loadCombobox().then(setModule);
+  const label = props.groups.flatMap((g) => g.items).find((i) => i.value === props.value)?.label;
+  return (
+    <button
+      type="button"
+      aria-expanded={false}
+      aria-haspopup="dialog"
+      aria-label="Example"
+      onPointerEnter={load}
+      onPointerDown={(event: PointerEvent) => {
+        setPointerType(event.pointerType);
+        load();
       }}
-      itemToStringLabel={(item) => item.label}
-      isItemEqualToValue={(a, b) => a.value === b.value}
-      filter={matches}
+      onFocus={() => {
+        setFocused(true);
+        load();
+      }}
+      onBlur={() => setFocused(false)}
+      onClick={() => {
+        setOpenedBy(pointerType || "keyboard");
+        load();
+      }}
+      {...stylex.props(pickerStyles.trigger, focusRing.ring)}
     >
-      <Combobox.Trigger aria-label="Example" {...stylex.props(styles.trigger, focusRing.ring)}>
-        <span {...stylex.props(styles.value, !selected && styles.placeholder)}>
-          {selected?.label ?? "Your payload"}
-        </span>
-        <span {...stylex.props(styles.icon)}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="m7 15 5 5 5-5M7 9l5-5 5 5"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </Combobox.Trigger>
-      <Combobox.Portal>
-        <Combobox.Positioner sideOffset={6} align="start" {...stylex.props(styles.positioner)}>
-          <Combobox.Popup
-            // Opened by a tap, the list shows without focusing the search field, so a phone's
-            // keyboard doesn't cover it; tapping the field brings the keyboard up to search.
-            initialFocus={(openType) => openType !== "touch"}
-            className={(state) =>
-              stylex.props(
-                styles.popup,
-                (state.transitionStatus === "starting" || state.transitionStatus === "ending") &&
-                  styles.popupHidden,
-              ).className ?? ""
-            }
-          >
-            <Combobox.Input
-              placeholder="Search examples"
-              aria-label="Search examples"
-              {...stylex.props(styles.search)}
-            />
-            <Combobox.Empty {...stylex.props(styles.empty)}>
-              <span {...stylex.props(styles.emptyText)}>No example matches.</span>
-            </Combobox.Empty>
-            <Combobox.List>
-              {(group: { value: string; items: PickerItem[] }) => (
-                <Combobox.Group
-                  key={group.value}
-                  items={group.items}
-                  {...stylex.props(styles.group)}
-                >
-                  <Combobox.GroupLabel {...stylex.props(styles.groupLabel)}>
-                    {group.value}
-                  </Combobox.GroupLabel>
-                  <Combobox.Collection>
-                    {(item: PickerItem) => (
-                      <Combobox.Item
-                        key={item.value}
-                        value={item}
-                        className={(state) =>
-                          stylex.props(styles.item, state.highlighted && styles.itemHighlighted)
-                            .className ?? ""
-                        }
-                      >
-                        <Combobox.ItemIndicator {...stylex.props(styles.check)}>
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            aria-hidden="true"
-                          >
-                            <path
-                              d="M20 6 9 17l-5-5"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </Combobox.ItemIndicator>
-                        <span {...stylex.props(styles.itemText)}>{item.label}</span>
-                      </Combobox.Item>
-                    )}
-                  </Combobox.Collection>
-                </Combobox.Group>
-              )}
-            </Combobox.List>
-          </Combobox.Popup>
-        </Combobox.Positioner>
-      </Combobox.Portal>
-    </Combobox.Root>
+      <TriggerContent label={label} />
+    </button>
   );
 }
