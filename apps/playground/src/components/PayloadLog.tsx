@@ -1,4 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
+import { memo } from "react";
 import { copyText, useFlash } from "../lib/useFlash";
 import { color, font } from "../theme/tokens.stylex";
 import { CodeViewer } from "./LazyCode";
@@ -82,7 +83,8 @@ const styles = stylex.create({
   },
 });
 
-export function PayloadLog({
+/** Memoized: the app re-renders on every keystroke, and the log only changes with a payload. */
+export const PayloadLog = memo(function PayloadLog({
   payload,
   reply,
   delivering,
@@ -135,4 +137,4 @@ export function PayloadLog({
       )}
     </div>
   );
-}
+});

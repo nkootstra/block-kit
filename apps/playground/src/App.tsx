@@ -1,7 +1,7 @@
 import type { BlockKitProviderProps, ModalView, Surface } from "@nkootstra/block-kit";
 import { httpTransport } from "@nkootstra/block-kit/transport";
 import * as stylex from "@stylexjs/stylex";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { EditorPane } from "./components/EditorPane";
 import { CUSTOM, ExamplePicker, pickerGroups } from "./components/ExamplePicker";
 import { Header } from "./components/Header";
@@ -187,6 +187,11 @@ export function App() {
   );
   const example = all.find((f) => f.json === source)?.name ?? CUSTOM;
 
+  const clearLog = useCallback(() => {
+    setLatestPayload(null);
+    setAppReply(null);
+  }, []);
+
   const load = (json: string) => {
     setSource(json);
     setSurface(detectSurface(json));
@@ -245,10 +250,7 @@ export function App() {
               payload={latestPayload}
               reply={appReply}
               delivering={delivery === "app"}
-              onClear={() => {
-                setLatestPayload(null);
-                setAppReply(null);
-              }}
+              onClear={clearLog}
               theme={resolved}
             />
           }

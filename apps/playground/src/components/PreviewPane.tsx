@@ -8,7 +8,7 @@ import {
   type Surface,
 } from "@nkootstra/block-kit";
 import * as stylex from "@stylexjs/stylex";
-import { lazy, type ReactNode, Suspense } from "react";
+import { lazy, memo, type ReactNode, Suspense } from "react";
 import { builderUrl } from "../payload";
 import { toHomeView, toModalView } from "../lib/views";
 import { color, font } from "../theme/tokens.stylex";
@@ -135,6 +135,39 @@ function DeliveryPicker({
   );
 }
 
+type Shown = { blocks: ModalView["blocks"]; raw: unknown };
+
+/**
+ * The payload as Slack draws it. Memoized: the pane re-renders on every keystroke (for the Block
+ * Kit Builder link), and the surface only needs to when the payload that parses changes.
+ */
+const Rendered = memo(function Rendered({
+  shown,
+  surface,
+  handlers,
+}: {
+  shown: Shown;
+  surface: Surface;
+  handlers: Omit<BlockKitProviderProps, "children">;
+}) {
+  return (
+    <BlockKitProvider
+      surface={surface}
+      resolvers={sampleResolvers}
+      identity={sampleIdentity}
+      {...handlers}
+    >
+      {surface === "modal" ? (
+        <Modal view={toModalView(shown.raw, shown.blocks)} />
+      ) : surface === "home" ? (
+        <HomeTab view={toHomeView(shown.raw, shown.blocks)} />
+      ) : (
+        <Message blocks={shown.blocks} />
+      )}
+    </BlockKitProvider>
+  );
+});
+
 export function PreviewPane({
   source,
   surface,
@@ -152,7 +185,7 @@ export function PreviewPane({
   delivery: Delivery;
   onDeliveryChange: (delivery: Delivery) => void;
   /** The last payload that parsed. */
-  shown: { blocks: ModalView["blocks"]; raw: unknown } | null;
+  shown: Shown | null;
   handlers: Omit<BlockKitProviderProps, "children">;
   log: ReactNode;
   hiddenOnPhone: boolean;
@@ -178,20 +211,7 @@ export function PreviewPane({
       <div {...stylex.props(styles.stage)}>
         <div {...stylex.props(styles.frame, surface === "modal" && styles.frameModal)}>
           {shown ? (
-            <BlockKitProvider
-              surface={surface}
-              resolvers={sampleResolvers}
-              identity={sampleIdentity}
-              {...handlers}
-            >
-              {surface === "modal" ? (
-                <Modal view={toModalView(shown.raw, shown.blocks)} />
-              ) : surface === "home" ? (
-                <HomeTab view={toHomeView(shown.raw, shown.blocks)} />
-              ) : (
-                <Message blocks={shown.blocks} />
-              )}
-            </BlockKitProvider>
+            <Rendered shown={shown} surface={surface} handlers={handlers} />
           ) : (
             <p {...stylex.props(styles.empty)}>
               Paste a <code {...stylex.props(styles.code)}>{'{ "blocks": [...] }'}</code> payload,
