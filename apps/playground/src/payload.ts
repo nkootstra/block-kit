@@ -37,7 +37,8 @@ export function builderUrl(json: string, teamId?: string): string {
 }
 
 export function readHash(): string | null {
-  const hash = window.location.hash.slice(1);
+  // The build's prerender (src/prerender.tsx) has no address: it shows the default example.
+  const hash = typeof location === "undefined" ? "" : location.hash.slice(1);
   if (!hash) return null;
   try {
     return JSON.stringify(JSON.parse(decodeURIComponent(hash)), null, 2);

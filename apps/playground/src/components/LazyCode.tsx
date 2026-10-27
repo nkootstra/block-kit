@@ -23,6 +23,8 @@ const styles = stylex.create({
 });
 
 export function CodeEditor(props: ComponentProps<typeof LazyEditor>) {
+  // The build's prerender (src/prerender.tsx) shows the plain JSON without loading the editor.
+  if (import.meta.env.SSR) return <pre {...stylex.props(styles.fallback)}>{props.value}</pre>;
   return (
     <Suspense fallback={<pre {...stylex.props(styles.fallback)}>{props.value}</pre>}>
       <LazyEditor {...props} />

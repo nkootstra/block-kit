@@ -6,7 +6,8 @@
 
 html,
 body,
-#root {
+#root,
+#prerender {
   height: 100%;
   margin: 0;
 }
