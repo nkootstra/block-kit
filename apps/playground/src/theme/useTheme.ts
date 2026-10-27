@@ -1,5 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useLayoutEffect, useState } from "react";
+import { useHydrated } from "../lib/useHydrated";
 import { darkTheme } from "./dark";
 
 export type ThemeChoice = "light" | "dark" | "system";
@@ -55,5 +56,7 @@ export function useTheme() {
     }
   }, [choice]);
 
-  return { choice, setChoice, resolved };
+  // The prerender (src/prerender.tsx) shows the system choice: hydrate that, then show the stored one.
+  const hydrated = useHydrated();
+  return { choice: hydrated ? choice : "system", setChoice, resolved };
 }

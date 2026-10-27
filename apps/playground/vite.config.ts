@@ -72,10 +72,10 @@ function pierreThemesOnly(): Plugin {
 }
 
 /**
- * Puts the playground's first screen (src/prerender.tsx) in the built index.html, so a slow
- * connection shows the default example before the JavaScript arrives. It builds the prerender
- * entry for Node with this same config, renders it, and fills in index.html's `#prerender` and the
- * StyleX dark theme class its theme script applies.
+ * Puts the playground's first screen (src/prerender.tsx) in the built index.html's #root, so a
+ * slow connection shows the default example before the JavaScript arrives and the app hydrates
+ * it. It builds the prerender entry for Node with this same config, renders it, and fills in
+ * #root and the StyleX dark theme class index.html's theme script applies.
  */
 function prerender(): Plugin {
   let config: ResolvedConfig;
@@ -107,10 +107,10 @@ function prerender(): Plugin {
         const page = join(config.root, config.build.outDir, "index.html");
         const source = await readFile(page, "utf8");
         const filled = source
-          .replace('<div id="prerender"></div>', `<div id="prerender">${html}</div>`)
+          .replace('<div id="root"></div>', `<div id="root" data-prerendered>${html}</div>`)
           .replace('data-dark-theme=""', `data-dark-theme="${darkClass}"`);
         if (filled === source || !filled.includes(darkClass)) {
-          throw new Error("index.html has no #prerender or data-dark-theme to fill in.");
+          throw new Error("index.html has no empty #root or data-dark-theme to fill in.");
         }
         await writeFile(page, filled);
       },

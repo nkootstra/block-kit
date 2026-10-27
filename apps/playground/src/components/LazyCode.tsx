@@ -1,5 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { type ComponentProps, lazy, Suspense } from "react";
+import { useHydrated } from "../lib/useHydrated";
 import { color, font } from "../theme/tokens.stylex";
 
 // Loaded the first time either one renders, not when this module loads.
@@ -23,8 +24,9 @@ const styles = stylex.create({
 });
 
 export function CodeEditor(props: ComponentProps<typeof LazyEditor>) {
-  // The build's prerender (src/prerender.tsx) shows the plain JSON without loading the editor.
-  if (import.meta.env.SSR) return <pre {...stylex.props(styles.fallback)}>{props.value}</pre>;
+  // The prerender (src/prerender.tsx) shows the plain JSON, and hydrating it loads nothing.
+  const hydrated = useHydrated();
+  if (!hydrated) return <pre {...stylex.props(styles.fallback)}>{props.value}</pre>;
   return (
     <Suspense fallback={<pre {...stylex.props(styles.fallback)}>{props.value}</pre>}>
       <LazyEditor {...props} />

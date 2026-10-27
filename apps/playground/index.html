@@ -91,18 +91,17 @@
       }
     </script>
     <!--
-      #prerender is the build's HTML of the app's first screen (vite.config.ts), shown until the
-      app mounts in #root and removes it. Without it (the dev server, a shared link, the render
-      page) the about section below is the page before the app mounts, and what crawlers that
-      don't run JavaScript read. It waits a moment before it shows, so a normal load goes from blank
-      to the app without flashing it. Once the app is in #root, or the prerender shows, it stays in
-      the page for search engines and screen readers, visually hidden. The render page (?render)
-      never shows it.
+      A built page has the app's first screen in #root (data-prerendered, vite.config.ts), which
+      the app hydrates. Without it (the dev server, a shared link, the render page) the about
+      section below is the page before the app mounts, and what crawlers that don't run JavaScript
+      read. It waits a moment before it shows, so a normal load goes from blank to the app without
+      flashing it. Once the app or its first screen shows, it stays in the page for search engines
+      and screen readers, visually hidden. The render page (?render) never shows it.
     -->
     <style>
       #root:empty,
-      [data-shared] #prerender,
-      [data-render] #prerender {
+      [data-shared] #root[data-prerendered],
+      [data-render] #root[data-prerendered] {
         display: none;
       }
       .about {
@@ -150,8 +149,8 @@
       :root[data-theme="dark"] .about__note {
         color: #a3a3a3;
       }
-      #root:not(:empty) ~ .about,
-      :root:not([data-shared]) #prerender:not(:empty) ~ .about {
+      #root:not(:empty):not([data-prerendered]) ~ .about,
+      :root:not([data-shared], [data-render]) #root[data-prerendered] ~ .about {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -207,7 +206,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <div id="prerender"></div>
     <section id="about" class="about" aria-labelledby="about-title" tabindex="-1">
       <h1 id="about-title">Block Kit Playground</h1>
       <p>
@@ -258,7 +256,9 @@
         // The prerendered message shows the time it was built; show the viewer's time, as the
         // app's Message does.
         const now = new Date();
-        for (const time of document.querySelectorAll("#prerender .sbk-message__time")) {
+        for (const time of document.querySelectorAll(
+          "#root[data-prerendered] .sbk-message__time",
+        )) {
           time.dateTime = now.toISOString();
           time.textContent = now.toLocaleTimeString("en-US", {
             hour: "numeric",

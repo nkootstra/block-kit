@@ -1,4 +1,5 @@
 import { useState, useSyncExternalStore } from "react";
+import { useHydrated } from "./useHydrated";
 
 /** The playground's phone layout, as the components' `PHONE` media queries define it. */
 const phone = () => matchMedia("(max-width: 800px)");
@@ -14,14 +15,16 @@ function subscribe(onChange: () => void) {
  * guards mounts on first sight and keeps its state after that.
  */
 export function useShown(hiddenOnPhone: boolean): boolean {
-  // The build's prerender (src/prerender.tsx) renders the wide layout; CSS hides the pane on phones.
+  // The prerender (src/prerender.tsx) renders the wide layout, where CSS hides the pane on phones.
+  // It doesn't count as shown, so a phone that hydrates it doesn't load what the pane guards.
+  const hydrated = useHydrated();
   const isPhone = useSyncExternalStore(
     subscribe,
     () => phone().matches,
     () => false,
   );
   const visible = !(hiddenOnPhone && isPhone);
-  const [shown, setShown] = useState(visible);
-  if (visible && !shown) setShown(true);
+  const [shown, setShown] = useState(false);
+  if (hydrated && visible && !shown) setShown(true);
   return shown || visible;
 }
