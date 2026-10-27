@@ -7,9 +7,8 @@ import {
   type ModalView,
   type Surface,
 } from "@nkootstra/block-kit";
-import { Tooltip } from "@base-ui/react/tooltip";
 import * as stylex from "@stylexjs/stylex";
-import type { ReactNode } from "react";
+import { lazy, type ReactNode, Suspense } from "react";
 import { builderUrl } from "../payload";
 import { toHomeView, toModalView } from "../lib/views";
 import { color, font } from "../theme/tokens.stylex";
@@ -17,6 +16,8 @@ import { ButtonLink, layout, SegmentedControl } from "./ui";
 import { sampleIdentity, sampleResolvers } from "../lib/workspace";
 
 export type Delivery = "demo" | "app";
+
+const RelayHint = lazy(() => import("./RelayHint").then((m) => ({ default: m.RelayHint })));
 
 const TEAM_ID = import.meta.env.VITE_SLACK_TEAM_ID as string | undefined;
 
@@ -97,16 +98,6 @@ const styles = stylex.create({
     fontSize: 13,
     whiteSpace: "nowrap",
   },
-  tooltip: {
-    maxWidth: 280,
-    paddingBlock: 6,
-    paddingInline: 10,
-    borderRadius: 8,
-    backgroundColor: color.ink,
-    color: color.bg,
-    fontSize: 12,
-    lineHeight: 1.45,
-  },
 });
 
 /**
@@ -138,17 +129,9 @@ function DeliveryPicker({
   );
   if (__RELAY__ === "ready") return picker;
   return (
-    <Tooltip.Root>
-      <Tooltip.Trigger render={<span />}>{picker}</Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Positioner sideOffset={8}>
-          <Tooltip.Popup {...stylex.props(styles.tooltip)}>
-            Set SLACK_REQUEST_URL and SLACK_SIGNING_SECRET in apps/playground/.env.local to deliver
-            interactions to your app.
-          </Tooltip.Popup>
-        </Tooltip.Positioner>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+    <Suspense fallback={picker}>
+      <RelayHint>{picker}</RelayHint>
+    </Suspense>
   );
 }
 

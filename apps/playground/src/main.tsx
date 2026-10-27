@@ -24,15 +24,12 @@ if (params.has("render")) {
 } else {
   void Promise.all([
     import("./App"),
-    import("@base-ui/react/tooltip"),
     import("@fontsource-variable/geist"),
     import("@fontsource-variable/geist-mono"),
-  ]).then(([{ App }, { Tooltip }]) => {
+  ]).then(([{ App }]) => {
     root.render(
       <StrictMode>
-        <Tooltip.Provider>
-          <App />
-        </Tooltip.Provider>
+        <App />
       </StrictMode>,
     );
   });
