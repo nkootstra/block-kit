@@ -1587,26 +1587,10 @@
   "extra/fidelity/rich-text-channel/mixed@hover-mention-1+mobile+dark": [],
   "extra/fidelity/rich-text-channel/mixed@mobile": [],
   "extra/fidelity/rich-text-channel/mixed@mobile+dark": [],
-  "extra/fidelity/rich-text-citation/default": [
-    "missing|1|0",
-    "missing|·|0",
-    "missing|example.com|0"
-  ],
-  "extra/fidelity/rich-text-citation/default@dark": [
-    "missing|1|0",
-    "missing|·|0",
-    "missing|example.com|0"
-  ],
-  "extra/fidelity/rich-text-citation/default@mobile": [
-    "missing|1|0",
-    "missing|·|0",
-    "missing|example.com|0"
-  ],
-  "extra/fidelity/rich-text-citation/default@mobile+dark": [
-    "missing|1|0",
-    "missing|·|0",
-    "missing|example.com|0"
-  ],
+  "extra/fidelity/rich-text-citation/default": [],
+  "extra/fidelity/rich-text-citation/default@dark": [],
+  "extra/fidelity/rich-text-citation/default@mobile": [],
+  "extra/fidelity/rich-text-citation/default@mobile+dark": [],
   "extra/fidelity/rich-text-date/mixed": [],
   "extra/fidelity/rich-text-date/mixed@dark": [],
   "extra/fidelity/rich-text-date/mixed@mobile": [],
