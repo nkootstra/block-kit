@@ -2,9 +2,11 @@ import * as stylex from "@stylexjs/stylex";
 import { type ComponentProps, lazy, Suspense } from "react";
 import { color, font } from "../theme/tokens.stylex";
 
-const Code = import("./Code");
-const LazyEditor = lazy(() => Code.then((m) => ({ default: m.CodeEditor })));
-const LazyViewer = lazy(() => Code.then((m) => ({ default: m.CodeViewer })));
+// Loaded the first time either one renders, not when this module loads.
+let code: Promise<typeof import("./Code")> | undefined;
+const loadCode = () => (code ??= import("./Code"));
+const LazyEditor = lazy(() => loadCode().then((m) => ({ default: m.CodeEditor })));
+const LazyViewer = lazy(() => loadCode().then((m) => ({ default: m.CodeViewer })));
 
 const styles = stylex.create({
   // What shows for the moment before the editor loads: the same JSON, unhighlighted.

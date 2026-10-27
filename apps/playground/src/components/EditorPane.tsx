@@ -1,5 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { copyText, useFlash } from "../lib/useFlash";
+import { useShown } from "../lib/useShown";
 import { color } from "../theme/tokens.stylex";
 import { ExamplePicker, type PickerGroup } from "./ExamplePicker";
 import { CodeEditor } from "./LazyCode";
@@ -64,6 +65,9 @@ export function EditorPane({
   hiddenOnPhone: boolean;
 }) {
   const [flashed, flash] = useFlash();
+  // The editor is the largest download, so a phone that opens on the preview doesn't load it
+  // until the JSON pane is first shown.
+  const editorShown = useShown(hiddenOnPhone);
 
   const format = () => {
     try {
@@ -99,7 +103,7 @@ export function EditorPane({
         </div>
       </div>
       <div {...stylex.props(styles.code)}>
-        <CodeEditor value={source} onChange={onSourceChange} theme={theme} />
+        {editorShown && <CodeEditor value={source} onChange={onSourceChange} theme={theme} />}
       </div>
       {error !== null && (
         <p role="status" {...stylex.props(styles.error)}>
