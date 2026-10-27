@@ -89,7 +89,7 @@ links, mentions, emoji, and dates.
 Inline (`RichTextElement`) types: `text` (with `style.bold` / `italic` / `strike` / `code` /
 `underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, `color`,
 `tag`, `salesforce_data_field`, `workflow_mention`, `message_mention`, `file`, `canvas`,
-`list_record`, `work_object_mention` and `attachment_mention`.
+`list_record`, `work_object_mention`, `attachment_mention` and `citation`.
 
 ## Examples
 
@@ -510,7 +510,7 @@ record's ID is on the pill as `data-id`.
   }}
 />
 
-### Workflows, messages, files, canvases, lists and work objects
+### Workflows, messages, files, canvases, lists, work objects and citations
 
 These elements point at something only Slack can look up. The renderer shows each the way Slack
 shows it to someone who can't open it, whatever `text` the payload gives:
@@ -524,6 +524,9 @@ shows it to someone who can't open it, whatever `text` the payload gives:
 | `list_record`         | A blue pill with a lock and "Private list"                                |
 | `work_object_mention` | A blue pill with the app's icon and the element's `text`, linked to `url` |
 | `attachment_mention`  | The element's `text` as a link to `url`, without an underline             |
+| `citation`            | A small blue chip, "1 · 🔗 example.com", linked to `url`                  |
+
+A citation shows its `index`, then `details.display_name` (or its `text`) after Slack's link icon.
 
 A work object's icon is a square in the colour of a message's placeholder avatar: Slack shows the
 app's icon, which the renderer can't load.

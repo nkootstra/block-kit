@@ -125,7 +125,8 @@ Rich text elements that point at something only Slack can look up have no resolv
 `workflow_mention`, `message_mention`, `file`, `canvas` or `list_record` shows Slack's pill for
 something the viewer can't open ("Deleted workflow", "Private message", "Hidden file", "Private
 canvas", "Private list"), whatever
-its `text`; a `work_object_mention` and an `attachment_mention` show their `text` linked to `url`.
+its `text`; a `work_object_mention` and an `attachment_mention` show their `text` linked to `url`,
+and a `citation` shows Slack's chip, its `index` and `details.display_name` linked to `url`.
 
 `slackFile: (file) => ({ url, size })` resolves a `slack_file` image (image block or element) to a
 loadable URL and its size in bytes (shown as Slack's "(400 kB)", decimal kilobytes); an image block

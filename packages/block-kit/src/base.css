@@ -53,6 +53,8 @@
   --sbk-row-hover-bg: #f8f8f8;
   --sbk-mention-hover-bg: rgba(29, 155, 209, 0.2);
   --sbk-mention-hover-text: rgb(11, 76, 140);
+  --sbk-citation-hover-bg: rgba(29, 155, 209, 0.2);
+  --sbk-citation-hover-text: rgb(11, 76, 140);
   --sbk-menu-highlight-bg: #1264a3;
   --sbk-menu-highlight-text: #fff;
   --sbk-focus-ring: #1264a3;

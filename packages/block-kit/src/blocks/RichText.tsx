@@ -15,7 +15,14 @@ import { Link, MentionLink } from "../Link";
 import { PrivateChannel } from "../Mrkdwn";
 import type { BlockProps } from "../types";
 import { PrivateUser, UnavailableUsergroup, UserMention } from "../UserMention";
-import { CopyIcon, EyeClosedIcon, LockFilledIcon, MessageIcon, TrashIcon } from "../icons";
+import {
+  CopyIcon,
+  EyeClosedIcon,
+  LinkIcon,
+  LockFilledIcon,
+  MessageIcon,
+  TrashIcon,
+} from "../icons";
 import { CodeBlock } from "./CodeBlock";
 
 // Builder-only/undocumented extensions to `@slack/types`' definitions.
@@ -51,7 +58,14 @@ type RichTextEntity =
   | { type: "message_mention"; channel_id: string; message_ts: string }
   | { type: "file" | "canvas" | "list_record"; file_id: string; text?: string }
   | { type: "work_object_mention"; entity_id: string; app_id?: string; text?: string; url: string }
-  | { type: "attachment_mention"; url: string; text?: string };
+  | { type: "attachment_mention"; url: string; text?: string }
+  | {
+      type: "citation";
+      url: string;
+      text?: string;
+      index: number;
+      details?: { citation_type?: string; display_name?: string; title?: string; snippet?: string };
+    };
 type RichTextEntityLeaf = RichTextEntity & { style?: RichTextElement["style"] };
 
 /** Salesforce's cloud, as Slack draws it before a record's field (`sf-cloud-filled`). */
@@ -366,6 +380,23 @@ export function renderLeaf(
           rel="noopener noreferrer"
         >
           {el.text || el.url}
+        </Link>
+      );
+      break;
+    // extra/fidelity/rich-text-citation/default: Slack's citation chip, "1 · 🔗 example.com",
+    // linked to the source.
+    case "citation":
+      content = (
+        <Link
+          className="sbk-link sbk-rich-text__citation"
+          href={el.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="sbk-rich-text__citation-contents">
+            <b>{el.index}</b>·<LinkIcon />
+            {el.details?.display_name || el.text || el.url}
+          </span>
         </Link>
       );
       break;
