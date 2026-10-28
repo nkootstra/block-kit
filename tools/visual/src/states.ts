@@ -151,10 +151,18 @@ export const STATES: Record<string, State> = {
     (p) => p.getByRole("combobox", { name: "Pick a channel", exact: true }),
     { option: /channel-one/ },
   ),
-  "extra/fidelity/datetimepicker/empty@pick": pick(
-    (p) => p.getByPlaceholder("Select a date", { exact: true }),
-    { button: /October 15th, 2026/ },
-  ),
+  // The reference picked "Tomorrow": the day after it was captured, which the page's clock reads.
+  "extra/fidelity/datetimepicker/empty@pick": {
+    ours: async (p) => {
+      const [year, month, day] = await p.evaluate(() => {
+        const now = new Date();
+        return [now.getFullYear(), now.getMonth(), now.getDate()];
+      });
+      await pick((q) => q.getByPlaceholder("Select a date", { exact: true }), {
+        button: new RegExp(calendarDayName(new Date(year, month, day + 1))),
+      }).ours(p);
+    },
+  },
   "extra/fidelity/multi-channels-select/empty@pick": pick(
     (p) => p.locator(".sbk-input .sbk-select__control").first(),
     { option: /channel-one/ },
@@ -210,6 +218,15 @@ export const STATES: Record<string, State> = {
 type Find = (p: Page) => Locator;
 /** What a pick clicks once its control is open: an option, a calendar day or menu text. */
 type Choice = { option: string | RegExp } | { button: string | RegExp } | { text: string | RegExp };
+
+/** A calendar day button's name, "October 15th, 2026". */
+export function calendarDayName(date: Date): string {
+  const day = date.getDate();
+  const suffix =
+    day % 100 >= 11 && day % 100 <= 13 ? "th" : (["th", "st", "nd", "rd"][day % 10] ?? "th");
+  const month = date.toLocaleString("en-US", { month: "long" });
+  return `${month} ${day}${suffix}, ${date.getFullYear()}`;
+}
 
 /** A string names a control exactly, as Testing Library matches it; a RegExp matches as written. */
 const exact = (name: string | RegExp) => typeof name === "string";
