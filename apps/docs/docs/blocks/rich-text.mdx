@@ -88,8 +88,8 @@ links, mentions, emoji, and dates.
 
 Inline (`RichTextElement`) types: `text` (with `style.bold` / `italic` / `strike` / `code` /
 `underline`), `link`, `user`, `usergroup`, `channel`, `broadcast`, `emoji`, `date`, `color`,
-`tag`, `salesforce_data_field`, `workflow_mention`, `message_mention`, `file`, `canvas`,
-`list_record`, `work_object_mention`, `attachment_mention` and `citation`.
+`canvas_user_mention`, `tag`, `salesforce_data_field`, `workflow_mention`, `message_mention`,
+`file`, `canvas`, `list_record`, `work_object_mention`, `attachment_mention` and `citation`.
 
 ## Examples
 
@@ -345,7 +345,7 @@ gets no card.
 />
 
 :::note
-A `user`, `usergroup`, or `channel` mention needs to be resolved to a name to render. The preview
+A `user` (or `canvas_user_mention`), `usergroup`, or `channel` mention needs to be resolved to a name to render. The preview
 resolves `U0ADA`/`U0GRACE`/`U0ALAN`, `S0ENG`, and `C0GENERAL`/`C0RELEASES`/`C0DESIGN` for you (see
 [Mentions and resolvers](/guides/mentions-and-resolvers) for how resolvers work in your own app). An unresolved
 `channel` renders as a locked "Private channel" placeholder, with Slack's hover card saying why its

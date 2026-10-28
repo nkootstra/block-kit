@@ -297,6 +297,33 @@ describe("<RichText>", () => {
     expect(screen.getByText("@Ada")).toBeTruthy();
   });
 
+  it("draws a canvas user mention as a user mention", () => {
+    // extra/fidelity/rich-text-canvas-user-mention: Slack draws the same missing-user outline
+    // (c-missing_text--non-existent) for a canvas user mention of someone who doesn't exist.
+    const block = {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            { type: "canvas_user_mention", user_id: "U999" },
+            { type: "text", text: " " },
+            { type: "canvas_user_mention", user_id: "U123" },
+          ],
+        },
+      ],
+    };
+    const { container } = render(
+      <BlockKitProvider resolvers={{ user: (id) => (id === "U123" ? "Ada" : undefined) }}>
+        <RichText block={block as never} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(container.querySelector(".sbk-mention--missing")?.getAttribute("aria-label")).toBe(
+      "@U999",
+    );
+    expect(screen.getByText("@Ada")).toBeTruthy();
+  });
+
   it("renders a date leaf formatted for the given time zone", () => {
     const block = {
       type: "rich_text",

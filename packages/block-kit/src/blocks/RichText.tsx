@@ -50,10 +50,11 @@ interface RichTextSalesforceDataField {
 }
 
 /**
- * Elements that point at something only Slack can look up: a workflow, a message, a file, a canvas,
- * a list, an app's work object or an attachment, e.g. `{ type: "canvas", file_id: "F0123456789" }`.
+ * Elements that point at something only Slack can look up: a user mentioned in a canvas, a
+ * workflow, a message, a file, a canvas, a list, an app's work object or an attachment, e.g. `{ type: "canvas", file_id: "F0123456789" }`.
  */
 type RichTextEntity =
+  | { type: "canvas_user_mention"; user_id: string }
   | { type: "workflow_mention"; workflow_id: string; text?: string }
   | { type: "message_mention"; channel_id: string; message_ts: string }
   | { type: "file" | "canvas" | "list_record"; file_id: string; text?: string }
@@ -254,6 +255,16 @@ export function renderLeaf(
       break;
     }
     case "user": {
+      const name = ctx.resolvers.user?.(el.user_id);
+      content = name ? (
+        <UserMention id={el.user_id} name={name} />
+      ) : (
+        <PrivateUser id={el.user_id} />
+      );
+      break;
+    }
+    // extra/fidelity/rich-text-canvas-user-mention: drawn like a user mention.
+    case "canvas_user_mention": {
       const name = ctx.resolvers.user?.(el.user_id);
       content = name ? (
         <UserMention id={el.user_id} name={name} />

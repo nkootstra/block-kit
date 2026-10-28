@@ -121,6 +121,8 @@ A `rich_text` user mention with no `user` resolver shows Slack's grey loading ba
 pending); with a `user` resolver that returns `undefined`, the user doesn't exist and it shows
 Slack's empty outline instead, as a `contact_card` shows its "could not be displayed" notice.
 
+A `canvas_user_mention` is resolved and drawn like a `user` mention.
+
 Rich text elements that point at something only Slack can look up have no resolver: a
 `workflow_mention`, `message_mention`, `file`, `canvas` or `list_record` shows Slack's pill for
 something the viewer can't open ("Deleted workflow", "Private message", "Hidden file", "Private
