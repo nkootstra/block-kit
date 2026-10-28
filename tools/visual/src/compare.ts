@@ -217,6 +217,7 @@ await context.route(/\.(woff2?|ttf|otf)(\?.*)?$/, async (route) => {
   let body = fontCache.get(url);
   if (!body) {
     const res = await fetch(url);
+    console.log("font", res.status, res.headers.get("content-type"), res.headers.get("content-length"), url);
     body = Buffer.from(await res.arrayBuffer());
     fontCache.set(url, body);
   }
