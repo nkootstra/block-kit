@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { Glob } from "bun";
 import { parseReferenceName } from "./names";
 import { readProbes, type Step } from "./probes";
-import { OPEN_STATES, STATES, stateFor } from "./states";
+import { calendarDayName, OPEN_STATES, STATES, stateFor } from "./states";
 
 const FIXTURES = join(import.meta.dir, "../../../fixtures");
 
@@ -13,6 +13,19 @@ const keeps = (steps: Step[]) =>
     ?.keepPointer;
 
 describe("states", () => {
+  it("names a calendar day the way our calendar's day buttons read", () => {
+    expect(calendarDayName(new Date(2026, 9, 15))).toBe("October 15th, 2026");
+    expect(calendarDayName(new Date(2026, 9, 28))).toBe("October 28th, 2026");
+    expect(calendarDayName(new Date(2026, 0, 1))).toBe("January 1st, 2026");
+    expect(calendarDayName(new Date(2026, 1, 2))).toBe("February 2nd, 2026");
+    expect(calendarDayName(new Date(2026, 2, 3))).toBe("March 3rd, 2026");
+    expect(calendarDayName(new Date(2026, 3, 11))).toBe("April 11th, 2026");
+    expect(calendarDayName(new Date(2026, 4, 12))).toBe("May 12th, 2026");
+    expect(calendarDayName(new Date(2026, 5, 13))).toBe("June 13th, 2026");
+    expect(calendarDayName(new Date(2026, 6, 22))).toBe("July 22nd, 2026");
+    expect(calendarDayName(new Date(2026, 7, 31))).toBe("August 31st, 2026");
+  });
+
   it("keeps the pointer on a hover that a wait or a key follows, not on one a click follows", () => {
     // catalog/agents/message-feedback@poke-tooltip-1: hover, wait for the tooltip, snapshot.
     expect(keeps([{ hover: "button-1" }, { wait: 1200 }])).toBe(true);
