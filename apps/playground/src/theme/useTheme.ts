@@ -1,11 +1,14 @@
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useLayoutEffect, useState } from "react";
+import { useHydrated } from "../lib/useHydrated";
 import { darkTheme } from "./dark";
 
 export type ThemeChoice = "light" | "dark" | "system";
 
 const DARK_CLASSES = (stylex.props(darkTheme).className ?? "").split(" ").filter(Boolean);
 const media = () => matchMedia("(prefers-color-scheme: dark)");
+// The build's prerender (src/prerender.tsx) runs without a page: it renders the system choice, light.
+const browser = typeof document !== "undefined";
 
 /**
  * The same light/dark/system choice as block-kit.dev, stored under the same key. The resolved theme
@@ -14,9 +17,12 @@ const media = () => matchMedia("(prefers-color-scheme: dark)");
  */
 export function useTheme() {
   const [choice, setChoice] = useState<ThemeChoice>(
-    () => (document.documentElement.dataset.themeChoice as ThemeChoice | undefined) ?? "system",
+    () =>
+      (browser
+        ? (document.documentElement.dataset.themeChoice as ThemeChoice | undefined)
+        : null) ?? "system",
   );
-  const [systemDark, setSystemDark] = useState(() => media().matches);
+  const [systemDark, setSystemDark] = useState(() => browser && media().matches);
   const resolved: "light" | "dark" = choice === "system" ? (systemDark ? "dark" : "light") : choice;
 
   useEffect(() => {
@@ -50,5 +56,7 @@ export function useTheme() {
     }
   }, [choice]);
 
-  return { choice, setChoice, resolved };
+  // The prerender (src/prerender.tsx) shows the system choice: hydrate that, then show the stored one.
+  const hydrated = useHydrated();
+  return { choice: hydrated ? choice : "system", setChoice, resolved };
 }

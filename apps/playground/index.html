@@ -27,16 +27,19 @@
     <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
     <!--
-      Applies the theme before the first paint, with block-kit.dev's stored choice. The visual
-      harness's render page (?render) stays light: its references set their own theme.
+      Applies the theme before the first paint, with block-kit.dev's stored choice, including the
+      StyleX dark theme class the build fills in (vite.config.ts) for the prerendered first screen.
+      The visual harness's render page (?render) stays light: its references set their own theme.
+      A shared link (a payload in the hash) skips the prerender, which shows the default example.
     -->
-    <script>
+    <script data-dark-theme="">
       (() => {
         const root = document.documentElement;
         if (new URLSearchParams(location.search).has("render")) {
           root.dataset.render = "";
           return;
         }
+        if (location.hash.length > 1) root.dataset.shared = "";
         let theme = "system";
         try {
           theme = localStorage.getItem("theme") || theme;
@@ -44,6 +47,8 @@
         const dark = matchMedia("(prefers-color-scheme: dark)").matches;
         root.dataset.themeChoice = theme;
         root.dataset.theme = theme === "system" ? (dark ? "dark" : "light") : theme;
+        const darkClass = document.currentScript.dataset.darkTheme;
+        if (root.dataset.theme === "dark" && darkClass) root.classList.add(...darkClass.split(" "));
         root.style.backgroundColor = root.dataset.theme === "dark" ? "#0a0a0a" : "#fff";
         document
           .querySelector('meta[name="theme-color"]')
@@ -86,13 +91,17 @@
       }
     </script>
     <!--
-      The about section below is the page before the app mounts, and what crawlers that don't run
-      JavaScript read. It waits a moment before it shows, so a normal load goes from blank to the
-      app without flashing it. Once the app is in #root it stays in the page for search engines
+      A built page has the app's first screen in #root (data-prerendered, vite.config.ts), which
+      the app hydrates. Without it (the dev server, a shared link, the render page) the about
+      section below is the page before the app mounts, and what crawlers that don't run JavaScript
+      read. It waits a moment before it shows, so a normal load goes from blank to the app without
+      flashing it. Once the app or its first screen shows, it stays in the page for search engines
       and screen readers, visually hidden. The render page (?render) never shows it.
     -->
     <style>
-      #root:empty {
+      #root:empty,
+      [data-shared] #root[data-prerendered],
+      [data-render] #root[data-prerendered] {
         display: none;
       }
       .about {
@@ -140,7 +149,8 @@
       :root[data-theme="dark"] .about__note {
         color: #a3a3a3;
       }
-      #root:not(:empty) ~ .about {
+      #root:not(:empty):not([data-prerendered]) ~ .about,
+      :root:not([data-shared], [data-render]) #root[data-prerendered] ~ .about {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -243,6 +253,18 @@
           document.getElementById("about-button")?.focus();
         };
         about.querySelector(".about__close").addEventListener("click", close);
+        // The prerendered message shows the time it was built; show the viewer's time, as the
+        // app's Message does.
+        const now = new Date();
+        for (const time of document.querySelectorAll(
+          "#root[data-prerendered] .sbk-message__time",
+        )) {
+          time.dateTime = now.toISOString();
+          time.textContent = now.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          });
+        }
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") close();
         });

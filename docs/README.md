@@ -122,7 +122,7 @@ For a docs-only fix between releases, run Actions → CI → Run workflow on `ma
 
 ### Playground deployment
 
-`play.block-kit.dev` is the static `vite build` of `apps/playground` on Workers Static Assets ([`apps/playground/wrangler.jsonc`](../apps/playground/wrangler.jsonc)), with no Worker script. It renders with the package, so it deploys with releases too, by the same `deploy` CI run and the same guard, in the `deploy-playground` job, with the same Cloudflare secrets. The build ships only the curated examples in [`src/examples.ts`](../apps/playground/src/examples.ts) and offers no "Deliver to your app": the interaction relay that signs and forwards interactions exists only in the dev server.
+`play.block-kit.dev` is the static `vite build` of `apps/playground` on Workers Static Assets ([`apps/playground/wrangler.jsonc`](../apps/playground/wrangler.jsonc)), with no Worker script. It renders with the package, so it deploys with releases too, by the same `deploy` CI run and the same guard, in the `deploy-playground` job, with the same Cloudflare secrets. The build ships only the curated examples in [`src/examples.ts`](../apps/playground/src/examples.ts) and offers no "Deliver to your app": the interaction relay that signs and forwards interactions exists only in the dev server. The build also renders the default example into `index.html` ([`src/prerender.tsx`](../apps/playground/src/prerender.tsx)), so the page paints before its JavaScript arrives and hydrates when it does; the editor and the example picker's combobox load when they're first needed.
 
 ### Pull request previews
 

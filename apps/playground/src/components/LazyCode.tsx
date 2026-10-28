@@ -1,10 +1,13 @@
 import * as stylex from "@stylexjs/stylex";
 import { type ComponentProps, lazy, Suspense } from "react";
+import { useHydrated } from "../lib/useHydrated";
 import { color, font } from "../theme/tokens.stylex";
 
-const Code = import("./Code");
-const LazyEditor = lazy(() => Code.then((m) => ({ default: m.CodeEditor })));
-const LazyViewer = lazy(() => Code.then((m) => ({ default: m.CodeViewer })));
+// Loaded the first time either one renders, not when this module loads.
+let code: Promise<typeof import("./Code")> | undefined;
+const loadCode = () => (code ??= import("./Code"));
+const LazyEditor = lazy(() => loadCode().then((m) => ({ default: m.CodeEditor })));
+const LazyViewer = lazy(() => loadCode().then((m) => ({ default: m.CodeViewer })));
 
 const styles = stylex.create({
   // What shows for the moment before the editor loads: the same JSON, unhighlighted.
@@ -21,6 +24,9 @@ const styles = stylex.create({
 });
 
 export function CodeEditor(props: ComponentProps<typeof LazyEditor>) {
+  // The prerender (src/prerender.tsx) shows the plain JSON, and hydrating it loads nothing.
+  const hydrated = useHydrated();
+  if (!hydrated) return <pre {...stylex.props(styles.fallback)}>{props.value}</pre>;
   return (
     <Suspense fallback={<pre {...stylex.props(styles.fallback)}>{props.value}</pre>}>
       <LazyEditor {...props} />

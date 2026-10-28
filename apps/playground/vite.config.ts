@@ -1,8 +1,10 @@
+import { readFile, rm, writeFile } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import stylex from "@stylexjs/unplugin/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import { build, defineConfig, loadEnv, type Plugin, type ResolvedConfig } from "vite";
 import { createInteractionRelay } from "../../packages/block-kit/src/interactivity/relay";
 
 const src = (path: string) =>
@@ -69,6 +71,53 @@ function pierreThemesOnly(): Plugin {
   };
 }
 
+/**
+ * Puts the playground's first screen (src/prerender.tsx) in the built index.html's #root, so a
+ * slow connection shows the default example before the JavaScript arrives and the app hydrates
+ * it. It builds the prerender entry for Node with this same config, renders it, and fills in
+ * #root and the StyleX dark theme class index.html's theme script applies.
+ */
+function prerender(): Plugin {
+  let config: ResolvedConfig;
+  return {
+    name: "prerender-playground",
+    apply: "build",
+    configResolved(resolved) {
+      config = resolved;
+    },
+    closeBundle: {
+      order: "post",
+      sequential: true,
+      async handler() {
+        // The prerender entry's own build runs this plugin too.
+        if (config.build.ssr) return;
+        const outDir = join(config.root, "node_modules/.prerender");
+        await build({
+          configFile: config.configFile,
+          mode: config.mode,
+          logLevel: "warn",
+          build: { ssr: "src/prerender.tsx", outDir, emptyOutDir: true, copyPublicDir: false },
+        });
+        const { render } = (await import(
+          pathToFileURL(join(outDir, "prerender.js")).href
+        )) as typeof import("./src/prerender");
+        const { html, darkClass } = render();
+        await rm(outDir, { recursive: true, force: true });
+
+        const page = join(config.root, config.build.outDir, "index.html");
+        const source = await readFile(page, "utf8");
+        const filled = source
+          .replace('<div id="root"></div>', `<div id="root" data-prerendered>${html}</div>`)
+          .replace('data-dark-theme=""', `data-dark-theme="${darkClass}"`);
+        if (filled === source || !filled.includes(darkClass)) {
+          throw new Error("index.html has no empty #root or data-dark-theme to fill in.");
+        }
+        await writeFile(page, filled);
+      },
+    },
+  };
+}
+
 async function toRequest(req: IncomingMessage): Promise<Request> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
@@ -94,7 +143,7 @@ async function send(res: ServerResponse, response: Response) {
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "SLACK_");
   return {
-    plugins: [stylex(), react(), interactionRelay(env), pierreThemesOnly()],
+    plugins: [stylex(), react(), interactionRelay(env), pierreThemesOnly(), prerender()],
     define: {
       // Whether "Deliver to your app" can work: the relay only exists in the dev server, so a built
       // (public) playground never offers it, and the dev server offers it once it's configured.
