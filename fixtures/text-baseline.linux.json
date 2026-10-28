@@ -1086,9 +1086,7 @@
   "extra/actions/more-elements@open": [
     "color|Type a minimum of 2 characters to see options.|0"
   ],
-  "extra/actions/more-elements@open+dark": [
-    "color|Type a minimum of 2 characters to see options.|0"
-  ],
+  "extra/actions/more-elements@open+dark": [],
   "extra/actions/more-elements@pick": [],
   "extra/actions/more-elements@pick+dark": [],
   "extra/actions/more-elements@pick+mobile": [],
