@@ -55,6 +55,13 @@ export const textFindingsOf = (results: readonly Result[]): TextBaseline =>
   Object.fromEntries(results.flatMap((r) => (r.text ? [[r.name, r.text.findings] as const] : [])));
 
 /**
+ * How far, in percentage points, a fixture's mismatch may move before it counts as a regression or
+ * an improvement. Linux CI renders the same commit identically from run to run, so this only leaves
+ * room for the odd anti-aliased pixel.
+ */
+export const TOLERANCE = 0.1;
+
+/**
  * The baselines after a run. A full run (every fixture) rewrites them, dropping removed fixtures; a
  * partial one only updates the fixtures it ran. `lowerOnly` keeps every recorded entry unless it
  * improved beyond the tolerance, and adds new fixtures, so it can't hide a regression. A fixture

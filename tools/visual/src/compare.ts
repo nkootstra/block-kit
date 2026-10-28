@@ -3,7 +3,7 @@
  * Needs the playground dev server (`bun run --cwd apps/playground dev`).
  *
  *   bun tools/visual/src/compare.ts [fixture-prefix...] [--base=http://localhost:5180]
- *     [--check [--tolerance=0.5] [--baseline=<file>] [--text-baseline=<file>] [--allow-increase]]
+ *     [--check [--tolerance=0.1] [--baseline=<file>] [--text-baseline=<file>] [--allow-increase]]
  *     [--update-baseline[=lower]] [--scale=2] [--shard=<index>/<count>]
  *
  * A reference named `<fixture>@<state>` was captured after interacting with Slack's preview (a plan
@@ -68,6 +68,7 @@ import {
   type Result,
   scoresPixels,
   textFindingsOf,
+  TOLERANCE,
   updateBaselines,
 } from "./baseline";
 import { collectTextRuns } from "./collectTextRuns";
@@ -114,7 +115,7 @@ const shardSpec = args.find((a) => a.startsWith("--shard="))?.slice(8);
 if (shardSpec && updateBaseline) {
   throw new Error("--shard runs part of the fixtures; drop it to update the baseline");
 }
-const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? 0.5);
+const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? TOLERANCE);
 const BASELINE = join(FIXTURES, `visual-baseline.${process.platform}.json`);
 const checkBaselineArg = args.find((a) => a.startsWith("--baseline="))?.slice(11);
 const CHECK_BASELINE = checkBaselineArg ? resolve(checkBaselineArg) : BASELINE;
