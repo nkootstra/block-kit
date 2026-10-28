@@ -315,11 +315,16 @@ async function shotBox(page: Page, selector: string, box: Box): Promise<PNG> {
 
 // A snapshot only records the fonts Slack had loaded by then, and a few were taken before Lato
 // Black arrived, so their bold sender names fall back to a faux bold. Pool every snapshot's faces
-// (one per family/weight/style) and give each page the full set.
+// (one per family/weight/style) and give each page the full set. Snapshots taken before
+// snapshot.js told Lato's bold italic (lato-italic-bold-) from its italic recorded it as weight 400,
+// where it shadowed or replaced the italic; it's weight 700.
 const faces = new Map<string, string>();
 for await (const path of new Glob("**/*.reference.html").scan(FIXTURES)) {
   const html = await Bun.file(join(FIXTURES, path)).text();
-  for (const face of html.match(/@font-face \{[^}]*\}/g) ?? []) {
+  for (const recorded of html.match(/@font-face \{[^}]*\}/g) ?? []) {
+    const face = recorded.includes("/lato-italic-bold-")
+      ? recorded.replace(/font-weight: 400;/, "font-weight: 700;")
+      : recorded;
     const key = face.replace(/src:[^;]*;?/, "");
     if (!faces.has(key)) faces.set(key, face);
   }

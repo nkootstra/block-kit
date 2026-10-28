@@ -582,8 +582,8 @@ async (win = window, options = {}) => {
     [/lato-regular-/, "Slack-Lato", 400, "normal"],
     [/lato-bold-/, "Slack-Lato", 700, "normal"],
     [/lato-black-/, "Slack-Lato", 900, "normal"],
-    [/lato-italic-/, "Slack-Lato", 400, "italic"],
-    [/lato-bolditalic-/, "Slack-Lato", 700, "italic"],
+    [/lato-italic-(?!bold)/, "Slack-Lato", 400, "italic"],
+    [/lato-italic-bold-/, "Slack-Lato", 700, "italic"],
     [/RobotoMono-Regular/, "Slack-Roboto-Mono", "100 700", "normal"],
   ];
   for (const { name } of win.performance.getEntriesByType("resource")) {
