@@ -3,7 +3,7 @@
  * with --update-baseline would. CI compares main's fixtures in parallel slices, each writing its
  * results to report.json, and merges them here.
  *
- *   bun tools/visual/src/merge-baseline.ts --update-baseline[=lower] [--tolerance=0.5]
+ *   bun tools/visual/src/merge-baseline.ts --update-baseline[=lower] [--tolerance=0.1]
  *     [--platform=linux] <report.json>...
  *
  * Fails, writing nothing, unless the reports together hold exactly one result for every reference
@@ -19,6 +19,7 @@ import {
   mergeReports,
   referenceNames,
   type Result,
+  TOLERANCE,
   updateBaselines,
 } from "./baseline";
 import type { TextBaseline } from "./textRuns";
@@ -30,7 +31,7 @@ const args = process.argv.slice(2);
 const updateBaseline = args.find((a) => /^--update-baseline(=lower)?$/.test(a));
 if (!updateBaseline) throw new Error("pass --update-baseline or --update-baseline=lower");
 const lowerOnly = updateBaseline === "--update-baseline=lower";
-const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? 0.5);
+const tolerance = Number(args.find((a) => a.startsWith("--tolerance="))?.slice(12) ?? TOLERANCE);
 const platform = args.find((a) => a.startsWith("--platform="))?.slice(11) ?? process.platform;
 const files = args.filter((a) => !a.startsWith("--"));
 if (files.length === 0) throw new Error("pass the slices' report.json files");

@@ -22,7 +22,7 @@ bun run compare
   page's comparison (`apps/site/src/assets/proof`, one set from `message/approval` and one from
   `message/approval@dark`, shown with the page's theme). Baselines are recorded at 1x, so it can't be
   combined with `--check` or `--update-baseline`.
-- `bun run compare:check` fails when a fixture regresses past its baseline (0.5 pp tolerance).
+- `bun run compare:check` fails when a fixture regresses past its baseline (0.1 pp tolerance).
 - `--shard=2/4` compares one slice of the fixtures: every fourth one, starting from the second.
   CI checks a pull request in eight slices at once; a slice can't update the baseline.
 - `--update-baseline` records the current mismatch in `fixtures/visual-baseline.<platform>.json`
