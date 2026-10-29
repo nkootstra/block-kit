@@ -10,6 +10,7 @@ import { formatSlackDate } from "../parser";
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "../context";
 import { Emoji } from "../emoji";
+import { skinToneOf } from "../emoji/lookup";
 import { LinkHoverCard } from "../HoverCard";
 import { Link, MentionLink } from "../Link";
 import { PrivateChannel } from "../Mrkdwn";
@@ -251,7 +252,13 @@ export function renderLeaf(
       break;
     case "emoji": {
       const emoji = el as RichTextEmojiExt;
-      content = <Emoji name={emoji.name} skinTone={emoji.skin_tone} size={emojiSize} />;
+      content = (
+        <Emoji
+          name={emoji.name}
+          skinTone={emoji.skin_tone ?? skinToneOf(emoji.unicode)}
+          size={emojiSize}
+        />
+      );
       break;
     }
     case "user": {

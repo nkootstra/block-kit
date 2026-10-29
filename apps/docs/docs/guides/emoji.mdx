@@ -79,7 +79,9 @@ text, exactly as Slack shows an emoji it can't find.
 
 `:thumbsup::skin-tone-3:` (Fitzpatrick modifiers 2–6) picks the matching variant of a standard emoji
 that supports one. Modifiers on emoji without skin tone variants, or on custom emoji, are ignored: the
-base emoji renders instead.
+base emoji renders instead. In a `rich_text` block, an `emoji` element takes its tone from
+`skin_tone`, or from a modifier in its `unicode` (`{ name: "wave", unicode: "1f44b-1f3fd" }` draws
+`:wave::skin-tone-4:`), as Slack does. The image's alt text and tooltip name the tone.
 
 <Preview
   payload={{

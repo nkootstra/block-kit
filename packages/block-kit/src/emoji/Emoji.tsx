@@ -17,18 +17,23 @@ export function Emoji({ name, skinTone, size = 22 }: EmojiProps) {
   const resolved = resolveEmoji(name, skinTone, emoji.custom);
   if (!resolved) return <>{`:${name}:`}</>;
 
+  // Slack names the tone too, e.g. `:wave::skin-tone-4:`.
+  const label =
+    resolved.kind === "unicode" && skinTone && skinTone >= 2 && skinTone <= 6
+      ? `:${name}::skin-tone-${skinTone}:`
+      : `:${name}:`;
   const src =
     resolved.kind === "custom"
       ? resolved.url
       : (emoji.imageUrl ?? defaultEmojiImageUrl)(resolved.unified);
 
   return (
-    <Tooltip label={`:${name}:`}>
+    <Tooltip label={label}>
       <span className="sbk-emoji" style={{ width: size, height: size }}>
         <img
           className="sbk-emoji__img"
           src={src}
-          alt={`:${name}:`}
+          alt={label}
           draggable={false}
           style={{ width: size, height: size, top: size / 2, marginTop: -size / 2 }}
         />
