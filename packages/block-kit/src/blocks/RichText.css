@@ -253,12 +253,15 @@
   }
 }
 
-/* A work object's app icon (Slack's is 16px with 2px corners), drawn as a message's placeholder
-   avatar is. */
+/* A work object's app icon (Slack's is 16px with 2px corners); without one, drawn as a message's
+   placeholder avatar is. */
 .sbk-rich-text__slug-app {
   width: 16px;
   height: 16px;
   border-radius: 2px;
+}
+
+span.sbk-rich-text__slug-app {
   background: #4a154b;
 }
 

@@ -466,6 +466,40 @@ describe("<RichText>", () => {
       expect(link.querySelector(".sbk-rich-text__slug")).toBeTruthy();
     });
 
+    it("shows a work object's app icon from resolvers.app, and a placeholder without one", () => {
+      const leaf = {
+        type: "work_object_mention",
+        entity_id: "E0123456789",
+        app_id: "A0123456789",
+        text: "A work object",
+        url: "https://example.com/work-object",
+      };
+      const block = {
+        type: "rich_text",
+        elements: [{ type: "rich_text_section", elements: [leaf] }],
+      };
+      const { container, unmount } = render(
+        <BlockKitProvider
+          resolvers={{
+            app: (id) =>
+              id === "A0123456789" ? { iconUrl: "https://example.com/app.png" } : undefined,
+          }}
+        >
+          <RichText block={block as never} blockId="b1" index={0} />
+        </BlockKitProvider>,
+      );
+      expect(container.querySelector("img.sbk-rich-text__slug-app")?.getAttribute("src")).toBe(
+        "https://example.com/app.png",
+      );
+      unmount();
+
+      const { container: unresolved } = render(
+        <RichText block={block as never} blockId="b1" index={0} />,
+      );
+      expect(unresolved.querySelector("img")).toBeNull();
+      expect(unresolved.querySelector("span.sbk-rich-text__slug-app")).toBeTruthy();
+    });
+
     it("links an attachment to its URL under its text", () => {
       renderEntity({
         type: "attachment_mention",
