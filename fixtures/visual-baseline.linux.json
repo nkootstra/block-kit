@@ -1648,7 +1648,7 @@
   "extra/media/video@mobile": 0.16,
   "extra/media/video@mobile+dark": 0.16,
   "extra/modal/alert": 0,
-  "extra/modal/alert@dark": 0.53,
+  "extra/modal/alert@dark": 0,
   "extra/modal/dispatch-rich-text": 0,
   "extra/modal/dispatch-rich-text@dark": 0,
   "extra/modal/form": 0.02,
