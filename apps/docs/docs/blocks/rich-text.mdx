@@ -528,8 +528,9 @@ shows it to someone who can't open it, whatever `text` the payload gives:
 
 A citation shows its `index`, then `details.display_name` (or its `text`) after Slack's link icon.
 
-A work object's icon is a square in the colour of a message's placeholder avatar: Slack shows the
-app's icon, which the renderer can't load.
+A work object shows its app's icon from `resolvers.app`, as Slack does (see
+[Mentions and resolvers](/guides/mentions-and-resolvers)). Without it the icon is a square in the
+colour of a message's placeholder avatar.
 
 <Preview
   payload={{

@@ -87,6 +87,11 @@ const resolvers: Resolvers = {
       description:
         'The people and channels a users, conversations or channels select lists, in order: { type: "user", id, name, realName?, avatarUrl?, self?, badge?, bot?, presence? } or { type: "channel", id, name, private? }. A chosen id it lists shows that entry\'s name.',
     },
+    app: {
+      type: "(id: string) => { iconUrl?: string } | undefined",
+      description:
+        "An app's icon, e.g. from bots.info, shown at 16px in a rich text work_object_mention with that app_id. Without it the mention shows a placeholder square where Slack shows the icon.",
+    },
   }}
 />
 

@@ -364,9 +364,10 @@ export function renderLeaf(
       content = <Slug icon={<LockFilledIcon />} label="Private list" />;
       break;
     // extra/fidelity/rich-text-work-object-mention/default: the payload's text, linked, behind the
-    // app's icon. Without one Slack shows its default app icon, an image we can't use, so the
-    // icon is a square in the colour of a message's placeholder avatar.
-    case "work_object_mention":
+    // app's icon from resolvers.app. Without one Slack shows its default app icon, an image we
+    // can't use, so the icon is a square in the colour of a message's placeholder avatar.
+    case "work_object_mention": {
+      const iconUrl = el.app_id ? ctx.resolvers.app?.(el.app_id)?.iconUrl : undefined;
       content = (
         <Link
           className="sbk-link sbk-rich-text__entity-link"
@@ -375,12 +376,19 @@ export function renderLeaf(
           rel="noopener noreferrer"
         >
           <Slug
-            icon={<span className="sbk-rich-text__slug-app" aria-hidden="true" />}
+            icon={
+              iconUrl ? (
+                <img className="sbk-rich-text__slug-app" src={iconUrl} alt="" />
+              ) : (
+                <span className="sbk-rich-text__slug-app" aria-hidden="true" />
+              )
+            }
             label={el.text || el.url}
           />
         </Link>
       );
       break;
+    }
     // extra/fidelity/rich-text-attachment-mention/default: a plain link.
     case "attachment_mention":
       content = (

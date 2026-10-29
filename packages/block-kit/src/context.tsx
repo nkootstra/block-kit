@@ -96,6 +96,11 @@ export interface Resolvers {
    * it.
    */
   directory?: (source: "users" | "conversations" | "channels") => DirectoryEntry[] | undefined;
+  /**
+   * An app's icon, for the rich text `work_object_mention`s it owns (their `app_id`), e.g. from
+   * `bots.info`. Without it a work object shows a placeholder square where Slack shows the icon.
+   */
+  app?: (id: string) => ResolvedApp | undefined;
 }
 
 /** A row in a users, conversations or channels select: a person or a channel. */
@@ -139,6 +144,12 @@ export interface ResolvedSlackFile {
   url: string;
   /** The file's size in bytes. */
   size?: number;
+}
+
+/** What {@link Resolvers.app} returns for an app it knows. */
+export interface ResolvedApp {
+  /** A URL the browser can load for the app's icon, shown at 16px. */
+  iconUrl?: string;
 }
 
 export interface EmojiOptions {

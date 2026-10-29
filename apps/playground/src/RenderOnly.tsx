@@ -130,9 +130,9 @@ const builderDirectory = (source: string): DirectoryEntry[] =>
  * them as they appear, so the order and which channels are private differ between capture
  * sessions. `&directory=User One,channel-one:private,…` (what a reference's open list shows, read
  * by the comparison) lists the placeholders in that order, with those channels private; names it
- * leaves out follow, as above.
+ * leaves out follow, as above. `icon` is the Builder's default app icon (the message's, `&icon=`).
  */
-function builderResolvers(listed: string[]): Resolvers {
+function builderResolvers(listed: string[], icon: string | undefined): Resolvers {
   const order = listed.map((entry) => entry.split(":")[0]!);
   const rank = (entry: DirectoryEntry) => {
     const at = order.indexOf(entry.name);
@@ -148,6 +148,8 @@ function builderResolvers(listed: string[]): Resolvers {
     // contact card for one shows "This content could not be displayed.", as a renderer does when its
     // user resolver doesn't know the id.
     user: () => undefined,
+    // Nor does it know their apps, so a work object shows its default app icon.
+    app: () => (icon ? { iconUrl: icon } : undefined),
     directory: (source) =>
       listed.length === 0
         ? builderDirectory(source)
@@ -168,7 +170,10 @@ export function RenderOnly({ params }: { params: URLSearchParams }) {
   // Left unset for light, so the existing references render exactly as before.
   const theme = params.get("theme") === "dark" ? ("dark" as const) : undefined;
   const fixture = fixtures.find((f) => f.name === name);
-  const resolvers = builderResolvers(params.get("directory")?.split(",") ?? []);
+  const resolvers = builderResolvers(
+    params.get("directory")?.split(",") ?? [],
+    params.get("icon") ?? undefined,
+  );
   if (!fixture) return <p>Unknown fixture {name}</p>;
 
   let raw: unknown;

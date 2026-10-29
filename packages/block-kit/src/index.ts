@@ -17,6 +17,7 @@ export {
   type DirectoryChannel,
   type DirectoryEntry,
   type DirectoryUser,
+  type ResolvedApp,
   type ResolvedSlackFile,
   type Resolvers,
   type StackedView,
