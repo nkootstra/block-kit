@@ -358,8 +358,9 @@
     --sbk-data-table-match-text: rgb(222, 167, 0);
     --sbk-plan-text: #9a9b9e;
     --sbk-task-card-text: #9a9b9e;
-    --sbk-alert-default-bg: #f8f8f81a;
-    --sbk-alert-default-icon: #b9babd;
+    --sbk-alert-default-bg: #212428;
+    --sbk-alert-default-border: #797c8180;
+    --sbk-alert-default-icon: #9a9b9e;
     --sbk-alert-info-icon: #2ba5ce;
     --sbk-alert-warning-icon: #e8a723;
     --sbk-alert-error-icon: #d94c75;
@@ -527,8 +528,9 @@
   --sbk-data-table-match-text: rgb(222, 167, 0);
   --sbk-plan-text: #9a9b9e;
   --sbk-task-card-text: #9a9b9e;
-  --sbk-alert-default-bg: #f8f8f81a;
-  --sbk-alert-default-icon: #b9babd;
+  --sbk-alert-default-bg: #212428;
+  --sbk-alert-default-border: #797c8180;
+  --sbk-alert-default-icon: #9a9b9e;
   --sbk-alert-info-icon: #2ba5ce;
   --sbk-alert-warning-icon: #e8a723;
   --sbk-alert-error-icon: #d94c75;

@@ -1,8 +1,10 @@
-/* Measured from the Builder's modal preview (`c-alert--boxed`). Dark values aren't measured; they
-   reuse the dark palette's matching hues. */
+/* Measured from the Builder's modal preview (`c-alert--boxed`). Of the dark values (Message.css) the
+   default level's are measured (extra/modal/alert@dark); the others reuse the dark palette's
+   matching hues. */
 :root,
 [data-theme="light"] {
   --sbk-alert-default-bg: rgb(234, 234, 234);
+  --sbk-alert-default-border: transparent;
   --sbk-alert-default-icon: rgb(94, 93, 96);
   --sbk-alert-info-bg: rgba(54, 197, 240, 0.13);
   --sbk-alert-info-icon: rgb(18, 100, 163);
@@ -46,6 +48,7 @@
 
 .sbk-alert--default {
   background: var(--sbk-alert-default-bg);
+  border-color: var(--sbk-alert-default-border);
 }
 .sbk-alert--default .sbk-alert__icon {
   color: var(--sbk-alert-default-icon);
