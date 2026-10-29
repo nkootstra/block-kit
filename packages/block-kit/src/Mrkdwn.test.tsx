@@ -56,7 +56,7 @@ describe("<Mrkdwn>", () => {
     const wave = screen.getByAltText(":wave:");
     expect(wave.tagName).toBe("IMG");
     expect((wave as HTMLImageElement).src).toContain("1f44b");
-    const thumb = screen.getByAltText(":+1:");
+    const thumb = screen.getByAltText(":+1::skin-tone-3:");
     expect((thumb as HTMLImageElement).src).toContain("1f44d-1f3fc");
   });
 

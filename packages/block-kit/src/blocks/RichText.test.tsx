@@ -356,6 +356,24 @@ describe("<RichText>", () => {
     expect(container.querySelector(".sbk-rich-text__jumbo-emoji")).toBeTruthy();
   });
 
+  it("takes an emoji's skin tone from its unicode, as Slack does", () => {
+    const block = {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            { type: "emoji", name: "wave", unicode: "1f44b-1f3fd" },
+            { type: "text", text: " hi" },
+          ],
+        },
+      ],
+    };
+    render(<RichText block={block as never} blockId="b1" index={0} />);
+    const wave = screen.getByAltText(":wave::skin-tone-4:") as HTMLImageElement;
+    expect(wave.src).toContain("1f44b-1f3fd.png");
+  });
+
   describe("a list with a border", () => {
     const text = (value: string) => ({ type: "text", text: value });
     const section = (value: string) => ({ type: "rich_text_section", elements: [text(value)] });

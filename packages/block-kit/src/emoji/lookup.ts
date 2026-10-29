@@ -40,6 +40,18 @@ export function resolveEmoji(
   return { kind: "unicode", unified };
 }
 
+const SKIN_TONE_MODIFIERS = ["1f3fb", "1f3fc", "1f3fd", "1f3fe", "1f3ff"];
+
+/**
+ * The `skin-tone-N` (2-6) a rich-text emoji's `unicode` carries, e.g. 4 for `1f44b-1f3fd`; Slack
+ * draws the emoji in that tone.
+ */
+export function skinToneOf(unicode: string | undefined): number | undefined {
+  const codepoints = unicode?.toLowerCase().split("-") ?? [];
+  const at = SKIN_TONE_MODIFIERS.findIndex((modifier) => codepoints.includes(modifier));
+  return at === -1 ? undefined : at + 2;
+}
+
 /** Apple emoji set served from jsDelivr, Slack's own image source for standard emoji. */
 export function defaultEmojiImageUrl(unified: string): string {
   return `https://cdn.jsdelivr.net/npm/emoji-datasource-apple@16.0.0/img/apple/64/${unified}.png`;
