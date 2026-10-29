@@ -29,6 +29,12 @@
   margin-bottom: 0;
 }
 
+/* Slack keeps the unknown-block notice's bottom margin even as a callout's last child
+   (catalog/callout/callout@hidden, catalog/container/with-callout). */
+.sbk-callout .sbk-block:last-child > .sbk-block-error {
+  margin-bottom: 6px;
+}
+
 /* In a container Slack lays a callout's blocks out in a flex column with an 8px gap, so their own
    margins no longer collapse into each other (catalog/container/with-callout). */
 .sbk-container .sbk-callout {
@@ -47,7 +53,3 @@
   display: flow-root;
 }
 
-/* Slack keeps the unknown-block notice's bottom margin even as a callout's last child. */
-.sbk-container .sbk-callout .sbk-block:last-child > .sbk-block-error {
-  margin-bottom: 6px;
-}
