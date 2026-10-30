@@ -36,6 +36,8 @@ export function postSigned(opts: {
   body: string;
   timestamp?: number;
   fetch?: typeof fetch;
+  /** Aborts the request, e.g. `AbortSignal.timeout(ms)`. */
+  signal?: AbortSignal;
 }): Promise<Response> {
   const timestamp = opts.timestamp ?? Math.floor(Date.now() / 1000);
   const signature = signSlackRequest(opts.signingSecret, timestamp, opts.body);
@@ -48,5 +50,6 @@ export function postSigned(opts: {
       "x-slack-request-timestamp": String(timestamp),
     },
     body: opts.body,
+    signal: opts.signal,
   });
 }

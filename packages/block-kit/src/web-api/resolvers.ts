@@ -1,5 +1,5 @@
 import type { Resolvers, UserProfile } from "../index";
-import type { WebApiClient, WebApiUser } from "./client";
+import { USERGROUP_BY_ID, type UsergroupsById, type WebApiClient, type WebApiUser } from "./client";
 
 export interface WebApiResolversOptions {
   /**
@@ -24,7 +24,9 @@ type Kind = "user" | "channel" | "usergroup";
 /**
  * Builds `Resolvers` (see `context.tsx`) backed by the Slack Web API: `users.info` for names and
  * the profile card, `conversations.info`, and `usergroups.list` for usergroups (there is no per-id
- * usergroup lookup in the Web API, so the whole list is fetched once and cached).
+ * usergroup lookup in the Web API, so the whole list is fetched once and cached). Through
+ * `httpResolverClient`, user groups are asked for by id like users and channels, and the relay
+ * filters the list on the server.
  *
  * On a server, pass a `WebClient`. In the browser, pass `httpResolverClient`, which asks a
  * `createResolverRelay` on your server, so the bot token never reaches the page.
@@ -48,7 +50,11 @@ export function createWebApiResolvers(
   const queues = new Map<Kind, Set<string>>([
     ["user", new Set()],
     ["channel", new Set()],
+    ["usergroup", new Set()],
   ]);
+  const usergroupById = (client.usergroups as WebApiClient["usergroups"] & UsergroupsById)[
+    USERGROUP_BY_ID
+  ];
   const timers = new Map<Kind, ReturnType<typeof setTimeout>>();
   const listeners = new Set<() => void>();
 
@@ -63,14 +69,14 @@ export function createWebApiResolvers(
     return `${kind}:${id}`;
   }
 
-  function lookup(kind: "user" | "channel", id: string): string | undefined {
+  function lookup(kind: Kind, id: string): string | undefined {
     const key = cacheKey(kind, id);
     if (cache.has(key)) return cache.get(key) ?? undefined;
     schedule(kind, id);
     return undefined;
   }
 
-  function schedule(kind: "user" | "channel", id: string) {
+  function schedule(kind: Kind, id: string) {
     const key = cacheKey(kind, id);
     if (inflight.has(key)) return;
     inflight.add(key);
@@ -87,7 +93,7 @@ export function createWebApiResolvers(
     }
   }
 
-  async function flush(kind: "user" | "channel") {
+  async function flush(kind: Kind) {
     const queue = queues.get(kind);
     const ids = queue ? [...queue] : [];
     queue?.clear();
@@ -96,10 +102,15 @@ export function createWebApiResolvers(
     await Promise.all(ids.map((id) => fetchOne(kind, id)));
   }
 
-  async function fetchOne(kind: "user" | "channel", id: string) {
+  async function fetchOne(kind: Kind, id: string) {
     const key = cacheKey(kind, id);
     try {
-      const name = kind === "user" ? await fetchUser(id) : await fetchChannelName(id);
+      const name =
+        kind === "user"
+          ? await fetchUser(id)
+          : kind === "channel"
+            ? await fetchChannelName(id)
+            : await fetchUsergroupName(id);
       cache.set(key, name ?? null);
     } catch {
       // Unknown id, revoked token, rate limit, or an emulator that doesn't implement the method:
@@ -124,6 +135,11 @@ export function createWebApiResolvers(
     return res.channel?.name || undefined;
   }
 
+  async function fetchUsergroupName(id: string): Promise<string | undefined> {
+    const group = await usergroupById?.(id);
+    return group?.handle || group?.name || undefined;
+  }
+
   function loadUsergroups(): void {
     if (usergroupsLoaded || usergroupsLoading) return;
     usergroupsLoading = (async () => {
@@ -145,6 +161,7 @@ export function createWebApiResolvers(
   }
 
   function lookupUsergroup(id: string): string | undefined {
+    if (usergroupById) return lookup("usergroup", id);
     const key = cacheKey("usergroup", id);
     if (cache.has(key)) return cache.get(key) ?? undefined;
     loadUsergroups();

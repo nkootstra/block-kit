@@ -87,6 +87,36 @@ describe("httpResolverClient", () => {
     await expect(client.users.info({ user: ADA })).rejects.toThrow("answered 401");
   });
 
+  it("asks for user groups by id, in the same request as users and channels", async () => {
+    const { client, fetch } = setup();
+    const resolvers = createWebApiResolvers(client, { batchWindowMs: 0 });
+    resolvers.user?.(ADA);
+    resolvers.usergroup?.("S0123456789");
+    resolvers.usergroup?.("S0987654321");
+    await new Promise((r) => setTimeout(r, 5));
+
+    const bodies = fetch.mock.calls.map(([, init]) => JSON.parse(String(init?.body)));
+    expect(bodies.flatMap((body) => body.usergroups ?? [])).toEqual(["S0123456789", "S0987654321"]);
+    expect(bodies.some((body) => body.usergroups === true)).toBe(false);
+    expect(resolvers.usergroup?.("S0123456789")).toBe("eng");
+    expect(resolvers.usergroup?.("S0987654321")).toBeUndefined();
+  });
+
+  it("doesn't list user groups: the relay only answers for ids", async () => {
+    const { client, fetch } = setup();
+    await expect(client.usergroups.list()).rejects.toThrow(/by id/);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("sends no Authorization header for an empty token", async () => {
+    const fetch = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) =>
+      Response.json({}),
+    );
+    const client = httpResolverClient({ url: "/api/slack/resolve", token: "", fetch });
+    await client.users.info({ user: ADA });
+    expect(new Headers(fetch.mock.calls[0]?.[1]?.headers).has("authorization")).toBe(false);
+  });
+
   it("drives createWebApiResolvers end to end", async () => {
     const resolvers = createWebApiResolvers(setup().client, { batchWindowMs: 0 });
     resolvers.user?.(ADA);

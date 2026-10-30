@@ -5,6 +5,8 @@ import { createResolverRelay } from "./relay";
 const ADA = "U0123456789";
 const GRACE = "U0987654321";
 const RELEASES = "C0123456789";
+const ENG = "S0123456789";
+const OTHER_GROUP = "S0987654321";
 
 /** Slack's whole `users.info` user, including the fields the relay must never pass on. */
 const fullUser = {
@@ -51,7 +53,10 @@ function client(overrides: Partial<WebApiClient> = {}): WebApiClient {
     },
     usergroups: {
       list: vi.fn(async () => ({
-        usergroups: [{ id: "S0123456789", handle: "eng", name: "Engineering", users: [ADA] }],
+        usergroups: [
+          { id: ENG, handle: "eng", name: "Engineering", users: [ADA] },
+          { id: "S0000000001", handle: "design", name: "Design" },
+        ],
       })),
     },
     ...overrides,
@@ -69,7 +74,7 @@ function post(body: unknown, headers: Record<string, string> = {}) {
 describe("createResolverRelay", () => {
   it("returns only the allowlisted user, channel and user group fields", async () => {
     const relay = createResolverRelay({ client: client() });
-    const res = await relay(post({ users: [ADA], channels: [RELEASES], usergroups: true }));
+    const res = await relay(post({ users: [ADA], channels: [RELEASES], usergroups: [ENG] }));
 
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("private, no-store");
@@ -92,13 +97,55 @@ describe("createResolverRelay", () => {
         },
       },
       channels: { [RELEASES]: { id: RELEASES, name: "releases", is_private: false } },
-      usergroups: [{ id: "S0123456789", handle: "eng", name: "Engineering" }],
+      usergroups: { [ENG]: { id: ENG, handle: "eng", name: "Engineering" } },
     });
+  });
+
+  it("returns only the user groups asked for, never the whole list", async () => {
+    const c = client();
+    const relay = createResolverRelay({ client: c });
+
+    expect((await relay(post({ usergroups: true }))).status).toBe(400);
+    expect((await relay(post({ usergroups: [] }))).status).toBe(200);
+    expect(c.usergroups.list).not.toHaveBeenCalled();
+
+    const res = await relay(post({ usergroups: [ENG, OTHER_GROUP] }));
+    expect(await res.json()).toEqual({
+      usergroups: { [ENG]: { id: ENG, handle: "eng", name: "Engineering" }, [OTHER_GROUP]: null },
+    });
+    const text = await (await relay(post({ usergroups: [OTHER_GROUP] }))).text();
+    expect(text).not.toContain("design");
+  });
+
+  it("reuses one usergroups.list answer for a minute, but not a failed one", async () => {
+    vi.useFakeTimers();
+    try {
+      const list = vi
+        .fn<WebApiClient["usergroups"]["list"]>()
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
+        .mockResolvedValue({ usergroups: [{ id: ENG, handle: "eng" }] });
+      const relay = createResolverRelay({ client: client({ usergroups: { list } }) });
+
+      expect((await relay(post({ usergroups: [ENG] }))).status).toBe(502);
+      expect((await relay(post({ usergroups: [ENG] }))).status).toBe(200);
+      expect((await relay(post({ usergroups: [ENG] }))).status).toBe(200);
+      expect(list).toHaveBeenCalledTimes(2);
+      vi.advanceTimersByTime(60_001);
+      await relay(post({ usergroups: [ENG] }));
+      expect(list).toHaveBeenCalledTimes(3);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("counts user group ids toward maxIds", async () => {
+    const relay = createResolverRelay({ client: client(), maxIds: 1 });
+    expect((await relay(post({ users: [ADA], usergroups: [ENG] }))).status).toBe(413);
   });
 
   it("never passes on an email, phone or anything outside the allowlist", async () => {
     const relay = createResolverRelay({ client: client() });
-    const text = await (await relay(post({ users: [ADA], usergroups: true }))).text();
+    const text = await (await relay(post({ users: [ADA], usergroups: [ENG] }))).text();
 
     for (const leak of ["name@example.com", "+00", "skype", "team_id", "is_admin", 'users":[']) {
       expect(text).not.toContain(leak);
@@ -169,7 +216,8 @@ describe("createResolverRelay", () => {
     ["an id that isn't a string", { users: [123] }],
     ["users that isn't a list", { users: ADA }],
     ["an unknown key", { users: [ADA], emails: ["name@example.com"] }],
-    ["usergroups other than true", { usergroups: "all" }],
+    ["usergroups that isn't a list of ids", { usergroups: "all" }],
+    ["a usergroup id that isn't one", { usergroups: [ADA] }],
     ["a body that isn't an object", [ADA]],
   ])("rejects %s", async (_, body) => {
     const c = client();
@@ -257,5 +305,26 @@ describe("createResolverRelay", () => {
 
     expect(res.status).toBe(429);
     expect(res.headers.get("retry-after")).toBe("12");
+  });
+
+  describe("when it's created", () => {
+    it("refuses a client without the three methods", () => {
+      expect(() => createResolverRelay({ client: undefined as never })).toThrow(/`client`/);
+      expect(() => createResolverRelay({ client: { users: {} } as never })).toThrow(/`client`/);
+    });
+
+    it.each(["xoxb-0000-placeholder", "xoxp-0000-placeholder", "xapp-1-placeholder"])(
+      "refuses the Slack token %s as its token",
+      (token) => {
+        expect(() => createResolverRelay({ client: client(), token })).toThrow(
+          /`token` looks like a Slack token/,
+        );
+      },
+    );
+
+    it("treats an empty token as none, the way a blank env var reads", async () => {
+      const relay = createResolverRelay({ client: client(), token: "" });
+      expect((await relay(post({ users: [ADA] }))).status).toBe(200);
+    });
   });
 });

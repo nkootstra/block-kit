@@ -65,3 +65,36 @@ export async function readCapped(request: Request, max: number): Promise<string 
   }
   return new TextDecoder().decode(bytes);
 }
+
+/** Slack credentials: bot, user and app-level tokens, which must never be a relay's `token`. */
+const SLACK_TOKEN = /^(xox[a-z]|xapp)-/;
+
+/**
+ * A relay's `token` option, checked when the relay is created. An empty string (an env var left
+ * blank, as in the examples' `.env.example`) means no token. A Slack credential, or the signing
+ * secret, is refused: the token is shared with the page, so it would publish that secret.
+ */
+export function relayToken(
+  factory: string,
+  token: string | undefined,
+  signingSecret?: string,
+): string | undefined {
+  if (token === undefined || token === "") return undefined;
+  if (typeof token !== "string") {
+    throw new TypeError(`${factory}: \`token\` must be a string.`);
+  }
+  if (SLACK_TOKEN.test(token)) {
+    throw new Error(
+      `${factory}: \`token\` looks like a Slack token (xox…/xapp-…). The relay's token is sent ` +
+        "by the page, so anyone who opens it can read it: use a random development secret of " +
+        "your own, never a bot, user or app token.",
+    );
+  }
+  if (signingSecret !== undefined && token === signingSecret) {
+    throw new Error(
+      `${factory}: \`token\` is the same as \`signingSecret\`. The relay's token is sent by the ` +
+        "page, so anyone who opens it can read it: use a different, random development secret.",
+    );
+  }
+  return token;
+}

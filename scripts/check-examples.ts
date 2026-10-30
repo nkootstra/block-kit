@@ -1,7 +1,8 @@
 // Checks that the examples keep the bot token on the server. CI builds them with
 // SLACK_BOT_TOKEN=xoxb-block-kit-canary; this fails if the canary, any bot token or the Slack SDK
 // shows up in what a browser downloads. With --smoke it also starts each example with the canary
-// and checks what its page and routes answer.
+// and a canary signing secret, clicks a button through its interaction relay, and checks that the
+// click reached the app signed and that neither secret is in what its page and routes answer.
 //
 //   bun scripts/check-examples.ts [--smoke]
 
@@ -9,6 +10,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 export const CANARY = "xoxb-block-kit-canary";
+/** The signing secret the smoke run starts the examples with. */
+export const SIGNING_SECRET_CANARY = "block-kit-signing-secret-canary";
 
 /** What must never reach a browser. The package name only survives bundling in some cases. */
 export const LEAKS: { name: string; pattern: RegExp }[] = [
@@ -16,6 +19,7 @@ export const LEAKS: { name: string; pattern: RegExp }[] = [
   { name: "a bot token", pattern: /xoxb-/ },
   { name: "the Slack Web API SDK", pattern: /@slack\/web-api|slack_webapi_/ },
   { name: "a Slack Web API URL", pattern: /slack\.com\/api/ },
+  { name: "the canary signing secret", pattern: new RegExp(SIGNING_SECRET_CANARY) },
 ];
 
 /** Every leak in a set of files, as `file: what`. */
@@ -77,7 +81,13 @@ function clientFiles(example: Example) {
 async function smoke(example: Example, port: number): Promise<string[]> {
   const proc = Bun.spawn(example.start(port), {
     cwd: example.dir,
-    env: { ...process.env, SLACK_BOT_TOKEN: CANARY, PORT: String(port) },
+    env: {
+      ...process.env,
+      SLACK_BOT_TOKEN: CANARY,
+      SLACK_SIGNING_SECRET: SIGNING_SECRET_CANARY,
+      SLACK_REQUEST_URL: "",
+      PORT: String(port),
+    },
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -100,12 +110,30 @@ async function smoke(example: Example, port: number): Promise<string[]> {
         headers: { "content-type": "application/json", ...headers },
         body: JSON.stringify({ users: ["U0123456789"], channels: ["C0123456789"] }),
       });
+    // A button click, posted the way `httpTransport` posts it, to the example's demo app.
+    const click = fetch(`${base}/api/slack/relay`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "x-block-kit-transport": "http",
+      },
+      body: `payload=${encodeURIComponent(
+        JSON.stringify({ type: "block_actions", actions: [{ action_id: "approve_release" }] }),
+      )}`,
+    });
     const responses = await Promise.all([
       fetch(base, { headers: sameOrigin }),
       resolve(sameOrigin),
+      click,
       fetch(`${base}/api/slack/files/F0123456789`, { headers: sameOrigin }),
       fetch(`${base}/api/message`, { headers: sameOrigin }),
     ]);
+    const clicked = responses[2]!;
+    if (clicked.status !== 200) {
+      problems.push(
+        `${example.name} /api/slack/relay: a click answered ${clicked.status}, not 200 from the demo app`,
+      );
+    }
     const answered = await Promise.all(
       responses.map(async (res) => ({
         path: `${example.name} ${new URL(res.url).pathname}`,

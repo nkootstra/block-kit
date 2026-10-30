@@ -42,3 +42,14 @@ export interface WebApiClient {
   conversations: { info(args: { channel: string }): Promise<{ channel?: WebApiChannel }> };
   usergroups: { list(): Promise<{ usergroups?: WebApiUsergroup[] }> };
 }
+
+/**
+ * Set on `httpResolverClient`'s `usergroups`: looks one user group up by id through the resolver
+ * relay, which never lists them all. `createWebApiResolvers` uses it in place of `list()` when
+ * it's there. Internal: a `Symbol.for`, so the `/transport` and `/web-api` bundles agree on it.
+ */
+export const USERGROUP_BY_ID: unique symbol = Symbol.for("@nkootstra/block-kit/usergroup-by-id");
+
+export interface UsergroupsById {
+  [USERGROUP_BY_ID]?: (id: string) => Promise<WebApiUsergroup | null>;
+}

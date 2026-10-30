@@ -142,6 +142,93 @@ describe("createInteractionRelay", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  describe("when it's created", () => {
+    const fetch = replying("");
+
+    it.each([
+      ["missing", undefined],
+      ["empty", ""],
+    ])("throws, naming signingSecret, when it's %s", (_, secret) => {
+      expect(() =>
+        createInteractionRelay({ requestUrl: "http://app", signingSecret: secret as never, fetch }),
+      ).toThrow(/`signingSecret` is missing or empty/);
+    });
+
+    it.each([
+      ["missing", undefined],
+      ["empty", ""],
+      ["relative", "/slack/events"],
+      ["not http(s)", "ftp://app/slack"],
+    ])("throws, naming requestUrl, when it's %s", (_, requestUrl) => {
+      expect(() =>
+        createInteractionRelay({ requestUrl: requestUrl as never, signingSecret, fetch }),
+      ).toThrow(/`requestUrl` must be the app's absolute http\(s\) request URL/);
+    });
+
+    it("refuses the signing secret, or a Slack token, as its token", () => {
+      const relay = (token: string) =>
+        createInteractionRelay({ requestUrl: "http://app", signingSecret, token, fetch });
+      expect(() => relay(signingSecret)).toThrow(/`token` is the same as `signingSecret`/);
+      for (const token of ["xoxb-0000-placeholder", "xoxp-0000-placeholder", "xapp-1-x"]) {
+        expect(() => relay(token)).toThrow(/`token` looks like a Slack token/);
+      }
+    });
+
+    it("refuses a timeoutMs that isn't a positive number", () => {
+      for (const timeoutMs of [0, -1, Number.NaN]) {
+        expect(() =>
+          createInteractionRelay({ requestUrl: "http://app", signingSecret, timeoutMs, fetch }),
+        ).toThrow(/`timeoutMs`/);
+      }
+    });
+  });
+
+  it("answers 504 when the app doesn't answer within timeoutMs", async () => {
+    const onError = vi.fn();
+    const hanging = vi.fn(
+      (_url: RequestInfo | URL, init?: RequestInit) =>
+        new Promise<Response>((_, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+        }),
+    );
+    const relay = createInteractionRelay({
+      requestUrl: "http://app",
+      signingSecret,
+      timeoutMs: 20,
+      onError,
+      fetch: hanging,
+    });
+    const res = await relay(new Request("http://dev/relay", { method: "POST", body: form }));
+    expect(res.status).toBe(504);
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ name: "TimeoutError" }));
+  });
+
+  it("passes on the app's error status, but not its error page", async () => {
+    const onError = vi.fn();
+    const page = "Traceback: DB password=placeholder at /srv/app";
+    const relay = createInteractionRelay({
+      requestUrl: "http://app",
+      signingSecret,
+      onError,
+      fetch: replying(page, { status: 500, headers: { "content-type": "text/html" } }),
+    });
+    const res = await relay(new Request("http://dev/relay", { method: "POST", body: form }));
+    expect(res.status).toBe(500);
+    expect(res.headers.get("content-type")).toMatch(/^text\/plain/);
+    expect(await res.text()).toBe("The app answered 500");
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ status: 500, body: page }));
+  });
+
+  it("passes on an empty 204 ack", async () => {
+    const relay = createInteractionRelay({
+      requestUrl: "http://app",
+      signingSecret,
+      fetch: replying(null as never, { status: 204 }),
+    });
+    const res = await relay(new Request("http://dev/relay", { method: "POST", body: form }));
+    expect(res.status).toBe(204);
+  });
+
   describe("token", () => {
     const token = "dev-relay-token-for-tests";
 
@@ -184,6 +271,25 @@ describe("createInteractionRelay", () => {
       expect(app).toHaveBeenCalledTimes(1);
       // The token stays between the page and the relay: the app gets Slack's headers only.
       expect(new Headers(app.mock.calls[0]?.[1]?.headers).has("authorization")).toBe(false);
+    });
+
+    it("treats an empty token as none, on both ends, the way a blank env var reads", async () => {
+      const app = replying("");
+      const relay = createInteractionRelay({
+        requestUrl: "http://app",
+        signingSecret,
+        token: "",
+        fetch: app,
+      });
+      const fetch = vi.fn((url: RequestInfo | URL, init?: RequestInit) =>
+        relay(new Request(url, init)),
+      );
+      await httpTransport({ url: "http://dev/relay", token: "", fetch }).onSubmit(
+        payload as never,
+        {} as never,
+      );
+      expect(new Headers(fetch.mock.calls[0]?.[1]?.headers).has("authorization")).toBe(false);
+      expect(app).toHaveBeenCalledTimes(1);
     });
 
     it("needs no token when none is set", async () => {

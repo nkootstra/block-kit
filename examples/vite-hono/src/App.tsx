@@ -3,6 +3,7 @@ import { httpResolverClient } from "@nkootstra/block-kit/transport";
 import { useWebApiResolvers } from "@nkootstra/block-kit/web-api";
 import type { AnyBlock } from "@slack/types";
 import { useEffect, useState } from "react";
+import { Approval } from "./Approval";
 
 interface MessageData {
   blocks: AnyBlock[];
@@ -19,7 +20,8 @@ interface MessageData {
 const client = httpResolverClient({
   url: "/api/slack/resolve",
   // A development secret shared with the page, not a Slack credential.
-  token: import.meta.env.VITE_SLACK_RELAY_TOKEN || undefined,
+  // Blank means none.
+  token: import.meta.env.VITE_SLACK_RELAY_TOKEN,
 });
 
 // A route on the Hono server that downloads the file with the bot token.
@@ -81,6 +83,8 @@ export function App() {
           <ServerResolvedPreview blocks={data.blocks} names={data.names} />
         </>
       )}
+      <h2>Buttons through the interaction relay</h2>
+      <Approval />
     </main>
   );
 }

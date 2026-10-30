@@ -1,10 +1,18 @@
-import type { WebApiChannel, WebApiClient, WebApiUser } from "./client";
+import {
+  USERGROUP_BY_ID,
+  type UsergroupsById,
+  type WebApiChannel,
+  type WebApiClient,
+  type WebApiUser,
+  type WebApiUsergroup,
+} from "./client";
 import {
   CHANNEL_ID,
   MAX_RESOLVE_IDS,
   type ResolveRequest,
   type ResolveResponse,
   USER_ID,
+  USERGROUP_ID,
 } from "./protocol";
 
 // Browser-safe: it only talks to your own server, which holds the bot token.
@@ -14,7 +22,8 @@ export interface HttpResolverClientOptions {
   url: string;
   /**
    * The relay's `token`, sent as `Authorization: Bearer <token>`. A development secret shared
-   * with the page, not a Slack credential.
+   * with the page, not a Slack credential. An empty string counts as no token, so an env var left
+   * blank sends no `Authorization` header.
    */
   token?: string;
   /** Sent with every request, e.g. a header your own session check reads. */
@@ -32,6 +41,10 @@ interface Waiting<T> {
  * A `WebApiClient` that asks a `createResolverRelay` on your server instead of Slack, for
  * `useWebApiResolvers` in the browser. Lookups made in the same tick go out as one request.
  *
+ * User groups are looked up by id too: the relay never sends the page the whole list, so this
+ * client's `usergroups.list()` rejects. `createWebApiResolvers` asks for each mentioned group
+ * instead.
+ *
  * Create it once, outside your components: the resolvers are tied to the client's identity, so
  * a new client on every render would start every lookup over.
  *
@@ -42,6 +55,7 @@ interface Waiting<T> {
 export function httpResolverClient(options: HttpResolverClientOptions): WebApiClient {
   const users = new Map<string, Waiting<WebApiUser>[]>();
   const channels = new Map<string, Waiting<WebApiChannel>[]>();
+  const usergroups = new Map<string, Waiting<WebApiUsergroup>[]>();
   let scheduled = false;
 
   async function post(body: ResolveRequest): Promise<ResolveResponse> {
@@ -50,7 +64,7 @@ export function httpResolverClient(options: HttpResolverClientOptions): WebApiCl
       headers: {
         "content-type": "application/json",
         ...Object.fromEntries(new Headers(options.headers)),
-        ...(options.token === undefined ? {} : { authorization: `Bearer ${options.token}` }),
+        ...(options.token ? { authorization: `Bearer ${options.token}` } : {}),
       },
       body: JSON.stringify(body),
     });
@@ -76,11 +90,14 @@ export function httpResolverClient(options: HttpResolverClientOptions): WebApiCl
     const queue = [
       ...[...users.keys()].map((id) => ["user", id] as const),
       ...[...channels.keys()].map((id) => ["channel", id] as const),
+      ...[...usergroups.keys()].map((id) => ["usergroup", id] as const),
     ];
     const pendingUsers = new Map(users);
     const pendingChannels = new Map(channels);
+    const pendingUsergroups = new Map(usergroups);
     users.clear();
     channels.clear();
+    usergroups.clear();
     for (let i = 0; i < queue.length; i += MAX_RESOLVE_IDS) {
       const batch = queue.slice(i, i + MAX_RESOLVE_IDS);
       const batchUsers = new Map(
@@ -89,17 +106,25 @@ export function httpResolverClient(options: HttpResolverClientOptions): WebApiCl
       const batchChannels = new Map(
         batch.filter(([k]) => k === "channel").map(([, id]) => [id, pendingChannels.get(id) ?? []]),
       );
+      const batchUsergroups = new Map(
+        batch
+          .filter(([k]) => k === "usergroup")
+          .map(([, id]) => [id, pendingUsergroups.get(id) ?? []]),
+      );
       const body: ResolveRequest = {};
       if (batchUsers.size) body.users = [...batchUsers.keys()];
       if (batchChannels.size) body.channels = [...batchChannels.keys()];
+      if (batchUsergroups.size) body.usergroups = [...batchUsergroups.keys()];
       post(body).then(
         (res) => {
           settle(batchUsers, res.users);
           settle(batchChannels, res.channels);
+          settle(batchUsergroups, res.usergroups);
         },
         (error: unknown) => {
           settle(batchUsers, undefined, error);
           settle(batchChannels, undefined, error);
+          settle(batchUsergroups, undefined, error);
         },
       );
     }
@@ -121,6 +146,17 @@ export function httpResolverClient(options: HttpResolverClientOptions): WebApiCl
     });
   }
 
+  const usergroupsApi: WebApiClient["usergroups"] & UsergroupsById = {
+    list: () =>
+      Promise.reject(
+        new Error(
+          "The resolver relay looks user groups up by id and doesn't list them: " +
+            "use createWebApiResolvers, which asks for each one it renders.",
+        ),
+      ),
+    [USERGROUP_BY_ID]: (id: string) => enqueue(usergroups, USERGROUP_ID, id),
+  };
+
   return {
     users: {
       info: async ({ user }) => ({ user: (await enqueue(users, USER_ID, user)) ?? undefined }),
@@ -130,8 +166,6 @@ export function httpResolverClient(options: HttpResolverClientOptions): WebApiCl
         channel: (await enqueue(channels, CHANNEL_ID, channel)) ?? undefined,
       }),
     },
-    usergroups: {
-      list: async () => ({ usergroups: (await post({ usergroups: true })).usergroups ?? [] }),
-    },
+    usergroups: usergroupsApi,
   };
 }

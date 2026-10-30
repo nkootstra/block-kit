@@ -66,7 +66,8 @@ export interface HttpTransportOptions {
   url: string;
   /**
    * The relay's `token`, sent as `Authorization: Bearer <token>`. A development secret shared
-   * with the page, not a Slack credential.
+   * with the page, not a Slack credential. An empty string counts as no token, so an env var left
+   * blank sends no `Authorization` header.
    */
   token?: string;
   headers?: HeadersInit;
@@ -105,7 +106,7 @@ export function httpTransport(options: HttpTransportOptions): InteractionTranspo
             "content-type": "application/x-www-form-urlencoded",
             // Marks the request as the transport's, which a cross-site form can't send.
             [TRANSPORT_HEADER]: "http",
-            ...(options.token === undefined ? {} : { authorization: `Bearer ${options.token}` }),
+            ...(options.token ? { authorization: `Bearer ${options.token}` } : {}),
             ...Object.fromEntries(new Headers(options.headers)),
           },
           body: encodeInteraction(payload),

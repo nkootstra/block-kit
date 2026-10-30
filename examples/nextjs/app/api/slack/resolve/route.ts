@@ -6,6 +6,6 @@ import { slack, slackErrorCode } from "@/lib/slack";
 // development tooling: set NEXT_PUBLIC_SLACK_RELAY_TOKEN when anyone else can reach it.
 export const POST = createResolverRelay({
   client: slack,
-  token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN || undefined,
+  token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN, // Blank means none.
   onError: (error) => console.error("Slack lookup failed:", slackErrorCode(error)),
 });

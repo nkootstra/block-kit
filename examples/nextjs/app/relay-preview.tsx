@@ -10,7 +10,8 @@ import type { AnyBlock } from "@slack/types";
 const client = httpResolverClient({
   url: "/api/slack/resolve",
   // A development secret shared with the page, not a Slack credential.
-  token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN || undefined,
+  // Blank means none.
+  token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN,
 });
 
 /** Pattern (a): the browser asks the relay route for names; the bot token stays on the server. */

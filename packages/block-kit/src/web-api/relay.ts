@@ -1,6 +1,12 @@
-import { hasBearer, readCapped } from "../interactivity/guard";
+import { hasBearer, readCapped, relayToken } from "../interactivity/guard";
 import type { WebApiChannel, WebApiClient, WebApiUser, WebApiUsergroup } from "./client";
-import { CHANNEL_ID, MAX_RESOLVE_IDS, type ResolveResponse, USER_ID } from "./protocol";
+import {
+  CHANNEL_ID,
+  MAX_RESOLVE_IDS,
+  type ResolveResponse,
+  USER_ID,
+  USERGROUP_ID,
+} from "./protocol";
 
 export interface ResolverRelayOptions {
   /** A `WebClient` (or anything with the same three methods). Its bot token stays on the server. */
@@ -10,10 +16,14 @@ export interface ResolverRelayOptions {
    * body is read. Without it, anyone who can reach the route can look up every user and channel
    * the bot can see. Set it whenever the route is reachable beyond your machine (a tunnel, a
    * preview deploy, a shared network). It's a development secret shared with the page, not a
-   * Slack credential, so it's fine in browser code.
+   * Slack credential, so it's fine in browser code. An empty string counts as no token. The relay
+   * throws when it's created with a Slack token (`xox…-`, `xapp-`) as its token.
    */
   token?: string;
-  /** The most ids one request may ask for. Defaults to 100, which is also the ceiling. */
+  /**
+   * The most ids (users, channels and user groups together) one request may ask for. Defaults to
+   * 100, which is also the ceiling.
+   */
   maxIds?: number;
   /**
    * Called with every Slack error the relay doesn't pass on: the response only ever says
@@ -67,8 +77,11 @@ function ids(value: unknown, pattern: RegExp): string[] {
 interface Query {
   users: string[];
   channels: string[];
-  usergroups: boolean;
+  usergroups: string[];
 }
+
+/** How long the relay reuses one `usergroups.list` answer (a Tier 2 method: 20 calls a minute). */
+const USERGROUPS_TTL_MS = 60_000;
 
 function parse(text: string, maxIds: number): Query {
   let body: unknown;
@@ -84,13 +97,14 @@ function parse(text: string, maxIds: number): Query {
   if (Object.keys(record).some((key) => !["users", "channels", "usergroups"].includes(key))) {
     throw new Refusal(400, "invalid_request");
   }
-  if (record.usergroups !== undefined && record.usergroups !== true) {
-    throw new Refusal(400, "invalid_request");
-  }
   const users = ids(record.users, USER_ID);
   const channels = ids(record.channels, CHANNEL_ID);
-  if (users.length + channels.length > maxIds) throw new Refusal(413, "too_many_ids");
-  return { users, channels, usergroups: record.usergroups === true };
+  // Only ids: the page never gets the whole list of groups.
+  const usergroups = ids(record.usergroups, USERGROUP_ID);
+  if (users.length + channels.length + usergroups.length > maxIds) {
+    throw new Refusal(413, "too_many_ids");
+  }
+  return { users, channels, usergroups };
 }
 
 /** Slack's error code, from a `WebClient` platform error or a client that throws `Error(code)`. */
@@ -159,8 +173,9 @@ async function orNull<T>(lookup: () => Promise<T | null>): Promise<T | null> {
  * A server-side `(Request) => Response` handler that answers `httpResolverClient`'s lookups with
  * the bot's `WebClient`, so the page can show names without the bot token reaching it. Like
  * `createInteractionRelay`, it's development and preview tooling: don't deploy it publicly. It only
- * calls `users.info`, `conversations.info` and `usergroups.list`, and only returns the fields
- * mentions and the profile card use.
+ * calls `users.info`, `conversations.info` and `usergroups.list`, only answers for the ids it's
+ * asked about (it lists the user groups on the server, caches that list for a minute, and returns
+ * only the ones asked for), and only returns the fields mentions and the profile card use.
  *
  * Mount it anywhere that speaks the Fetch API: a Next.js route (`export const POST = relay`),
  * `Bun.serve`, Hono, or a Vite dev-server middleware.
@@ -170,13 +185,46 @@ export function createResolverRelay(
 ): (request: Request) => Promise<Response> {
   const maxIds = Math.max(1, Math.min(options.maxIds ?? MAX_RESOLVE_IDS, MAX_RESOLVE_IDS));
   const { client } = options;
+  if (
+    typeof client?.users?.info !== "function" ||
+    typeof client.conversations?.info !== "function" ||
+    typeof client.usergroups?.list !== "function"
+  ) {
+    throw new Error(
+      "createResolverRelay: `client` must be a WebClient from @slack/web-api (created on the " +
+        "server with your bot token), or anything with users.info, conversations.info and " +
+        "usergroups.list.",
+    );
+  }
+  const token = relayToken("createResolverRelay", options.token);
+
+  let groups: { at: number; list: Promise<Map<string, WebApiUsergroup>> } | undefined;
+  /** `usergroups.list`, by id, shared by the requests of the next minute. */
+  function usergroupsById(): Promise<Map<string, WebApiUsergroup>> {
+    if (groups && Date.now() - groups.at < USERGROUPS_TTL_MS) return groups.list;
+    const list = client.usergroups
+      .list()
+      .then(
+        (res) =>
+          new Map(
+            (res.usergroups ?? []).flatMap((g) => (typeof g.id === "string" ? [[g.id, g]] : [])),
+          ),
+      );
+    const entry = { at: Date.now(), list };
+    groups = entry;
+    // A failure isn't cached: the next request asks Slack again.
+    list.catch(() => {
+      if (groups === entry) groups = undefined;
+    });
+    return list;
+  }
 
   return async (request) => {
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
     }
-    if (options.token !== undefined) {
-      if (!hasBearer(request, options.token)) {
+    if (token !== undefined) {
+      if (!hasBearer(request, token)) {
         return json(401, { error: "unauthorized" }, { "www-authenticate": "Bearer" });
       }
     }
@@ -206,12 +254,19 @@ export function createResolverRelay(
             return [id, pickChannel(channel ?? undefined)] as const;
           }),
         ),
-        query.usergroups ? client.usergroups.list() : undefined,
+        query.usergroups.length ? usergroupsById() : undefined,
       ]);
       const response: ResolveResponse = {};
       if (query.users.length) response.users = Object.fromEntries(users);
       if (query.channels.length) response.channels = Object.fromEntries(channels);
-      if (usergroups) response.usergroups = (usergroups.usergroups ?? []).map(pickUsergroup);
+      if (usergroups) {
+        response.usergroups = Object.fromEntries(
+          query.usergroups.map((id) => {
+            const group = usergroups.get(id);
+            return [id, group ? pickUsergroup(group) : null];
+          }),
+        );
+      }
       return json(200, response);
     } catch (error) {
       if (error instanceof Refusal) return json(error.status, { error: error.error });

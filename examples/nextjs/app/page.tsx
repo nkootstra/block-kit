@@ -1,17 +1,19 @@
+import { connection } from "next/server";
+import { Suspense } from "react";
 import { blocks } from "@/lib/blocks";
 import { resolveNames } from "@/lib/mentions";
 import { slack, usingFakeWorkspace } from "@/lib/slack";
+import { Approval } from "./approval";
 import { RelayPreview } from "./relay-preview";
 import { ServerResolvedPreview } from "./server-resolved-preview";
 
-// Resolved per request, so names from a real workspace are never baked into a prerendered page.
-export const dynamic = "force-dynamic";
-
-export default async function Page() {
+/** The message, with its names looked up on the server. */
+async function Previews() {
+  // Resolved per request, so names from a real workspace are never baked into a prerendered page.
+  await connection();
   const names = await resolveNames(slack, blocks);
   return (
-    <main>
-      <h1>Keep the bot token on the server</h1>
+    <>
       {usingFakeWorkspace && (
         <p>
           <strong>SLACK_BOT_TOKEN is unset</strong>, so names come from the example's in-memory
@@ -27,6 +29,19 @@ export default async function Page() {
         channels={names.channels}
         usergroups={names.usergroups}
       />
+    </>
+  );
+}
+
+export default function Page() {
+  return (
+    <main>
+      <h1>Keep the bot token on the server</h1>
+      <Suspense fallback={<p>Looking up names…</p>}>
+        <Previews />
+      </Suspense>
+      <h2>Buttons through the interaction relay</h2>
+      <Approval />
     </main>
   );
 }

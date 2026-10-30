@@ -69,10 +69,30 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../app/api/demo-app/slack/events/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/demo-app/slack/events">> = Specific
+  const handler = {} as typeof import("../../app/api/demo-app/slack/events/route.js")
+  type __Check = __IsExpected<typeof handler>
+  
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/api/slack/files/[id]/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/slack/files/[id]">> = Specific
   const handler = {} as typeof import("../../app/api/slack/files/[id]/route.js")
+  type __Check = __IsExpected<typeof handler>
+  
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/api/slack/relay/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/slack/relay">> = Specific
+  const handler = {} as typeof import("../../app/api/slack/relay/route.js")
   type __Check = __IsExpected<typeof handler>
   
   // @ts-ignore
