@@ -8,11 +8,13 @@ import {
   type Surface,
 } from "@nkootstra/block-kit";
 import { Tooltip } from "@base-ui/react/tooltip";
+import type { AnyBlock } from "@slack/types";
 import * as stylex from "@stylexjs/stylex";
 import type { ReactNode } from "react";
-import { builderUrl } from "../payload";
+import { builderUrl, type Payload } from "../payload";
 import { toHomeView, toModalView } from "../lib/views";
 import { color, font } from "../theme/tokens.stylex";
+import { PreviewBoundary } from "./PreviewBoundary";
 import { ButtonLink, layout, SegmentedControl } from "./ui";
 import { sampleIdentity, sampleResolvers } from "../lib/workspace";
 
@@ -169,11 +171,29 @@ export function PreviewPane({
   delivery: Delivery;
   onDeliveryChange: (delivery: Delivery) => void;
   /** The last payload that parsed. */
-  shown: { blocks: ModalView["blocks"]; raw: unknown } | null;
+  shown: Payload | null;
   handlers: Omit<BlockKitProviderProps, "children">;
   log: ReactNode;
   hiddenOnPhone: boolean;
 }) {
+  /** The chosen surface drawing `blocks` with the rest of the payload (view chrome, text…). */
+  const surfaceOf = (blocks: AnyBlock[]) => (
+    <BlockKitProvider
+      surface={surface}
+      resolvers={sampleResolvers}
+      identity={sampleIdentity}
+      {...handlers}
+    >
+      {surface === "modal" ? (
+        <Modal view={toModalView(shown?.view, blocks as ModalView["blocks"])} />
+      ) : surface === "home" ? (
+        <HomeTab view={toHomeView(shown?.view, blocks as ModalView["blocks"])} />
+      ) : (
+        <Message blocks={blocks} message={shown?.message && { ...shown.message, blocks }} />
+      )}
+    </BlockKitProvider>
+  );
+
   return (
     <section aria-label="Preview" {...stylex.props(styles.pane, hiddenOnPhone && styles.hidden)}>
       <div {...stylex.props(layout.toolbar, styles.toolbar)}>
@@ -195,20 +215,20 @@ export function PreviewPane({
       <div {...stylex.props(styles.stage)}>
         <div {...stylex.props(styles.frame, surface === "modal" && styles.frameModal)}>
           {shown ? (
-            <BlockKitProvider
-              surface={surface}
-              resolvers={sampleResolvers}
-              identity={sampleIdentity}
-              {...handlers}
+            <PreviewBoundary
+              resetKeys={[shown, surface]}
+              blocks={shown.blocks}
+              probe={(blocks) => surfaceOf(blocks)}
+              outside={
+                surface === "modal"
+                  ? "The modal's title, close or submit"
+                  : surface === "home"
+                    ? "The Home tab"
+                    : "The message's text or attachments"
+              }
             >
-              {surface === "modal" ? (
-                <Modal view={toModalView(shown.raw, shown.blocks)} />
-              ) : surface === "home" ? (
-                <HomeTab view={toHomeView(shown.raw, shown.blocks)} />
-              ) : (
-                <Message blocks={shown.blocks} />
-              )}
-            </BlockKitProvider>
+              {surfaceOf(shown.blocks)}
+            </PreviewBoundary>
           ) : (
             <p {...stylex.props(styles.empty)}>
               Paste a <code {...stylex.props(styles.code)}>{'{ "blocks": [...] }'}</code> payload,

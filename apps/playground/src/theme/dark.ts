@@ -14,6 +14,8 @@ export const darkTheme = stylex.createTheme(color, {
   accentWash: "rgb(138 165 255 / 0.14)",
   danger: "#ff8fa3",
   dangerBg: "#2a1217",
+  warn: "#f5c46b",
+  warnBg: "#271d0b",
   // Slack's dark message background.
   frameBg: "#1a1d21",
   shadow: "0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6)",

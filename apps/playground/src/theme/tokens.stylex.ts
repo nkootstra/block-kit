@@ -14,6 +14,8 @@ export const color = stylex.defineVars({
   accentWash: "rgb(47 91 224 / 0.1)",
   danger: "#b4233c",
   dangerBg: "#fdeef1",
+  warn: "#7a4a00",
+  warnBg: "#fff5dc",
   // Slack's message background, so the preview sits on what it would sit on in Slack.
   frameBg: "#fff",
   shadow: "0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08)",

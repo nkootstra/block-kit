@@ -1,4 +1,4 @@
-import type { BlockKitProviderProps, ModalView, Surface } from "@nkootstra/block-kit";
+import type { BlockKitProviderProps, Surface } from "@nkootstra/block-kit";
 import { httpTransport } from "@nkootstra/block-kit/transport";
 import * as stylex from "@stylexjs/stylex";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
@@ -10,8 +10,8 @@ import { type Delivery, PreviewPane } from "./components/PreviewPane";
 import { SegmentedControl } from "./components/ui";
 import { demoAction, demoOptions, demoSubmit } from "./demoApp";
 import { DEFAULT_EXAMPLE, examples } from "./examples";
-import { detectSurface, isView } from "./lib/views";
-import { parsePayload, readHash } from "./payload";
+import { limitWarnings } from "./lib/limits";
+import { type Payload, parsePayload, readHash } from "./payload";
 import { color, font } from "./theme/tokens.stylex";
 import { useTheme } from "./theme/useTheme";
 
@@ -30,6 +30,12 @@ function readDelivery(): Delivery {
 }
 
 type Fixture = { name: string; json: string };
+
+/** The surface a payload names (see `Payload.surface`), or null when it names none. */
+function namedSurface(json: string): Surface | null {
+  const result = parsePayload(json);
+  return result.ok ? result.surface : null;
+}
 
 /**
  * Every fixture, for the dev server's "Test fixtures" group. A production build ships only the
@@ -90,7 +96,7 @@ const styles = stylex.create({
 
 export function App() {
   const [source, setSource] = useState(() => readHash() ?? DEFAULT_EXAMPLE?.json ?? "[]");
-  const [surface, setSurface] = useState<Surface>(() => detectSurface(source));
+  const [surface, setSurface] = useState<Surface>(() => namedSurface(source) ?? "message");
   const [latestPayload, setLatestPayload] = useState<unknown>(null);
   const [delivery, setDelivery] = useState<Delivery>(readDelivery);
   const [appReply, setAppReply] = useState<AppReply | null>(null);
@@ -101,23 +107,29 @@ export function App() {
 
   const deferred = useDeferredValue(source);
   const result = useMemo(() => parsePayload(deferred), [deferred]);
-  const raw = useMemo(() => {
-    try {
-      return JSON.parse(deferred);
-    } catch {
-      return undefined;
-    }
-  }, [deferred]);
   // While the JSON is mid-edit and doesn't parse, keep showing the last version that did.
-  const [shown, setShown] = useState<{ blocks: ModalView["blocks"]; raw: unknown } | null>(null);
-  if (result.ok && shown?.blocks !== result.blocks) setShown({ blocks: result.blocks, raw });
+  const [shown, setShown] = useState<Payload | null>(null);
+  // The surface the payload names (a view's type, or a message body) follows the JSON as it's
+  // edited or pasted, the same as when it loads from a link. A bare array of blocks names none,
+  // so it keeps the surface chosen in the toolbar.
+  const [named, setNamed] = useState<Surface | null>(() => namedSurface(source));
+  if (result.ok && shown?.blocks !== result.blocks) {
+    setShown(result);
+    if (result.surface !== named) {
+      setNamed(result.surface);
+      if (result.surface) setSurface(result.surface);
+    }
+  }
+  const warnings = useMemo(
+    () => (shown && result.ok ? limitWarnings(shown, surface) : []),
+    [shown, result.ok, surface],
+  );
 
   // Keep the URL shareable, in Block Kit Builder's hash format (a modal or Home tab keeps its view).
   useEffect(() => {
     if (!result.ok) return;
-    const hash = encodeURIComponent(JSON.stringify(isView(raw) ? raw : { blocks: result.blocks }));
-    window.history.replaceState(null, "", `#${hash}`);
-  }, [result, raw]);
+    window.history.replaceState(null, "", `#${encodeURIComponent(JSON.stringify(result.share))}`);
+  }, [result]);
 
   useEffect(() => {
     if (__RELAY__ !== "ready") return;
@@ -188,7 +200,9 @@ export function App() {
 
   const load = (json: string) => {
     setSource(json);
-    setSurface(detectSurface(json));
+    const next = namedSurface(json);
+    setSurface(next ?? "message");
+    setNamed(next);
     setLatestPayload(null);
     setAppReply(null);
   };
@@ -220,7 +234,8 @@ export function App() {
         <EditorPane
           source={source}
           onSourceChange={setSource}
-          error={result.ok ? null : result.error}
+          problem={result.ok ? null : result}
+          warnings={warnings}
           groups={groups}
           example={example}
           onExampleChange={pickExample}
