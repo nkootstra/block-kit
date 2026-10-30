@@ -88,11 +88,13 @@ The second argument is the `ActionContext`:
 <TypeTable
   type={{
     state: {
+      required: true,
       type: "StateValues",
       description:
         "Every input's current value on the surface, keyed by block_id then action_id. See below.",
     },
     views: {
+      required: true,
       type: "ViewsApi",
       description:
         "Opens, pushes, updates or closes modals, as an app would with views.*. See the modals guide.",
@@ -225,6 +227,77 @@ container, which they register automatically. You don't need to do anything extr
 Every payload here is built in the browser, so a server that acts on one checks it first: who is
 acting, whether they may, and whether each value is one you offered. See
 [Untrusted input](/guides/untrusted-input).
+
+## In production
+
+Everything above runs in the browser, which is right for a preview. In a deployed app, a click that
+should change something goes to a route of your own, the way any other button in your app calls
+your API. `onAction` (or `onPayload`) posts to that route, and the route answers with what to show:
+
+```tsx components/approval.tsx
+"use client";
+
+import type { AnyBlock } from "@slack/types";
+import {
+  BlockKitProvider,
+  Message,
+  type ActionContext,
+  type BlockAction,
+} from "@nkootstra/block-kit";
+
+async function handleAction(action: BlockAction, { message }: ActionContext) {
+  const response = await fetch("/api/approvals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ actionId: action.action_id, value: action.value }),
+  });
+  if (!response.ok) return; // Show your own error here.
+  message?.update(await response.json());
+}
+
+export function Approval({ blocks }: { blocks: AnyBlock[] }) {
+  return (
+    <BlockKitProvider onAction={handleAction}>
+      <Message blocks={blocks} />
+    </BlockKitProvider>
+  );
+}
+```
+
+```ts app/api/approvals/route.ts
+import { getSession } from "@/lib/auth"; // Your app's own sign-in.
+import { canApprove, recordDecision } from "@/lib/deploys"; // Your own logic.
+
+export async function POST(request: Request) {
+  const session = await getSession(request);
+  if (!session) return new Response(null, { status: 401 });
+
+  const { actionId, value } = await request.json();
+  if (actionId !== "approve" && actionId !== "reject") return new Response(null, { status: 400 });
+  if (!(await canApprove(session.user, value))) return new Response(null, { status: 403 });
+
+  const verdict = await recordDecision(value, session.user, actionId === "approve");
+  return Response.json({
+    blocks: [{ type: "section", text: { type: "mrkdwn", text: verdict } }],
+  });
+}
+```
+
+- **No relay and no Slack signature.** The route is yours, behind your app's own authentication,
+  so your session says who clicked. The [interaction relay](/guides/connecting-your-app) exists to
+  sign requests for an app that expects them from Slack, which is development and preview tooling;
+  don't put it, or the browser's payload, in front of your Slack request URL in production.
+- **Reuse your Slack handler's logic, not its endpoint.** If your Bolt app already decides what an
+  approval does, move that into a function the Bolt handler and this route both call.
+- **Check what arrives.** Send only what the route needs, and check each value against what you
+  offered. Never take the user from the payload's `user` field: see
+  [Untrusted input](/guides/untrusted-input). If your session is a cookie, keep your framework's
+  CSRF protection on for the route.
+- **Modal submissions work the same way.** `onSubmit` can be async: post the values from
+  `payload.view.state.values`, and return the `response_action` your route answers with, such as
+  `{ response_action: "errors", errors }` (see [Modals](/guides/modals)).
+- **The bot token stays on the server.** If the route calls Slack, it does so with its own
+  `WebClient`. Never construct a `WebClient` in browser code.
 
 ## Identity
 

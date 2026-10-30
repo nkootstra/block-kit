@@ -41,6 +41,37 @@ Override the image source with `emoji.imageUrl`, given a unified codepoint seque
 >
 ```
 
+### Where the default images come from
+
+Unless you set `emoji.imageUrl`, every emoji is an `<img>` that the viewer's browser loads from
+`https://cdn.jsdelivr.net/npm/emoji-datasource-apple@<version>/img/apple/64/<unified>.png`. The package
+doesn't bundle them. That means:
+
+- **A third-party request.** Each viewer's browser asks jsDelivr for the images, which tells it the
+  viewer's IP address and that the page shows emoji. Weigh that in your privacy notice, and on an
+  intranet or offline machine that can't reach jsDelivr, emoji show as broken images.
+- **Content Security Policy.** A page with a CSP needs `img-src https://cdn.jsdelivr.net` (next to
+  your own sources), or the images are blocked.
+- **Apple's artwork.** The images are Apple's emoji, published by the
+  [`emoji-datasource-apple`](https://github.com/iamcal/emoji-data) project. The package's MIT licence
+  doesn't cover them; check that Apple's terms suit your use.
+
+To serve them yourself, install the same data set (the version in the URL your browser requests
+by default, so every shortcode has an image), copy its images into your public files and point `imageUrl` at them:
+
+```sh
+npm install emoji-datasource-apple
+cp -r node_modules/emoji-datasource-apple/img/apple/64 public/emoji
+```
+
+```tsx
+<BlockKitProvider emoji={{ imageUrl: (unified) => `/emoji/${unified}.png` }}>
+```
+
+To switch to an openly licensed set, do the same with `emoji-datasource-google` (Noto, from
+`img/google/64`) or `emoji-datasource-twitter` (Twemoji, from `img/twitter/64`): they use the same
+file names. The emoji then look like that set rather than like Slack's.
+
 ## Custom emoji
 
 Workspace custom emoji have no fixed set: pass them as a name → URL map with `emoji.custom`:

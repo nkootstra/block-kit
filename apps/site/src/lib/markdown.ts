@@ -25,7 +25,7 @@ Block Kit Builder only runs inside Slack. This is for everywhere else: an admin 
 
 ## Install
 
-React 18 or later.
+React 18 or 19.
 
 ${INSTALL.map(({ manager, command }) => `- ${manager}: \`${command}\``).join("\n")}
 
@@ -50,11 +50,13 @@ export function App() {
 }
 \`\`\`
 
+Emoji are images the viewer's browser loads from jsDelivr (Apple's emoji artwork, not covered by the package's MIT licence) unless you set \`emoji.imageUrl\`: see [Emoji](${DOCS}/guides/emoji#where-the-default-images-come-from).
+
 The [quickstart](${DOCS}/quickstart) wires up an interactive approval message. To try it without installing anything, paste your JSON into the [Block Kit playground](${PLAYGROUND}).
 
 ## Buttons that work
 
-Buttons, menus, pickers and inputs work. \`onPayload\` receives the \`block_actions\` payload Slack would send your app, and a signed relay can forward it to your Bolt app.
+Buttons, menus, pickers and inputs work. \`onPayload\` receives the \`block_actions\` payload Slack would send your app, and while you develop, a signed relay can forward it to your Bolt app.
 
 ## Checked against Slack
 

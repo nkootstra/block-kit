@@ -27,9 +27,11 @@ talks to its own origin.
 
 :::warning
 The relay is development and preview tooling. It signs whatever it's sent, so anyone who can reach
-it can send your app requests that pass its signature check. Keep it on your machine, and set a
-[`token`](#protecting-the-relay) as soon as it's reachable from anywhere else: a tunnel, a preview
-deploy, a shared network. Don't deploy it alongside your production app.
+it can send your app requests that pass its signature check. Keep it on your machine. When it's
+reachable from anywhere else (a tunnel, a preview deploy, a shared network), put it behind real
+authentication: its [`token`](#protecting-the-relay) is not access control. Don't deploy it
+alongside your production app; [In production](/guides/interactivity#in-production) shows what to
+do instead.
 :::
 
 ## Client: httpTransport
@@ -118,7 +120,7 @@ import { createInteractionRelay } from "@nkootstra/block-kit/server";
 
 export const relay = createInteractionRelay({
   requestUrl: "https://internal.example.com/slack/events",
-  signingSecret: process.env.SLACK_SIGNING_SECRET!,
+  signingSecret: process.env.SLACK_SIGNING_SECRET ?? "",
 });
 ```
 
@@ -127,22 +129,29 @@ export const relay = createInteractionRelay({
     requestUrl: {
       type: "string",
       required: true,
-      description: "Your app's Slack request URL (an Events API / interactivity endpoint).",
+      description:
+        "Your app's Slack request URL (an Events API / interactivity endpoint), as an absolute `http:` or `https:` URL.",
     },
     signingSecret: {
       type: "string",
       required: true,
-      description: "The same signing secret your app is configured with.",
+      description: "The same signing secret your app is configured with. Must not be empty.",
     },
     token: {
       type: "string",
       description:
-        "When set, a request without `Authorization: Bearer <token>` gets a 401 before it's read. See [Protecting the relay](#protecting-the-relay).",
+        "When set, a request without `Authorization: Bearer <token>` gets a 401 before it's read. An empty string counts as no token. See [Protecting the relay](#protecting-the-relay).",
+    },
+    timeoutMs: {
+      type: "number",
+      description:
+        "How long your app has to answer before the relay gives up and answers 504. Slack itself gives an app 3 seconds to acknowledge an interaction.",
+      default: "10000",
     },
     onError: {
       type: "(error: unknown) => void",
       description:
-        "Called when the app couldn't be reached. The browser only gets a 502, without the URL or the reason.",
+        "Called on the server with what went wrong when the app couldn't be reached (the browser gets a 502), didn't answer within `timeoutMs` (a 504), or answered with an error status (an `Error` carrying the app's `status` and response `body`; the browser gets the same status with a generic message, never the body).",
     },
     fetch: {
       type: "typeof fetch",
@@ -151,14 +160,21 @@ export const relay = createInteractionRelay({
   }}
 />
 
+The relay checks its options when it's created: without a `signingSecret`, or without an absolute
+`http(s)` `requestUrl`, it throws, so a missing environment variable shows up when your server
+loads the route (in Next.js, already during `next build`) instead of as a failed click. That's why
+the snippets here pass `process.env.X ?? ""` rather than `process.env.X!`: an unset variable
+becomes an empty string the relay refuses, instead of a non-null assertion that hides it from
+TypeScript.
+
 ### Next.js route handler
 
 ```ts app/api/slack/relay/route.ts
 import { createInteractionRelay } from "@nkootstra/block-kit/server";
 
 export const POST = createInteractionRelay({
-  requestUrl: process.env.SLACK_REQUEST_URL!,
-  signingSecret: process.env.SLACK_SIGNING_SECRET!,
+  requestUrl: process.env.SLACK_REQUEST_URL ?? "",
+  signingSecret: process.env.SLACK_SIGNING_SECRET ?? "",
 });
 ```
 
@@ -170,8 +186,8 @@ Point `httpTransport({ url: "/api/slack/relay" })` at that route and you're done
 import { createInteractionRelay } from "@nkootstra/block-kit/server";
 
 const relay = createInteractionRelay({
-  requestUrl: process.env.SLACK_REQUEST_URL!,
-  signingSecret: process.env.SLACK_SIGNING_SECRET!,
+  requestUrl: process.env.SLACK_REQUEST_URL ?? "",
+  signingSecret: process.env.SLACK_SIGNING_SECRET ?? "",
 });
 
 Bun.serve({
@@ -194,15 +210,15 @@ another site's page. `httpTransport` marks every request with a header a cross-s
 set, so a page you happen to visit while your dev server runs can't post a payload to
 `localhost` and have the relay sign it. Calls from your own server, which send no `Origin`, pass.
 
-That doesn't stop someone who can reach the route directly. When it's reachable beyond your
-machine, give the relay a `token` and pass the same value to `httpTransport`:
+That doesn't stop someone who can reach the route directly. A `token` keeps out requests that
+don't come from your page: give the relay one and pass the same value to `httpTransport`:
 
 ```ts app/api/slack/relay/route.ts
 import { createInteractionRelay } from "@nkootstra/block-kit/server";
 
 export const POST = createInteractionRelay({
-  requestUrl: process.env.SLACK_REQUEST_URL!,
-  signingSecret: process.env.SLACK_SIGNING_SECRET!,
+  requestUrl: process.env.SLACK_REQUEST_URL ?? "",
+  signingSecret: process.env.SLACK_SIGNING_SECRET ?? "",
   token: process.env.NEXT_PUBLIC_RELAY_TOKEN,
 });
 ```
@@ -215,12 +231,22 @@ const transport = httpTransport({
 ```
 
 A request without `Authorization: Bearer <token>`, or with a different one, gets a 401 before the
-relay reads it. The token is compared in constant time.
+relay reads it. The token is compared in constant time. An empty token counts as none on both
+sides, so a variable left blank (as in the examples' `.env.example`) turns the check off rather than
+refusing every request. The relay throws when it's created with a Slack token (`xox…-`, `xapp-`) or
+its own signing secret as the token, since the page would publish it.
 
-The token ships in your page, so anyone who can open the page can read it. That's fine because it's
-a development secret shared between the page and its own relay, not a Slack credential: it can't
-reach Slack, and you can change it whenever you like. Never reuse the signing secret or a bot token
-as the relay's token.
+:::warning
+The token is not access control. It ships in your page, so anyone who can load the page can read
+it and call the relay with it. What it does stop is a request from another site's page, another
+tool on your machine or a scanner that doesn't have your page. Behind a tunnel or on a preview
+deploy, put the page and the relay behind real authentication as well: your app's own sign-in,
+HTTP Basic auth, Cloudflare Access or your host's deployment protection.
+:::
+
+The token is a development value shared between the page and its own relay, not a Slack credential:
+it can't reach Slack, and you can change it whenever you like. Never reuse the signing secret or a
+bot token as the relay's token.
 
 ## Why the signing secret must stay server-side
 
@@ -233,8 +259,8 @@ relies on.
 
 The relay signs each request with a fresh timestamp, so your app's replay protection (Bolt rejects
 a request more than five minutes old) doesn't limit what reaches it through the relay: every request
-it forwards is new. That's another reason the relay belongs on your machine or behind a `token`, not
-in front of an app that holds real data.
+it forwards is new. That's another reason the relay belongs on your machine, or behind real
+authentication, and never in front of an app that holds real data.
 
 ## Signing without the relay
 
@@ -247,8 +273,8 @@ import { sendInteraction, signSlackRequest, postSigned } from "@nkootstra/block-
 import { buildBlockActionsPayload } from "@nkootstra/block-kit";
 
 const result = await sendInteraction({
-  requestUrl: process.env.SLACK_REQUEST_URL!,
-  signingSecret: process.env.SLACK_SIGNING_SECRET!,
+  requestUrl: process.env.SLACK_REQUEST_URL ?? "",
+  signingSecret: process.env.SLACK_SIGNING_SECRET ?? "",
   payload: buildBlockActionsPayload({
     action: {
       type: "button",

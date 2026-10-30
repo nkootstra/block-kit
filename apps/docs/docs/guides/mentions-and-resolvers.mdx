@@ -139,8 +139,9 @@ link in a message through your router. See [Linking to your app](/guides/linking
 ## Resolving names from the Slack Web API
 
 `@nkootstra/block-kit/web-api` builds `Resolvers` from three Web API methods: `users.info` for a
-user's name and profile card, `conversations.info` for a channel, and `usergroups.list` once for every
-usergroup id (the Web API has no per-id usergroup lookup). Those calls need your bot token, and the
+user's name and profile card, `conversations.info` for a channel, and `usergroups.list` for user groups
+(the Web API has no per-id user group lookup, so the list is read on the server and only the
+groups asked for are returned). Those calls need your bot token, and the
 bot token must never reach the browser, so the lookups run on your server. There are two ways to set
 that up:
 
@@ -190,8 +191,8 @@ the scopes these lookups need:
 Never add `users:read.email`: nothing here reads an email address.
 
 The same goes for everything else that needs the token: [`slack_file` images](/blocks/image#slack-files)
-and the [directory](/elements/select-menus) a users or conversations select lists come from your
-server too.
+and the [directory](/elements/select-menus#serving-the-directory) a users or conversations select
+lists come from your server too.
 
 ## The resolver relay
 
@@ -211,7 +212,7 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN, {
 
 export const POST = createResolverRelay({
   client,
-  // A development secret the page sends along; see below.
+  // A development value the page sends along, not access control; see below.
   token: process.env.NEXT_PUBLIC_SLACK_RELAY_TOKEN,
 });
 ```
@@ -243,22 +244,30 @@ export const POST = createResolverRelay({
 />
 
 It only calls those three methods, accepts only ids in Slack's formats (`U0123456789`,
-`C0123456789`) and at most 100 of them per request, and returns only the fields mentions and the
-profile card use: never an email, a phone number or the rest of the user object. A request that isn't
-JSON is refused, so a form on another site can't post to it.
+`C0123456789`, `S0123456789`) and at most 100 of them per request, and returns only the fields
+mentions and the profile card use: never an email, a phone number or the rest of the user object.
+User groups are answered by id too: the relay reads `usergroups.list` on the server, reuses it for
+a minute, and returns only the groups asked for, so the page can't list them all. A request that
+isn't JSON is refused, so a form on another site can't post to it.
+
+It checks its options when it's created: it throws when `client` doesn't have those three methods,
+or when `token` looks like a Slack token (`xox…-`, `xapp-`). An empty `token` counts as none.
 
 ### Development and previews only
 
 Like the [interaction relay](/guides/connecting-your-app), the resolver relay is development and
-preview tooling. Don't deploy it publicly: without a `token`, anyone who can reach the route can look
-up any user and channel the bot can see.
+preview tooling. Don't deploy it publicly: anyone who can reach the route and load the page can
+look up any user and channel the bot can see.
 
-- Set `token` whenever the route is reachable beyond your machine: a tunnel, a preview deploy, a
-  shared network.
-- The relay token is a development secret shared with the page, not a Slack credential, so it's fine
-  in browser code (and in a `NEXT_PUBLIC_` or `VITE_` variable). Pass the same value to
-  `httpResolverClient`.
-- The bot token is the opposite: it never leaves the server, and it has only the scopes above.
+- The relay `token` is not access control. It ships in the page, so anyone who can load the page
+  can read it and use it. It keeps out requests from other sites' pages, other tools on your machine
+  and scanners that don't have your page. Pass the same value to `httpResolverClient`.
+- When the route is reachable beyond your machine (a tunnel, a preview deploy, a shared network),
+  put the page and the relay behind real authentication: your app's own sign-in, HTTP Basic auth,
+  Cloudflare Access or your host's deployment protection.
+- The relay token isn't a Slack credential, so it's fine in browser code (and in a `NEXT_PUBLIC_` or
+  `VITE_` variable). The bot token is the opposite: it never leaves the server, and it has only the
+  scopes above.
 
 ## In the browser: httpResolverClient
 
@@ -290,7 +299,8 @@ export function SlackPreview({ blocks }: { blocks: AnyBlock[] }) {
 
 Create the client once, outside the component: the resolvers belong to the client they were made
 with, so a new client on every render would start every lookup over. `token` is sent as
-`Authorization: Bearer <token>`; `headers` adds any others.
+`Authorization: Bearer <token>` (an empty one isn't sent); `headers` adds any others. The client
+asks for user groups by id, so its `usergroups.list()` rejects: use it through the resolvers.
 
 `useWebApiResolvers` re-renders the component whenever a lookup completes, so a mention that started
 unresolved shows its name once it arrives. `createWebApiResolvers` is the same without React: call

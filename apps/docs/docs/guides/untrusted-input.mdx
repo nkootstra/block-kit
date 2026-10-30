@@ -85,8 +85,10 @@ page for anyone who can open it.
 - **`directory`, `user` and `userProfile`:** return only the people and channels the viewer may see,
   and only the fields you mean to show. Names, avatars, presence, titles and time zones of everyone
   in a workspace are personal data. `createResolverRelay` already limits its answers to an allowlist
-  of fields, and its `token` keeps strangers from querying it; a directory you build yourself needs
-  the same care.
+  of fields; its `token` only keeps out requests that don't come from your page, since anyone who
+  can load the page can read it. A directory you build yourself needs the same care, behind your
+  app's own sign-in: [Serving the directory](/elements/select-menus#serving-the-directory) shows a
+  route that does.
 - **`slackFile`:** return a route on your own server that checks access, never `url_private` or a
   URL with a token in it. [Slack files](/blocks/image#slack-files) lists what the route checks.
 - **`imageSize`:** don't have your server download a payload's `image_url` to measure it. A payload

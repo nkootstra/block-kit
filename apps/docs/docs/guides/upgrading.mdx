@@ -43,8 +43,9 @@ written by people you don't trust.
 the relay looks for, so the playground and your own page keep working, and server-to-server calls
 are unaffected.
 
-It also takes an optional `token`. Set it on the relay and the same value on `httpTransport` as soon
-as the relay is reachable from anywhere but your own machine; see
+It also takes an optional `token`, which keeps out requests that don't come from your page. It
+ships in the page, so it isn't access control: behind a tunnel or on a preview deploy, put the relay
+behind real authentication too. See
 [Protecting the relay](/guides/connecting-your-app#protecting-the-relay).
 
 ### Web API resolvers return bare names

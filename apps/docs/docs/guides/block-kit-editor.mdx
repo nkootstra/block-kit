@@ -77,15 +77,23 @@ export function parsePayload(source: string): Payload {
 }
 ```
 
-`JSON.parse` already throws a `SyntaxError` that names the position of the mistake, so the editor
-can show its message as is.
+`JSON.parse` throws a `SyntaxError`, and the editor shows its message as is. How much it says
+depends on the browser: some name the line and column, but Chrome, for example, gives no position
+for a trailing comma or for JSON that ends too early ("Unexpected end of JSON input"). To point at
+the mistake every time, find the position yourself, as the
+[playground](https://play.block-kit.dev) does.
 
 ## Catch payloads that can't render
 
-Valid JSON can still be invalid Block Kit. The renderer expects each block to have its required
-fields: a `section` whose `text` is an empty object, or a `button` without `text`, throws while
-rendering, and Slack's API would reject it too. An error boundary keeps that from taking down the
-page:
+Valid JSON can still be invalid Block Kit: a `section` whose `text` is an empty object, or a
+`button` without `text`, which Slack's API would reject too. The package contains those to the
+block: a block that throws while rendering shows Slack's "This content could not be displayed." in
+its place, the rest of the message keeps rendering, and React still logs the error. An entry in
+`blocks` that isn't an object renders nothing.
+
+That keeps the editor usable; the notice doesn't say what's wrong, but the console does. An error
+boundary around the preview is still worth having for anything that throws outside a block, such as
+a component of your own in the preview:
 
 ```tsx preview-boundary.tsx
 import { Component, type ReactNode } from "react";
@@ -220,7 +228,8 @@ A few details in there matter:
   `action_id`, `block_id` and `value`. To log the full payload Slack sends to your request URL
   instead, use `onPayload`; see [Handling actions](/guides/interactivity).
 - **The boundary is keyed by the payload.** A new key mounts a new boundary, so once the user
-  fixes the block that failed, the preview comes back on its own. It also remounts the preview,
+  fixes what failed, the preview comes back on its own. (A block showing the "could not be
+  displayed" notice retries by itself when its JSON changes.) It also remounts the preview,
   which clears anything typed into its inputs: the payload it rendered no longer exists.
 - **A modal validates on Submit.** Paste a `modal` view with an empty required input and press its
   submit button: the preview shows Slack's own error. Add `onSubmit` to the provider to see the

@@ -68,7 +68,9 @@ Without an explicit `ts`, `<Message>` stamps the current time itself the moment 
 server that's the time of the render; on the client, hydration re-runs the same `useState` initializer
 a moment later: a different value, which React flags as a hydration mismatch. Always pass a real `ts`
 (the message's own Slack timestamp) for anything rendered server-side; reserve the no-`ts` fallback for
-client-only, ephemeral previews.
+client-only, ephemeral previews. With a `ts`, `<Message>` never reads the clock while rendering, so it
+also prerenders under Next.js's `cacheComponents`, which refuses `Date.now()` during a prerender;
+without one, put the `<Message>` inside `<Suspense>` there.
 
 Pass `timeZone` alongside it, either directly or via `<BlockKitProvider timeZone="...">`, so the
 formatted time matches between server and client instead of depending on the server machine's local

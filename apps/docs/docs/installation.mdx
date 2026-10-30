@@ -20,7 +20,8 @@ The package needs React 18 or 19. It works with any bundler that can import CSS:
 </Step>
 <Step title="Import the stylesheet">
 
-Import the styles once, near the root of your app:
+Import the styles once, near the root of your app: `src/main.tsx` in Vite, `app/layout.tsx` in the
+Next.js App Router.
 
 ```tsx main.tsx
 import "@nkootstra/block-kit/styles.css";
@@ -77,6 +78,52 @@ export function App() {
   }}
 />
 
+## Next.js (App Router)
+
+Put the stylesheet and font imports in the root layout, so every page gets them:
+
+```tsx app/layout.tsx
+import "@nkootstra/block-kit/styles.css";
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/400-italic.css";
+import "@fontsource/lato/700.css";
+import "@fontsource/lato/900.css";
+import "@fontsource/roboto-mono/400.css";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+The package's components are already Client Components, so a Server Component page can render a
+`<Message>` directly. Two things to know:
+
+- **Handlers and resolvers are functions,** and a Server Component can't pass a function to a
+  Client Component. Put `<BlockKitProvider onAction={…}>` (or `resolvers`, `mentionHref`,
+  `linkComponent`) in a file of your own that starts with `"use client"`, and render that from the
+  page.
+- **Pass `ts`, and `timeZone`, to a server-rendered `<Message>`.** Without a `ts` it stamps the
+  current time, which differs between the server's HTML and the browser and logs a hydration
+  mismatch. With `cacheComponents` on (the default in a new `create-next-app` project), a
+  `<Message>` without `ts` reads `Date.now()` and has to sit inside `<Suspense>`; with a `ts` it
+  prerenders like any other component.
+
+[Server rendering](/guides/server-rendering) covers both, and
+[`examples/nextjs`](https://github.com/nkootstra/block-kit/tree/main/examples/nextjs) is a complete
+app.
+
+## Emoji images
+
+Emoji are images, and by default the viewer's browser loads them from jsDelivr
+(`cdn.jsdelivr.net`, the `emoji-datasource-apple` package): the package doesn't bundle them. They
+are Apple's emoji artwork, which the package's MIT licence doesn't cover. A page with a Content
+Security Policy needs `img-src https://cdn.jsdelivr.net`. To serve them yourself or switch to
+another set, see [Where the default images come from](/guides/emoji#where-the-default-images-come-from).
+
 ## Optional packages
 
 | Package          | When you need it                                                                                                                                                                                                    |
@@ -91,8 +138,55 @@ export function App() {
 | `@nkootstra/block-kit/styles.css` | The stylesheet.                                                                                                                            |
 | `@nkootstra/block-kit/mrkdwn`     | The mrkdwn parser, without React. See [mrkdwn](/guides/mrkdwn).                                                                            |
 | `@nkootstra/block-kit/transport`  | Browser-safe. Sends interactions to your app, and resolver lookups to your server. See [Connecting your app](/guides/connecting-your-app). |
-| `@nkootstra/block-kit/server`     | Server only. Signs and relays interactions, and answers resolver lookups with the bot token.                                               |
+| `@nkootstra/block-kit/server`     | Server only, development tooling. Signs and relays interactions, and answers resolver lookups with the bot token.                          |
 | `@nkootstra/block-kit/web-api`    | Resolvers backed by the Slack Web API. In the browser, give them `httpResolverClient`, never a `WebClient`.                                |
+
+## Size
+
+The package's JavaScript is one bundle: a message can hold any block, so rendering one `<Message>`
+loads the renderer for all of them. In a Vite app that renders the message above, it adds about
+365 kB of minified JavaScript (about 105 kB gzipped) to React's own, and the stylesheet is about
+100 kB (about 17 kB gzipped). That's enough for Vite to warn that a chunk is larger than 500 kB.
+
+If the Block Kit preview is one part of a larger app, load it on demand with `React.lazy`, so it
+becomes its own chunk that only downloads when the preview first renders:
+
+```tsx App.tsx
+import { lazy, Suspense } from "react";
+
+// SlackPreview.tsx default-exports the component that renders <BlockKitProvider> and <Message>.
+const SlackPreview = lazy(() => import("./SlackPreview"));
+
+export function App() {
+  return (
+    <Suspense fallback={<p>Loading preview…</p>}>
+      <SlackPreview />
+    </Suspense>
+  );
+}
+```
+
+Keep the stylesheet import at the root. In the Next.js App Router, `next/dynamic` does the same.
+
+## Accessibility
+
+The components draw Slack's own controls with the roles and keyboard behaviour of the matching
+ARIA patterns:
+
+- Buttons, checkboxes, radio buttons and text inputs are native controls or carry the matching
+  role. Selects are comboboxes with a listbox: the arrow keys, Home and End move through the
+  options, Enter picks one and Escape closes the list. Overflow menus follow the menu pattern, and
+  the date picker's calendar moves by day and week with the arrow keys.
+- A modal opened through `views` is a dialog (`role="dialog"`, `aria-modal`, labelled by its
+  title): focus moves into it when it opens, Tab stays inside it, Escape closes it as the close
+  button does, and focus goes back to what opened it. Confirmation dialogs are alert dialogs.
+- Images use the payload's `alt_text`. Reduced motion and forced colours (high contrast) are
+  followed; see [Theming](/guides/theming).
+
+Some things match Slack rather than an accessibility pattern: hover cards on links and unresolved
+mentions open on pointer hover only, and a user mention that no resolver names shows a loading
+skeleton with no visible text. The package hasn't had a formal WCAG audit; report problems on
+[GitHub](https://github.com/nkootstra/block-kit/issues).
 
 ## Give your coding agent the docs
 

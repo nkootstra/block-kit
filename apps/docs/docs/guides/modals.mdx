@@ -13,6 +13,11 @@ close/submit footer. You rarely render one directly: instead a button's `onActio
 A modal opened through `views` sits centred on a dimmed overlay, with Slack's modal shadow. The dim
 fades in over 80ms, as Slack's does; with reduced motion turned on, it appears at once.
 
+It's a modal dialog (`role="dialog"`, `aria-modal`, labelled by its title): focus moves into it when
+it opens, Tab stays inside it, Escape closes it as the close button does, and focus goes back to
+what opened it once the last modal closes. A `<Modal>` you render yourself is part of your page and
+has none of this.
+
 <Preview
   actions
   opens={{
@@ -111,25 +116,30 @@ yourself for this flow.
 <TypeTable
   type={{
     open: {
+      required: true,
       type: "(view) => string",
       description: "Replaces any open modals with this one. Returns the new view's id.",
     },
     push: {
+      required: true,
       type: "(view) => string",
       description:
         "Stacks a modal on top of the current one, keeping the one below. Slack allows at most 3 views in a stack.",
     },
     update: {
+      required: true,
       type: "(view, target?) => void",
       description:
         "Swaps a modal's content in place, keeping its id and matching state. target is { viewId } or { externalId }; defaults to the top modal.",
     },
     close: {
+      required: true,
       type: "() => void",
       description: "Closes the top modal, returning to the one below it.",
     },
-    clear: { type: "() => void", description: "Closes every open modal." },
+    clear: { type: "() => void", required: true, description: "Closes every open modal." },
     publish: {
+      required: true,
       type: "(view) => void",
       description:
         "views.publish: replaces the content of the <HomeTab> rendered under this provider.",
@@ -188,7 +198,9 @@ Return a `response_action` to react like an app would; return nothing to just cl
 />
 
 If `onSubmit` throws or its promise rejects, the same as an app's request timing out or answering
-with an error, the modal stays open, matching Slack's behavior when it can't reach your app.
+with an error, the modal stays open, matching Slack's behavior when it can't reach your app. While an async
+`onSubmit` is pending, further presses of the submit button are ignored, as in Slack, so a double
+click submits once.
 
 ## Validation errors
 

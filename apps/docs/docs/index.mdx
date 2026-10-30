@@ -56,7 +56,7 @@ seo:
 
 Click a button: the log under the preview shows the action your `onAction` handler receives, in the same shape Slack sends to your app.
 
-To see your own JSON rendered without installing anything, paste it into the [Block Kit playground](https://play.block-kit.dev). It renders messages, modals and Home tabs with this package, shows the payload each click sends, and needs no Slack sign-in.
+To see your own JSON rendered without installing anything, paste it into the [Block Kit playground](https://play.block-kit.dev): `{ "blocks": [...] }`, a `chat.postMessage` body, a view, or a `views.open` or `views.publish` body. It renders messages, modals and Home tabs with this package, shows the payload each click sends, and needs no Slack sign-in.
 
 ## Why this exists
 
@@ -67,7 +67,7 @@ This package does that work for you:
 - **Every block and element.** Sections, rich text, tables, charts, cards, carousels, inputs, every select menu and picker, including the newer agent blocks such as `plan` and `task_card`.
 - **Measured against Slack.** Each block is compared, pixel by pixel, against captures of Slack's own rendering. Spacing, fonts, colours, hover and focus states match.
 - **Interactive.** Buttons, selects, pickers and inputs work. You receive Slack's `block_actions`, `view_submission` and `block_suggestion` payloads, and can answer them the way your app would: open a modal, update the message, return validation errors.
-- **Plugs into your app.** Forward interactions to an existing Bolt app with a signed relay, and resolve user and channel mentions from the Slack Web API.
+- **Plugs into your app.** Send clicks to your own API, forward them to an existing Bolt app with a signed relay while you develop, and resolve user and channel mentions from the Slack Web API.
 
 ## Where to start
 

@@ -148,11 +148,13 @@ The second argument to `onAction`.
 <TypeTable
   type={{
     state: {
+      required: true,
       type: "StateValues",
       description:
         "The value of every input on the surface when the action happened, keyed by `block_id`, then `action_id`, like `view.state.values`.",
     },
     views: {
+      required: true,
       type: "ViewsApi",
       description: "Open, push, update, close and clear modals, and publish the Home tab.",
     },
@@ -171,22 +173,26 @@ The calls your app makes with Slack's `views.*` methods. A modal opened this way
 <TypeTable
   type={{
     open: {
+      required: true,
       type: "(view) => string",
       description: "`views.open`: replaces any open modals with this one. Returns the new view id.",
     },
     push: {
+      required: true,
       type: "(view) => string",
       description:
         "`views.push`: stacks a modal on top of the current one. Returns the new view id.",
     },
     update: {
+      required: true,
       type: "(view, target?: { viewId?; externalId? }) => void",
       description:
         "`views.update`: swaps a modal's content, keeping input values whose `block_id` and `action_id` are unchanged. Targets the top modal unless you pass `viewId` or `externalId`.",
     },
-    close: { type: "() => void", description: "Closes the top modal." },
-    clear: { type: "() => void", description: "Closes every open modal." },
+    close: { type: "() => void", required: true, description: "Closes the top modal." },
+    clear: { type: "() => void", required: true, description: "Closes every open modal." },
     publish: {
+      required: true,
       type: "(view) => void",
       description: "`views.publish`: replaces the content of the `<HomeTab>` under this provider.",
     },

@@ -41,6 +41,13 @@ export interface PreviewProps {
    * leaving the docs, shows under the preview what an app's router would get.
    */
   links?: boolean;
+  /** The app name in the message header, for a preview of code that passes its own `app`. */
+  app?: string;
+  /**
+   * Resolve mentions with the demo names. Turn it off under code that passes no `resolvers`, so
+   * the preview shows the raw ids that code would.
+   */
+  resolve?: boolean;
 }
 
 /** What `DemoLink` was last asked to open, reported to the preview that renders it. */
@@ -172,6 +179,8 @@ export default function Preview({
   opens,
   ephemeral = false,
   links = false,
+  app = "Your App",
+  resolve = true,
 }: PreviewProps) {
   const [tab, setTab] = useState<"preview" | "json">(code ? "json" : "preview");
   // The latest thing the log shows: an action, or (for an input block, which sends none) the state
@@ -240,7 +249,7 @@ export default function Preview({
             <BlockKitProvider
               timeZone="UTC"
               surface={view?.type ?? "message"}
-              resolvers={resolvers}
+              resolvers={resolve ? resolvers : undefined}
               mentionHref={links ? demoMentionHref : undefined}
               linkComponent={links ? DemoLink : undefined}
               onOptions={onOptions}
@@ -261,7 +270,7 @@ export default function Preview({
                 <Message
                   blocks={blocks}
                   message={message}
-                  app={{ name: "Your App" }}
+                  app={{ name: app }}
                   ts={TS}
                   timeZone="UTC"
                   isEphemeral={ephemeral}

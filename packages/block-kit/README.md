@@ -4,17 +4,17 @@
 
 Documentation: **<https://docs.block-kit.dev>**
 
-To try it without installing anything, paste your JSON into the [Block Kit playground](https://play.block-kit.dev): it renders the message, modal or Home tab with this package and shows the payload each click sends. No Slack sign-in.
+To try it without installing anything, paste your JSON (`{ "blocks": [...] }`, a `chat.postMessage` body, a view, or a `views.open` or `views.publish` body) into the [Block Kit playground](https://play.block-kit.dev): it renders the message, modal or Home tab with this package and shows the payload each click sends. No Slack sign-in.
 
 ## Install
 
-The package needs React 18 or later.
+The package needs React 18 or 19.
 
 ```sh
 bun add @nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono
 ```
 
-Import the stylesheet and fonts once, near the root of your app, then render a message:
+Import the stylesheet and fonts once, near the root of your app (`src/main.tsx` in Vite, `app/layout.tsx` in the Next.js App Router), then render a message:
 
 ```tsx
 import "@nkootstra/block-kit/styles.css";
@@ -35,7 +35,9 @@ export function App() {
 }
 ```
 
-The [installation guide](https://docs.block-kit.dev/installation) lists the remaining font weights and the entry points, and the [quickstart](https://docs.block-kit.dev/quickstart) wires up an interactive approval message.
+The [installation guide](https://docs.block-kit.dev/installation) lists the remaining font weights, the Next.js setup and the entry points, and the [quickstart](https://docs.block-kit.dev/quickstart) wires up an interactive approval message.
+
+Emoji are images that the viewer's browser loads from jsDelivr (`cdn.jsdelivr.net`, the `emoji-datasource-apple` package) unless you set `emoji.imageUrl`; the package doesn't bundle them. They are Apple's emoji artwork, which this package's MIT licence doesn't cover, and a page with a Content Security Policy needs `img-src https://cdn.jsdelivr.net`. The [emoji guide](https://docs.block-kit.dev/guides/emoji#where-the-default-images-come-from) shows how to serve them yourself or switch to another set.
 
 ## Entry points
 

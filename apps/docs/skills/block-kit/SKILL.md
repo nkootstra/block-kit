@@ -13,13 +13,14 @@ https://docs.block-kit.dev/mcp searches them and returns any page as Markdown.
 
 ## Install
 
-Requires React 18 or later.
+Requires React 18 or 19.
 
 ```sh
 npm install @nkootstra/block-kit @fontsource/lato @fontsource/roboto-mono
 ```
 
-Import the stylesheet and fonts once, near the root of the app:
+Import the stylesheet and fonts once, near the root of the app (`src/main.tsx` in Vite,
+`app/layout.tsx` in the Next.js App Router):
 
 ```tsx
 import "@nkootstra/block-kit/styles.css";
@@ -34,16 +35,21 @@ The stylesheet resets and styles only elements inside the package's components, 
 such as Tailwind's preflight doesn't change how blocks render. Skip the Fontsource packages if the
 app already serves a font named `Lato`.
 
+Emoji are `<img>`s the browser loads from jsDelivr (`emoji-datasource-apple`, Apple's artwork, not
+covered by the package's MIT licence) unless `emoji.imageUrl` on the provider points elsewhere; a page
+with a CSP needs `img-src https://cdn.jsdelivr.net`. Self-hosting:
+https://docs.block-kit.dev/guides/emoji.md
+
 ## Render a surface
 
 Pass the same JSON the app sends to Slack:
 
-| Component   | Renders                                      | Takes                               |
-| ----------- | -------------------------------------------- | ----------------------------------- |
-| `<Message>` | A message (`chat.postMessage`)               | `blocks`, or a whole message object |
-| `<Modal>`   | A modal (`views.open`)                       | A `modal` view                      |
-| `<HomeTab>` | The App Home tab (`views.publish`)           | A `home` view                       |
-| `<View>`    | `<Modal>` or `<HomeTab>`, picked by its type | Any view                            |
+| Component   | Renders                                      | Takes                                                  |
+| ----------- | -------------------------------------------- | ------------------------------------------------------ |
+| `<Message>` | A message (`chat.postMessage`)               | `blocks`, or `message={{ blocks, text, attachments }}` |
+| `<Modal>`   | A modal (`views.open`)                       | A `modal` view                                         |
+| `<HomeTab>` | The App Home tab (`views.publish`)           | A `home` view                                          |
+| `<View>`    | `<Modal>` or `<HomeTab>`, picked by its type | Any view                                               |
 
 ```tsx
 import { BlockKitProvider, Message } from "@nkootstra/block-kit";
@@ -89,12 +95,56 @@ function handleAction(action: BlockAction, { message }: ActionContext) {
 </BlockKitProvider>;
 ```
 
-Modal submissions arrive through `onSubmit`. To send interactions to a real Slack app's request URL
-instead, see https://docs.block-kit.dev/guides/connecting-your-app.md: `httpTransport({ url, token? })`
-in the browser, `createInteractionRelay({ requestUrl, signingSecret, token? })` on the server. The
-relay is development and preview tooling (it signs whatever it's sent): keep the signing secret on
-the server, set the same `token` on both whenever the route is reachable beyond the developer's
-machine, and never deploy it in front of a production app.
+`views.open(view)` opens a modal over the page (no `<Modal>` needed) and returns its view id;
+`views.push`, `views.update(view, target?)`, `views.close()`, `views.clear()` and
+`views.publish(homeView)` mirror Slack's `views.*`. Modal submissions arrive through `onSubmit`, a
+`<BlockKitProvider>` prop (not a `<Modal>` prop):
+`onSubmit(payload: view_submission payload, { views }) => SubmitResult | Promise<SubmitResult>`.
+Return nothing to close the modal, or a `response_action` (`errors`, `update`, `push`, `clear`);
+if it throws or rejects, the modal stays open. Read the values from `payload.view.state.values`.
+
+```tsx
+<BlockKitProvider
+  onAction={(action, { views }) => {
+    if (action.action_id !== "report") return;
+    views.open({
+      type: "modal",
+      callback_id: "report_issue",
+      title: { type: "plain_text", text: "Report an issue" },
+      submit: { type: "plain_text", text: "Submit" },
+      blocks: [
+        {
+          type: "input",
+          block_id: "summary",
+          label: { type: "plain_text", text: "Summary" },
+          element: { type: "plain_text_input", action_id: "value" },
+        },
+      ],
+    });
+  }}
+  onSubmit={(payload) => {
+    const summary = payload.view.state.values.summary?.value?.value;
+    if (!summary) return { response_action: "errors", errors: { summary: "Add a summary." } };
+  }}
+>
+  <Message blocks={blocks} />
+</BlockKitProvider>
+```
+
+**In production**, `onAction`/`onSubmit` post to the app's own authenticated API route with
+`fetch`, and that route runs the app's own logic, taking the user from its session (no relay and no
+Slack signing: it's the app's route). Example:
+https://docs.block-kit.dev/guides/interactivity.md#in-production
+
+To send interactions to a real Slack app's request URL while developing, see
+https://docs.block-kit.dev/guides/connecting-your-app.md: `httpTransport({ url, token? })` in the
+browser, `createInteractionRelay({ requestUrl, signingSecret, token? })` on the server. The relay is
+development and preview tooling (it signs whatever it's sent): keep the signing secret on the
+server and never deploy it in front of a production app. Its `token` is not access control: it
+ships in the page, so anyone who can load the page can use it; it only keeps out requests that
+don't come from the page. Behind a tunnel or a preview deploy, put the page and relay behind real
+authentication (the app's sign-in, Basic auth, Cloudflare Access). An empty `token` counts as no
+token on both sides.
 
 **Rule: every payload the provider reports is built in the browser.** Server code that acts on one
 verifies Slack's request signature, takes the acting user from its own session rather than the
@@ -135,18 +185,22 @@ applies its `filter` to them.
 `@nkootstra/block-kit/web-api` builds resolvers (names and `userProfile`) from the Slack Web API.
 The bot token never goes to the browser: on the server, `createResolverRelay({ client, token? })`
 from `/server` answers lookups with a `WebClient`; in the browser, `useWebApiResolvers` gets
-`httpResolverClient({ url })` from `/transport`, created once at module scope. Never construct a
+`httpResolverClient({ url, token? })` from `/transport` (the same `token` as the relay), created once
+at module scope. Never construct a
 `WebClient` in client code or give the token a `NEXT_PUBLIC_`/`VITE_` prefix.
 
 **Rule: the Slack bot token (`xoxb-…`) and `@slack/web-api` only ever run on the server.** Never
 generate code that creates a `WebClient` in a `"use client"` file, a React component, an Astro island
 or anything a bundler ships to the browser. Resolver data reaches the browser one of two ways:
-`httpResolverClient` asking a `createResolverRelay` route (development and preview tooling: set the
-same `token` on both whenever the route is reachable beyond the developer's machine, and don't deploy
-it publicly), or names resolved on the server and passed as plain `{ id: name }` maps.
+`httpResolverClient` asking a `createResolverRelay` route (development and preview tooling: its
+`token` is readable from the page, so it isn't access control; put a reachable route behind real
+authentication, and don't deploy it publicly), or names resolved on the server and passed as plain
+`{ id: name }` maps.
 `resolvers.slackFile` returns a URL on the app's own server that downloads the file with the token
 (never `url_private`, never a token in a query string); `resolvers.directory` entries are fetched on
-the server and passed as data. Scopes: `users:read`, `channels:read` (`groups:read` only for private
+the server and passed as data, by an authenticated route that returns only the people the viewer may
+pick and only the fields the select draws (never emails):
+https://docs.block-kit.dev/elements/select-menus.md#serving-the-directory Scopes: `users:read`, `channels:read` (`groups:read` only for private
 channels), `usergroups:read`, and `files:read` for files; never `users:read.email`. Working examples:
 https://github.com/nkootstra/block-kit/tree/main/examples
 
@@ -186,8 +240,9 @@ These props, and `resolvers`, are functions:
 ## Things that trip people up
 
 - **Server rendering:** the main entry ships `"use client"`, so import components straight into a
-  Next.js Server Component. Always pass `ts` (the message's Slack timestamp) to a server-rendered
-  `<Message>`; without it the component stamps the current time and hydration mismatches.
+  Next.js Server Component. Always pass `ts` (the message's Slack timestamp) and `timeZone` to a
+  server-rendered `<Message>`; without `ts` the component stamps the current time and hydration
+  mismatches.
 - **Theme:** `theme="light" | "dark"` on the provider forces a colour scheme; otherwise the page's
   `data-theme` or the system preference applies. Colours are `--sbk-*` CSS custom properties,
   including callout backgrounds (`--sbk-callout-<color>-bg`), chart series colours
@@ -210,6 +265,9 @@ These props, and `resolvers`, are functions:
   colours (high contrast), focused controls get an outline the system paints. A desktop message
   looks the same either way. Details: https://docs.block-kit.dev/guides/theming.md
 - **Unknown block types** render the block's `fallback` array in their place when it has one.
+- **A block that throws while rendering** (a missing required field, or a custom block's bug) shows
+  Slack's "This content could not be displayed." in its place; the rest of the message and the page
+  keep rendering, and React logs the error. Entries in `blocks` that aren't objects render nothing.
 
 ## Entry points
 
@@ -231,7 +289,8 @@ These props, and `resolvers`, are functions:
   https://docs.block-kit.dev/reference/limits.md
 - A JSON editor with a live preview: https://docs.block-kit.dev/guides/block-kit-editor.md
 - To show a user a payload rendered without writing code: the Block Kit playground at
-  https://play.block-kit.dev renders pasted JSON as a message, modal or Home tab, and its links use
+  https://play.block-kit.dev renders pasted JSON (`{ blocks }`, a `chat.postMessage` body, a view,
+  or a `views.open`/`views.publish` body) as a message, modal or Home tab, and its links use
   Block Kit Builder's URL format
 - Provider props: https://docs.block-kit.dev/reference/block-kit-provider.md
 - Linking mentions and links into your app: https://docs.block-kit.dev/guides/linking-to-your-app.md

@@ -425,6 +425,72 @@ route of your own. Never call them from the browser with a `WebClient`; see
 >
 ```
 
+#### Serving the directory
+
+Everything the directory returns is in the page, so the route that serves it decides what a viewer
+gets. A safe one checks the viewer's session, lists only the people the viewer may pick, and returns
+only the fields the select draws, never an email:
+
+```ts app/api/directory/route.ts
+import "server-only";
+import { WebClient } from "@slack/web-api";
+import type { DirectoryEntry } from "@nkootstra/block-kit";
+import { getSession } from "@/lib/auth"; // Your app's own sign-in.
+
+const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
+
+export async function GET(request: Request) {
+  const session = await getSession(request);
+  if (!session) return new Response(null, { status: 401 });
+
+  // One page of at most 200, not the whole workspace. For a large workspace, list the people the
+  // viewer works with instead, such as a channel's members from conversations.members.
+  const { members = [] } = await slack.users.list({ limit: 200 });
+  const entries: DirectoryEntry[] = members
+    .filter((member) => member.id && !member.deleted)
+    .map((member) => ({
+      type: "user",
+      id: member.id!,
+      name: member.profile?.display_name || member.name || member.id!,
+      realName: member.real_name,
+      bot: member.is_bot,
+      self: member.id === session.slackUserId,
+    }));
+  return Response.json(entries, { headers: { "Cache-Control": "private, max-age=300" } });
+}
+```
+
+```tsx components/review-form.tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { BlockKitProvider, type DirectoryEntry } from "@nkootstra/block-kit";
+
+export function ReviewForm({ children }: { children: React.ReactNode }) {
+  const [people, setPeople] = useState<DirectoryEntry[]>();
+  useEffect(() => {
+    fetch("/api/directory")
+      .then((response) => (response.ok ? response.json() : undefined))
+      .then(setPeople);
+  }, []);
+  return (
+    <BlockKitProvider
+      resolvers={{ directory: (source) => (source === "users" ? people : undefined) }}
+    >
+      {children}
+    </BlockKitProvider>
+  );
+}
+```
+
+- `directory` is called without the text being typed, and the select filters its list by name in
+  the page, so the route returns one bounded list. Keep it to the people (or channels) this viewer
+  may choose, rather than everyone the bot can see.
+- The bot needs `users:read` (and `channels:read` for channels). Never `users:read.email`; leave out
+  `avatarUrl` and `presence` unless you mean to show them.
+- The selected ids come back in `state.values` and payloads; check each one against this same list
+  on the server ([Untrusted input](/guides/untrusted-input)).
+
 A conversations select applies its `filter` to the directory: `include` keeps people (`im`),
 `private` or `public` channels, and `exclude_bot_users` drops entries marked `bot`. A directory
 entry is a person or a channel, never a group DM, so `mpim` keeps nothing, and
