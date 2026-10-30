@@ -178,3 +178,124 @@ describe("views (modals opened by an interaction)", () => {
     expect(nameAfter?.value).toBe("Ada");
   });
 });
+
+describe("views: keyboard and screen readers", () => {
+  function renderApp(props: { onClose?: () => void; onSubmit?: () => unknown } = {}) {
+    render(
+      <BlockKitProvider onAction={app} {...(props as object)}>
+        <Message blocks={openButton} />
+      </BlockKitProvider>,
+    );
+  }
+
+  it("opens as a modal dialog named by its title, and takes focus", async () => {
+    renderApp();
+    const opener = screen.getByRole("button", { name: "Open form" });
+    opener.focus();
+    await clickAsync(opener);
+
+    const form = screen.getByRole("dialog", { name: "Form" });
+    expect(form.getAttribute("aria-modal")).toBe("true");
+    expect(form.contains(document.activeElement)).toBe(true);
+  });
+
+  it("keeps Tab inside the modal", async () => {
+    renderApp();
+    await clickAsync(screen.getByRole("button", { name: "Open form" }));
+    const form = screen.getByRole("dialog", { name: "Form" });
+    const close = within(form).getByRole("button", { name: "Close" });
+    const save = within(form).getByRole("button", { name: "Save" });
+
+    save.focus();
+    fireEvent.keyDown(save, { key: "Tab" });
+    expect(document.activeElement).toBe(close);
+    fireEvent.keyDown(close, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(save);
+    // From the dialog itself (where focus lands as it opens), Shift+Tab goes to the last control.
+    form.focus();
+    fireEvent.keyDown(form, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(save);
+  });
+
+  it("closes on Escape as the X does, and gives focus back to the opener", async () => {
+    const onClose = vi.fn();
+    renderApp({ onClose });
+    const opener = screen.getByRole("button", { name: "Open form" });
+    opener.focus();
+    await clickAsync(opener);
+    await clickAsync(within(dialog("Form")).getByRole("button", { name: "More" }));
+    const details = screen.getByRole("dialog", { name: "Details" });
+    expect(details.contains(document.activeElement)).toBe(true);
+
+    act(() => {
+      fireEvent.keyDown(details, { key: "Escape" });
+    });
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "view_closed", is_cleared: true }),
+    );
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it("closes on Escape from a field, but leaves Escape to a control that handled it", async () => {
+    renderApp();
+    await clickAsync(screen.getByRole("button", { name: "Open form" }));
+    act(() => {
+      fireEvent.keyDown(within(dialog("Form")).getByRole("textbox"), { key: "Escape" });
+    });
+    expect(screen.queryByRole("dialog")).toBeNull();
+
+    await clickAsync(screen.getByRole("button", { name: "Open form" }));
+    const field = within(dialog("Form")).getByRole("textbox");
+    field.addEventListener("keydown", (e) => e.preventDefault());
+    act(() => {
+      fireEvent.keyDown(field, { key: "Escape" });
+    });
+    expect(screen.getByRole("dialog", { name: "Form" })).toBeTruthy();
+  });
+
+  it("sends one view_submission while the app is still answering", async () => {
+    let answer: (value: undefined) => void = () => {};
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<undefined>((resolve) => {
+          answer = resolve;
+        }),
+    );
+    renderApp({ onSubmit });
+    await clickAsync(screen.getByRole("button", { name: "Open form" }));
+    fireEvent.change(within(dialog("Form")).getByRole("textbox"), { target: { value: "Ada" } });
+    const save = within(dialog("Form")).getByRole("button", { name: "Save" });
+
+    await clickAsync(save);
+    await clickAsync(save);
+    await clickAsync(save);
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(save.getAttribute("aria-busy")).toBe("true");
+    expect(save.getAttribute("aria-disabled")).toBe("true");
+
+    await act(async () => answer(undefined));
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("takes a submission again once a failed one settles", async () => {
+    let fail: (error: Error) => void = () => {};
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<undefined>((_, reject) => {
+          fail = reject;
+        }),
+    );
+    renderApp({ onSubmit });
+    await clickAsync(screen.getByRole("button", { name: "Open form" }));
+    fireEvent.change(within(dialog("Form")).getByRole("textbox"), { target: { value: "Ada" } });
+    const save = within(dialog("Form")).getByRole("button", { name: "Save" });
+
+    await clickAsync(save);
+    await act(async () => fail(new Error("offline")));
+    expect(save.getAttribute("aria-busy")).toBeNull();
+    await clickAsync(save);
+    expect(onSubmit).toHaveBeenCalledTimes(2);
+  });
+});

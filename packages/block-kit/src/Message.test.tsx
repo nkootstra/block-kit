@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { type ActionContext, type BlockAction, BlockKitProvider } from "./context";
 import { clickAsync } from "./elements/test-utils";
+import { renderToString } from "react-dom/server";
 import { Message } from "./Message";
 
 afterEach(cleanup);
@@ -73,6 +74,43 @@ describe("<Message>", () => {
       type: "block_actions",
       container: { type: "message", message_ts: expect.stringMatching(/^\d+\.\d{6}$/) },
     });
+  });
+
+  it("doesn't read the clock while rendering a message that has a ts", () => {
+    // Only the package's own reads count: React 18's server renderer reads the clock itself.
+    const real = Date.now.bind(Date);
+    const reads: string[] = [];
+    const now = vi.spyOn(Date, "now").mockImplementation(() => {
+      reads.push(new Error("Date.now").stack ?? "");
+      return real();
+    });
+    try {
+      const html = renderToString(<Message ts="1719493800.000200" timeZone="UTC" text="hi" />);
+      renderToString(<Message message={{ ts: "1719493800.000200", text: "hi" }} timeZone="UTC" />);
+      const fromPackage = (stack: string) =>
+        stack.split("\n").some((frame) => /block-kit\/src\/(?!.*\.test\.)/.test(frame));
+      expect(reads.filter(fromPackage)).toEqual([]);
+      expect(html).toContain('dateTime="2024-06-27T13:10:00.000Z"');
+    } finally {
+      now.mockRestore();
+    }
+  });
+
+  it("stamps a message once its ts is taken away, and keeps that stamp", () => {
+    const { container, rerender } = render(<Message ts="1719493800.000200" text="hi" />);
+    const time = () => container.querySelector("time")?.getAttribute("datetime");
+    expect(time()).toBe("2024-06-27T13:10:00.000Z");
+
+    const now = vi.spyOn(Date, "now").mockReturnValue(1_800_000_000_000);
+    try {
+      rerender(<Message text="hi" />);
+      expect(time()).toBe(new Date(1_800_000_000_000).toISOString());
+      now.mockReturnValue(1_900_000_000_000);
+      rerender(<Message text="hi again" />);
+      expect(time()).toBe(new Date(1_800_000_000_000).toISOString());
+    } finally {
+      now.mockRestore();
+    }
   });
 
   it("falls back to text when there are no blocks", () => {

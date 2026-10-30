@@ -16,6 +16,12 @@
   overflow: hidden;
 }
 
+/* A modal opened through `views` holds focus as it opens only so Escape and Tab work from then on;
+   like Slack's, it draws no ring of its own. */
+.sbk-modal[role="dialog"]:focus {
+  outline: none;
+}
+
 .sbk-modal__header {
   position: relative;
   display: flex;

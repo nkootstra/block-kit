@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Collapse } from "../data/Collapse";
 import { Text, type TextObject } from "../Text";
 import type { BlockProps, Json } from "../types";
-import { Block } from "./Block";
+import { Block, blockKey } from "./Block";
 import { InContainerContext } from "./containerContext";
 
 function ChevronDown() {
@@ -74,7 +74,7 @@ export function Container({ block }: BlockProps) {
     <div className="sbk-container__body">
       <InContainerContext.Provider value={true}>
         {children.map((child, i) => (
-          <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+          <Block key={blockKey(child, i)} block={child} index={i} />
         ))}
       </InContainerContext.Provider>
     </div>

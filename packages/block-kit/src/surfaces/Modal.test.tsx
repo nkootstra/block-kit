@@ -197,6 +197,18 @@ describe("<Modal>", () => {
     });
   });
 
+  it("stays a plain part of the page when rendered on its own, not a modal dialog", () => {
+    render(
+      <BlockKitProvider>
+        <Modal
+          view={{ type: "modal", title: { type: "plain_text", text: "Inline" }, blocks: [] }}
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByRole("heading", { name: "Inline" })).toBeTruthy();
+  });
+
   it("omits the footer when a view has neither close nor submit", () => {
     render(
       <BlockKitProvider>

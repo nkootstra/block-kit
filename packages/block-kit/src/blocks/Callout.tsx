@@ -1,5 +1,5 @@
 import type { BlockProps, Json } from "../types";
-import { Block } from "./Block";
+import { Block, blockKey } from "./Block";
 
 /** Callout colours; each has a token per theme (Callout.css, and Message.css for dark). */
 const BACKGROUND_COLORS = new Set(["green", "blue", "red", "yellow", "purple", "gray"]);
@@ -14,7 +14,7 @@ export function Callout({ block }: BlockProps) {
   return (
     <div className="sbk-callout" style={{ backgroundColor: background }}>
       {children.map((child, i) => (
-        <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+        <Block key={blockKey(child, i)} block={child} index={i} />
       ))}
     </div>
   );

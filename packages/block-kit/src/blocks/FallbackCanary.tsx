@@ -1,5 +1,5 @@
 import type { BlockProps, Json } from "../types";
-import { Block } from "./Block";
+import { Block, blockKey } from "./Block";
 
 /**
  * The Block Kit "fallback" convention: a block type this renderer doesn't know renders its
@@ -16,7 +16,7 @@ export function FallbackCanary({ block }: BlockProps) {
   return (
     <div className="sbk-fallback-canary">
       {fallback.map((child, i) => (
-        <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+        <Block key={blockKey(child, i)} block={child} index={i} />
       ))}
     </div>
   );

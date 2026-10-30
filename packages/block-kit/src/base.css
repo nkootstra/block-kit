@@ -141,6 +141,25 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* The revert below rolls inherited properties back to inheriting, so a host's own (Vite's template
+   centres `#root`, sites set letter-spacing or uppercase headings) would still flow in through the
+   surface's root. Each root starts from the browser's initial values instead, as in Slack's page;
+   component rules come later and set their own. */
+:is(.sbk-root, .sbk-confirm__overlay, .sbk-tooltip) {
+  text-align: start;
+  text-indent: 0;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-style: normal;
+  font-weight: 400;
+  white-space: normal;
+  word-break: normal;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+}
+
 /* Isolate rendering from the host page's global styles (Tailwind's preflight, a docs theme's heading
    fonts, `* { min-width: 0 }`): roll every element back to the browser's defaults, so only the rules
    below decide how a block looks. Component rules are more specific or come later, so they win.

@@ -158,6 +158,8 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
           }}
           onKeyDown={(e) => {
             if (e.key === "Escape") {
+              // Closing the calendar is all Escape does then; a modal around it stays open.
+              if (open) e.preventDefault();
               setText(null);
               setOpen(false);
             }

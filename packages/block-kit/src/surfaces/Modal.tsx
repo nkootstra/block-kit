@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type KeyboardEvent, useId, useRef, useState } from "react";
 import { Blocks } from "../Blocks";
 import { CloseIcon } from "../icons";
 import {
@@ -10,6 +10,7 @@ import {
 } from "../context";
 import { buildViewClosedPayload, buildViewSubmissionPayload, type ViewLike } from "../payloads";
 import { validateView } from "../validation";
+import { trapTab } from "./focusTrap";
 
 export interface ModalView extends ViewLike {
   type: "modal";
@@ -50,18 +51,28 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
     if (notify) onClose?.(buildViewClosedPayload({ view, state, identity }));
     if (stacked && view.id) respond?.(view.id, undefined);
   };
+  // A submission waiting for the app's answer. Slack sends one `view_submission` per Submit and
+  // ignores further presses until the app answers, so a double click doesn't submit twice.
+  const pending = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
   const submit = async () => {
+    if (pending.current) return;
     const invalid = validateView(view.blocks, state);
     setChecked({ errors: invalid, state });
     if (Object.keys(invalid).length > 0) return;
 
     setAppErrors({});
     let result: SubmitResult;
+    pending.current = true;
+    setSubmitting(true);
     try {
       result = await onSubmit?.(buildViewSubmissionPayload({ view, state, identity }), { views });
     } catch {
       // The app couldn't be reached or failed: like Slack, leave the modal open to retry.
       return;
+    } finally {
+      pending.current = false;
+      setSubmitting(false);
     }
     if (stacked && view.id) {
       respond?.(view.id, result);
@@ -74,12 +85,43 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
     else if (result.response_action === "clear") views.clear();
   };
 
+  // A modal opened through `views` is a modal dialog, as in Slack: Escape closes it the way the X
+  // does, and Tab stays inside it. (The layer it sits on moves focus in and back out.) A standalone
+  // `<Modal>` is part of its host's page, so it stays a plain region.
+  const titleId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const root = rootRef.current;
+    // Keys from a portalled popover or dialog inside the modal, or ones a control already
+    // handled (an open menu or calendar closing on Escape), aren't the modal's.
+    if (!root || event.defaultPrevented || !root.contains(event.target as Node)) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      dismiss();
+    } else if (event.key === "Tab") {
+      trapTab(event, root);
+    }
+  };
+  const dialogProps = stacked
+    ? {
+        role: "dialog",
+        "aria-modal": true,
+        "aria-labelledby": titleId,
+        tabIndex: -1,
+        onKeyDown,
+      }
+    : {};
+
   return (
-    <div className="sbk-root sbk-modal" data-surface="modal">
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- a modal dialog handles its own keys: Escape closes it and Tab stays inside it
+    <div ref={rootRef} className="sbk-root sbk-modal" data-surface="modal" {...dialogProps}>
       <div className="sbk-modal__header">
         <div className="sbk-modal__title-row">
           {icon && <img className="sbk-modal__icon" src={icon} alt="" />}
-          <h2 className="sbk-modal__title">{view.title?.text}</h2>
+          <h2 id={titleId} className="sbk-modal__title">
+            {view.title?.text}
+          </h2>
         </div>
         <button type="button" className="sbk-modal__close" aria-label="Close" onClick={dismiss}>
           <CloseIcon width="20" height="20" />
@@ -105,6 +147,8 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
             <button
               type="button"
               className="sbk-modal__button sbk-modal__button--primary"
+              aria-disabled={submitting || undefined}
+              aria-busy={submitting || undefined}
               onClick={submit}
             >
               {view.submit.text}

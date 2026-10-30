@@ -1,5 +1,5 @@
 import type { BlockProps, Json } from "../types";
-import { Block } from "./Block";
+import { Block, blockKey } from "./Block";
 
 /** This library only ever renders as Slack's desktop client, matching the Builder's preview. */
 const CLIENT = "desktop";
@@ -29,7 +29,7 @@ export function Condition({ block }: BlockProps) {
   return (
     <>
       {blocks.map((child, i) => (
-        <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+        <Block key={blockKey(child, i)} block={child} index={i} />
       ))}
     </>
   );

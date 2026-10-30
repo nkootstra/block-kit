@@ -1,5 +1,6 @@
 import { useBlockKit } from "../context";
 import type { BlockProps, Json } from "../types";
+import { BlockError } from "./BlockError";
 import { useInContainer } from "./containerContext";
 
 /**
@@ -19,11 +20,7 @@ export function ContactCard({ block }: BlockProps) {
   const inContainer = useInContainer();
 
   if (inContainer) {
-    return (
-      <div className="sbk-block-error">
-        <small className="sbk-block-error__message">This content could not be displayed.</small>
-      </div>
-    );
+    return <BlockError />;
   }
 
   return (

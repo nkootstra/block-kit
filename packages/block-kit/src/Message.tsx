@@ -114,9 +114,15 @@ export function Message({
   isEphemeral,
 }: MessageProps) {
   // Without a `ts`, the message is stamped once at mount, so its timestamp stays stable across
-  // renders and interactions still produce a `block_actions` payload with a `message_ts`.
-  const [mountTs] = useState(() => actionTs());
-  const resolvedTs = message?.ts ?? (ts === undefined ? mountTs : String(ts));
+  // renders and interactions still produce a `block_actions` payload with a `message_ts`. With a
+  // `ts`, the clock is never read, so a render stays pure (e.g. Next.js prerendering, which
+  // rejects `Date.now()` in render).
+  const givenTs = message?.ts ?? (ts === undefined ? undefined : String(ts));
+  const [mountTs, setMountTs] = useState(() => (givenTs === undefined ? actionTs() : undefined));
+  // The `ts` was dropped after mount: stamp it now, once, as a mount without one would have.
+  const stampTs = givenTs === undefined && mountTs === undefined ? actionTs() : undefined;
+  if (stampTs !== undefined) setMountTs(stampTs);
+  const resolvedTs = givenTs ?? mountTs ?? stampTs ?? "";
   const time = new Date(Number(resolvedTs) * 1000);
 
   // What an app sent back through the action's `message` handle (`chat.update`/`response_url`).
@@ -179,7 +185,7 @@ export function Message({
             {message?.edited && <span className="sbk-message__edited">(edited)</span>}
           </div>
 
-          {resolvedBlocks && resolvedBlocks.length > 0 ? (
+          {Array.isArray(resolvedBlocks) && resolvedBlocks.length > 0 ? (
             <Blocks blocks={resolvedBlocks} />
           ) : (
             resolvedText && <Mrkdwn text={resolvedText} />
@@ -309,7 +315,9 @@ function Attachment({ attachment }: { attachment: SlackAttachment }) {
         {attachment.image_url && (
           <img className="sbk-attachment__image" src={attachment.image_url} alt="" />
         )}
-        {attachment.blocks && attachment.blocks.length > 0 && <Blocks blocks={attachment.blocks} />}
+        {Array.isArray(attachment.blocks) && attachment.blocks.length > 0 && (
+          <Blocks blocks={attachment.blocks} />
+        )}
         {attachment.footer && (
           <div className="sbk-attachment__footer">
             {attachment.footer_icon && (

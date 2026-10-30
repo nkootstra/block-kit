@@ -100,7 +100,9 @@ export function validateView(
   state: StateValues,
 ): Record<string, string> {
   const errors: Record<string, string> = {};
-  (blocks as Json[]).forEach((block, index) => {
+  if (!Array.isArray(blocks)) return errors;
+  (blocks as (Json | null)[]).forEach((block, index) => {
+    if (typeof block !== "object" || block === null) return;
     if (block.type !== "input" || !block.element) return;
     const blockId = typeof block.block_id === "string" ? block.block_id : `block-${index}`;
     const element = block.element as Json;

@@ -35,4 +35,26 @@ describe("build", () => {
   ])("keeps @slack/web-api out of %s", (file) => {
     expect(readFileSync(file, "utf8")).not.toMatch(/(from|import)\s*\(?\s*["']@slack\/web-api/);
   });
+
+  // TypeScript's classic `moduleResolution: "node"` (what Next.js writes into a new tsconfig)
+  // ignores `exports`, so every entry's types are mapped again through `types`/`typesVersions`.
+  it("maps every entry's types for moduleResolution node as well as through exports", () => {
+    const pkg = JSON.parse(readFileSync("package.json", "utf8")) as {
+      main: string;
+      types: string;
+      exports: Record<string, string>;
+      typesVersions: { "*": Record<string, string[]> };
+    };
+    expect(pkg.main).toBe(pkg.exports["."]);
+    expect(pkg.types).toBe(pkg.exports["."]?.replace(/\.js$/, ".d.ts"));
+    const subpaths = Object.entries(pkg.exports).filter(
+      ([path, target]) => path !== "." && target.endsWith(".js"),
+    );
+    expect(Object.keys(pkg.typesVersions["*"]).sort()).toEqual(
+      subpaths.map(([path]) => path.slice(2)).sort(),
+    );
+    for (const [path, target] of subpaths) {
+      expect(pkg.typesVersions["*"][path.slice(2)]).toEqual([target.replace(/\.js$/, ".d.ts")]);
+    }
+  });
 });
