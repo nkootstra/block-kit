@@ -105,6 +105,11 @@
   --sbk-highlight: #1264a3;
   --sbk-on-highlight: #fff;
   --sbk-blend-interaction: multiply;
+  /* The tint `--sbk-blend-interaction` lays over a hovered or pressed primary or danger button. */
+  --sbk-primary-hover-tint: #0a403221;
+  --sbk-primary-pressed-tint: #0a403238;
+  --sbk-danger-hover-tint: #59000f17;
+  --sbk-danger-pressed-tint: #59000f38;
   --sbk-calendar-grid: rgb(221, 221, 221);
   /* A select list's Enter key on its typed highlight, and the rule between option groups. */
   --sbk-keycap-bg: rgb(234, 234, 234);

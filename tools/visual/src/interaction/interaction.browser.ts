@@ -4794,6 +4794,65 @@ describe.each(engines)("%s", (engine) => {
 
   // Measured in Block Kit Builder (contexts/button/{actions,home}): a message's small button is at
   // least 56px wide, App Home's medium one at least 80px, so "Click me" is 80px wide there.
+  // Measured in Block Kit Builder (interactive/open-modal+dark, interactive/update-message+dark,
+  // and their light references): Slack tints a hovered or pressed primary or danger button with
+  // `--dt_blend-mode-interaction`, darkening it in light and lightening it in dark.
+  describe("primary and danger button tints", () => {
+    const tints = {
+      light: {
+        primary: ["multiply", "rgba(10, 64, 50, 0.13)", "rgba(10, 64, 50, 0.22)"],
+        danger: ["multiply", "rgba(89, 0, 15, 0.09)", "rgba(89, 0, 15, 0.22)"],
+      },
+      dark: {
+        primary: ["lighten", "rgba(216, 245, 233, 0.08)", "rgba(216, 245, 233, 0.18)"],
+        danger: ["lighten", "rgba(247, 220, 228, 0.08)", "rgba(247, 220, 228, 0.18)"],
+      },
+    } as const;
+    const tint = (page: Page, selector: string) =>
+      page.$eval(selector, (el) => {
+        const s = getComputedStyle(el);
+        return [s.backgroundBlendMode, s.backgroundImage];
+      });
+
+    for (const theme of ["light", "dark"] as const) {
+      for (const style of ["primary", "danger"] as const) {
+        const [blend, hover, pressed] = tints[theme][style];
+        const selector = `.sbk-button--${style}`;
+        const mount: Mount = {
+          theme,
+          blocks: [
+            {
+              type: "actions",
+              elements: [{ type: "button", action_id: "b", style, text: plain("Go") }],
+            },
+          ],
+        };
+
+        it(`tints a hovered ${style} button in ${theme}`, async () => {
+          const page = await harness.open(mount);
+          await page.hover(selector);
+          await settle(page);
+          expect(await tint(page, selector)).toEqual([
+            blend,
+            `linear-gradient(${hover}, ${hover})`,
+          ]);
+        });
+
+        it(`tints a pressed ${style} button in ${theme}`, async () => {
+          const page = await harness.open(mount);
+          await page.hover(selector);
+          await page.mouse.down();
+          await settle(page);
+          expect(await tint(page, selector)).toEqual([
+            blend,
+            `linear-gradient(${pressed}, ${pressed})`,
+          ]);
+          await page.mouse.up();
+        });
+      }
+    }
+  });
+
   describe("button widths by surface", () => {
     const button = { type: "button", action_id: "b", text: plain("Click me") };
     const width = (page: Page) =>

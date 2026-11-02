@@ -301,6 +301,10 @@
     --sbk-highlight: #0a77a7;
     --sbk-on-highlight: #f8f8f8;
     --sbk-blend-interaction: lighten;
+    --sbk-primary-hover-tint: rgba(216, 245, 233, 0.08);
+    --sbk-primary-pressed-tint: rgba(216, 245, 233, 0.18);
+    --sbk-danger-hover-tint: rgba(247, 220, 228, 0.08);
+    --sbk-danger-pressed-tint: rgba(247, 220, 228, 0.18);
     --sbk-calendar-grid: #35373b;
     --sbk-keycap-bg: #212428;
     --sbk-keycap-border: rgba(121, 124, 129, 0.3);
@@ -471,6 +475,10 @@
   --sbk-highlight: #0a77a7;
   --sbk-on-highlight: #f8f8f8;
   --sbk-blend-interaction: lighten;
+  --sbk-primary-hover-tint: rgba(216, 245, 233, 0.08);
+  --sbk-primary-pressed-tint: rgba(216, 245, 233, 0.18);
+  --sbk-danger-hover-tint: rgba(247, 220, 228, 0.08);
+  --sbk-danger-pressed-tint: rgba(247, 220, 228, 0.18);
   --sbk-calendar-grid: #35373b;
   --sbk-keycap-bg: #212428;
   --sbk-keycap-border: rgba(121, 124, 129, 0.3);
