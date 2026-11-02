@@ -1209,7 +1209,7 @@
   "extra/fidelity/datepicker/empty@dark": 0.08,
   "extra/fidelity/datepicker/empty@mobile": 0.09,
   "extra/fidelity/datepicker/empty@mobile+dark": 0.09,
-  "extra/fidelity/datepicker/empty@open": 0.73,
+  "extra/fidelity/datepicker/empty@open": 0.02,
   "extra/fidelity/datepicker/empty@open+dark": 0.12,
   "extra/fidelity/datetimepicker/empty": 0.06,
   "extra/fidelity/datetimepicker/empty@confirm": 0.04,
