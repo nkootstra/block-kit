@@ -455,7 +455,13 @@ for (const name of names) {
       reference = await shotBox(refPage, refTarget, box);
       actual = await shotBox(page, ourTarget, box);
     } else {
-      actual = await shot(page, ourTarget);
+      // Slack's message includes the 36px gutter it keeps for block menus, and ours doesn't, so
+      // take ours at the reference's size: a focus ring on a control at our right edge reaches
+      // into that gutter, as Slack's does, instead of being cut off at our message's edge.
+      const ref = reference
+        ? [{ x: 0, y: 0, width: reference.width, height: reference.height }]
+        : [];
+      actual = await shotBox(page, ourTarget, cropBox(ref, await boxesOf(page, ourTarget)));
     }
     ourRuns = await page.evaluate(collectTextRuns, ourTarget);
     if (meta.stateStyles && !state) stateStyles = await compareStateStyles(page, meta.stateStyles);
