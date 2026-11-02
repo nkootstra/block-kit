@@ -868,7 +868,7 @@
   "contexts/datetimepicker/actions@mobile+dark": 0.09,
   "contexts/datetimepicker/actions@open": 0.02,
   "contexts/datetimepicker/actions@open+dark": 0.02,
-  "contexts/datetimepicker/actions@open+mobile": 0.92,
+  "contexts/datetimepicker/actions@open+mobile": 0.03,
   "contexts/datetimepicker/actions@open+mobile+dark": 0.03,
   "contexts/datetimepicker/actions@pick": 0.09,
   "contexts/datetimepicker/actions@pick+dark": 0.09,
