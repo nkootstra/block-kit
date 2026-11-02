@@ -776,12 +776,8 @@
   "contexts/button/actions@dark": [],
   "contexts/button/actions@mobile": [],
   "contexts/button/actions@mobile+dark": [],
-  "contexts/button/home": [
-    "x|Click me|0"
-  ],
-  "contexts/button/home@dark": [
-    "x|Click me|0"
-  ],
+  "contexts/button/home": [],
+  "contexts/button/home@dark": [],
   "contexts/channels_select/accessory": [],
   "contexts/channels_select/accessory@dark": [],
   "contexts/channels_select/accessory@mobile": [],
