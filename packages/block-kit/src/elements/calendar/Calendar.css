@@ -101,8 +101,12 @@
   cursor: default;
 }
 
-/* Slack's hover, which keyboard focus shares: a light-blue border raised above the neighbouring
-   grid lines, and a light-blue wash on any day but the selected one. */
+/* Slack's hover, which keyboard focus and the active day share: a light-blue border raised above
+   the neighbouring grid lines, and a light-blue wash on any day but the selected one. The active
+   day is the one the calendar opens on (Slack's `c-date_picker_calendar__date--is_active`); when
+   it isn't selected it keeps the look without focus (extra/fidelity/datepicker/empty@open). A
+   selected active day keeps the grey grid line, as measured in the Builder. */
+.sbk-calendar__cell--active:not(.sbk-calendar__cell--selected),
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
   z-index: 1;
@@ -131,6 +135,7 @@
   }
 }
 
+.sbk-calendar__cell--active:not(.sbk-calendar__cell--selected),
 .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus {
   background: rgba(29, 155, 209, 0.2);

@@ -191,6 +191,7 @@ export function Calendar({ value, onSelect, onClear }: CalendarProps) {
             ];
             if (iso === value) classes.push("sbk-calendar__cell--selected");
             if (iso === today) classes.push("sbk-calendar__cell--today");
+            if (iso === tabStop) classes.push("sbk-calendar__cell--active");
             return (
               <button
                 type="button"
