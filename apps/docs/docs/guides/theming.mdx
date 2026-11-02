@@ -148,6 +148,11 @@ stylesheet to restyle without touching the components. The main tokens:
       description: "Primary button background (e.g. modal Submit).",
     },
     "--sbk-danger": { type: "color", description: "Danger-styled button background." },
+    "--sbk-primary-hover-tint": {
+      type: "color",
+      description:
+        "The tint over a hovered primary button, blended as Slack does: darkening in light, lightening in dark. `--sbk-primary-pressed-tint`, `--sbk-danger-hover-tint` and `--sbk-danger-pressed-tint` do the same for a pressed primary button and a danger button.",
+    },
     "--sbk-border": { type: "color", description: "Default hairline border color." },
     "--sbk-divider": { type: "color", description: "Divider block color." },
     "--sbk-code-text": { type: "color", description: "Inline code text." },

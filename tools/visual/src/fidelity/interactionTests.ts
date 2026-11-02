@@ -269,6 +269,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
   "date and time fields by surface": [
     { components: ["datepicker", "timepicker"], states: ["default"], facts: ["styles"] },
   ],
+  "primary and danger button tints": [
+    { components: ["button"], states: ["hover", "pressed"], facts: ["styles"], themes: BOTH },
+  ],
   "button widths by surface": [{ components: ["button"], states: ["default"], facts: ["styles"] }],
   "field placeholders": [
     {
