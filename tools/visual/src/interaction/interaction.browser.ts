@@ -4792,6 +4792,28 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  // Measured in Block Kit Builder (contexts/button/{actions,home}): a message's small button is at
+  // least 56px wide, App Home's medium one at least 80px, so "Click me" is 80px wide there.
+  describe("button widths by surface", () => {
+    const button = { type: "button", action_id: "b", text: plain("Click me") };
+    const width = (page: Page) =>
+      page.evaluate(() => document.querySelector(".sbk-button")!.getBoundingClientRect().width);
+
+    it("widens a short button to Slack's 80px minimum on App Home", async () => {
+      const page = await harness.open({
+        view: { type: "home", blocks: [{ type: "actions", elements: [button] }] },
+      });
+      expect(await width(page)).toBe(80);
+    });
+
+    it("keeps the 56px minimum in a message", async () => {
+      const page = await harness.open({
+        blocks: [{ type: "actions", elements: [{ ...button, text: plain("Go") }] }],
+      });
+      expect(await width(page)).toBe(56);
+    });
+  });
+
   describe("field placeholders", () => {
     const inModal = (element: object): Mount => ({
       view: {

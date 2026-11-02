@@ -231,9 +231,11 @@
   box-shadow: inset 0 -2px 0 0 rgb(74, 21, 75);
 }
 
-/* The Home tab uses Slack's "medium" buttons: 36px tall, 15px text, rounder corners. */
+/* The Home tab uses Slack's "medium" buttons: 36px tall, at least 80px wide, 15px text, rounder
+   corners. */
 .sbk-home .sbk-button {
   height: 36px;
+  min-width: 80px;
   font-size: 15px;
   border-radius: 8px;
 }
