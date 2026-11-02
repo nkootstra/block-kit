@@ -247,6 +247,15 @@ describe("<DatePicker>", () => {
       expect(tabbable.map((b) => b.textContent)).toEqual(["28"]);
     });
 
+    it("marks the focused day active, as Slack's calendar does without a hover", () => {
+      open();
+      const active = () =>
+        [...document.querySelectorAll(".sbk-calendar__cell--active")].map((b) => b.textContent);
+      expect(active()).toEqual(["28"]);
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowRight" });
+      expect(active()).toEqual(["29"]);
+    });
+
     it("moves a day with ArrowLeft and ArrowRight", () => {
       open();
       fireEvent.keyDown(document.activeElement!, { key: "ArrowRight" });
