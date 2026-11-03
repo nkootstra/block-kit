@@ -118,14 +118,21 @@ function Glyph({ d }: { d: string }) {
  * it's shown), and an emoji button, unavailable until block-kit has an emoji picker. */
 export function RichTextComposerActions({
   formatting,
+  divided = false,
   onToggleFormatting,
 }: {
   formatting: boolean;
+  /** Draws the hairline Slack shows above the footer while text runs past the editor. */
+  divided?: boolean;
   onToggleFormatting: () => void;
 }) {
   return (
     <div
-      className="sbk-rich-text-input__footer"
+      className={
+        divided
+          ? "sbk-rich-text-input__footer sbk-rich-text-input__footer--divided"
+          : "sbk-rich-text-input__footer"
+      }
       role="toolbar"
       aria-orientation="horizontal"
       aria-label="Composer actions"

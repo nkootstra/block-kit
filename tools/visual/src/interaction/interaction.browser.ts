@@ -4927,6 +4927,63 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  // Slack's `c-wysiwyg_container__footer` gets a hairline above it while the editor holds more
+  // lines than it shows (extra/fidelity/rich-text-input/many-lines), and none otherwise.
+  describe("rich text input footer divider", () => {
+    const DIVIDER = "rgba(29, 28, 29, 0.13) 0px -1px 0px 0px";
+    const withLines = (count: number): Mount => ({
+      view: {
+        type: "modal",
+        title: plain("New entry"),
+        submit: plain("Save"),
+        blocks: [
+          {
+            type: "input",
+            label: plain("Summary"),
+            element: {
+              type: "rich_text_input",
+              action_id: "summary",
+              initial_value: {
+                type: "rich_text",
+                elements: [
+                  {
+                    type: "rich_text_section",
+                    elements: [
+                      {
+                        type: "text",
+                        text: Array.from({ length: count }, (_, i) => `Line ${i + 1}`).join("\n"),
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    });
+    const footerShadow = (page: Page) =>
+      page.$eval(".sbk-rich-text-input__footer", (el) => getComputedStyle(el).boxShadow);
+
+    it("divides the footer from text that runs past the editor", async () => {
+      const page = await harness.open(withLines(12));
+      expect(await footerShadow(page)).toBe(DIVIDER);
+    });
+
+    it("leaves the footer undivided while every line shows", async () => {
+      const page = await harness.open(withLines(2));
+      expect(await footerShadow(page)).toBe("none");
+    });
+
+    it("divides the footer once typing runs past the editor", async () => {
+      const page = await harness.open(withLines(2));
+      await page.click(".sbk-rich-text-input__editor");
+      await page.keyboard.press("End");
+      for (let i = 0; i < 10; i++) await page.keyboard.press("Shift+Enter");
+      expect(await footerShadow(page)).toBe(DIVIDER);
+    });
+  });
+
   describe("field placeholders", () => {
     const inModal = (element: object): Mount => ({
       view: {

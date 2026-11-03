@@ -50,6 +50,21 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
   const [formatting, setFormatting] = useState(true);
   const [empty, setEmpty] = useState(() => isBlank(element.initial_value));
   const [pressed, setPressed] = useState<ReadonlySet<string>>(() => new Set());
+  // Slack draws a hairline above the footer while the editor holds more lines than it shows
+  // (fixtures/extra/fidelity/rich-text-input/many-lines).
+  const [overflowing, setOverflowing] = useState(false);
+  const measure = () => {
+    const editor = ref.current;
+    if (editor) setOverflowing(editor.scrollHeight > editor.clientHeight);
+  };
+  useClientLayoutEffect(() => {
+    measure();
+    const editor = ref.current;
+    if (!editor || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(editor);
+    return () => observer.disconnect();
+  }, []);
 
   // Slack's toolbar shows the formats at the caret as pressed, and before the field is used the
   // caret sits at the start of the value: "Bold" is pressed for a value that opens in bold
@@ -101,6 +116,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
     if (!editor) return;
     const value = readRichTextValue(editor);
     setEmpty(isBlank(value));
+    measure();
     setValue(blockId, actionId, { type: "rich_text_input", rich_text_value: value });
     if (dispatchEnabled && triggers.includes("on_character_entered")) {
       clearTimeout(typing.current);
@@ -147,6 +163,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
       </div>
       <RichTextComposerActions
         formatting={formatting}
+        divided={overflowing}
         onToggleFormatting={() => setFormatting((shown) => !shown)}
       />
     </div>

@@ -274,6 +274,9 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
   ],
   "button widths by surface": [{ components: ["button"], states: ["default"], facts: ["styles"] }],
   "tooltip placement": [{ components: ["tooltip"], states: ["hover"], facts: ["styles"] }],
+  "rich text input footer divider": [
+    { components: ["rich_text_input"], states: ["default"], facts: ["styles"] },
+  ],
   "field placeholders": [
     {
       components: ["static_select", "users_select", "url_text_input", "timepicker", "datepicker"],
