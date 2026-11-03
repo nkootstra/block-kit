@@ -322,7 +322,7 @@ export function renderLeaf(
           {el.value}
           <span
             className="sbk-rich-text__color-swatch"
-            style={{ background: el.value }}
+            style={/^#[0-9a-f]{3,8}$/i.test(el.value) ? { background: el.value } : undefined}
             aria-label={el.value}
           />
         </Fragment>
