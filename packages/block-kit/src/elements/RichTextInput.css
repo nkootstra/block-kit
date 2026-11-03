@@ -114,6 +114,12 @@
   border-radius: 0 0 4px 4px;
 }
 
+/* The hairline Slack draws above the footer while text runs past the editor, in the colour of the
+   editor's border. */
+.sbk-rich-text-input__footer--divided {
+  box-shadow: 0 -1px 0 var(--sbk-composer-border);
+}
+
 .sbk-rich-text-input__action {
   position: relative;
   display: flex;
