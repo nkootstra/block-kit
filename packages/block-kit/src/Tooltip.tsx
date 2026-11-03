@@ -86,7 +86,13 @@ export function Tooltip({ label, children, placement = "top", align = "center" }
       Math.max(4, align === "end" ? a.right - t.width : a.left + a.width / 2 - t.width / 2),
       window.innerWidth - t.width - 4,
     );
-    setPosition({ top: side === "top" ? a.top - gap - t.height : a.bottom + gap, left, side });
+    // Slack places tooltips on whole pixels, as it does popovers: centred over a button 121.5625px
+    // wide, a bubble would otherwise start on a fraction of a pixel and blur its text.
+    setPosition({
+      top: Math.round(side === "top" ? a.top - gap - t.height : a.bottom + gap),
+      left: Math.round(left),
+      side,
+    });
   }, [open, placement, align]);
 
   if (label === undefined || label === null || label === "") return children;

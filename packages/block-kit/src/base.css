@@ -601,16 +601,17 @@ a.sbk-mention {
   height: 9px;
   margin-left: -4.5px;
   background: var(--sbk-tooltip-bg);
-  border-radius: 1px;
   transform: rotate(45deg);
 }
 
+/* Slack's square-cornered arrow points 6px past the bubble: our 9px box, rotated about its centre,
+   reaches 4.5px * sqrt(2) = 6.36px from it, so its edge sits 6 + 4.5 - 6.36 = 4.14px out. */
 .sbk-tooltip--top .sbk-tooltip__arrow {
-  bottom: -4px;
+  bottom: -4.14px;
 }
 
 .sbk-tooltip--bottom .sbk-tooltip__arrow {
-  top: -4px;
+  top: -4.14px;
 }
 
 /* Slack's `top-right` tooltip: its arrow sits off-centre, 16px from the right edge as Slack

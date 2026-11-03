@@ -4873,6 +4873,60 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  // Slack's `c-tooltip__tip` (contexts/file_input/modal-input@hover-file-1): placed on whole
+  // pixels like its popovers, even over the 121.5625px "Upload File" button, and a 9px square
+  // arrow whose tip sits 6px below the bubble.
+  describe("tooltip placement", () => {
+    const open = async () => {
+      const page = await harness.open({
+        view: {
+          type: "modal",
+          title: plain("Files"),
+          blocks: [
+            {
+              type: "input",
+              label: plain("Upload"),
+              element: { type: "file_input", action_id: "f" },
+            },
+          ],
+        },
+      });
+      // Room on the left, so the bubble is centred over the button rather than held at the edge,
+      // and the button's macOS width, which other platforms' fonts may round to whole pixels.
+      await page.addStyleTag({
+        content:
+          "#sbk-render{margin-left:150px!important}.sbk-file-input__button{width:121.5625px!important}",
+      });
+      await page.hover(".sbk-file-input__button");
+      await page.waitForSelector(".sbk-tooltip");
+      return page;
+    };
+
+    it("places the bubble on whole pixels over a button of fractional width", async () => {
+      const page = await open();
+      const { left, top, buttonWidth } = await page.evaluate(() => {
+        const tip = document.querySelector(".sbk-tooltip")!.getBoundingClientRect();
+        const button = document.querySelector(".sbk-file-input__button")!.getBoundingClientRect();
+        return { left: tip.left, top: tip.top, buttonWidth: button.width };
+      });
+      expect(Number.isInteger(buttonWidth)).toBe(false);
+      expect({ left: left % 1, top: top % 1 }).toEqual({ left: 0, top: 0 });
+    });
+
+    it("points its square-cornered arrow 6px below the bubble", async () => {
+      const page = await open();
+      const arrow = await page.$eval(".sbk-tooltip", (tip) => {
+        const el = tip.querySelector<HTMLElement>(".sbk-tooltip__arrow")!;
+        return {
+          tip: el.getBoundingClientRect().bottom - tip.getBoundingClientRect().bottom,
+          radius: getComputedStyle(el).borderTopLeftRadius,
+        };
+      });
+      expect(arrow.radius).toBe("0px");
+      expect(arrow.tip).toBeCloseTo(6, 1);
+    });
+  });
+
   describe("field placeholders", () => {
     const inModal = (element: object): Mount => ({
       view: {

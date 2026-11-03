@@ -273,6 +273,7 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     { components: ["button"], states: ["hover", "pressed"], facts: ["styles"], themes: BOTH },
   ],
   "button widths by surface": [{ components: ["button"], states: ["default"], facts: ["styles"] }],
+  "tooltip placement": [{ components: ["tooltip"], states: ["hover"], facts: ["styles"] }],
   "field placeholders": [
     {
       components: ["static_select", "users_select", "url_text_input", "timepicker", "datepicker"],
