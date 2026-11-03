@@ -4891,8 +4891,12 @@ describe.each(engines)("%s", (engine) => {
           ],
         },
       });
-      // Room on the left, so the bubble is centred over the button rather than held at the edge.
-      await page.addStyleTag({ content: "#sbk-render{margin-left:150px!important}" });
+      // Room on the left, so the bubble is centred over the button rather than held at the edge,
+      // and the button's macOS width, which other platforms' fonts may round to whole pixels.
+      await page.addStyleTag({
+        content:
+          "#sbk-render{margin-left:150px!important}.sbk-file-input__button{width:121.5625px!important}",
+      });
       await page.hover(".sbk-file-input__button");
       await page.waitForSelector(".sbk-tooltip");
       return page;
