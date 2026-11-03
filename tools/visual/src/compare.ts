@@ -145,6 +145,10 @@ const OUR_POPOVERS = ".sbk-popover > *, .sbk-tooltip";
 /** Above anything in the frozen preview; snapshot.js writes the same on new captures. */
 const POPOVER_LAYER_Z = 1000;
 const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog";
+/** snapshot.js freezes Slack's dialog on a plain page, without the dim Slack draws behind it, so a
+ * menu reaching past the dialog's edge shows the page there. Take ours without our dim too. */
+const UNDIMMED_DIALOGS =
+  ".sbk-select-dialog__overlay{background:none!important}.sbk-confirm__overlay::before{content:none!important}";
 
 const names = shard(
   (await referenceNames(FIXTURES)).filter(
@@ -437,6 +441,7 @@ for (const name of names) {
     await page.addStyleTag({ content: fontFaces + SCROLLBAR_CSS });
     if (pageBackground)
       await page.addStyleTag({ content: `html,body{background:${pageBackground}}` });
+    if (dialog) await page.addStyleTag({ content: UNDIMMED_DIALOGS });
     if (room.left || room.top)
       await page.addStyleTag({
         content: `#sbk-render{margin-left:${room.left}px;margin-top:${room.top}px}`,
