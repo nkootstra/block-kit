@@ -874,12 +874,8 @@
   "contexts/datetimepicker/actions@pick+dark": [],
   "contexts/datetimepicker/modal-input": [],
   "contexts/datetimepicker/modal-input@dark": [],
-  "contexts/datetimepicker/modal-input@open": [
-    "extra|Clear selection|0"
-  ],
-  "contexts/datetimepicker/modal-input@open+dark": [
-    "extra|Clear selection|0"
-  ],
+  "contexts/datetimepicker/modal-input@open": [],
+  "contexts/datetimepicker/modal-input@open+dark": [],
   "contexts/email_text_input/modal-input": [],
   "contexts/email_text_input/modal-input@dark": [],
   "contexts/email_text_input/modal-input@focus-input-1": [],

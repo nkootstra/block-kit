@@ -875,7 +875,7 @@
   "contexts/datetimepicker/modal-input": 0.04,
   "contexts/datetimepicker/modal-input@dark": 0.04,
   "contexts/datetimepicker/modal-input@open": 0.12,
-  "contexts/datetimepicker/modal-input@open+dark": 0.2,
+  "contexts/datetimepicker/modal-input@open+dark": 0.02,
   "contexts/email_text_input/modal-input": 0.05,
   "contexts/email_text_input/modal-input@dark": 0.05,
   "contexts/email_text_input/modal-input@focus-input-1": 0.05,
