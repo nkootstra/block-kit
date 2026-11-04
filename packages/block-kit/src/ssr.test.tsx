@@ -66,4 +66,37 @@ describe("SSR", () => {
     );
     expect(html).toContain("Welcome");
   });
+
+  it("keeps payload values that aren't a colour or an alignment out of server-rendered styles", () => {
+    const evil = "fff;position:fixed;inset:0";
+    const html = renderToStaticMarkup(
+      <BlockKitProvider>
+        <Message
+          message={{
+            ts: "1700000000.000000",
+            attachments: [
+              { color: evil, text: "a" },
+              { color: "2eb886", text: "b" },
+            ],
+            blocks: [
+              {
+                type: "rich_text",
+                elements: [
+                  { type: "rich_text_section", elements: [{ type: "color", value: `#${evil}` }] },
+                ],
+              },
+              {
+                type: "table",
+                column_settings: [{ align: `left;${evil}` }],
+                rows: [[{ type: "raw_text", text: "cell" }]],
+              } as never,
+            ],
+          }}
+        />
+      </BlockKitProvider>,
+    );
+    const styles = html.match(/style="[^"]*"/g) ?? [];
+    expect(styles.filter((style) => style.includes("position"))).toEqual([]);
+    expect(html).toContain("border-left-color:#2eb886");
+  });
 });

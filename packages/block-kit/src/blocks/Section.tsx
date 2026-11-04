@@ -1,3 +1,4 @@
+import { classModifier } from "../payloadValues";
 import type { SectionBlock } from "@slack/types";
 import { SectionAccessoryContext } from "../elements/accessoryContext";
 import { Element } from "../elements/Element";
@@ -34,7 +35,9 @@ export function Section({ block, blockId }: BlockProps<SectionBlock>) {
         )}
       </div>
       {accessory && (
-        <div className={`sbk-section__accessory sbk-section__accessory--${accessory.type}`}>
+        <div
+          className={`sbk-section__accessory sbk-section__accessory--${classModifier(accessory.type) ?? "unsupported"}`}
+        >
           <SectionAccessoryContext.Provider value={true}>
             <Element element={accessory} blockId={blockId} />
           </SectionAccessoryContext.Provider>

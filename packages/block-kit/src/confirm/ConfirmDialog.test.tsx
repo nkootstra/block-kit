@@ -99,4 +99,21 @@ describe("confirm dialog", () => {
     fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
     expect(document.activeElement).toBe(confirm);
   });
+
+  it("keeps the confirm style to one class", async () => {
+    render(
+      <BlockKitProvider>
+        <Button
+          element={{
+            ...deleteButton,
+            confirm: { ...deleteButton.confirm!, style: "danger sbk-modal-layer" as never },
+          }}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    await openDialog();
+    const confirm = screen.getByRole("button", { name: "Delete it" });
+    expect(confirm.classList.contains("sbk-modal-layer")).toBe(false);
+  });
 });

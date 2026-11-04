@@ -103,7 +103,7 @@ const { messages } = await slack.conversations.history({ channel: "C0RELEASES", 
 
 ### Attachments
 
-Legacy [attachments](https://docs.slack.dev/messaging/formatting-message-text#when-to-use-attachments) render with their colour bar, author, title, fields, image and footer. An attachment can also hold `blocks`.
+Legacy [attachments](https://docs.slack.dev/messaging/formatting-message-text#when-to-use-attachments) render with their colour bar, author, title, fields, image and footer. The bar's `color` is `good`, `warning`, `danger` or a hex colour, with or without the `#`, as Slack documents; any other value draws the default grey bar. An attachment can also hold `blocks`.
 
 <Preview
   payload={{

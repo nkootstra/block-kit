@@ -1,3 +1,4 @@
+import { safeUrl } from "../safeUrl";
 import type { ImageBlock } from "@slack/types";
 import { useRef, useState } from "react";
 import { useBlockKit } from "../context";
@@ -55,7 +56,8 @@ export function Image({ block }: BlockProps<ImageBlock>) {
   const slackFile = json.slack_file as { url?: string; id?: string } | undefined;
   const { resolvers } = useBlockKit();
   const resolved = slackFile ? resolvers.slackFile?.(slackFile) : undefined;
-  const imageUrl = directUrl ?? resolved?.url;
+  // The URL goes into a CSS `url()` as well as `src`: only a string that is a safe URL does.
+  const imageUrl = safeUrl(directUrl ?? resolved?.url, { image: true });
   const [expanded, setExpanded] = useState(true);
   const toggleRef = useRef<HTMLButtonElement>(null);
   // "Hide image" in the hover menu does what the caret does; the menu goes with the image, so focus

@@ -3,6 +3,9 @@ import { TableActions } from "../data/HoverActions";
 import { RichTextMini } from "../data/richTextMini";
 import type { BlockProps, Json } from "../types";
 
+/** Only these reach the style: a server render writes it into the attribute as is. */
+const ALIGNMENTS = new Set(["left", "center", "right"]);
+
 interface ColumnSetting {
   is_wrapped?: boolean;
   align?: "left" | "center" | "right";
@@ -39,7 +42,7 @@ export function Table({ block }: BlockProps<TableBlock>) {
     const setting = settings[colIndex];
     if (!setting) return undefined;
     return {
-      textAlign: setting.align,
+      textAlign: ALIGNMENTS.has(setting.align as string) ? setting.align : undefined,
       whiteSpace: setting.is_wrapped ? "normal" : "nowrap",
     };
   };

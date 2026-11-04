@@ -18,8 +18,16 @@ app should trust as is. This page lists what the package checks for you and what
   `slack` and relative URLs. Any other scheme is dropped without an error: the link keeps its text
   and loses its `href`, and a button still sends its action but opens nothing. See
   [URL safety](/reference/block-kit-provider#url-safety) for the full list.
-- **Image URLs** are left as they are, so an `image_url` makes the viewer's browser load whatever
-  host the payload names. Render payloads from people you don't trust only where that's acceptable,
+- **Styles and class names:** a payload value only reaches a style or a class once it has been
+  checked, because a server render writes both into the HTML as they are. An attachment's colour
+  must be `good`, `warning`, `danger` or a hex colour, a rich text `color` swatch a hex colour, and
+  a table column's `align` `left`, `center` or `right`; anything else is left out. A block type,
+  accessory type, button or confirm style and list style becomes a class only when it is a single
+  word.
+- **Image URLs:** an image block's `image_url` goes through the same scheme check as links (it
+  also keeps `blob:` and `data:image/` URLs), and is dropped when it isn't a string. Other image
+  URLs (icons, avatars, thumbnails) are left as they are. Either way an image makes the viewer's
+  browser load whatever host the payload names. Render payloads from people you don't trust only where that's acceptable,
   or replace the image block with one that checks the host (see [Custom blocks](/reference/custom-blocks#replace-a-built-in)).
 - **Downloaded files:** Download table and Download chart data save a cell that starts with `=`,
   `+`, `-`, `@`, a tab or a carriage return, and isn't a number, with a leading `'`, so a cell
