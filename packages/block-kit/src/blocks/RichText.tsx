@@ -318,6 +318,8 @@ export function renderLeaf(
       break;
     }
     case "color":
+      // Payloads are untyped JSON: a value that isn't a string has nothing to print.
+      if (typeof el.value !== "string") return null;
       content = (
         <Fragment>
           {el.value}

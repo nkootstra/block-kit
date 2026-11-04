@@ -604,4 +604,23 @@ describe("text nodes, as Slack writes them", () => {
     const nodes = textNodes(container);
     for (const text of ["@here", "@eng", "#general"]) expect(nodes).toContain(text);
   });
+
+  it("renders the rest of a section when a color element's value isn't a string", () => {
+    const block = {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            { type: "text", text: "before " },
+            { type: "color", value: { hex: "#fff" } },
+            { type: "text", text: " after" },
+          ],
+        },
+      ],
+    };
+    const { container } = render(<RichText block={block as never} blockId="b1" index={0} />);
+    expect(container.textContent).toBe("before  after");
+    expect(container.querySelector(".sbk-rich-text__color-swatch")).toBeNull();
+  });
 });
