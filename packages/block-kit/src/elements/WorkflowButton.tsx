@@ -1,3 +1,4 @@
+import { classModifier } from "../payloadValues";
 import type { WorkflowButton as WorkflowButtonElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
@@ -13,7 +14,7 @@ export function WorkflowButton({ element, blockId }: ElementProps<WorkflowButton
   const className = [
     "sbk-button",
     "sbk-workflow-button",
-    element.style && `sbk-button--${element.style}`,
+    classModifier(element.style) && `sbk-button--${element.style}`,
   ]
     .filter(Boolean)
     .join(" ");

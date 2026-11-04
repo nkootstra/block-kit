@@ -1,3 +1,4 @@
+import { classModifier } from "../payloadValues";
 import type {
   RichTextBlock,
   RichTextBlockElement,
@@ -68,7 +69,7 @@ export function renderRichTextValue(value: RichTextBlock | undefined, ctx: Rende
         return (
           <List
             key={i}
-            className={`sbk-rich-list sbk-rich-list--${block.style}`}
+            className={`sbk-rich-list sbk-rich-list--${classModifier(block.style) ?? "bullet"}`}
             data-indent={(block as RichTextListExt).indent ?? 0}
           >
             {block.elements.map((item, j) => (

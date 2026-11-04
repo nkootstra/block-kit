@@ -1,3 +1,4 @@
+import { hexColor } from "./payloadValues";
 import type { AnyBlock } from "@slack/types";
 import { useMemo, useState } from "react";
 import { Blocks } from "./Blocks";
@@ -323,12 +324,10 @@ function Attachment({ attachment }: { attachment: SlackAttachment }) {
   );
 }
 
-function normalizeColor(color: string | undefined): string | undefined {
-  if (!color) return undefined;
+function normalizeColor(color: unknown): string | undefined {
+  if (typeof color !== "string" || !color) return undefined;
   if (color === "good") return "#2eb67d";
   if (color === "warning") return "#ecb22e";
   if (color === "danger") return "#e01e5a";
-  // Only a hex colour reaches the style: a server render writes it into the attribute as is.
-  const hex = color.startsWith("#") ? color : `#${color}`;
-  return /^#[0-9a-f]{3,8}$/i.test(hex) ? hex : undefined;
+  return hexColor(color.startsWith("#") ? color : `#${color}`);
 }

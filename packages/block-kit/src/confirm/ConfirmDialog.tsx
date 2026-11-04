@@ -1,3 +1,4 @@
+import { classModifier } from "../payloadValues";
 import type { ConfirmationDialog } from "@slack/types";
 import { type KeyboardEvent, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -22,7 +23,7 @@ export interface ConfirmDialogProps {
  */
 export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps) {
   const { theme } = useBlockKit();
-  const confirmStyle = confirm.style ?? "primary";
+  const confirmStyle = classModifier(confirm.style) ?? "primary";
   const titleId = useId();
   const textId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);

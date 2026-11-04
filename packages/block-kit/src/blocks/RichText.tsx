@@ -1,3 +1,4 @@
+import { classModifier, hexColor } from "../payloadValues";
 import type {
   RichTextBlock,
   RichTextBlockElement,
@@ -322,7 +323,7 @@ export function renderLeaf(
           {el.value}
           <span
             className="sbk-rich-text__color-swatch"
-            style={/^#[0-9a-f]{3,8}$/i.test(el.value) ? { background: el.value } : undefined}
+            style={hexColor(el.value) ? { background: el.value } : undefined}
             aria-label={el.value}
           />
         </Fragment>
@@ -586,7 +587,7 @@ const ORDERED_MARKERS = ["decimal", "lower-alpha", "lower-roman"];
 function renderListGroup(group: ListGroup, ctx: RenderCtx, key: number, depth: number): ReactNode {
   const Tag = group.style === "ordered" ? "ol" : "ul";
   const ordered = group.style === "ordered";
-  const className = `sbk-rich-list sbk-rich-list--${group.style}${group.border ? " sbk-rich-list--bordered" : ""}`;
+  const className = `sbk-rich-list sbk-rich-list--${classModifier(group.style) ?? "bullet"}${group.border ? " sbk-rich-list--bordered" : ""}`;
 
   return (
     <Tag

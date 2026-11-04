@@ -113,8 +113,9 @@ such as `javascript:`, `data:` or `vbscript:`, is dropped: the link keeps its te
 `href`, and a button still sends its action but opens nothing. The check strips the spaces, tabs
 and newlines a browser would strip first, so `\tjava\nscript:` is caught too.
 
-`linkComponent` only ever receives a URL that passed this check, so it doesn't need its own. Image
-URLs (`image_url`, icons, avatars, thumbnails) are left as they are: an image can't run a script.
+`linkComponent` only ever receives a URL that passed this check, so it doesn't need its own. An image
+block's `image_url` goes through the check too, and also keeps `blob:` and `data:image/` URLs.
+Other image URLs (icons, avatars, thumbnails) are left as they are: an image can't run a script.
 
 ### Display
 
