@@ -177,7 +177,9 @@ cleared. When the element has an `initial_date_time`, the action echoes it:
 ```
 
 Once a value is chosen, "Clear selection" leads the time list and is the calendar's footer.
-It empties both fields and sends `"selected_date_time": null`.
+It empties both fields and sends `"selected_date_time": null`. As in Slack, it's offered in an
+actions block and wherever the value may be left empty: in a modal or on App Home, a required
+input block's datetimepicker has none.
 
 The same shape lands in `state.values[block_id][action_id]`:
 

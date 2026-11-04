@@ -452,8 +452,7 @@ a.sbk-mention {
 .sbk-datepicker__input,
 .sbk-datetimepicker__time-input,
 .sbk-select__control,
-.sbk-timepicker__control,
-.sbk-datetimepicker__control {
+.sbk-timepicker__control {
   transition:
     border 80ms ease-out,
     box-shadow 80ms ease-out;

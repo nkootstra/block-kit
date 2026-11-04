@@ -1,6 +1,7 @@
 import type { DateTimepicker } from "@slack/types";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Input } from "../blocks/Input";
 import { BlockKitProvider, type StateValues } from "../context";
 import { DateTimePicker } from "./DateTimePicker";
 import { blurAsync, clickAsync, keyDownAsync } from "./test-utils";
@@ -251,6 +252,46 @@ describe("<DateTimePicker>", () => {
       await clickAsync(screen.getByText("Clear selection"));
       expect([dateText(), timeText()]).toEqual(["Select a date", "Time"]);
       expect(sent(onAction).selected_date_time).toBeNull();
+    });
+
+    function inInput(optional: boolean, surface: "modal" | "message") {
+      render(
+        <BlockKitProvider surface={surface} timeZone="Europe/Amsterdam">
+          <Input
+            block={
+              {
+                type: "input",
+                block_id: "b1",
+                optional,
+                label: { type: "plain_text", text: "Label" },
+                element: {
+                  type: "datetimepicker",
+                  action_id: "a1",
+                  initial_date_time: ts("2026-01-01T10:00:00Z"),
+                },
+              } as never
+            }
+            blockId="b1"
+            index={0}
+          />
+        </BlockKitProvider>,
+      );
+    }
+
+    // contexts/datetimepicker/modal-input@open: Slack's calendar for a required modal input has no
+    // footer, where the one in an actions block (contexts/datetimepicker/actions@open) does.
+    it("isn't offered for a required input in a modal, as in Slack", () => {
+      inInput(false, "modal");
+      fireEvent.click(dateInput());
+      expect(screen.queryByText("Clear selection")).toBeNull();
+      fireEvent.click(timeInput());
+      expect(screen.queryByRole("option", { name: "Clear selection" })).toBeNull();
+    });
+
+    it("is offered for an optional input in a modal", () => {
+      inInput(true, "modal");
+      fireEvent.click(dateInput());
+      expect(screen.queryByText("Clear selection")).not.toBeNull();
     });
   });
 
