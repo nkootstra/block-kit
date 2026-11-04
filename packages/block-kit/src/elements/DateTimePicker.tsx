@@ -9,6 +9,7 @@ import { DateField, useDateField } from "./DateField";
 import { fromWallClock, ordinal, timeZoneLabel, wallClock } from "./dateFormat";
 import { MENU_GAP, Popover } from "./Popover";
 import { formatTime, parseTime, TIMES } from "./TimePicker";
+import { useInClearableInput, useInInputBlock } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -44,6 +45,11 @@ function formatDay(date: string, today: string): string {
 export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker>) {
   const { setValue, dispatch, timeZone } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
+  // Slack offers "Clear selection" in an actions block, and in an input block only where the
+  // value may be left empty (contexts/datetimepicker/modal-input@open has none).
+  const inInputBlock = useInInputBlock();
+  const clearableInput = useInClearableInput();
+  const clearable = !inInputBlock || clearableInput;
   const zone = timeZone ?? "UTC";
   const [value, setValueState] = useState<WallClock | undefined>(() =>
     element.initial_date_time !== undefined
@@ -118,7 +124,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   }
 
   const [query, setQuery] = useState("");
-  const rows = [...(value && !query.trim() ? [CLEAR] : []), ...TIMES];
+  const rows = [...(clearable && value && !query.trim() ? [CLEAR] : []), ...TIMES];
   const combo = useCombobox({
     query,
     onQueryChange: setQuery,
@@ -177,7 +183,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
           anchorRef={dateFieldRef}
           value={value?.date}
           onSelect={pickDate}
-          onClear={value ? clear : undefined}
+          onClear={clearable && value ? clear : undefined}
           {...dateField.popoverProps}
           // Measured in Block Kit Builder: here the calendar's right edge sits 4px inside the
           // date field's.
