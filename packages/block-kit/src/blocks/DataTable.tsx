@@ -30,7 +30,12 @@ const HEADER_HEIGHT = 36;
  * pagination kicks in above `PAGE_SIZE` data rows, matching Slack's Builder.
  */
 export function DataTable({ block }: BlockProps<DataTableBlock>) {
-  const rows = Array.isArray(block.rows) ? block.rows : [];
+  // Payloads are untyped JSON: a row that isn't an array renders as an empty one, keeping its place.
+  const rows = useMemo(
+    () =>
+      (Array.isArray(block.rows) ? block.rows : []).map((row) => (Array.isArray(row) ? row : [])),
+    [block.rows],
+  );
   const [header, ...body] = rows;
   const columnCount = header?.length ?? 0;
 

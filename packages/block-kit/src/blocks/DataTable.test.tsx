@@ -498,4 +498,18 @@ describe("<DataTable> filter highlight", () => {
     fireEvent.change(box, { target: { value: "on rev" } });
     expect(marks()).toEqual(["on ", "rev"]);
   });
+
+  it("renders a table whose header or rows aren't arrays", () => {
+    const block = asDataTableBlock({
+      type: "data_table",
+      caption: "Data table",
+      rows: [{ text: "not a row" }, [rawText("a")], "not a row either", [rawText("b")]],
+    });
+    const { container } = render(
+      <BlockKitProvider>
+        <DataTable block={block} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    expect(bodyRowsText(container)).toEqual([["a"], [], ["b"]]);
+  });
 });
