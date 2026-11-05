@@ -64,7 +64,17 @@ export function formatSlackDate(
     ago: () => ago(date.getTime(), now, locale),
   };
 
-  return format.replace(TOKEN_RE, (_, token: string) => tokens[token]?.() ?? `{${token}}`);
+  // A token's text is the same wherever it appears, so work each one out once: a format that
+  // repeats its tokens shouldn't build new formatters for every copy.
+  const done = new Map<string, string>();
+  return format.replace(TOKEN_RE, (_, token: string) => {
+    let text = done.get(token);
+    if (text === undefined) {
+      text = tokens[token]?.() ?? `{${token}}`;
+      done.set(token, text);
+    }
+    return text;
+  });
 }
 
 function ordinalSuffix(day: number): string {

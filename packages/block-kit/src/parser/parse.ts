@@ -100,6 +100,8 @@ function parseInline(text: string, options: ParseOptions): InlineNode[] {
   const nodes: InlineNode[] = [];
   let buffer = "";
   let i = 0;
+  const nextIndex = indexFinder(text);
+  const closers = closerFinder(text);
 
   const flush = () => {
     if (buffer) pushText(nodes, decodeEntities(buffer));
@@ -111,7 +113,7 @@ function parseInline(text: string, options: ParseOptions): InlineNode[] {
     const prev = text[i - 1];
 
     if (ch === "`") {
-      const end = text.indexOf("`", i + 1);
+      const end = nextIndex("`", i + 1);
       if (end > i + 1) {
         flush();
         nodes.push({ type: "code", value: decodeEntities(text.slice(i + 1, end)) });
@@ -121,7 +123,7 @@ function parseInline(text: string, options: ParseOptions): InlineNode[] {
     }
 
     if (ch === "<") {
-      const end = text.indexOf(">", i + 1);
+      const end = nextIndex(">", i + 1);
       if (end !== -1) {
         const node = parseAngle(text.slice(i + 1, end), options);
         if (node) {
@@ -135,7 +137,7 @@ function parseInline(text: string, options: ParseOptions): InlineNode[] {
 
     if (ch === "*" || ch === "_" || ch === "~") {
       if (isBoundary(prev)) {
-        const end = findCloser(text, i, ch);
+        const end = closers(i, ch);
         if (end !== -1) {
           flush();
           nodes.push({
@@ -250,37 +252,68 @@ function isBoundary(ch: string | undefined): boolean {
 }
 
 /**
- * Finds the closing marker for a `*`, `_` or `~` span opening at `start`. The span must stay on
- * one line, have non-empty content that doesn't start or end with whitespace, and be followed by a
- * word boundary. Code spans and `<...>` markup are skipped so markers inside them don't count.
+ * `text.indexOf(char, from)`, remembering the last answer for each character. Every unclosed `<`
+ * or backtick asks for the next `>` or backtick; without the memory each ask scanned to the end of
+ * the text, so a long run of them took quadratic time.
  */
-function findCloser(text: string, start: number, marker: Marker): number {
-  const first = text[start + 1];
-  if (first === undefined || first === marker || /\s/.test(first)) return -1;
+function indexFinder(text: string): (char: string, from: number) => number {
+  const last = new Map<string, { from: number; at: number }>();
+  return (char, from) => {
+    const hit = last.get(char);
+    // The first `char` at or after hit.from is hit.at, so it is also the first at or after any
+    // `from` between the two (and there is none at all when hit.at is -1).
+    if (hit && from >= hit.from && (hit.at === -1 || from <= hit.at)) return hit.at;
+    const at = text.indexOf(char, from);
+    last.set(char, { from, at });
+    return at;
+  };
+}
 
-  for (let j = start + 1; j < text.length; j++) {
-    const ch = text[j];
-    if (ch === "\n") return -1;
-    if (ch === "`") {
-      const end = text.indexOf("`", j + 1);
-      if (end !== -1) j = end;
-      continue;
+/**
+ * Finds the closing marker for a `*`, `_` or `~` span opening at a given index. The span must stay
+ * on one line, have non-empty content that doesn't start or end with whitespace, and be followed by
+ * a word boundary. Code spans and `<...>` markup are skipped so markers inside them don't count.
+ *
+ * A scan's path from any index it visits doesn't depend on where it started, so a scan that
+ * reaches the end of its line without a closer marks every index it visited as a dead end for that
+ * marker, and later scans stop there. Each index is then scanned at most once per marker, where
+ * scanning every opener to the end of its line took quadratic time.
+ */
+function closerFinder(text: string): (start: number, marker: Marker) => number {
+  const nextIndex = indexFinder(text);
+  const dead: Partial<Record<Marker, Uint8Array>> = {};
+
+  return (start, marker) => {
+    const first = text[start + 1];
+    // `first` is never the marker, so no index visited below can close the span at once.
+    if (first === undefined || first === marker || /\s/.test(first)) return -1;
+
+    const deadEnds = (dead[marker] ??= new Uint8Array(text.length));
+    const visited: number[] = [];
+    let found = -1;
+    for (let j = start + 1; j < text.length; j++) {
+      if (deadEnds[j]) break;
+      visited.push(j);
+      const ch = text[j];
+      if (ch === "\n") break;
+      if (ch === "`") {
+        const end = nextIndex("`", j + 1);
+        if (end !== -1) j = end;
+        continue;
+      }
+      if (ch === "<") {
+        const end = nextIndex(">", j + 1);
+        if (end !== -1) j = end;
+        continue;
+      }
+      if (ch === marker && !/\s/.test(text[j - 1] as string) && isBoundary(text[j + 1])) {
+        found = j;
+        break;
+      }
     }
-    if (ch === "<") {
-      const end = text.indexOf(">", j + 1);
-      if (end !== -1) j = end;
-      continue;
-    }
-    if (
-      ch === marker &&
-      j > start + 1 &&
-      !/\s/.test(text[j - 1] as string) &&
-      isBoundary(text[j + 1])
-    ) {
-      return j;
-    }
-  }
-  return -1;
+    if (found === -1) for (const j of visited) deadEnds[j] = 1;
+    return found;
+  };
 }
 
 function pushText(nodes: InlineNode[], value: string): void {

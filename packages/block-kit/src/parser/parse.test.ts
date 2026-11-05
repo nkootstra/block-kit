@@ -125,3 +125,23 @@ describe("parse", () => {
     expect(inline("a <b> c")).toEqual([{ type: "text", value: "a <b> c" }]);
   });
 });
+
+describe("parse on hostile input", () => {
+  // Each of these took seconds to minutes before the parser stopped rescanning the line for every
+  // marker and every unclosed `<` or backtick. 100 KB is far past any Slack text limit; linear
+  // parsing does it in milliseconds, so the bound only catches a return to quadratic time.
+  const cases: Record<string, string> = {
+    "markers before unclosed <": "*a <".repeat(25_000),
+    "italics before unclosed <": "_a <".repeat(25_000),
+    "markers before an unclosed backtick": "*a `".repeat(25_000),
+    "markers with no closer": "*a ".repeat(33_000),
+    "unclosed <": "<".repeat(100_000),
+  };
+
+  it.each(Object.entries(cases))("parses %s in linear time", (_, text) => {
+    const start = performance.now();
+    const root = parse(text);
+    expect(performance.now() - start).toBeLessThan(500);
+    expect(root.children.length).toBeGreaterThan(0);
+  });
+});

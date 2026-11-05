@@ -32,3 +32,15 @@ describe("formatSlackDate", () => {
     expect(formatSlackDate(TS, "Due {date_short} {nope}", opts)).toBe("Due Feb 18, 2014 {nope}");
   });
 });
+
+describe("formatSlackDate on hostile input", () => {
+  // Each token built new Intl formatters, so a format repeating its tokens took seconds. The bound
+  // only catches a return to that.
+  it("formats a format string of thousands of tokens quickly", () => {
+    const format = "{date_long_pretty} {date} {time}".repeat(3_000);
+    const start = performance.now();
+    const out = formatSlackDate(1392734382, format, { timeZone: "UTC", now: 0 });
+    expect(performance.now() - start).toBeLessThan(500);
+    expect(out.startsWith("Tuesday, February 18th, 2014 February 18th, 2014 2:39 PM")).toBe(true);
+  });
+});
