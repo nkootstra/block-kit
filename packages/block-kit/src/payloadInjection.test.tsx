@@ -21,6 +21,14 @@ function render(message: object): string {
 const classTokens = (html: string) =>
   [...html.matchAll(/class="([^"]*)"/g)].flatMap((match) => match[1]!.split(" "));
 
+function header(level: unknown) {
+  return {
+    type: "header",
+    text: { type: "plain_text", text: "Title" },
+    level,
+  };
+}
+
 describe("payload values in styles", () => {
   it("keeps an image URL that isn't a string out of the image's background", () => {
     const breakout = [")", ";position:fixed;inset:0;x:"];
@@ -122,5 +130,29 @@ describe("payload values in class names", () => {
   it("keeps the class of a block type Slack has", () => {
     const html = render({ blocks: [{ type: "divider" }] });
     expect(classTokens(html)).toContain("sbk-block--divider");
+  });
+});
+
+describe("header level", () => {
+  it("renders a header whose level would not be a tag", () => {
+    const html = render({ blocks: [header("x"), header({ a: 1 }), header(5)] });
+    expect(html).not.toContain("[object Object]");
+    expect(html.match(/<h[1-4]/g)).toEqual(["<h2", "<h2", "<h2"]);
+    expect(classTokens(html).filter((token) => token.includes("level"))).toEqual([
+      "sbk-header--level-2",
+      "sbk-header--level-2",
+      "sbk-header--level-2",
+    ]);
+  });
+
+  it("keeps a header level to one class", () => {
+    const html = render({ blocks: [header("1 sbk-foo")] });
+    expect(classTokens(html)).not.toContain("sbk-foo");
+    expect(html).toContain('<h2 class="sbk-header sbk-header--level-2">');
+  });
+
+  it.each([1, 2, 3, 4])("renders a level %i header", (level) => {
+    const html = render({ blocks: [header(level)] });
+    expect(html).toContain(`<h${level} class="sbk-header sbk-header--level-${level}">`);
   });
 });

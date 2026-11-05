@@ -177,8 +177,9 @@ framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
   `href` and open nothing. `linkComponent` only gets URLs that passed, so don't re-add a check there,
   and never bypass it by rendering a payload URL into your own `<a>` or `window.open`.
 - Payload values reach styles and class names only after a check (hex colours, known alignments,
-  single-word class modifiers), because a server render writes them into the HTML as they are. A
-  custom block that puts a payload value into `style` or `className` needs the same check.
+  single-word class modifiers, and a header level of 1, 2, 3 or 4), because a server render writes
+  them into the HTML as they are. A custom block that puts a payload value into `style` or
+  `className` needs the same check.
 
 ```tsx
 import { Link } from "react-router"; // TanStack: "@tanstack/react-router". Next.js: next/link, with href.

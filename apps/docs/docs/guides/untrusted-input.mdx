@@ -23,7 +23,8 @@ app should trust as is. This page lists what the package checks for you and what
   must be `good`, `warning`, `danger` or a hex colour, a rich text `color` swatch a hex colour, and
   a table column's `align` `left`, `center` or `right`; anything else is left out. A block type,
   accessory type, button or confirm style and list style becomes a class only when it is a single
-  word.
+  word. A header's `level` is used as the heading tag and a class only when it is 1, 2, 3 or 4;
+  anything else renders at level 2.
 - **Image URLs:** an image block's `image_url` goes through the same scheme check as links (it
   also keeps `blob:` and `data:image/` URLs), and is dropped when it isn't a string. Other image
   URLs (icons, avatars, thumbnails) are left as they are. Either way an image makes the viewer's
