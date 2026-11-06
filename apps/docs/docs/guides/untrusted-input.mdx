@@ -30,11 +30,16 @@ app should trust as is. This page lists what the package checks for you and what
   URLs (icons, avatars, thumbnails) are left as they are. Either way an image makes the viewer's
   browser load whatever host the payload names. Render payloads from people you don't trust only where that's acceptable,
   or replace the image block with one that checks the host (see [Custom blocks](/reference/custom-blocks#replace-a-built-in)).
+- **Relative URLs:** a relative link or image URL resolves against the page that renders the
+  message, not against Slack. `/settings` links to your own app's `/settings`, and an `image_url`
+  of `/api/export` makes the viewer's browser send a GET request to your own server, with their
+  cookies, as soon as the message shows. Keep GET routes free of side effects, or drop relative
+  URLs from payloads you don't trust before you render them.
 - **Downloaded and copied tables:** Download table, Copy table and Download chart data write a
   cell that starts with `=`, `+`, `-`, `@`, a tab or a carriage return, and isn't a number, with a
   leading `'`, so a cell someone wrote into the payload can't run as a formula in the spreadsheet
   the reader opens or pastes it in. A copied cell's tabs and line breaks become spaces, so one cell
-  can't add cells or rows of its own. Releases before 0.6.2 saved these cells as they were.
+  can't add cells or rows of its own.
 - **Shape:** a field of the wrong type (a number where text goes, an object where a list goes, a
   missing `text`) is left out rather than thrown on, in the browser and in a server render, so one
   bad block doesn't take down the rest of the page. Blocks nested more than 32 deep (callouts,
