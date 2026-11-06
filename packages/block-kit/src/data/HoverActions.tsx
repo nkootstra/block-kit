@@ -295,7 +295,8 @@ export function ImageActions({ url, onHide }: { url: string; onHide: () => void 
         { label: "Open in new window", icon: <OpenInWindowIcon />, href: url },
         {
           label: "More actions",
-          icon: <EllipsisVerticalIcon />,
+          // 20px, as Slack draws it beside the 20px Open in new window glyph; a chart's is 18px.
+          icon: <EllipsisVerticalIcon width="20" height="20" />,
           // Slack's image menu button has a `top-right` tooltip; a chart's is centred.
           tooltipAlign: "end",
           menu: [

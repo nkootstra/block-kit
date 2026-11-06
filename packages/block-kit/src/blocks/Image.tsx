@@ -81,7 +81,9 @@ export function Image({ block }: BlockProps<ImageBlock>) {
             </span>
           )}
           <span className="sbk-image__trigger">
-            {size !== undefined && ` (${formatFileSize(size)})`}{" "}
+            {/* Slack's caret follows the caption with no space; without a caption, a space keeps
+                it off the title. */}
+            {size !== undefined ? ` (${formatFileSize(size)})` : " "}
             <button
               ref={toggleRef}
               type="button"

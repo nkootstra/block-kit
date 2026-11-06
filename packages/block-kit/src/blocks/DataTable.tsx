@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DataTableCell, dataTableCellText, dataTableSortValue } from "../data/dataTableCells";
 import { copyText, downloadText, MenuAction, toCsv, toTsv } from "../data/HoverActions";
-import { ChevronIcon, ExpandIcon, KebabIcon, SearchIcon } from "../data/icons";
+import { ExpandIcon, KebabIcon, PageCaretIcon, SearchIcon } from "../data/icons";
 import { CopyIcon, DownloadIcon } from "../icons";
 import { asString } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
@@ -270,7 +270,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
               disabled={currentPage === 0}
               onClick={() => setPage((p) => Math.max(0, p - 1))}
             >
-              <ChevronIcon direction="left" />
+              <PageCaretIcon direction="left" />
             </button>
             {Array.from({ length: totalPages }, (_, i) => (
               <button
@@ -290,7 +290,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
               disabled={currentPage === totalPages - 1}
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             >
-              <ChevronIcon direction="right" />
+              <PageCaretIcon direction="right" />
             </button>
           </div>
         ) : null}

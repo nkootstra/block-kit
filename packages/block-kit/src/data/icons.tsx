@@ -1,19 +1,9 @@
 /** Small inline icons shared by the table/chart blocks, drawn to match Slack's glyphs. */
 
+/** Slack's `search`, on a data table's Search button. */
 export function SearchIcon() {
   return (
-    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
-      <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" strokeWidth="1.8" />
-      <line
-        x1="13"
-        y1="13"
-        x2="17.5"
-        y2="17.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
+    <SlackGlyph d="M9 3a6 6 0 1 0 0 12A6 6 0 0 0 9 3M1.5 9a7.5 7.5 0 1 1 13.307 4.746l3.473 3.474a.75.75 0 1 1-1.06 1.06l-3.473-3.473A7.5 7.5 0 0 1 1.5 9" />
   );
 }
 
@@ -32,27 +22,17 @@ export function ExpandDiagonalIcon() {
   );
 }
 
+/** Four arrows pointing out to the corners: Slack's `arrow-expand-full`, a data table's expand. */
 export function ExpandIcon() {
   return (
-    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
-      <path
-        d="M7 3H3v4M13 3h4v4M3 13v4h4M17 13v4h-4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <SlackGlyph d="M18.5 2.25a.75.75 0 0 0-.75-.75h-5a.75.75 0 0 0 0 1.5h3.19l-4.2 4.2a.75.75 0 0 0 1.06 1.06l4.2-4.2v3.19a.75.75 0 0 0 1.5 0zm-.22 16.03a.75.75 0 0 1-.53.22h-5a.75.75 0 0 1 0-1.5h3.19l-4.2-4.2a.75.75 0 1 1 1.06-1.06l4.2 4.2v-3.19a.75.75 0 0 1 1.5 0v5a.75.75 0 0 1-.22.53m-16.317.163a.75.75 0 0 1-.463-.693v-5a.75.75 0 0 1 1.5 0v3.19l4.2-4.2a.75.75 0 0 1 1.06 1.06L4.06 17h3.19a.75.75 0 0 1 0 1.5h-5a.8.8 0 0 1-.287-.057M1.5 2.25a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5H4.06l4.2 4.2A.75.75 0 0 1 7.2 8.26L3 4.06v3.19a.75.75 0 0 1-1.5 0z" />
   );
 }
 
+/** Slack's `ellipsis-vertical-filled`, on a data table's More actions button. */
 export function KebabIcon() {
   return (
-    <svg viewBox="0 0 4 18" width="4" height="16" fill="currentColor" aria-hidden="true">
-      <circle cx="2" cy="2" r="2" />
-      <circle cx="2" cy="9" r="2" />
-      <circle cx="2" cy="16" r="2" />
-    </svg>
+    <SlackGlyph d="M10 5.5A1.75 1.75 0 1 1 10 2a1.75 1.75 0 0 1 0 3.5m0 6.25a1.75 1.75 0 1 1 0-3.5 1.75 1.75 0 0 1 0 3.5m-1.75 4.5a1.75 1.75 0 1 0 3.5 0 1.75 1.75 0 0 0-3.5 0" />
   );
 }
 
@@ -85,36 +65,28 @@ export function CaretIcon({
   );
 }
 
-export function ChevronIcon({
-  direction = "down",
-}: {
-  direction?: "up" | "down" | "left" | "right";
-}) {
-  const rotation = { up: 180, down: 0, left: 90, right: -90 }[direction];
-  return (
-    <svg
-      viewBox="0 0 12 8"
-      width="7"
-      height="4"
-      fill="none"
-      aria-hidden="true"
-      style={{ transform: `rotate(${rotation}deg)` }}
-    >
-      <path
-        d="M1 1.5L6 6.5L11 1.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+const PAGE_CARETS = {
+  left: "M12.03 5.72a.75.75 0 0 1 0 1.06L8.81 10l3.22 3.22a.75.75 0 1 1-1.06 1.06l-3.75-3.75a.75.75 0 0 1 0-1.06l3.75-3.75a.75.75 0 0 1 1.06 0",
+  right:
+    "M7.72 5.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1 0 1.06l-3.75 3.75a.75.75 0 0 1-1.06-1.06L10.94 10 7.72 6.78a.75.75 0 0 1 0-1.06",
+};
+
+/** Slack's `caret-left` and `caret-right` at 18px, on a data table's previous and next page buttons. */
+export function PageCaretIcon({ direction }: { direction: "left" | "right" }) {
+  return <SlackGlyph d={PAGE_CARETS[direction]} size={18} />;
 }
 
-/** A 16px glyph from Slack's 20x20 icon set, filled with the text colour. */
-function SlackGlyph({ d }: { d: string }) {
+/** A glyph from Slack's 20x20 icon set (16px unless sized), filled with the text colour. */
+function SlackGlyph({ d, size = 16 }: { d: string; size?: number }) {
   return (
-    <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <svg
+      viewBox="0 0 20 20"
+      width={size}
+      height={size}
+      fill="currentColor"
+      fillRule="evenodd"
+      aria-hidden="true"
+    >
       <path d={d} />
     </svg>
   );

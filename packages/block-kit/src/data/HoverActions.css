@@ -33,9 +33,11 @@
   pointer-events: auto;
 }
 
+/* An image's More actions glyph is as dark as its Open in new window link, unlike a chart's. */
 .sbk-hover-actions--image {
   top: 10px;
   right: 10px;
+  --sbk-hover-actions-icon: var(--sbk-content-sec);
 }
 
 .sbk-hover-actions--chart {
