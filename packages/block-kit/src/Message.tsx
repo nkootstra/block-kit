@@ -1,4 +1,4 @@
-import { hexColor } from "./payloadValues";
+import { asArray, asObject, asString, hexColor, objectsIn } from "./payloadValues";
 import type { AnyBlock } from "@slack/types";
 import { useMemo, useState } from "react";
 import { Blocks } from "./Blocks";
@@ -117,7 +117,9 @@ export function Message({
   // Without a `ts`, the message is stamped once at mount, so its timestamp stays stable across
   // renders and interactions still produce a `block_actions` payload with a `message_ts`.
   const [mountTs] = useState(() => actionTs());
-  const resolvedTs = message?.ts ?? (ts === undefined ? mountTs : String(ts));
+  const givenTs = message?.ts ?? (ts === undefined ? mountTs : String(ts));
+  // A `ts` that isn't a time (`toISOString` throws on one) is treated as missing.
+  const resolvedTs = Number.isNaN(new Date(Number(givenTs) * 1000).getTime()) ? mountTs : givenTs;
   const time = new Date(Number(resolvedTs) * 1000);
 
   // What an app sent back through the action's `message` handle (`chat.update`/`response_url`).
@@ -186,21 +188,26 @@ export function Message({
             resolvedText && <Mrkdwn text={resolvedText} />
           )}
 
-          {message?.attachments && message.attachments.length > 0 && (
+          {objectsIn(message?.attachments).length > 0 && (
             <div className="sbk-attachments">
-              {message.attachments.map((attachment, i) => (
+              {objectsIn<SlackAttachment>(message?.attachments).map((attachment, i) => (
                 <Attachment key={i} attachment={attachment} />
               ))}
             </div>
           )}
 
-          {message?.reactions && message.reactions.length > 0 && (
+          {objectsIn(message?.reactions).length > 0 && (
             <div className="sbk-reactions">
-              {message.reactions.map((reaction) => (
-                <Tooltip key={reaction.name} label={`:${reaction.name}:`}>
+              {objectsIn<SlackReaction>(message?.reactions).map((reaction, i) => (
+                <Tooltip
+                  key={asString(reaction.name) ?? i}
+                  label={`:${asString(reaction.name) ?? ""}:`}
+                >
                   <span className="sbk-reactions__item">
-                    <span className="sbk-reactions__emoji">:{reaction.name}:</span>
-                    <span className="sbk-reactions__count">{reaction.count}</span>
+                    <span className="sbk-reactions__emoji">:{asString(reaction.name)}:</span>
+                    <span className="sbk-reactions__count">
+                      {typeof reaction.count === "number" ? reaction.count : null}
+                    </span>
                   </span>
                 </Tooltip>
               ))}
@@ -210,7 +217,7 @@ export function Message({
           {message && (message.reply_count ?? 0) > 0 && (
             <button type="button" className="sbk-thread-summary">
               <span className="sbk-thread-summary__count">
-                {message.reply_count} {message.reply_count === 1 ? "reply" : "replies"}
+                {Number(message.reply_count)} {message.reply_count === 1 ? "reply" : "replies"}
               </span>
               {message.subscribed && <span className="sbk-thread-summary__subscribed">●</span>}
             </button>
@@ -231,11 +238,11 @@ interface ResolvedHeader {
 
 function resolveHeader(message: SlackMessageLike | undefined, app: MessageApp): ResolvedHeader {
   if (!message) return { name: app.name, iconUrl: app.iconUrl, isApp: true };
-  const name = message.username ?? message.bot_profile?.name ?? app.name;
+  const botProfile = asObject<NonNullable<SlackMessageLike["bot_profile"]>>(message.bot_profile);
+  const icons = asObject<Record<string, unknown>>(botProfile?.icons);
+  const name = asString(message.username) ?? asString(botProfile?.name) ?? app.name;
   const iconUrl =
-    message.icon_url ??
-    message.bot_profile?.icons?.image_72 ??
-    message.bot_profile?.icons?.image_48;
+    asString(message.icon_url) ?? asString(icons?.image_72) ?? asString(icons?.image_48);
   return {
     name,
     iconUrl,
@@ -243,7 +250,19 @@ function resolveHeader(message: SlackMessageLike | undefined, app: MessageApp): 
   };
 }
 
-function Attachment({ attachment }: { attachment: SlackAttachment }) {
+function Attachment({ attachment: raw }: { attachment: SlackAttachment }) {
+  // Only strings render as text or reach a `src`; anything else in their place is left out.
+  const attachment = {
+    ...raw,
+    author_name: asString(raw.author_name),
+    author_icon: asString(raw.author_icon),
+    title: asString(raw.title),
+    image_url: asString(raw.image_url),
+    footer: asString(raw.footer),
+    footer_icon: asString(raw.footer_icon),
+  };
+  const fields = objectsIn<SlackAttachmentField>(attachment.fields);
+  const blocks = asArray(attachment.blocks);
   return (
     <div className="sbk-attachment" style={{ borderLeftColor: normalizeColor(attachment.color) }}>
       <div className="sbk-attachment__body">
@@ -292,14 +311,14 @@ function Attachment({ attachment }: { attachment: SlackAttachment }) {
             <Mrkdwn text={attachment.text} />
           </div>
         )}
-        {attachment.fields && attachment.fields.length > 0 && (
+        {fields.length > 0 && (
           <div className="sbk-attachment__fields">
-            {attachment.fields.map((field, i) => (
+            {fields.map((field, i) => (
               <div
                 key={i}
                 className={`sbk-attachment__field${field.short ? " sbk-attachment__field--short" : ""}`}
               >
-                <div className="sbk-attachment__field-title">{field.title}</div>
+                <div className="sbk-attachment__field-title">{asString(field.title)}</div>
                 <div className="sbk-attachment__field-value">
                   <Mrkdwn text={field.value} />
                 </div>
@@ -310,7 +329,7 @@ function Attachment({ attachment }: { attachment: SlackAttachment }) {
         {attachment.image_url && (
           <img className="sbk-attachment__image" src={attachment.image_url} alt="" />
         )}
-        {attachment.blocks && attachment.blocks.length > 0 && <Blocks blocks={attachment.blocks} />}
+        {blocks.length > 0 && <Blocks blocks={blocks as AnyBlock[]} />}
         {attachment.footer && (
           <div className="sbk-attachment__footer">
             {attachment.footer_icon && (

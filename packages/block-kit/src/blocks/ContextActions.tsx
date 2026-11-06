@@ -1,4 +1,5 @@
 import { Element } from "../elements/Element";
+import { objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 
 /**
@@ -7,7 +8,7 @@ import type { BlockProps, Json } from "../types";
  * icon_button, overflow, ...) is owned by the elements layer; this just lays the row out.
  */
 export function ContextActions({ block, blockId }: BlockProps) {
-  const elements = ((block as Json).elements as Json[] | undefined) ?? [];
+  const elements = objectsIn<Json>((block as Json).elements);
   return (
     <div className="sbk-context-actions">
       {elements.map((element, i) => (

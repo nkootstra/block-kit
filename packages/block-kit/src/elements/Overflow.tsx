@@ -4,6 +4,7 @@ import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { KebabIcon } from "../icons";
 import { safeUrl } from "../safeUrl";
+import { asObject, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useMenuNavigation } from "./useMenuNavigation";
 import { Popover } from "./Popover";
@@ -17,6 +18,9 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
   const listRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
   const idPrefix = useId();
+  const options = objectsIn<PlainTextOption>(element.options).filter(
+    (option) => typeof asObject(option.text)?.text === "string",
+  );
 
   async function choose(option: PlainTextOption) {
     if (!(await ask())) return;
@@ -38,9 +42,9 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
 
   const nav = useMenuNavigation({
     open,
-    count: element.options.length,
+    count: options.length,
     onChoose: (i) => {
-      const option = element.options[i];
+      const option = options[i];
       if (option) choose(option);
     },
     onClose: () => {
@@ -78,7 +82,7 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
             tabIndex={-1}
             aria-activedescendant={nav.active >= 0 ? `${idPrefix}-${nav.active}` : undefined}
           >
-            {element.options.map((option, i) => (
+            {options.map((option, i) => (
               <div
                 key={option.value ?? i}
                 id={`${idPrefix}-${i}`}

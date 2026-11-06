@@ -9,6 +9,7 @@ import {
   type TaskStatus,
   TimelineIcon,
 } from "../data/statusIcon";
+import { asObject, asString, objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Link } from "../Link";
 
@@ -41,8 +42,11 @@ interface PlanBlock extends Json {
  */
 function TaskRow({ task }: { task: PlanTask }) {
   const [open, setOpen] = useState(true);
-  const sources = Array.isArray(task.sources) ? task.sources : [];
-  const expandable = Boolean(task.details || task.output || sources.length > 0);
+  const sources = objectsIn<PlanSource>(task.sources);
+  const title = asString(task.title);
+  const details = asObject<Json>(task.details);
+  const output = asObject<Json>(task.output);
+  const expandable = Boolean(details || output || sources.length > 0);
 
   return (
     // Slack makes each task a focusable list item, so the keyboard can step through a long plan.
@@ -63,7 +67,7 @@ function TaskRow({ task }: { task: PlanTask }) {
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >
-            <span className="sbk-plan__task-title">{task.title}</span>
+            <span className="sbk-plan__task-title">{title}</span>
             <StatusText status={task.status} />
             <span className="sbk-plan__task-caret">
               <CaretIcon direction={open ? "down" : "right"} />
@@ -71,33 +75,33 @@ function TaskRow({ task }: { task: PlanTask }) {
           </button>
         ) : (
           <div className="sbk-plan__task-header">
-            <span className="sbk-plan__task-title">{task.title}</span>
+            <span className="sbk-plan__task-title">{title}</span>
             <StatusText status={task.status} />
           </div>
         )}
         {open && expandable ? (
           <div className="sbk-plan__task-body">
-            {task.details ? (
+            {details ? (
               <div className="sbk-plan__task-details">
-                <RichTextMini value={task.details} />
+                <RichTextMini value={details} />
               </div>
             ) : null}
-            {task.output ? (
+            {output ? (
               <div className="sbk-plan__task-output">
-                <RichTextMini value={task.output} />
+                <RichTextMini value={output} />
               </div>
             ) : null}
             {sources.length > 0 ? (
               <ul className="sbk-plan__task-sources">
                 {sources.map((source, i) => (
-                  <li key={source.url ?? i}>
+                  <li key={asString(source.url) ?? i}>
                     <Link
                       className="sbk-plan__task-source-link"
-                      href={source.url}
+                      href={asString(source.url)}
                       target="_blank"
                       rel="noreferrer noopener"
                     >
-                      {source.text ?? source.url}
+                      {asString(source.text) ?? asString(source.url)}
                     </Link>
                   </li>
                 ))}
@@ -112,7 +116,7 @@ function TaskRow({ task }: { task: PlanTask }) {
 
 export function Plan({ block }: BlockProps<PlanBlock>) {
   const [expanded, setExpanded] = useState(false);
-  const tasks = Array.isArray(block.tasks) ? block.tasks : [];
+  const tasks = objectsIn<PlanTask>(block.tasks);
   const status = aggregateStatus(tasks.map((t) => t.status));
 
   return (
@@ -127,7 +131,7 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
           <span className="sbk-plan__pill-icon">
             <StatusIcon status={status} />
           </span>
-          <span className="sbk-plan__pill-title">{block.title}</span>
+          <span className="sbk-plan__pill-title">{asString(block.title)}</span>
           <StatusText status={status} />
           <span className="sbk-plan__pill-chevron">
             <CaretIcon direction={expanded ? "down" : "right"} />
@@ -137,7 +141,7 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
       <Collapse open={expanded}>
         <ul className="sbk-plan__tasks">
           {tasks.map((task) => (
-            <TaskRow key={task.task_id} task={task} />
+            <TaskRow key={asString(task.task_id)} task={task} />
           ))}
         </ul>
       </Collapse>

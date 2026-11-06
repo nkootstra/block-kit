@@ -1,3 +1,4 @@
+import { asObject, asString } from "../payloadValues";
 import { safeUrl } from "../safeUrl";
 import type { ImageBlock } from "@slack/types";
 import { useRef, useState } from "react";
@@ -53,7 +54,8 @@ function ExpandCaret({ expanded }: { expanded: boolean }) {
 export function Image({ block }: BlockProps<ImageBlock>) {
   const json = block as unknown as Json;
   const directUrl = "image_url" in block ? block.image_url : undefined;
-  const slackFile = json.slack_file as { url?: string; id?: string } | undefined;
+  const slackFile = asObject<{ url?: string; id?: string }>(json.slack_file);
+  const altText = asString(block.alt_text);
   const { resolvers } = useBlockKit();
   const resolved = slackFile ? resolvers.slackFile?.(slackFile) : undefined;
   // The URL goes into a CSS `url()` as well as `src`: only a string that is a safe URL does.
@@ -100,11 +102,11 @@ export function Image({ block }: BlockProps<ImageBlock>) {
           style={imageUrl ? { backgroundImage: `url(${JSON.stringify(imageUrl)})` } : undefined}
         >
           {imageUrl ? (
-            <img className="sbk-image__img" src={imageUrl} alt={block.alt_text} />
+            <img className="sbk-image__img" src={imageUrl} alt={altText} />
           ) : (
-            <div className="sbk-image__fallback" role="img" aria-label={block.alt_text}>
+            <div className="sbk-image__fallback" role="img" aria-label={altText}>
               <span className="sbk-image__fallback-text">
-                {slackFile ? "Slack file image unavailable" : block.alt_text}
+                {slackFile ? "Slack file image unavailable" : altText}
               </span>
             </div>
           )}

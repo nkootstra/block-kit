@@ -2,6 +2,7 @@ import type { Datepicker } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
+import { asString } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { CalendarPopover } from "./calendar/CalendarPopover";
 import { DateField, useDateField } from "./DateField";
@@ -32,7 +33,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const inInputBlock = useInInputBlock();
   const clearable = useInClearableInput();
   const { ask, dialog } = useConfirm(element.confirm);
-  const [date, setDate] = useState<string | undefined>(element.initial_date);
+  const [date, setDate] = useState<string | undefined>(asString(element.initial_date));
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useFocusOnLoad<HTMLInputElement>(element);
   const invalid = useInvalidProps();
@@ -95,7 +96,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
     <div className={`sbk-datepicker${medium ? " sbk-datepicker--medium" : ""}`} ref={rootRef}>
       <DateField
         field={field}
-        placeholder={element.placeholder?.text ?? "Select a date"}
+        placeholder={asString(element.placeholder?.text) ?? "Select a date"}
         invalid={invalid}
       />
       {field.open && (

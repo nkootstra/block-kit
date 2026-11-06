@@ -1,3 +1,4 @@
+import { objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
 
@@ -9,7 +10,7 @@ export function Callout({ block }: BlockProps) {
   const color = typeof json.background_color === "string" ? json.background_color : undefined;
   const key = color === "grey" ? "gray" : color;
   const background = `var(--sbk-callout-${key && BACKGROUND_COLORS.has(key) ? key : "gray"}-bg)`;
-  const children = (json.child_blocks as Json[] | undefined) ?? [];
+  const children = objectsIn<Json>(json.child_blocks);
 
   return (
     <div className="sbk-callout" style={{ backgroundColor: background }}>

@@ -1,5 +1,6 @@
 import { LEGACY_ALIASES } from "./aliases";
 import { EMOJI_NAMES, EMOJI_SKIN_TONES } from "./data.generated";
+import { own } from "../payloadValues";
 
 const ALL_NAMES: Record<string, string> = { ...EMOJI_NAMES, ...LEGACY_ALIASES };
 
@@ -15,6 +16,7 @@ export function resolveEmoji(
   skinTone: number | undefined,
   custom: Record<string, string> | undefined,
 ): ResolvedEmoji | null {
+  if (typeof name !== "string") return null;
   if (custom) {
     let current = name;
     const seen = new Set<string>();
@@ -30,11 +32,11 @@ export function resolveEmoji(
     }
   }
 
-  const unified = ALL_NAMES[name.toLowerCase()];
+  const unified = own(ALL_NAMES, name.toLowerCase());
   if (!unified) return null;
 
   if (skinTone && skinTone >= 2 && skinTone <= 6) {
-    const variant = EMOJI_SKIN_TONES[unified]?.[skinTone - 2];
+    const variant = own(EMOJI_SKIN_TONES, unified)?.[skinTone - 2];
     if (variant) return { kind: "unicode", unified: variant };
   }
   return { kind: "unicode", unified };
@@ -47,7 +49,7 @@ const SKIN_TONE_MODIFIERS = ["1f3fb", "1f3fc", "1f3fd", "1f3fe", "1f3ff"];
  * draws the emoji in that tone.
  */
 export function skinToneOf(unicode: string | undefined): number | undefined {
-  const codepoints = unicode?.toLowerCase().split("-") ?? [];
+  const codepoints = typeof unicode === "string" ? unicode.toLowerCase().split("-") : [];
   const at = SKIN_TONE_MODIFIERS.findIndex((modifier) => codepoints.includes(modifier));
   return at === -1 ? undefined : at + 2;
 }

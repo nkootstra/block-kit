@@ -4,6 +4,7 @@ import { useConfirm } from "../confirm/useConfirm";
 import { type DirectoryEntry, useBlockKit } from "../context";
 import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
+import { asArray, asObject, asString, objectsIn } from "../payloadValues";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
@@ -64,6 +65,13 @@ interface Item {
   option?: PlainTextOption;
 }
 
+/** The options in `value` that can be listed: objects whose text object holds a string. */
+function optionsIn(value: unknown): PlainTextOption[] {
+  return objectsIn<PlainTextOption>(value).filter(
+    (option) => typeof asObject(option.text)?.text === "string",
+  );
+}
+
 function optionToItem(option: PlainTextOption): Item {
   return { id: option.value ?? option.text.text, label: option.text.text, option };
 }
@@ -86,15 +94,16 @@ function itemToPayload(source: Source, item: Item): unknown {
 
 function initialItems(element: SelectElement, source: Source, multi: boolean): Item[] {
   if (source === "static" || source === "external") {
-    const options = multi
-      ? element.initial_options
-      : element.initial_option && [element.initial_option];
-    return (options ?? []).map(optionToItem);
+    return optionsIn(multi ? element.initial_options : [element.initial_option]).map(optionToItem);
   }
   const key = { users: "user", conversations: "conversation", channels: "channel" }[source];
-  const single = element[`initial_${key}` as keyof SelectElement] as string | undefined;
-  const many = element[`initial_${key}s` as keyof SelectElement] as string[] | undefined;
-  const ids = multi ? (many ?? []) : single ? [single] : [];
+  const single = asString(element[`initial_${key}` as keyof SelectElement]);
+  const many = asArray(element[`initial_${key}s` as keyof SelectElement]);
+  const ids = multi
+    ? many.filter((id): id is string => typeof id === "string")
+    : single
+      ? [single]
+      : [];
   // Leave `label` empty for directory-backed sources (users/conversations/channels) — there's no
   // label to show until it's resolved. Every read site falls back to `resolveLabel(id)` when
   // `label` is falsy; storing `id` here instead would short-circuit that fallback and always show
@@ -103,21 +112,21 @@ function initialItems(element: SelectElement, source: Source, multi: boolean): I
 }
 
 function allOptions(element: SelectElement): PlainTextOption[] {
-  if (element.options) return element.options;
-  return (element.option_groups ?? []).flatMap((g) => g.options as PlainTextOption[]);
+  if (element.options) return optionsIn(element.options);
+  return objectsIn<OptionGroup>(element.option_groups).flatMap((g) => optionsIn(g.options));
 }
 
 type OptionGroupView = { label?: string; options: PlainTextOption[] };
 
 function responseGroups(response: OptionsResponse | undefined): OptionGroupView[] {
-  if (!response) return [];
+  if (typeof response !== "object" || response === null) return [];
   if ("option_groups" in response) {
-    return response.option_groups.map((group) => ({
-      label: group.label.text,
-      options: group.options as PlainTextOption[],
+    return objectsIn<OptionGroup>(response.option_groups).map((group) => ({
+      label: asString(asObject(group.label)?.text),
+      options: optionsIn(group.options),
     }));
   }
-  return [{ options: response.options as PlainTextOption[] }];
+  return [{ options: optionsIn(response.options) }];
 }
 
 /**
@@ -131,8 +140,8 @@ function matchesConversationFilter(
 ): boolean {
   if (!filter) return true;
   if (entry.type === "user" && entry.bot && filter.exclude_bot_users) return false;
-  const include = filter.include;
-  if (!include || include.length === 0) return true;
+  const include = asArray(filter.include);
+  if (include.length === 0) return true;
   const kind = entry.type === "user" ? "im" : entry.private ? "private" : "public";
   return include.includes(kind);
 }
@@ -386,10 +395,10 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         ? [{ options: directoryOptions }]
         : []
       : element.option_groups
-        ? element.option_groups
+        ? objectsIn<OptionGroup>(element.option_groups)
             .map((group) => ({
-              label: group.label.text,
-              options: (group.options as PlainTextOption[]).filter(matches),
+              label: asString(asObject(group.label)?.text),
+              options: optionsIn(group.options).filter(matches),
             }))
             // A group with nothing left to offer loses its header too.
             .filter((group) => group.options.length > 0)
@@ -435,7 +444,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   // Slack's static select without a placeholder reads "Pick an option" (Block Kit Builder,
   // `extra/modal/form@open`); the other selects' defaults aren't recorded yet.
   const placeholder =
-    element.placeholder?.text ??
+    asString(element.placeholder?.text) ??
     (source === "static" && !multi ? "Pick an option" : "Select an item");
 
   const combo = useCombobox({

@@ -2,6 +2,7 @@ import { Element } from "../elements/Element";
 import { Text, type TextObject } from "../Text";
 import { Tooltip } from "../Tooltip";
 import type { BlockProps, Json } from "../types";
+import { asObject, asString, objectsIn, own } from "../payloadValues";
 
 /** Slack's inline icons by `slack_icon` name, their 20-unit paths as Slack ships them. */
 const SLACK_ICONS: Record<string, string> = {
@@ -21,8 +22,8 @@ function CardIcon({ icon, slackIcon }: { icon?: Json; slackIcon?: Json }) {
     );
   }
   if (slackIcon) {
-    const name = slackIcon.name as string;
-    const glyph = SLACK_ICONS[name];
+    const name = asString(slackIcon.name) ?? "";
+    const glyph = own(SLACK_ICONS, name);
     if (glyph) {
       return (
         <span className="sbk-card__icon sbk-card__icon--slack">
@@ -52,14 +53,14 @@ function CardIcon({ icon, slackIcon }: { icon?: Json; slackIcon?: Json }) {
  */
 export function Card({ block, blockId }: BlockProps) {
   const json = block as Json;
-  const icon = json.icon as Json | undefined;
-  const slackIcon = json.slack_icon as Json | undefined;
+  const icon = asObject<Json>(json.icon);
+  const slackIcon = asObject<Json>(json.slack_icon);
   const title = json.title as TextObject | undefined;
   const subtitle = json.subtitle as TextObject | undefined;
-  const heroImage = json.hero_image as Json | undefined;
+  const heroImage = asObject<Json>(json.hero_image);
   const body = json.body as TextObject | undefined;
   const subtext = json.subtext as TextObject | undefined;
-  const actions = json.actions as Json[] | undefined;
+  const actions = objectsIn<Json>(json.actions);
 
   return (
     <div className="sbk-card">
@@ -101,7 +102,7 @@ export function Card({ block, blockId }: BlockProps) {
               <Text text={subtext} />
             </div>
           )}
-          {actions && actions.length > 0 && (
+          {actions.length > 0 && (
             <div className="sbk-card__actions">
               {/* catalog/card-and-carousel/card-actions-and-content and extra/fidelity/card/mixed:
                   Slack orders a card's buttons danger, default, primary, each keeping the

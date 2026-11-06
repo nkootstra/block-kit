@@ -3,6 +3,7 @@ import { DataTableCell, dataTableCellText, dataTableSortValue } from "../data/da
 import { copyText, downloadText, MenuAction, toCsv, toTsv } from "../data/HoverActions";
 import { ChevronIcon, ExpandIcon, KebabIcon, SearchIcon } from "../data/icons";
 import { CopyIcon, DownloadIcon } from "../icons";
+import { asString } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { DataTableBodyCell } from "./DataTableBodyCell";
 import { DataTableColumnHeader, type SortDirection } from "./DataTableColumnHeader";
@@ -37,6 +38,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
     [block.rows],
   );
   const [header, ...body] = rows;
+  const caption = asString(block.caption);
   const columnCount = header?.length ?? 0;
 
   const [sort, setSort] = useState<{ column: number; direction: SortDirection } | null>(null);
@@ -129,7 +131,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
   return (
     <div className="sbk-data-table">
       <div className="sbk-data-table__header">
-        {block.caption ? <span className="sbk-data-table__caption">{block.caption}</span> : null}
+        {caption ? <span className="sbk-data-table__caption">{caption}</span> : null}
         {filtering ? (
           <div className="sbk-data-table__filter-wrap">
             <div className="sbk-data-table__filter">
@@ -184,7 +186,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
           <button
             type="button"
             className="sbk-data-table__icon-btn"
-            aria-label={block.caption ? `View ${block.caption}` : "View table"}
+            aria-label={caption ? `View ${caption}` : "View table"}
           >
             <ExpandIcon />
           </button>
@@ -199,7 +201,7 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
       </div>
 
       <div className="sbk-data-table__frame">
-        <div className="sbk-data-table__rows" role="table" aria-label={block.caption}>
+        <div className="sbk-data-table__rows" role="table" aria-label={caption}>
           {noResults ? null : (
             <div className="sbk-data-table__grid-header" role="row" style={gridStyle}>
               {header?.map((cell, i) => (

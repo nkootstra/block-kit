@@ -1,15 +1,15 @@
-import { classModifier } from "../payloadValues";
+import { asObject, classModifier, objectsIn } from "../payloadValues";
 import type { SectionBlock } from "@slack/types";
 import { SectionAccessoryContext } from "../elements/accessoryContext";
 import { Element } from "../elements/Element";
-import { Text } from "../Text";
+import { Text, type TextObject } from "../Text";
 import type { BlockProps, Json } from "../types";
 
 /** Accessories Slack stacks full-width below the text instead of beside it. */
 const STACKED_ACCESSORIES = new Set(["checkboxes", "radio_buttons"]);
 
 export function Section({ block, blockId }: BlockProps<SectionBlock>) {
-  const accessory = block.accessory as Json | undefined;
+  const accessory = asObject<Json>(block.accessory);
   const stacked = accessory !== undefined && STACKED_ACCESSORIES.has(accessory.type as string);
 
   return (
@@ -26,7 +26,7 @@ export function Section({ block, blockId }: BlockProps<SectionBlock>) {
         )}
         {block.fields && (
           <div className="sbk-section__fields">
-            {block.fields.map((field, i) => (
+            {objectsIn<TextObject>(block.fields).map((field, i) => (
               <div key={i} className="sbk-section__field">
                 <Text text={field} />
               </div>

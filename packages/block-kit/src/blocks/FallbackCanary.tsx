@@ -1,3 +1,4 @@
+import { objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
 
@@ -12,7 +13,7 @@ import { Block } from "./Block";
  * and that wrapper is a flex row, so the fallback blocks sit side by side rather than stacking.
  */
 export function FallbackCanary({ block }: BlockProps) {
-  const fallback = ((block as Json).fallback as Json[] | undefined) ?? [];
+  const fallback = objectsIn<Json>((block as Json).fallback);
   return (
     <div className="sbk-fallback-canary">
       {fallback.map((child, i) => (

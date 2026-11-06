@@ -12,8 +12,12 @@ export interface TextProps {
   emojiSize?: number;
 }
 
-/** Renders a Block Kit text object. */
+/**
+ * Renders a Block Kit text object. Anything that isn't one (a missing text, or a `text` that isn't a
+ * string) renders nothing.
+ */
 export function Text({ text, emojiSize = 22 }: TextProps) {
+  if (typeof text !== "object" || text === null || typeof text.text !== "string") return null;
   if (text.type === "mrkdwn") {
     return <Mrkdwn text={text.text} verbatim={text.verbatim} emojiSize={emojiSize} />;
   }

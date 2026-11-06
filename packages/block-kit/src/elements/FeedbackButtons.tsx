@@ -4,6 +4,7 @@ import { useBlockKit } from "../context";
 import { ThumbsDownFilledIcon, ThumbsDownIcon, ThumbsUpFilledIcon, ThumbsUpIcon } from "../icons";
 import { Tooltip } from "../Tooltip";
 import type { ElementProps } from "../types";
+import { asObject, asString } from "../payloadValues";
 
 type Kind = "positive" | "negative";
 
@@ -24,13 +25,15 @@ export function FeedbackButtons({ element, blockId }: ElementProps<FeedbackButto
 
   function choose(kind: Kind) {
     setPicked(kind);
-    const button = kind === "positive" ? element.positive_button : element.negative_button;
+    const button = asObject(
+      kind === "positive" ? element.positive_button : element.negative_button,
+    );
     dispatch({
       type: "feedback_buttons",
       action_id: actionId,
       block_id: blockId,
-      value: button.value,
-      text: { type: "plain_text", text: button.text.text },
+      value: button?.value,
+      text: { type: "plain_text", text: asString(asObject(button?.text)?.text) },
     });
   }
 
@@ -49,7 +52,8 @@ export function FeedbackButtons({ element, blockId }: ElementProps<FeedbackButto
   const tabStop: Kind = picked ?? "positive";
 
   function button(kind: Kind) {
-    const spec = kind === "positive" ? element.positive_button : element.negative_button;
+    const spec = asObject(kind === "positive" ? element.positive_button : element.negative_button);
+    const label = asString(asObject(spec?.text)?.text);
     const checked = picked === kind;
     const Icon =
       kind === "positive"
@@ -60,7 +64,7 @@ export function FeedbackButtons({ element, blockId }: ElementProps<FeedbackButto
           ? ThumbsDownFilledIcon
           : ThumbsDownIcon;
     return (
-      <Tooltip label={spec.text.text}>
+      <Tooltip label={label}>
         <button
           ref={refs[kind]}
           type="button"
@@ -68,7 +72,7 @@ export function FeedbackButtons({ element, blockId }: ElementProps<FeedbackButto
           className="sbk-icon-button"
           onClick={() => choose(kind)}
           onKeyDown={onKeyDown}
-          aria-label={spec.accessibility_label ?? spec.text.text}
+          aria-label={(spec?.accessibility_label as string | undefined) ?? label}
           aria-checked={checked}
           tabIndex={tabStop === kind ? 0 : -1}
         >

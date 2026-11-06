@@ -17,6 +17,7 @@ export interface MrkdwnProps {
 /** Renders a Slack mrkdwn string. */
 export function Mrkdwn({ text, verbatim = false, emojiSize = 22 }: MrkdwnProps) {
   const { resolvers, timeZone } = useBlockKit();
+  if (typeof text !== "string") return null;
   const root = parse(text, { verbatim });
   return (
     <span className="sbk-mrkdwn">{renderNodes(root.children, resolvers, timeZone, emojiSize)}</span>

@@ -4,6 +4,7 @@ import { ChartTableModal } from "../charts/ChartTableModal";
 import { PieChart } from "../charts/PieChart";
 import { colorForIndex } from "../charts/palette";
 import { ChartActions } from "../data/HoverActions";
+import { asArray, asObject, asString, objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 
 interface AxisConfig {
@@ -45,6 +46,36 @@ function chartTable(chart: Chart, categories: string[]): string[][] {
   ];
 }
 
+/** A name or label as text: a number as written, anything else that isn't a string as nothing. */
+function label(value: unknown): string {
+  return typeof value === "string" ? value : typeof value === "number" ? String(value) : "";
+}
+
+/** The chart with every list, name and label the shape the charts read, whatever the payload held. */
+function cleanChart(chart: Chart): Chart {
+  const axis = asObject<AxisConfig>(chart.axis_config);
+  return {
+    ...chart,
+    series: objectsIn<ChartSeries>(chart.series).map((s) => ({
+      ...s,
+      name: label(s.name),
+      data: objectsIn<ChartSeries["data"][number]>(s.data).map((d) => ({
+        ...d,
+        label: label(d.label),
+      })),
+    })),
+    segments: objectsIn<{ label: string; value: number }>(chart.segments).map((s) => ({
+      ...s,
+      label: label(s.label),
+    })),
+    axis_config: axis && {
+      categories: axis.categories === undefined ? undefined : asArray(axis.categories).map(label),
+      x_label: asString(axis.x_label),
+      y_label: asString(axis.y_label),
+    },
+  };
+}
+
 function legendEntries(chart: Chart): { name: string; color: string }[] {
   if (chart.type === "pie") {
     return (chart.segments ?? []).map((s, i) => ({ name: s.label, color: colorForIndex(i) }));
@@ -54,8 +85,10 @@ function legendEntries(chart: Chart): { name: string; color: string }[] {
 
 export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>) {
   const [tableOpen, setTableOpen] = useState(false);
-  const chart = block.chart;
-  if (!chart) return null;
+  const rawChart = asObject<Chart>(block.chart);
+  if (!rawChart) return null;
+  const chart = cleanChart(rawChart);
+  const title = asString(block.title);
   const isPie = chart.type === "pie";
   const categories =
     chart.axis_config?.categories ?? chart.series?.[0]?.data.map((d) => d.label) ?? [];
@@ -71,7 +104,7 @@ export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>)
       <div className="sbk-dataviz-scroll">
         <div className="sbk-dataviz-frame sbk-hover-actions-host">
           <div className="sbk-dataviz">
-            {block.title ? <h3 className="sbk-dataviz__title">{block.title}</h3> : null}
+            {title ? <h3 className="sbk-dataviz__title">{title}</h3> : null}
             <div
               className={isPie ? "sbk-dataviz__body sbk-dataviz__body--pie" : "sbk-dataviz__body"}
             >
@@ -109,11 +142,11 @@ export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>)
               </div>
             ) : null}
           </div>
-          <ChartActions rows={rows} title={block.title} onViewTable={() => setTableOpen(true)} />
+          <ChartActions rows={rows} title={title} onViewTable={() => setTableOpen(true)} />
         </div>
       </div>
       {tableOpen ? (
-        <ChartTableModal title={block.title} rows={rows} onClose={() => setTableOpen(false)} />
+        <ChartTableModal title={title} rows={rows} onClose={() => setTableOpen(false)} />
       ) : null}
     </>
   );

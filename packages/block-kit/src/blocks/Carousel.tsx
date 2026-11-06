@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { CaretIcon } from "../data/icons";
+import { objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Card } from "./Card";
 
 /** A horizontally-scrolling row of cards, with arrow buttons that page by one card width. */
 export function Carousel({ block }: BlockProps) {
-  const elements = ((block as Json).elements as Json[] | undefined) ?? [];
+  const elements = objectsIn<Json>((block as Json).elements);
   const scrollerRef = useRef<HTMLDivElement>(null);
   // Slack fades an arrow out once there is nothing left to scroll towards.
   const [edges, setEdges] = useState({ start: true, end: false });

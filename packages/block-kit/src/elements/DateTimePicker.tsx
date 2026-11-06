@@ -36,6 +36,13 @@ function formatDay(date: string, today: string): string {
   return `${month} ${ordinal(d.getUTCDate())}, ${d.getUTCFullYear()}`;
 }
 
+/** `initial_date_time` when it's a timestamp a `Date` can hold. */
+function initialTimestamp(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(new Date(value * 1000).getTime())
+    ? value
+    : undefined;
+}
+
 /**
  * Slack's datetimepicker: a date field and a time field side by side, each changing the value on
  * its own. The date field opens the datepicker's calendar and the time field the timepicker's
@@ -51,10 +58,9 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   const clearableInput = useInClearableInput();
   const clearable = !inInputBlock || clearableInput;
   const zone = timeZone ?? "UTC";
+  const initial = initialTimestamp(element.initial_date_time);
   const [value, setValueState] = useState<WallClock | undefined>(() =>
-    element.initial_date_time !== undefined
-      ? wallClock(element.initial_date_time, zone)
-      : undefined,
+    initial !== undefined ? wallClock(initial, zone) : undefined,
   );
   const dateFieldRef = useRef<HTMLDivElement>(null);
   const dateRef = useFocusOnLoad<HTMLInputElement>(element);
@@ -75,10 +81,10 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   });
 
   useEffect(() => {
-    if (element.initial_date_time !== undefined) {
+    if (initial !== undefined) {
       setValue(blockId, actionId, {
         type: "datetimepicker",
-        selected_date_time: element.initial_date_time,
+        selected_date_time: initial,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

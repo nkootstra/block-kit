@@ -1,6 +1,12 @@
-import type { RichTextBlock, RichTextInput as RichTextInputElement } from "@slack/types";
+import type {
+  RichTextBlock,
+  RichTextBlockElement,
+  RichTextElement,
+  RichTextInput as RichTextInputElement,
+} from "@slack/types";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useBlockKit } from "../context";
+import { asObject, asString, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
@@ -14,10 +20,13 @@ const DEFAULT_PLACEHOLDER = "Write something";
 
 /** Whether the value holds nothing to show: no sections with text, and no lists, quotes or code. */
 function isBlank(value: RichTextBlock | undefined): boolean {
-  return (value?.elements ?? []).every(
+  return objectsIn<RichTextBlockElement>(value?.elements).every(
     (block) =>
       block.type === "rich_text_section" &&
-      block.elements.every((leaf) => leaf.type === "text" && leaf.text.trim() === ""),
+      objectsIn<RichTextElement>(block.elements).every(
+        (leaf) =>
+          leaf.type === "text" && (typeof leaf.text !== "string" || leaf.text.trim() === ""),
+      ),
   );
 }
 
@@ -131,7 +140,8 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
     fire();
   }
 
-  const placeholder = element.placeholder?.text ?? DEFAULT_PLACEHOLDER;
+  const placeholderText = asString(asObject(element.placeholder)?.text);
+  const placeholder = placeholderText ?? DEFAULT_PLACEHOLDER;
   return (
     <div className="sbk-rich-text-input">
       {formatting && <RichTextToolbar pressed={pressed} />}
@@ -144,7 +154,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
           role="textbox"
           aria-multiline="true"
           {...invalid}
-          aria-label={element.placeholder?.text ?? actionId}
+          aria-label={placeholderText ?? actionId}
           onInput={onInput}
           onKeyDown={onKeyDown}
           style={{
