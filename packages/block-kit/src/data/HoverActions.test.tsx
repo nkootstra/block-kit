@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Table, type TableBlock } from "../blocks/Table";
-import { neutralizeFormula, toCsv } from "./HoverActions";
+import { neutralizeFormula, toCsv, toTsv } from "./HoverActions";
 
 afterEach(cleanup);
 
@@ -42,5 +42,24 @@ describe("hover action groups", () => {
     expect(neutralizeFormula("-12")).toBe("-12");
     expect(neutralizeFormula("+1.5e3")).toBe("+1.5e3");
     expect(neutralizeFormula("Ada")).toBe("Ada");
+  });
+
+  it("quotes CSV cells that contain a carriage return", () => {
+    expect(toCsv([["a\rb", "c"]])).toBe('"a\rb",c');
+  });
+
+  it("keeps each copied cell one cell when it holds a tab or a line break", () => {
+    expect(
+      toTsv([
+        ["a\tb", "c\nd", "e\r\nf"],
+        ["g", "h", "i"],
+      ]),
+    ).toBe("a b\tc d\te f\ng\th\ti");
+  });
+
+  it("keeps a copied cell from running as a spreadsheet formula", () => {
+    expect(toTsv([['=HYPERLINK("https://x.example")', "-12", "x\t=1+1"]])).toBe(
+      '\'=HYPERLINK("https://x.example")\t-12\tx =1+1',
+    );
   });
 });
