@@ -1,6 +1,6 @@
 import { type KeyboardEvent, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { CloseIcon } from "../icons";
 
 export interface ChartTableModalProps {
@@ -18,7 +18,7 @@ export interface ChartTableModalProps {
  * opened it (the chart's "More actions" button), so keyboard users keep their place.
  */
 export function ChartTableModal({ title, rows, onClose }: ChartTableModalProps) {
-  const { theme } = useBlockKit();
+  const { theme } = useBlockKitConfig();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);

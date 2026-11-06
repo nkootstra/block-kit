@@ -2,7 +2,7 @@ import { classModifier } from "../payloadValues";
 import type { ConfirmationDialog } from "@slack/types";
 import { type KeyboardEvent, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { CloseIcon } from "../icons";
 import { Text } from "../Text";
 
@@ -22,7 +22,7 @@ export interface ConfirmDialogProps {
  * opened it when it closes.
  */
 export function ConfirmDialog({ confirm, onConfirm, onDeny }: ConfirmDialogProps) {
-  const { theme } = useBlockKit();
+  const { theme } = useBlockKitConfig();
   const confirmStyle = classModifier(confirm.style) ?? "primary";
   const titleId = useId();
   const textId = useId();

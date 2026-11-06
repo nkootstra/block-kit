@@ -1,7 +1,7 @@
 import { asObject, asString, classModifier } from "../payloadValues";
 import type { PlainTextElement, WorkflowButton as WorkflowButtonElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { WorkflowIcon } from "../icons";
 import type { ElementProps } from "../types";
 
@@ -9,7 +9,7 @@ import type { ElementProps } from "../types";
  * workflow_button treatment. There is no real workflow runtime here: clicking only dispatches
  * the block_actions payload with the workflow's trigger metadata, it never calls the trigger URL. */
 export function WorkflowButton({ element, blockId }: ElementProps<WorkflowButtonElement>) {
-  const { dispatch } = useBlockKit();
+  const { dispatch } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   const text = asObject<PlainTextElement>(element.text);
   const className = [

@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "./context";
+import { useBlockKitConfig } from "./context";
 import { copyText } from "./data/HoverActions";
 import { CopyIcon, LinkIcon, NewWindowIcon } from "./icons";
 import { safeUrl } from "./safeUrl";
@@ -56,7 +56,7 @@ export interface HoverCardProps {
  * open in (`sbk-popover`) so scroll containers and `overflow: hidden` can't clip it.
  */
 export function HoverCard({ content, children, className, describes = true }: HoverCardProps) {
-  const { theme } = useBlockKit();
+  const { theme } = useBlockKitConfig();
   const id = useId();
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);

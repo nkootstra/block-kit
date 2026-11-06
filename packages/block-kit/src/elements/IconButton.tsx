@@ -1,6 +1,6 @@
 import type { IconButton as IconButtonElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import {
   CalendarIcon,
   ChevronDownIcon,
@@ -30,7 +30,7 @@ const ICONS: Record<string, typeof TrashIcon> = {
 };
 
 export function IconButton({ element, blockId }: ElementProps<IconButtonElement>) {
-  const { dispatch } = useBlockKit();
+  const { dispatch } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   // Own keys only: "constructor" would find a function on Object.prototype. Not `own()`, which the
   // static-components lint reads as a component created during render.

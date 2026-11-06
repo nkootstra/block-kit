@@ -1,7 +1,7 @@
 import type { Overflow as OverflowElement, PlainTextOption } from "@slack/types";
 import { useId, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { KebabIcon } from "../icons";
 import { safeUrl } from "../safeUrl";
 import { asObject, objectsIn } from "../payloadValues";
@@ -10,7 +10,7 @@ import { useMenuNavigation } from "./useMenuNavigation";
 import { Popover } from "./Popover";
 
 export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
-  const { dispatch } = useBlockKit();
+  const { dispatch } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);

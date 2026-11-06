@@ -1,10 +1,10 @@
 import type { ImageElement as ImageElementType } from "@slack/types";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import type { ElementProps, Json } from "../types";
 
 /** An image element; a `slack_file` one shows through `resolvers.slackFile`, like the image block. */
 export function ImageElement({ element }: ElementProps<ImageElementType>) {
-  const { resolvers } = useBlockKit();
+  const { resolvers } = useBlockKitConfig();
   const slackFile = (element as unknown as Json).slack_file as
     | { url?: string; id?: string }
     | undefined;

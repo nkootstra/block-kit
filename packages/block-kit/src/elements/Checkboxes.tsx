@@ -1,7 +1,7 @@
 import type { Checkboxes as CheckboxesElement, Option } from "@slack/types";
 import { useEffect, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { Text } from "../Text";
 import { objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
@@ -13,7 +13,7 @@ function sameOption(a: Option, b: Option) {
 }
 
 export function Checkboxes({ element, blockId }: ElementProps<CheckboxesElement>) {
-  const { setValue, dispatch } = useBlockKit();
+  const { setValue, dispatch } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   const [selected, setSelected] = useState<Option[]>(() =>
     objectsIn<Option>(element.initial_options),

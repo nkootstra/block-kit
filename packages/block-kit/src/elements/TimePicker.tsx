@@ -1,7 +1,7 @@
 import type { Timepicker } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
 import { asString } from "../payloadValues";
 import type { ElementProps } from "../types";
@@ -56,7 +56,7 @@ export const TIMES: readonly string[] = HOURS;
 const CLEAR = "clear";
 
 export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
-  const { setValue, dispatch, surface } = useBlockKit();
+  const { setValue, dispatch, surface } = useBlockKitConfig();
   // Slack draws the small field in messages and the medium one in modals and on App Home.
   const medium = surface !== "message";
   const { ask, dialog } = useConfirm(element.confirm);

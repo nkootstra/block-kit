@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { objectsIn } from "../payloadValues";
 import type { Json } from "../types";
 import { markText, type TextMark } from "./textMark";
@@ -74,7 +74,7 @@ function RichTextMiniLeaf({
  * the loading skeleton.
  */
 function RichTextMiniUser({ id }: { id: string }) {
-  const name = useBlockKit().resolvers.user?.(id);
+  const name = useBlockKitConfig().resolvers.user?.(id);
   return name ? <UserMention id={id} name={name} /> : <PrivateUser id={id} />;
 }
 

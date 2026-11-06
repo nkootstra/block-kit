@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Blocks } from "../Blocks";
 import { CloseIcon } from "../icons";
 import {
@@ -41,7 +41,11 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
   const clientErrors = Object.fromEntries(
     Object.entries(checked?.errors ?? {}).filter(([id]) => state[id] === checked?.state[id]),
   );
-  const errors = stacked ? clientErrors : { ...appErrors, ...clientErrors };
+  // Compared by content: the modal re-renders on every input change, and a new errors object would
+  // re-render every block in it.
+  const errorsJson = JSON.stringify(stacked ? clientErrors : { ...appErrors, ...clientErrors });
+  const errors = useMemo<Record<string, string>>(() => JSON.parse(errorsJson), [errorsJson]);
+  const body = useMemo(() => <Blocks blocks={view.blocks} />, [view.blocks]);
 
   // Stacked modals are an app's own views, so they report `view_closed` only when it asked to
   // (`notify_on_close`), as Slack does. A standalone modal always reports it: its host needs to
@@ -93,7 +97,7 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
       </div>
       <div className="sbk-modal__body">
         <SurfaceScope container={{ type: "view", view }} errors={errors}>
-          <Blocks blocks={view.blocks} />
+          {body}
         </SurfaceScope>
       </div>
       {(view.close || view.submit) && (

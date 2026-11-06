@@ -1,6 +1,6 @@
 import type { FeedbackButtons as FeedbackButtonsElement } from "@slack/types";
 import { type KeyboardEvent, useRef, useState } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { ThumbsDownFilledIcon, ThumbsDownIcon, ThumbsUpFilledIcon, ThumbsUpIcon } from "../icons";
 import { Tooltip } from "../Tooltip";
 import type { ElementProps } from "../types";
@@ -15,7 +15,7 @@ type Kind = "positive" | "negative";
  * `state.values`.
  */
 export function FeedbackButtons({ element, blockId }: ElementProps<FeedbackButtonsElement>) {
-  const { dispatch } = useBlockKit();
+  const { dispatch } = useBlockKitConfig();
   const [picked, setPicked] = useState<Kind | undefined>();
   const refs = {
     positive: useRef<HTMLButtonElement>(null),
