@@ -9,7 +9,13 @@ import {
   useLiveView,
 } from "../context";
 import { buildViewClosedPayload, buildViewSubmissionPayload, type ViewLike } from "../payloads";
+import { asObject, asString } from "../payloadValues";
 import { validateView } from "../validation";
+
+/** A plain_text object's text, when it is one with a string text. */
+function textOf(value: unknown): string | undefined {
+  return asString(asObject(value)?.text);
+}
 
 export interface ModalView extends ViewLike {
   type: "modal";
@@ -79,7 +85,7 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
       <div className="sbk-modal__header">
         <div className="sbk-modal__title-row">
           {icon && <img className="sbk-modal__icon" src={icon} alt="" />}
-          <h2 className="sbk-modal__title">{view.title?.text}</h2>
+          <h2 className="sbk-modal__title">{textOf(view.title)}</h2>
         </div>
         <button type="button" className="sbk-modal__close" aria-label="Close" onClick={dismiss}>
           <CloseIcon width="20" height="20" />
@@ -98,7 +104,7 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
               className="sbk-modal__button sbk-modal__button--secondary"
               onClick={back}
             >
-              {view.close.text}
+              {textOf(view.close)}
             </button>
           )}
           {view.submit && (
@@ -107,7 +113,7 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
               className="sbk-modal__button sbk-modal__button--primary"
               onClick={submit}
             >
-              {view.submit.text}
+              {textOf(view.submit)}
             </button>
           )}
         </div>

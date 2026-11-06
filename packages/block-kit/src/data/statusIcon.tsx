@@ -1,3 +1,5 @@
+import { own } from "../payloadValues";
+
 /** Status glyphs shared by the plan/task_card blocks, matching Slack's status iconography. */
 export type TaskStatus = "complete" | "in_progress" | "pending" | "error" | string;
 
@@ -92,7 +94,7 @@ const STATUS_LABELS: Record<string, string> = {
  * or task header is announced with the state its icon shows. An unknown status says nothing.
  */
 export function StatusText({ status }: { status: TaskStatus }) {
-  const label = STATUS_LABELS[status];
+  const label = own(STATUS_LABELS, status);
   return label ? <span className="sbk-visually-hidden">{`, ${label}`}</span> : null;
 }
 

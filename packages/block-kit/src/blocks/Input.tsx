@@ -9,6 +9,7 @@ import {
   InputOptionalContext,
 } from "../elements/inputBlockContext";
 import { ReturnIcon } from "../icons";
+import { asArray, asObject, asString } from "../payloadValues";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
 
@@ -19,12 +20,12 @@ import type { BlockProps, Json } from "../types";
  * inputs, which dispatch on Enter without it (extra/payloads/dispatch-inputs). */
 function dispatchHint(block: InputBlock): boolean {
   if (block.dispatch_action !== true) return false;
-  const element = block.element as Json;
-  if (element.type !== "plain_text_input") return false;
+  const element = asObject<Json>(block.element);
+  if (element?.type !== "plain_text_input") return false;
   if (element.multiline === true) return false;
-  const config = element.dispatch_action_config as { trigger_actions_on?: string[] } | undefined;
+  const config = asObject(element.dispatch_action_config);
   const triggers = config?.trigger_actions_on ?? ["on_enter_pressed"];
-  return triggers.includes("on_enter_pressed");
+  return asArray(triggers).includes("on_enter_pressed");
 }
 
 /**
@@ -36,11 +37,12 @@ function dispatchHint(block: InputBlock): boolean {
  */
 export function Input({ block, blockId }: BlockProps<InputBlock>) {
   const { errors, surface, seedValue } = useBlockKit();
-  const element = { ...(block.element as Json), __dispatchAction: block.dispatch_action === true };
+  const blockElement = asObject<Json>(block.element) ?? ({} as Json);
+  const element = { ...blockElement, __dispatchAction: block.dispatch_action === true };
   // In a view, Slack's state lists every input, an untouched one with its empty value. Effects run
   // children first, so an element's initial value is already recorded and this only fills a gap.
-  const elementType = (block.element as { type: string }).type;
-  const actionId = (block.element as { action_id?: string }).action_id ?? "";
+  const elementType = blockElement.type as string;
+  const actionId = (blockElement.action_id as string | undefined) ?? "";
   useEffect(() => {
     if (surface === "message") return;
     const empty = emptyState(elementType);
@@ -81,7 +83,7 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
             <span className="sbk-input__hint-text">
               <Text text={block.hint} />
               {/* Slack ends the hint with a period when the enter hint follows it. */}
-              {showDispatchHint && !block.hint.text.trimEnd().endsWith(".") && "."}
+              {showDispatchHint && !asString(block.hint.text)?.trimEnd().endsWith(".") && "."}
             </span>
           )}
           {showDispatchHint && (

@@ -1,4 +1,4 @@
-import { classModifier, hexColor } from "../payloadValues";
+import { asArray, asString, classModifier, hexColor, objectsIn } from "../payloadValues";
 import type {
   RichTextBlock,
   RichTextBlockElement,
@@ -85,7 +85,11 @@ export interface RenderCtx {
 export function RichText({ block }: BlockProps<RichTextBlock>) {
   const { resolvers, timeZone } = useBlockKit();
   const ctx: RenderCtx = { resolvers, timeZone };
-  return <div className="sbk-rich-text">{renderTopLevel(block.elements ?? [], ctx)}</div>;
+  return (
+    <div className="sbk-rich-text">
+      {renderTopLevel(asArray(block.elements) as RichTextBlockElement[], ctx)}
+    </div>
+  );
 }
 
 function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): ReactNode[] {
@@ -145,11 +149,15 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
         );
         break;
       case "rich_text_preformatted": {
-        const language = (el as RichTextPreformattedExt).language;
+        const language = asString((el as RichTextPreformattedExt).language);
         if (language) {
-          const code = el.elements
+          const code = objectsIn<RichTextElement>(el.elements)
             .map((leaf) =>
-              leaf.type === "text" ? leaf.text : leaf.type === "link" ? leaf.text || leaf.url : "",
+              leaf.type === "text"
+                ? (asString(leaf.text) ?? "")
+                : leaf.type === "link"
+                  ? asString(leaf.text) || asString(leaf.url) || ""
+                  : "",
             )
             .join("");
           nodes.push(<CodeBlock key={key++} language={language} code={code} />);
@@ -185,10 +193,15 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
 }
 
 /** A section renders "jumbo" 32px emoji when it consists only of emoji (and whitespace). */
-function renderSectionChildren(elements: RichTextElement[], ctx: RenderCtx): ReactNode {
+function renderSectionChildren(value: unknown, ctx: RenderCtx): ReactNode {
+  const elements = objectsIn<RichTextElement>(value);
   const isJumbo =
     elements.some((el) => el.type === "emoji") &&
-    elements.every((el) => el.type === "emoji" || (el.type === "text" && el.text.trim() === ""));
+    elements.every(
+      (el) =>
+        el.type === "emoji" ||
+        (el.type === "text" && (typeof el.text !== "string" || el.text.trim() === "")),
+    );
 
   if (isJumbo) {
     return (
@@ -219,6 +232,8 @@ function mergeTextRuns(elements: RichTextElement[]): RichTextElement[] {
     if (
       el.type === "text" &&
       prev?.type === "text" &&
+      typeof el.text === "string" &&
+      typeof prev.text === "string" &&
       JSON.stringify(prev.style ?? {}) === JSON.stringify(el.style ?? {})
     ) {
       merged[merged.length - 1] = { ...prev, text: prev.text + el.text };
@@ -240,19 +255,21 @@ export function renderLeaf(
   let content: ReactNode;
   switch (el.type) {
     case "text":
+      if (typeof el.text !== "string") return null;
       content = renderTextWithBreaks(el.text, isFirst);
       break;
     case "link":
       content = (
         <LinkHoverCard url={el.url}>
           <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
-            {el.text || el.url}
+            {asString(el.text) || asString(el.url)}
           </Link>
         </LinkHoverCard>
       );
       break;
     case "emoji": {
       const emoji = el as RichTextEmojiExt;
+      if (typeof emoji.name !== "string") return null;
       content = (
         <Emoji
           name={emoji.name}
@@ -307,7 +324,10 @@ export function renderLeaf(
       content = <span className="sbk-mention--broadcast">{`@${el.range}`}</span>;
       break;
     case "date": {
-      const text = formatSlackDate(el.timestamp, el.format, { timeZone: ctx.timeZone });
+      // An invalid timestamp formats as "", and Slack shows the fallback instead.
+      const text =
+        formatSlackDate(el.timestamp, el.format, { timeZone: ctx.timeZone }) ||
+        asString(el.fallback);
       content = el.url ? (
         <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
           {text}
@@ -337,7 +357,7 @@ export function renderLeaf(
     case "tag":
       // extra/fidelity/rich-text-tag/default: Slack's `tag-span`, a 24px pill in the tag's colour.
       // Blue is the only colour captured so far; any other draws as blue until it is.
-      content = <span className="sbk-rich-text__tag">{el.text}</span>;
+      content = <span className="sbk-rich-text__tag">{asString(el.text)}</span>;
       break;
     case "salesforce_data_field":
       // extra/fidelity/rich-text-salesforce-data-field/default: a renderer outside Slack can't
@@ -393,7 +413,7 @@ export function renderLeaf(
                 <span className="sbk-rich-text__slug-app" aria-hidden="true" />
               )
             }
-            label={el.text || el.url}
+            label={asString(el.text) || asString(el.url) || ""}
           />
         </Link>
       );
@@ -408,7 +428,7 @@ export function renderLeaf(
           target="_blank"
           rel="noopener noreferrer"
         >
-          {el.text || el.url}
+          {asString(el.text) || asString(el.url)}
         </Link>
       );
       break;
@@ -423,8 +443,8 @@ export function renderLeaf(
           rel="noopener noreferrer"
         >
           <span className="sbk-rich-text__citation-contents">
-            <b>{el.index}</b>·<LinkIcon />
-            {el.details?.display_name || el.text || el.url}
+            <b>{typeof el.index === "object" ? null : el.index}</b>·<LinkIcon />
+            {asString(el.details?.display_name) || asString(el.text) || asString(el.url)}
           </span>
         </Link>
       );
@@ -495,17 +515,15 @@ function renderTextWithBreaks(value: string, isFirst: boolean): ReactNode {
  * rather than the compact spacer used elsewhere. That means the raw text can be rendered as-is,
  * with no custom newline splitting.
  */
-function renderPreformattedLines(
-  elements: Extract<RichTextElement, { type: "text" | "link" }>[],
-): ReactNode {
-  return elements.map((el, i) => {
+function renderPreformattedLines(value: unknown): ReactNode {
+  return objectsIn<Extract<RichTextElement, { type: "text" | "link" }>>(value).map((el, i) => {
     if (el.type === "link") {
       return (
         <Fragment key={i}>
           {applyStyle(
             <LinkHoverCard url={el.url}>
               <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
-                {el.text || el.url}
+                {asString(el.text) || asString(el.url)}
               </Link>
             </LinkHoverCard>,
             el.style,
@@ -513,7 +531,7 @@ function renderPreformattedLines(
         </Fragment>
       );
     }
-    return <Fragment key={i}>{applyStyle(el.text, el.style)}</Fragment>;
+    return <Fragment key={i}>{applyStyle(asString(el.text), el.style)}</Fragment>;
   });
 }
 
@@ -538,12 +556,18 @@ interface ListGroup {
   items: ListItem[];
 }
 
+/**
+ * The deepest `indent` a list nests at. Only a deeper indent nests, so this bounds the depth; a
+ * payload can staircase thousands of indents, which would overflow the stack while rendering.
+ */
+const MAX_INDENT = 31;
+
 function buildListForest(run: RichTextListExt[]): ListGroup[] {
   const forest: ListGroup[] = [];
   const stack: ListGroup[] = [];
 
   for (const block of run) {
-    const indent = block.indent ?? 0;
+    const indent = Math.min(block.indent ?? 0, MAX_INDENT);
     while (stack.length > 0 && (stack[stack.length - 1] as ListGroup).indent > indent) {
       stack.pop();
     }
@@ -552,7 +576,8 @@ function buildListForest(run: RichTextListExt[]): ListGroup[] {
     // A list that continues the one before it keeps counting; Slack ignores its offset there
     // (extra/fidelity/rich-text-rich-text-list/many-items numbers it 11, after ten items).
     if (top && top.indent === indent && top.style === block.style) {
-      for (const section of block.elements) top.items.push({ section, children: [] });
+      for (const section of objectsIn<RichTextSection>(block.elements))
+        top.items.push({ section, children: [] });
       continue;
     }
 
@@ -567,7 +592,10 @@ function buildListForest(run: RichTextListExt[]): ListGroup[] {
       indent,
       border: block.border,
       startValue: block.style === "ordered" ? (block.offset ?? 0) + 1 : undefined,
-      items: block.elements.map((section) => ({ section, children: [] })),
+      items: objectsIn<RichTextSection>(block.elements).map((section) => ({
+        section,
+        children: [],
+      })),
     };
 
     if (top && top.indent < indent) {

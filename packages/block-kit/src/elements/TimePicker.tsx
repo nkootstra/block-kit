@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
+import { asString } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { timeZoneLabel } from "./dateFormat";
@@ -59,13 +60,14 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   // Slack draws the small field in messages and the medium one in modals and on App Home.
   const medium = surface !== "message";
   const { ask, dialog } = useConfirm(element.confirm);
-  const [time, setTime] = useState<string | undefined>(element.initial_time);
+  const [time, setTime] = useState<string | undefined>(asString(element.initial_time));
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const invalid = useInvalidProps();
   const inInputBlock = useInInputBlock();
   const clearable = useInClearableInput();
   const actionId = element.action_id ?? "";
+  const timeZone = asString(element.timezone);
 
   useEffect(() => {
     if (time) setValue(blockId, actionId, { type: "timepicker", selected_time: time });
@@ -144,7 +146,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
 
   const display = time ? formatTime(time) : undefined;
   // Slack names the field "Time" for screen readers, whatever its placeholder.
-  const input = combo.inputProps(display, element.placeholder?.text ?? "Time", "Time");
+  const input = combo.inputProps(display, asString(element.placeholder?.text) ?? "Time", "Time");
   // Slack keeps the chosen time in the input but draws it in a layer over the field
   // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
   const overlay = display !== undefined && !combo.open;
@@ -201,9 +203,9 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
           </div>
         </Popover>
       )}
-      {element.timezone && (
+      {timeZone && (
         // One text run, as Slack writes it.
-        <div className="sbk-timepicker__hint">{`Time zone: ${timeZoneLabel(element.timezone)}`}</div>
+        <div className="sbk-timepicker__hint">{`Time zone: ${timeZoneLabel(timeZone)}`}</div>
       )}
       {dialog}
     </div>

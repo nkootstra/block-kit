@@ -1,3 +1,4 @@
+import { objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
 
@@ -19,12 +20,9 @@ function matches(condition: ConditionClause): boolean {
 /** Renders the first case whose conditions all match the desktop client, else `default`. */
 export function Condition({ block }: BlockProps) {
   const json = block as Json;
-  const cases =
-    (json.cases as { conditions: ConditionClause[]; blocks: Json[] }[] | undefined) ?? [];
-  const defaultBlocks = (json.default as Json[] | undefined) ?? [];
-
-  const matched = cases.find((c) => c.conditions.every(matches));
-  const blocks = matched?.blocks ?? defaultBlocks;
+  const cases = objectsIn(json.cases);
+  const matched = cases.find((c) => objectsIn<ConditionClause>(c.conditions).every(matches));
+  const blocks = objectsIn<Json>(matched?.blocks ?? json.default);
 
   return (
     <>

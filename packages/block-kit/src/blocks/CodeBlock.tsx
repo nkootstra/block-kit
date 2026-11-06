@@ -6,6 +6,7 @@
  */
 
 import { CopyIcon } from "../icons";
+import { own } from "../payloadValues";
 
 const LANGUAGE_LABELS: Record<string, string> = {
   js: "JavaScript",
@@ -49,7 +50,7 @@ const LANGUAGE_LABELS: Record<string, string> = {
 };
 
 function languageLabel(language: string): string {
-  const known = LANGUAGE_LABELS[language.toLowerCase()];
+  const known = own(LANGUAGE_LABELS, language.toLowerCase());
   if (known) return known;
   return language.charAt(0).toUpperCase() + language.slice(1);
 }

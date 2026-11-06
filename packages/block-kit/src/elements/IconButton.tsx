@@ -12,6 +12,7 @@ import {
 } from "../icons";
 import { Tooltip } from "../Tooltip";
 import type { ElementProps } from "../types";
+import { asObject, asString } from "../payloadValues";
 
 /** Slack's icon names we can approximate with our inline set; unknown icons fall back to a
  * generic glyph rather than rendering nothing. */
@@ -31,7 +32,13 @@ const ICONS: Record<string, typeof TrashIcon> = {
 export function IconButton({ element, blockId }: ElementProps<IconButtonElement>) {
   const { dispatch } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
-  const Icon = ICONS[element.icon] ?? KebabIcon;
+  // Own keys only: "constructor" would find a function on Object.prototype. Not `own()`, which the
+  // static-components lint reads as a component created during render.
+  const Icon =
+    (typeof element.icon === "string" && Object.hasOwn(ICONS, element.icon)
+      ? ICONS[element.icon]
+      : undefined) ?? KebabIcon;
+  const label = asString(asObject(element.text)?.text);
 
   async function onClick() {
     if (!(await ask())) return;
@@ -48,12 +55,12 @@ export function IconButton({ element, blockId }: ElementProps<IconButtonElement>
 
   return (
     <>
-      <Tooltip label={element.text.text}>
+      <Tooltip label={label}>
         <button
           type="button"
           className="sbk-icon-button"
           onClick={onClick}
-          aria-label={element.accessibility_label ?? element.text.text}
+          aria-label={element.accessibility_label ?? label}
         >
           <Icon />
         </button>

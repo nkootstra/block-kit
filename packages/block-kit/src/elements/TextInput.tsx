@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useBlockKit } from "../context";
 import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
 import { EmailIcon, LinkGlyphIcon } from "../icons";
+import { asString } from "../payloadValues";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
@@ -58,7 +59,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // Slack's Builder uses a taller "medium" control (36px, more horizontal padding) for a modal
   // or Home tab form; the message-surface preview uses a smaller 28px control.
   const sizeClass = surface === "message" ? "" : " sbk-text-input--medium";
-  const [value, setLocalValue] = useState(element.initial_value ?? "");
+  const [value, setLocalValue] = useState(asString(element.initial_value) ?? "");
   // Slack counts only once the text has been edited: an untouched initial_value shows no count.
   const [edited, setEdited] = useState(false);
   const invalid = useInvalidProps();
@@ -67,7 +68,8 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   );
   const actionId = element.action_id ?? "";
   const dispatchEnabled = element.__dispatchAction === true;
-  const triggers = element.dispatch_action_config?.trigger_actions_on ?? ["on_enter_pressed"];
+  const configured = element.dispatch_action_config?.trigger_actions_on;
+  const triggers = Array.isArray(configured) ? configured : ["on_enter_pressed"];
 
   useEffect(() => {
     if (element.initial_value !== undefined) {
@@ -156,7 +158,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
 
   // Slack's Builder preview shows a default placeholder for any text-like input that doesn't
   // specify its own, rather than leaving the field visually empty.
-  const placeholder = element.placeholder?.text ?? DEFAULT_PLACEHOLDER[element.type];
+  const placeholder = asString(element.placeholder?.text) ?? DEFAULT_PLACEHOLDER[element.type];
 
   const invalidDescribed = invalid["aria-describedby"];
   const commonProps = {

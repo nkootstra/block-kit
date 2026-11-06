@@ -8,6 +8,7 @@ const EMOJI_RE = /^:([a-z0-9_+'-]+):(?::skin-tone-([2-6]):)?/i;
  */
 export function parsePlainTextEmoji(input: string): Array<Text | Emoji> {
   const nodes: Array<Text | Emoji> = [];
+  if (typeof input !== "string") return nodes;
   let buffer = "";
   let i = 0;
 

@@ -1,5 +1,5 @@
-import { classModifier } from "../payloadValues";
-import type { Button as ButtonElement } from "@slack/types";
+import { asObject, asString, classModifier } from "../payloadValues";
+import type { Button as ButtonElement, PlainTextElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { safeUrl } from "../safeUrl";
@@ -9,6 +9,7 @@ import { BUTTON_LABEL_MAX, truncate } from "./truncate";
 export function Button({ element, blockId }: ElementProps<ButtonElement>) {
   const { dispatch } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
+  const text = asObject<PlainTextElement>(element.text);
   const className = ["sbk-button", classModifier(element.style) && `sbk-button--${element.style}`]
     .filter(Boolean)
     .join(" ");
@@ -19,7 +20,7 @@ export function Button({ element, blockId }: ElementProps<ButtonElement>) {
       type: "button",
       action_id: element.action_id ?? "",
       block_id: blockId,
-      text: { type: "plain_text", text: element.text.text, emoji: element.text.emoji ?? true },
+      text: { type: "plain_text", text: text?.text, emoji: text?.emoji ?? true },
       ...(element.value !== undefined ? { value: element.value } : {}),
       ...(element.url !== undefined ? { url: element.url } : {}),
       ...(element.style !== undefined ? { style: element.style } : {}),
@@ -39,7 +40,9 @@ export function Button({ element, blockId }: ElementProps<ButtonElement>) {
         onClick={handleClick}
         aria-label={element.accessibility_label}
       >
-        <span className="sbk-button__label">{truncate(element.text.text, BUTTON_LABEL_MAX)}</span>
+        <span className="sbk-button__label">
+          {truncate(asString(text?.text) ?? "", BUTTON_LABEL_MAX)}
+        </span>
       </button>
       {dialog}
     </>

@@ -1,0 +1,1513 @@
+[
+  {
+    "attachments": "x"
+  },
+  {
+    "attachments": [null]
+  },
+  {
+    "attachments": [
+      {
+        "fields": "x"
+      }
+    ]
+  },
+  {
+    "attachments": [
+      {
+        "fields": [null]
+      }
+    ]
+  },
+  {
+    "attachments": [
+      {
+        "title": {}
+      }
+    ]
+  },
+  {
+    "blocks": "x"
+  },
+  {
+    "blocks": [null]
+  },
+  {
+    "blocks": [
+      {
+        "dispatch_action": true,
+        "type": "input",
+        "element": {
+          "type": "plain_text_input",
+          "dispatch_action_config": {
+            "trigger_actions_on": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "__proto__"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "text": {}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "checkboxes",
+            "initial_options": 0,
+            "options": [{}]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "checkboxes",
+            "initial_options": [{}],
+            "options": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "checkboxes",
+            "options": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "checkboxes"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "datepicker",
+            "initial_date": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "datetimepicker",
+            "initial_date_time": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "external_select",
+            "initial_option": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "external_select",
+            "initial_option": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "overflow"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "radio_buttons",
+            "options": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "radio_buttons"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "static_select",
+            "option_groups": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "static_select",
+            "option_groups": [
+              {
+                "label": {},
+                "options": {
+                  "text": "x"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "static_select",
+            "option_groups": [
+              {
+                "options": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "static_select",
+            "options": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "static_select",
+            "options": ["x"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "timepicker",
+            "initial_time": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "valueOf"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "workflow_button",
+            "text": {
+              "text": {}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "workflow_button"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "callout",
+        "child_blocks": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "callout",
+        "child_blocks": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "card",
+        "actions": "x"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "card",
+        "actions": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "card",
+        "body": -1
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "card",
+        "hero_image": -1
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "carousel",
+        "elements": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "carousel",
+        "elements": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "condition",
+        "cases": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "condition",
+        "cases": [
+          {
+            "conditions": [],
+            "blocks": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "condition",
+        "cases": [
+          {
+            "conditions": [],
+            "blocks": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "condition",
+        "cases": [
+          {
+            "conditions": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "container",
+        "child_blocks": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "container",
+        "child_blocks": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "container",
+        "icon": -1
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context",
+        "elements": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context_actions",
+        "elements": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context_actions",
+        "elements": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context_actions",
+        "elements": [
+          {
+            "type": "feedback_buttons"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context_actions",
+        "elements": [
+          {
+            "type": "icon_button"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_table",
+        "caption": {}
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "axis_config": {
+            "categories": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "axis_config": {
+            "categories": [{}]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "series": 0
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "series": ["x"],
+          "axis_config": {
+            "categories": ["Mon"]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "series": [
+            {
+              "data": [{}]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "series": [{}],
+          "axis_config": {
+            "categories": ""
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "type": "pie",
+          "segments": 0
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "title": {},
+        "chart": {}
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "fallback_canary",
+        "fallback": 0
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "fallback_canary",
+        "fallback": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "hasOwnProperty"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "header"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Attachments"
+        },
+        "element": {
+          "type": "file_input",
+          "filetypes": 0
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Channels"
+        },
+        "element": {
+          "type": "multi_channels_select",
+          "initial_channels": 0
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Channels"
+        },
+        "element": {
+          "type": "multi_channels_select",
+          "placeholder": {
+            "text": {}
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Notes"
+        },
+        "element": {
+          "type": "plain_text_input",
+          "initial_value": 5
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [null]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_list",
+                "elements": ["x"]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_list",
+                "elements": [null]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_list",
+                "elements": [
+                  {
+                    "elements": 0
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_list",
+                "elements": [
+                  {
+                    "elements": [null]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_list"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": ""
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [null]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "initial_value": {
+            "elements": [
+              {
+                "type": "rich_text_section"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "text": "Summary"
+        },
+        "element": {
+          "type": "rich_text_input",
+          "placeholder": {
+            "text": {}
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "markdown",
+        "text": 5
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "plan",
+        "tasks": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "plan",
+        "title": {}
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_list",
+            "elements": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_list",
+            "style": "ordered",
+            "elements": []
+          },
+          {
+            "type": "rich_text_list",
+            "style": "ordered"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_list"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_preformatted",
+            "elements": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_preformatted",
+            "language": "typescript",
+            "elements": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_preformatted",
+            "language": "typescript",
+            "elements": [null]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_preformatted",
+            "language": "typescript"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_preformatted",
+            "language": 5,
+            "elements": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_preformatted"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_quote",
+            "elements": [
+              {
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "attachment_mention",
+                "text": {}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "date",
+                "format": "{date_long}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "date",
+                "format": "{date_short_pretty} at {time}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "date"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "emoji",
+                "unicode": 5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "emoji"
+              },
+              {
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "emoji"
+              },
+              {},
+              null
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "emoji"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "tag",
+                "text": {}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "work_object_mention",
+                "text": {}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "accessory": null
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "fields": -1
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "text": {},
+          "emoji": false
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": ["x"]
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn"
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "table",
+        "rows": ["x"]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "table",
+        "rows": [[], 0]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "table",
+        "rows": [
+          [
+            {
+              "type": "rich_text",
+              "elements": [null]
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "table",
+        "rows": [
+          [
+            {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "elements": [null]
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "task_card",
+        "sources": [null]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "task_card",
+        "title": {}
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "valueOf"
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": {}
+      }
+    ]
+  },
+  {
+    "type": "modal",
+    "title": {
+      "text": {}
+    }
+  }
+]

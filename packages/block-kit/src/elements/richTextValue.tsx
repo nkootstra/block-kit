@@ -1,4 +1,4 @@
-import { classModifier } from "../payloadValues";
+import { classModifier, objectsIn } from "../payloadValues";
 import type {
   RichTextBlock,
   RichTextBlockElement,
@@ -22,13 +22,14 @@ type RichTextListExt = RichTextList & { indent?: number };
 const LEAF_ATTR = "data-sbk-leaf";
 
 /** A section's leaves split into the lines its `\n`s make. */
-function splitLines(elements: Leaf[]): Leaf[][] {
+function splitLines(elements: unknown): Leaf[][] {
   const lines: Leaf[][] = [[]];
-  for (const el of elements) {
+  for (const el of objectsIn<Leaf>(elements)) {
     if (el.type !== "text") {
       lines[lines.length - 1]?.push(el);
       continue;
     }
+    if (typeof el.text !== "string") continue;
     el.text.split("\n").forEach((part, i) => {
       if (i > 0) lines.push([]);
       if (part) lines[lines.length - 1]?.push({ ...el, text: part });
@@ -50,7 +51,7 @@ function renderLine(leaves: Leaf[], ctx: RenderCtx): ReactNode {
   );
 }
 
-function renderLines(elements: Leaf[], ctx: RenderCtx): ReactNode {
+function renderLines(elements: unknown, ctx: RenderCtx): ReactNode {
   return splitLines(elements).map((line, i) => <p key={i}>{renderLine(line, ctx)}</p>);
 }
 
@@ -60,7 +61,7 @@ function renderLines(elements: Leaf[], ctx: RenderCtx): ReactNode {
  * blocks as blocks of their own. Each leaf renders as it does in a rich_text block.
  */
 export function renderRichTextValue(value: RichTextBlock | undefined, ctx: RenderCtx): ReactNode {
-  return (value?.elements ?? []).map((block, i) => {
+  return objectsIn<RichTextBlockElement>(value?.elements).map((block, i) => {
     switch (block.type) {
       case "rich_text_section":
         return <Fragment key={i}>{renderLines(block.elements, ctx)}</Fragment>;
@@ -72,9 +73,9 @@ export function renderRichTextValue(value: RichTextBlock | undefined, ctx: Rende
             className={`sbk-rich-list sbk-rich-list--${classModifier(block.style) ?? "bullet"}`}
             data-indent={(block as RichTextListExt).indent ?? 0}
           >
-            {block.elements.map((item, j) => (
+            {objectsIn<RichTextSection>(block.elements).map((item, j) => (
               <li key={j} className="sbk-rich-list__item">
-                {renderLine(item.elements, ctx)}
+                {renderLine(objectsIn<Leaf>(item.elements), ctx)}
               </li>
             ))}
           </List>
@@ -89,7 +90,7 @@ export function renderRichTextValue(value: RichTextBlock | undefined, ctx: Rende
       case "rich_text_preformatted":
         return (
           <pre key={i} className="sbk-rich-text__pre">
-            {block.elements.map((leaf, j) => (
+            {objectsIn<Leaf>(block.elements).map((leaf, j) => (
               <Fragment key={j}>{renderLeaf(leaf, ctx, 22)}</Fragment>
             ))}
           </pre>

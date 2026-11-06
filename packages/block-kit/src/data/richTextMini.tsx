@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 import { useBlockKit } from "../context";
+import { objectsIn } from "../payloadValues";
 import type { Json } from "../types";
 import { markText, type TextMark } from "./textMark";
 import { Link } from "../Link";
@@ -13,13 +14,13 @@ import { PrivateUser, UserMention } from "../UserMention";
  */
 export function RichTextMini({ value, mark }: { value: Json; mark?: TextMark }) {
   if (!value || typeof value !== "object") return null;
-  const elements = Array.isArray((value as Json).elements) ? (value as Json).elements : [];
+  const elements = objectsIn<Json>((value as Json).elements);
   // Each leaf's offset into the text richTextMiniToString reads, so a mark lands on the right leaf.
   let offset = 0;
   return (
     <>
-      {(elements as Json[]).map((section, i) => {
-        const leaves = Array.isArray(section.elements) ? (section.elements as Json[]) : [];
+      {elements.map((section, i) => {
+        const leaves = objectsIn<Json>(section.elements);
         return (
           <Fragment key={i}>
             {leaves.map((el, j) => {
@@ -80,10 +81,9 @@ function RichTextMiniUser({ id }: { id: string }) {
 /** Plain-text extraction of a rich_text value, used for sorting table cells. */
 export function richTextMiniToString(value: Json): string {
   if (!value || typeof value !== "object") return "";
-  const elements = Array.isArray((value as Json).elements) ? (value as Json).elements : [];
-  return (elements as Json[])
+  return objectsIn<Json>((value as Json).elements)
     .map((section) => {
-      const leaves = Array.isArray(section.elements) ? (section.elements as Json[]) : [];
+      const leaves = objectsIn<Json>(section.elements);
       return leaves.map((leaf) => (typeof leaf.text === "string" ? leaf.text : "")).join("");
     })
     .join("");

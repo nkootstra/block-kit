@@ -1,11 +1,12 @@
 import type { ContextBlock } from "@slack/types";
 import { Text, type TextObject } from "../Text";
+import { objectsIn } from "../payloadValues";
 import type { BlockProps } from "../types";
 
 export function Context({ block }: BlockProps<ContextBlock>) {
   return (
     <div className="sbk-context">
-      {block.elements.map((el, i) =>
+      {objectsIn<ContextBlock["elements"][number]>(block.elements).map((el, i) =>
         el.type === "image" ? (
           <img
             key={i}

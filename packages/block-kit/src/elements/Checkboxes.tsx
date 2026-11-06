@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { Text } from "../Text";
+import { objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -14,7 +15,9 @@ function sameOption(a: Option, b: Option) {
 export function Checkboxes({ element, blockId }: ElementProps<CheckboxesElement>) {
   const { setValue, dispatch } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
-  const [selected, setSelected] = useState<Option[]>(element.initial_options ?? []);
+  const [selected, setSelected] = useState<Option[]>(() =>
+    objectsIn<Option>(element.initial_options),
+  );
   const actionId = element.action_id ?? "";
   const focusRef = useFocusOnLoad<HTMLInputElement>(element);
 
@@ -42,7 +45,7 @@ export function Checkboxes({ element, blockId }: ElementProps<CheckboxesElement>
 
   return (
     <div className="sbk-checkboxes" role="group">
-      {element.options.map((option, i) => {
+      {objectsIn<Option>(element.options).map((option, i) => {
         const checked = selected.some((o) => sameOption(o, option));
         return (
           <label className="sbk-checkboxes__option" key={option.value ?? i}>

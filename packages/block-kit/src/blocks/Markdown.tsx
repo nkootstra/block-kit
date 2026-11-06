@@ -7,6 +7,7 @@ import type {
   InlineCode,
   Link,
   List,
+  Nodes,
   ListItem,
   Paragraph,
   PhrasingContent,
@@ -26,6 +27,7 @@ import { Emoji } from "../emoji";
 // mdast has its own `Link` type.
 import { Link as TextLink } from "../Link";
 import type { BlockProps } from "../types";
+import { asString } from "../payloadValues";
 import { CodeBlock } from "./CodeBlock";
 
 /**
@@ -35,7 +37,7 @@ import { CodeBlock } from "./CodeBlock";
  * blocks' own CSS classes so the two stay visually identical.
  */
 export function Markdown({ block }: BlockProps<MarkdownBlock>) {
-  const tree = parseMarkdown(block.text);
+  const tree = parseMarkdown(asString(block.text) ?? "");
   return <div className="sbk-markdown">{renderBlocks(tree.children)}</div>;
 }
 
@@ -153,8 +155,27 @@ function renderQuoteChildren(children: RootContent[]): ReactNode {
   ));
 }
 
+/**
+ * How deep lists and inline styles nest before the rest renders as plain text. A payload can nest
+ * them thousands deep (`"- ".repeat(1000)`), which would overflow the stack while rendering.
+ */
+const MAX_DEPTH = 32;
+
+/** The text under `node`, read without recursion so any depth is safe. */
+function plainText(node: Nodes): string {
+  let text = "";
+  const stack: Nodes[] = [node];
+  for (let next = stack.pop(); next; next = stack.pop()) {
+    if ("value" in next && typeof next.value === "string") text += next.value;
+    else if ("children" in next)
+      for (let i = next.children.length - 1; i >= 0; i--) stack.push(next.children[i] as Nodes);
+  }
+  return text;
+}
+
 /** Bullets are Slack's icon glyphs, drawn in CSS from the list's `data-indent` (RichText.css). */
 function renderList(list: List, key: number, depth: number): ReactNode {
+  if (depth >= MAX_DEPTH) return <Fragment key={key}>{plainText(list)}</Fragment>;
   const Tag = list.ordered ? "ol" : "ul";
   const style = list.ordered ? "ordered" : "bullet";
   const start = list.ordered ? (list.start ?? 1) : undefined;
@@ -231,27 +252,28 @@ function MarkdownTable({ table }: { table: Table }) {
   );
 }
 
-function renderInline(nodes: PhrasingContent[]): ReactNode {
-  return nodes.map((node, i) => <Fragment key={i}>{renderInlineNode(node)}</Fragment>);
+function renderInline(nodes: PhrasingContent[], depth = 0): ReactNode {
+  if (depth >= MAX_DEPTH) return nodes.map(plainText).join("");
+  return nodes.map((node, i) => <Fragment key={i}>{renderInlineNode(node, depth)}</Fragment>);
 }
 
-function renderInlineNode(node: PhrasingContent): ReactNode {
+function renderInlineNode(node: PhrasingContent, depth: number): ReactNode {
   switch (node.type) {
     case "text":
       return renderTextWithEmoji((node as Text).value);
     case "strong":
-      return <b>{renderInline(node.children)}</b>;
+      return <b>{renderInline(node.children, depth + 1)}</b>;
     case "emphasis":
-      return <i>{renderInline(node.children)}</i>;
+      return <i>{renderInline(node.children, depth + 1)}</i>;
     case "delete":
-      return <s>{renderInline(node.children)}</s>;
+      return <s>{renderInline(node.children, depth + 1)}</s>;
     case "inlineCode":
       return <code className="sbk-mrkdwn__code">{(node as InlineCode).value}</code>;
     case "link": {
       const link = node as Link;
       return (
         <TextLink className="sbk-link" href={link.url} target="_blank" rel="noopener noreferrer">
-          {renderInline(link.children)}
+          {renderInline(link.children, depth + 1)}
         </TextLink>
       );
     }

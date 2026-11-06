@@ -63,7 +63,11 @@ export function FileInput({ element, blockId }: ElementProps<FileInputElement>) 
         aria-hidden="true"
         className="sbk-file-input__native"
         multiple={maxFiles > 1}
-        accept={element.filetypes?.map((t) => `.${t}`).join(",")}
+        accept={
+          Array.isArray(element.filetypes)
+            ? element.filetypes.map((t) => `.${t}`).join(",")
+            : undefined
+        }
         onChange={(e) => onChange(e.target.files)}
       />
       {files.length > 0 && (

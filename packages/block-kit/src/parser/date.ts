@@ -23,6 +23,8 @@ export function formatSlackDate(
   const locale = options.locale ?? "en-US";
   const timeZone = options.timeZone;
   const date = new Date(timestamp * 1000);
+  // A payload's timestamp may be missing, not a number or out of range; there is no date to print.
+  if (typeof format !== "string" || Number.isNaN(date.getTime())) return "";
   const now = options.now ?? Date.now();
 
   const fmt = (opts: Intl.DateTimeFormatOptions) =>

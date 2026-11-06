@@ -1,6 +1,7 @@
 import { type CSSProperties, useRef } from "react";
 import { TableActions } from "../data/HoverActions";
 import { RichTextMini } from "../data/richTextMini";
+import { asArray, asObject } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 
 /** Only these reach the style: a server render writes it into the attribute as is. */
@@ -35,11 +36,11 @@ function Cell({ cell }: { cell: Json }) {
 export function Table({ block }: BlockProps<TableBlock>) {
   const rows = Array.isArray(block.rows) ? block.rows : [];
   const [header, ...body] = rows;
-  const settings = block.column_settings ?? [];
+  const settings = asArray(block.column_settings);
   const tableRef = useRef<HTMLTableElement>(null);
 
   const cellStyle = (colIndex: number): CSSProperties | undefined => {
-    const setting = settings[colIndex];
+    const setting = asObject<ColumnSetting>(settings[colIndex]);
     if (!setting) return undefined;
     return {
       textAlign: ALIGNMENTS.has(setting.align as string) ? setting.align : undefined,
@@ -54,9 +55,9 @@ export function Table({ block }: BlockProps<TableBlock>) {
           {header ? (
             <thead className="sbk-table__thead">
               <tr>
-                {header.map((cell, i) => (
+                {asArray(header).map((cell, i) => (
                   <th key={i} className="sbk-table__th" style={cellStyle(i)}>
-                    <Cell cell={cell} />
+                    <Cell cell={cell as Json} />
                   </th>
                 ))}
               </tr>
@@ -65,9 +66,9 @@ export function Table({ block }: BlockProps<TableBlock>) {
           <tbody className="sbk-table__tbody">
             {body.map((row, r) => (
               <tr key={r}>
-                {row.map((cell, i) => (
+                {asArray(row).map((cell, i) => (
                   <td key={i} className="sbk-table__td" style={cellStyle(i)}>
-                    <Cell cell={cell} />
+                    <Cell cell={cell as Json} />
                   </td>
                 ))}
               </tr>

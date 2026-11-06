@@ -623,4 +623,22 @@ describe("text nodes, as Slack writes them", () => {
     expect(container.textContent).toBe("before  after");
     expect(container.querySelector(".sbk-rich-text__color-swatch")).toBeNull();
   });
+
+  it("caps how deep a staircase of list indents nests", () => {
+    const elements = Array.from({ length: 1000 }, (_, indent) => ({
+      type: "rich_text_list",
+      style: "bullet",
+      indent,
+      elements: [{ type: "rich_text_section", elements: [{ type: "text", text: "x" }] }],
+    }));
+    const { container } = render(
+      <RichText block={{ type: "rich_text", elements } as never} blockId="b1" index={0} />,
+    );
+    const items = container.querySelectorAll("li");
+    expect(items).toHaveLength(1000);
+    let depth = 0;
+    for (let at: Element | null = items[items.length - 1] ?? null; at; at = at.parentElement)
+      if (at.tagName === "UL") depth++;
+    expect(depth).toBe(32);
+  });
 });

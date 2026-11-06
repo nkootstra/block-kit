@@ -107,7 +107,7 @@ export function ChartTooltip({ open, pointer, box, title, rows }: ChartTooltipPr
           <div key={row.name} className="sbk-chart-tooltip__row">
             <span className="sbk-chart-tooltip__dot" style={{ backgroundColor: row.color }} />
             <span className="sbk-chart-tooltip__name">{row.name}</span>
-            <span className="sbk-chart-tooltip__value">{row.value.toLocaleString("en-US")}</span>
+            <span className="sbk-chart-tooltip__value">{row.value?.toLocaleString("en-US")}</span>
           </div>
         ))}
       </div>

@@ -1,4 +1,5 @@
 import { Text, type TextObject } from "../Text";
+import { asString } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Link } from "../Link";
 
@@ -36,7 +37,8 @@ export function Video({ block }: BlockProps) {
   const providerIcon =
     typeof json.provider_icon_url === "string" ? json.provider_icon_url : undefined;
   const thumbnailUrl = typeof json.thumbnail_url === "string" ? json.thumbnail_url : undefined;
-  const altText = typeof json.alt_text === "string" ? json.alt_text : (title?.text ?? "video");
+  const altText =
+    typeof json.alt_text === "string" ? json.alt_text : (asString(title?.text) ?? "video");
 
   return (
     <div className="sbk-video">

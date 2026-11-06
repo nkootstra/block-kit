@@ -1,6 +1,7 @@
 import type { ActionsBlock } from "@slack/types";
 import { useState } from "react";
 import { Element } from "../elements/Element";
+import { objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 
 // Slack's Builder gives these element types their own full-width row in an actions block,
@@ -16,7 +17,7 @@ const VISIBLE_ELEMENTS = 5;
 
 export function Actions({ block, blockId }: BlockProps<ActionsBlock>) {
   const [expanded, setExpanded] = useState(false);
-  const elements = block.elements as unknown as Json[];
+  const elements = objectsIn<Json>(block.elements);
   const hidden = expanded ? 0 : Math.max(0, elements.length - VISIBLE_ELEMENTS);
   return (
     <div className="sbk-actions">

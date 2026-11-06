@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it } from "vitest";
 import { Markdown } from "./Markdown";
 
@@ -133,5 +134,28 @@ describe("<Markdown>", () => {
   it("renders emoji shortcodes in plain text", () => {
     const { container } = render(<Markdown block={block("Nice :tada:")} blockId="b1" index={0} />);
     expect(container.querySelector(".sbk-emoji, img, svg")).toBeTruthy();
+  });
+});
+
+describe("<Markdown> deep nesting", () => {
+  const html = (text: string) =>
+    renderToStaticMarkup(<Markdown block={block(text)} blockId="b1" index={0} />);
+
+  it("renders deeply nested bullet lists, the deepest as plain text", () => {
+    const out = html(`${"- ".repeat(200)}x`);
+    expect(out).toContain("x");
+    expect(out.match(/<ul/g)?.length).toBeLessThanOrEqual(32);
+  });
+
+  it("renders deeply nested ordered lists, the deepest as plain text", () => {
+    const out = html(`${"1. ".repeat(200)}x`);
+    expect(out).toContain("x");
+    expect(out.match(/<ol/g)?.length).toBeLessThanOrEqual(32);
+  });
+
+  it("renders deeply nested emphasis, the deepest as plain text", () => {
+    const out = html(`${"*".repeat(500)}a${"*".repeat(500)}`);
+    expect(out).toContain("a");
+    expect(out.match(/<[bi]>/g)?.length).toBeLessThanOrEqual(32);
   });
 });

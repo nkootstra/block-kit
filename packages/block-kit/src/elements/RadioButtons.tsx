@@ -3,13 +3,16 @@ import { useEffect, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { Text } from "../Text";
+import { asObject, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
 export function RadioButtons({ element, blockId }: ElementProps<RadioButtonsElement>) {
   const { setValue, dispatch } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
-  const [selected, setSelected] = useState<Option | undefined>(element.initial_option);
+  const [selected, setSelected] = useState<Option | undefined>(() =>
+    asObject<Option>(element.initial_option),
+  );
   const actionId = element.action_id ?? "";
   const focusRef = useFocusOnLoad<HTMLInputElement>(element);
 
@@ -36,7 +39,7 @@ export function RadioButtons({ element, blockId }: ElementProps<RadioButtonsElem
 
   return (
     <div className="sbk-radio-buttons" role="radiogroup">
-      {element.options.map((option, i) => (
+      {objectsIn<Option>(element.options).map((option, i) => (
         <label className="sbk-radio-buttons__option" key={option.value ?? i}>
           <input
             ref={i === 0 ? focusRef : undefined}

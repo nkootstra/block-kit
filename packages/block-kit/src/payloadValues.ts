@@ -18,3 +18,39 @@ const CLASS_MODIFIER = /^[a-z0-9_-]+$/i;
 export function classModifier(value: unknown): string | undefined {
   return typeof value === "string" && CLASS_MODIFIER.test(value) ? value : undefined;
 }
+
+/*
+ * Shape checks. Any field of a payload can be missing or of another type, and a render that calls
+ * `.map` on a number or renders an object as text throws, which takes down the host's whole tree or
+ * server response. Read payload fields through these instead of trusting the Block Kit types.
+ */
+
+/** `value` if it is an array, otherwise an empty one. */
+export function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+/** `value` if it is an object (not null and not an array), or `undefined`. */
+export function asObject<T = Record<string, unknown>>(value: unknown): T | undefined {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as T)
+    : undefined;
+}
+
+/** The objects in `value` when it is an array, skipping anything else (nulls, strings, arrays). */
+export function objectsIn<T = Record<string, unknown>>(value: unknown): T[] {
+  return asArray(value).filter((item) => asObject(item) !== undefined) as T[];
+}
+
+/** `value` if it is a string, or `undefined`. */
+export function asString(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+/**
+ * `table[key]` when `key` is one of `table`'s own keys. A payload string such as `"constructor"` or
+ * `"__proto__"` would otherwise find a value on `Object.prototype`.
+ */
+export function own<T>(table: Readonly<Record<string, T>>, key: unknown): T | undefined {
+  return typeof key === "string" && Object.hasOwn(table, key) ? table[key] : undefined;
+}

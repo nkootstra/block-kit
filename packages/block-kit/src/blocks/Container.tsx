@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Collapse } from "../data/Collapse";
+import { asObject, objectsIn } from "../payloadValues";
 import { Text, type TextObject } from "../Text";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
@@ -30,11 +31,11 @@ export function Container({ block }: BlockProps) {
   const json = block as Json;
   const title = json.title as TextObject | undefined;
   const subtitle = json.subtitle as TextObject | undefined;
-  const icon = json.icon as Json | undefined;
+  const icon = asObject<Json>(json.icon);
   const isCollapsible = json.is_collapsible === true;
   const width = WIDTHS.includes(json.width as string) ? (json.width as string) : "standard";
   const hasHeaderDivider = json.has_header_divider === true;
-  const children = (json.child_blocks as Json[] | undefined) ?? [];
+  const children = objectsIn<Json>(json.child_blocks);
   const [collapsed, setCollapsed] = useState(isCollapsible && json.default_collapsed === true);
 
   const hasHeader = Boolean(title || subtitle || icon || isCollapsible);

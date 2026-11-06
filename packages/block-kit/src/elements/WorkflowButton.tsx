@@ -1,5 +1,5 @@
-import { classModifier } from "../payloadValues";
-import type { WorkflowButton as WorkflowButtonElement } from "@slack/types";
+import { asObject, asString, classModifier } from "../payloadValues";
+import type { PlainTextElement, WorkflowButton as WorkflowButtonElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKit } from "../context";
 import { WorkflowIcon } from "../icons";
@@ -11,6 +11,7 @@ import type { ElementProps } from "../types";
 export function WorkflowButton({ element, blockId }: ElementProps<WorkflowButtonElement>) {
   const { dispatch } = useBlockKit();
   const { ask, dialog } = useConfirm(element.confirm);
+  const text = asObject<PlainTextElement>(element.text);
   const className = [
     "sbk-button",
     "sbk-workflow-button",
@@ -28,7 +29,7 @@ export function WorkflowButton({ element, blockId }: ElementProps<WorkflowButton
       type: "workflow_button",
       action_id: actionId,
       block_id: blockId,
-      text: { type: "plain_text", text: element.text.text, emoji: element.text.emoji ?? true },
+      text: { type: "plain_text", text: text?.text, emoji: text?.emoji ?? true },
       workflow: element.workflow,
       ...(element.style !== undefined ? { style: element.style } : {}),
     });
@@ -43,7 +44,7 @@ export function WorkflowButton({ element, blockId }: ElementProps<WorkflowButton
         aria-label={element.accessibility_label}
       >
         <WorkflowIcon className="sbk-workflow-button__icon" />
-        <span className="sbk-button__label">{element.text.text}</span>
+        <span className="sbk-button__label">{asString(text?.text)}</span>
       </button>
       {dialog}
     </>
