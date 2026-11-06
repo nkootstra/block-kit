@@ -117,6 +117,11 @@ and newlines a browser would strip first, so `\tjava\nscript:` is caught too.
 block's `image_url` goes through the check too, and also keeps `blob:` and `data:image/` URLs.
 Other image URLs (icons, avatars, thumbnails) are left as they are: an image can't run a script.
 
+A relative URL resolves against the page that renders the message, not against Slack, so a relative
+link opens a page of your own app and a relative image makes the viewer's browser request that path
+from your server, with their cookies. See [Untrusted input](/guides/untrusted-input) for what that
+means for payloads you don't trust.
+
 ### Display
 
 <TypeTable

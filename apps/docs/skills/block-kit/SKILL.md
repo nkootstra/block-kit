@@ -176,6 +176,9 @@ framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
   `mailto`, `slack` or relative URLs; `javascript:`, `data:` and other schemes render without an
   `href` and open nothing. `linkComponent` only gets URLs that passed, so don't re-add a check there,
   and never bypass it by rendering a payload URL into your own `<a>` or `window.open`.
+- Relative link and image URLs resolve against the host page, not Slack: a relative `image_url`
+  makes the viewer's browser GET that path from the app's own server, with their cookies. Keep GET
+  routes free of side effects, or drop relative URLs from untrusted payloads before rendering.
 - Payload values reach styles and class names only after a check (hex colours, known alignments,
   single-word class modifiers, and a header level of 1, 2, 3 or 4), because a server render writes
   them into the HTML as they are. A custom block that puts a payload value into `style` or
