@@ -549,8 +549,9 @@
   cursor: pointer;
 }
 
+/* Slack fades the arrow at either end of the pages to half. */
 .sbk-data-table__page-nav:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: default;
 }
 

@@ -113,7 +113,8 @@ describe("<Image>", () => {
     });
 
     // Slack's caption reads " (72 kB)": the space separates it from a title and collapses at the
-    // start of the row when there's none (catalog/image/title and no-title).
+    // start of the row when there's none (catalog/image/title and no-title). The caret follows it
+    // with no space in between.
     it("separates the caption from the title with a space, as Slack does", () => {
       const resolvers: Resolvers = { imageSize: () => 71_861 };
       const block = {
@@ -127,7 +128,7 @@ describe("<Image>", () => {
           <Image block={block as never} blockId="b1" index={0} />
         </BlockKitProvider>,
       );
-      expect(container.querySelector(".sbk-image__trigger")?.textContent).toMatch(/^ \(72 kB\)/);
+      expect(container.querySelector(".sbk-image__trigger")?.textContent).toBe(" (72 kB)");
     });
 
     it("leaves the caption out for an image the resolver doesn't know", () => {
@@ -138,7 +139,8 @@ describe("<Image>", () => {
           <Image block={block as never} blockId="b1" index={0} />
         </BlockKitProvider>,
       );
-      expect(container.querySelector(".sbk-image__trigger")?.textContent?.trim()).toBe("");
+      // A space still keeps the caret off a title.
+      expect(container.querySelector(".sbk-image__trigger")?.textContent).toBe(" ");
     });
   });
 
