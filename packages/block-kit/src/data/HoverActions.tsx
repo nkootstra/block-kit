@@ -228,15 +228,24 @@ export function neutralizeFormula(value: string): string {
 
 function csvCell(value: string): string {
   const cell = neutralizeFormula(value);
-  return /[",\n]/.test(cell) ? `"${cell.replace(/"/g, '""')}"` : cell;
+  return /[",\r\n]/.test(cell) ? `"${cell.replace(/"/g, '""')}"` : cell;
 }
 
 export function toCsv(rows: string[][]): string {
   return rows.map((row) => row.map(csvCell).join(",")).join("\n");
 }
 
+/**
+ * Tab-separated, for the clipboard and chart downloads. TSV has no quoting, so a tab or line break
+ * inside a cell becomes a space; otherwise a cell could add cells or rows of its own, formulas
+ * included, when it's pasted into a spreadsheet.
+ */
+function tsvCell(value: string): string {
+  return neutralizeFormula(value).replace(/\r\n|[\t\r\n]/g, " ");
+}
+
 export function toTsv(rows: string[][]): string {
-  return rows.map((row) => row.join("\t")).join("\n");
+  return rows.map((row) => row.map(tsvCell).join("\t")).join("\n");
 }
 
 export function copyText(text: string) {
@@ -342,11 +351,7 @@ export function ChartActions({
               label: "Download chart data",
               icon: <DownloadIcon width="15" height="15" />,
               onSelect: () =>
-                downloadText(
-                  chartFileName(title),
-                  toTsv(rows.map((row) => row.map(neutralizeFormula))),
-                  "text/tab-separated-values",
-                ),
+                downloadText(chartFileName(title), toTsv(rows), "text/tab-separated-values"),
             },
             {
               label: "Copy as image",
