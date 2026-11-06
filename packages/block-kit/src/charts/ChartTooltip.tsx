@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
 
 /** Space between the pointer and the tooltip, on both axes (ECharts' default). */
@@ -38,7 +38,7 @@ export interface ChartTooltipProps {
  * pointer is. With reduced motion it only fades (DataVisualization.css).
  */
 export function ChartTooltip({ open, pointer, box, title, rows }: ChartTooltipProps) {
-  const { theme } = useBlockKit();
+  const { theme } = useBlockKitConfig();
   const ref = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   // Transitions start once it has been placed, so the first show doesn't slide in from the corner.

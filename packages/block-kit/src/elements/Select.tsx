@@ -1,7 +1,7 @@
 import type { OptionGroup, PlainTextOption } from "@slack/types";
 import { type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { type DirectoryEntry, useBlockKit } from "../context";
+import { type DirectoryEntry, useBlockKitConfig } from "../context";
 import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
 import { asArray, asObject, asString, objectsIn } from "../payloadValues";
@@ -167,7 +167,7 @@ const DEFAULT_MIN_QUERY_LENGTH = 3;
 const SUGGESTION_DEBOUNCE_MS = 250;
 
 export function Select({ element, blockId }: ElementProps<SelectElement>) {
-  const { setValue, dispatch, resolvers, surface, loadOptions } = useBlockKit();
+  const { setValue, dispatch, resolvers, surface, loadOptions } = useBlockKitConfig();
   // Slack's Builder uses a taller "medium" control (36px) for a modal/Home tab surface than the
   // message-surface preview's 28px "small" control (independent of the multi-select bump below).
   const sizeClass = surface === "message" ? "" : " sbk-select--medium";

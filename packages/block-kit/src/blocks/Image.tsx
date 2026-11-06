@@ -2,7 +2,7 @@ import { asObject, asString } from "../payloadValues";
 import { safeUrl } from "../safeUrl";
 import type { ImageBlock } from "@slack/types";
 import { useRef, useState } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { ImageActions } from "../data/HoverActions";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
@@ -56,7 +56,7 @@ export function Image({ block }: BlockProps<ImageBlock>) {
   const directUrl = "image_url" in block ? block.image_url : undefined;
   const slackFile = asObject<{ url?: string; id?: string }>(json.slack_file);
   const altText = asString(block.alt_text);
-  const { resolvers } = useBlockKit();
+  const { resolvers } = useBlockKitConfig();
   const resolved = slackFile ? resolvers.slackFile?.(slackFile) : undefined;
   // The URL goes into a CSS `url()` as well as `src`: only a string that is a safe URL does.
   const imageUrl = safeUrl(directUrl ?? resolved?.url, { image: true });

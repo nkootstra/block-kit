@@ -1,6 +1,6 @@
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "./context";
+import { useBlockKitConfig } from "./context";
 import { Emoji } from "./emoji";
 import { Link } from "./Link";
 import { Tooltip } from "./Tooltip";
@@ -27,7 +27,7 @@ function localTime(timeZone: string): string | undefined {
  * `resolvers.userProfile` and falling back to the display name alone.
  */
 export function UserMention({ id, name }: UserMentionProps) {
-  const { resolvers, theme, mentionHref } = useBlockKit();
+  const { resolvers, theme, mentionHref } = useBlockKitConfig();
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const anchorRef = useRef<HTMLSpanElement>(null);
@@ -179,7 +179,7 @@ export function UnavailableUsergroup() {
  * (extra/fidelity/rich-text-rich-text-list/many-items).
  */
 export function PrivateUser({ id }: { id: string }) {
-  const looksUp = useBlockKit().resolvers.user !== undefined;
+  const looksUp = useBlockKitConfig().resolvers.user !== undefined;
   return (
     <Tooltip label="Private user info">
       <span

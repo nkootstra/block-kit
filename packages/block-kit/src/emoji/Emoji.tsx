@@ -1,4 +1,4 @@
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { Tooltip } from "../Tooltip";
 import { defaultEmojiImageUrl, resolveEmoji } from "./lookup";
 
@@ -13,7 +13,7 @@ export interface EmojiProps {
 
 /** Renders a `:name:` shortcode as an image, matching Slack exactly. Unknown names fall back to the literal text. */
 export function Emoji({ name, skinTone, size = 22 }: EmojiProps) {
-  const { emoji } = useBlockKit();
+  const { emoji } = useBlockKitConfig();
   const resolved = resolveEmoji(name, skinTone, emoji.custom);
   if (!resolved) return <>{`:${name}:`}</>;
 

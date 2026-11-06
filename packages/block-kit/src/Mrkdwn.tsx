@@ -1,6 +1,6 @@
 import { formatSlackDate, type InlineNode, type MrkdwnNode, parse } from "./parser";
 import { Fragment, type ReactNode } from "react";
-import { useBlockKit } from "./context";
+import { useBlockKitConfig } from "./context";
 import { Emoji } from "./emoji";
 import { HoverCard, LinkHoverCard } from "./HoverCard";
 import { Link, MentionLink } from "./Link";
@@ -16,7 +16,7 @@ export interface MrkdwnProps {
 
 /** Renders a Slack mrkdwn string. */
 export function Mrkdwn({ text, verbatim = false, emojiSize = 22 }: MrkdwnProps) {
-  const { resolvers, timeZone } = useBlockKit();
+  const { resolvers, timeZone } = useBlockKitConfig();
   if (typeof text !== "string") return null;
   const root = parse(text, { verbatim });
   return (
@@ -26,7 +26,7 @@ export function Mrkdwn({ text, verbatim = false, emojiSize = 22 }: MrkdwnProps) 
 
 function renderNodes(
   nodes: MrkdwnNode[],
-  resolvers: ReturnType<typeof useBlockKit>["resolvers"],
+  resolvers: ReturnType<typeof useBlockKitConfig>["resolvers"],
   timeZone: string | undefined,
   emojiSize: number,
 ): ReactNode[] {
@@ -37,7 +37,7 @@ function renderNodes(
 
 function renderNode(
   node: MrkdwnNode,
-  resolvers: ReturnType<typeof useBlockKit>["resolvers"],
+  resolvers: ReturnType<typeof useBlockKitConfig>["resolvers"],
   timeZone: string | undefined,
   emojiSize: number,
 ): ReactNode {

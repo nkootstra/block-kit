@@ -1,7 +1,7 @@
 import type { DateTimepicker } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
 import { CalendarPopover } from "./calendar/CalendarPopover";
@@ -50,7 +50,7 @@ function initialTimestamp(value: unknown): number | undefined {
  * now, or today) and sends the action straight away; "Clear selection" in either empties both.
  */
 export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker>) {
-  const { setValue, dispatch, timeZone } = useBlockKit();
+  const { setValue, dispatch, timeZone } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   // Slack offers "Clear selection" in an actions block, and in an input block only where the
   // value may be left empty (contexts/datetimepicker/modal-input@open has none).

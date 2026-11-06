@@ -5,7 +5,7 @@ import type {
   RichTextInput as RichTextInputElement,
 } from "@slack/types";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { asObject, asString, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
@@ -46,7 +46,7 @@ type DispatchConfig = {
 };
 
 export function RichTextInput({ element, blockId }: ElementProps<RichTextInputElement>) {
-  const { setValue, dispatch, resolvers, timeZone } = useBlockKit();
+  const { setValue, dispatch, resolvers, timeZone } = useBlockKitConfig();
   const ref = useRef<HTMLDivElement>(null);
   useFocusOnLoad(element, ref);
   const invalid = useInvalidProps();

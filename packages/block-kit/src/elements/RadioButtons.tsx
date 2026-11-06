@@ -1,14 +1,14 @@
 import type { Option, RadioButtons as RadioButtonsElement } from "@slack/types";
 import { useEffect, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { Text } from "../Text";
 import { asObject, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
 export function RadioButtons({ element, blockId }: ElementProps<RadioButtonsElement>) {
-  const { setValue, dispatch } = useBlockKit();
+  const { setValue, dispatch } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   const [selected, setSelected] = useState<Option | undefined>(() =>
     asObject<Option>(element.initial_option),

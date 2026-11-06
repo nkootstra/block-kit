@@ -325,12 +325,16 @@ const noopViews: ViewsApi = {
   publish: noop,
 };
 
-const BlockKitContext = createContext<BlockKitContextValue>({
+/** Everything in {@link BlockKitContextValue} but `state`, which changes on every input change. */
+type BlockKitConfig = Omit<BlockKitContextValue, "state">;
+
+// Two contexts, so a change to one input's value re-renders only what reads `state`. Elements keep
+// their own value and read only the config, which stays the same while the user interacts.
+const BlockKitContext = createContext<BlockKitConfig>({
   surface: "message",
   resolvers: {},
   emoji: {},
   errors: {},
-  state: {},
   setValue: noop,
   seedValue: noop,
   dispatch: noop,
@@ -338,6 +342,7 @@ const BlockKitContext = createContext<BlockKitContextValue>({
   setContainer: noop,
   views: noopViews,
 });
+const StateContext = createContext<StateValues>({});
 
 export interface BlockKitProviderProps {
   children: ReactNode;
@@ -618,7 +623,7 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
   );
 
   const stackedView = useContext(StackEntryContext);
-  const value = useMemo<BlockKitContextValue>(
+  const value = useMemo<BlockKitConfig>(
     () => ({
       surface,
       theme,
@@ -632,7 +637,6 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       emoji: emoji ?? {},
       errors: stackedView?.errors ?? errors ?? {},
       timeZone,
-      state,
       setValue,
       seedValue,
       dispatch,
@@ -656,7 +660,6 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       emoji,
       errors,
       timeZone,
-      state,
       setValue,
       seedValue,
       dispatch,
@@ -695,9 +698,11 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
 
   return (
     <BlockKitContext.Provider value={value}>
-      <StackContext.Provider value={stackValue}>
-        {theme ? <div data-theme={theme}>{content}</div> : content}
-      </StackContext.Provider>
+      <StateContext.Provider value={state}>
+        <StackContext.Provider value={stackValue}>
+          {theme ? <div data-theme={theme}>{content}</div> : content}
+        </StackContext.Provider>
+      </StateContext.Provider>
     </BlockKitContext.Provider>
   );
 }
@@ -720,6 +725,16 @@ const StackContext = createContext<
 const StackEntryContext = createContext<StackedView | undefined>(undefined);
 
 export function useBlockKit(): BlockKitContextValue {
+  const config = useContext(BlockKitContext);
+  const state = useContext(StateContext);
+  return useMemo(() => ({ ...config, state }), [config, state]);
+}
+
+/**
+ * {@link useBlockKit} without `state`: a component using it doesn't re-render when an input's value
+ * changes. The built-in elements use it; they keep their own value and report it with `setValue`.
+ */
+export function useBlockKitConfig(): BlockKitConfig {
   return useContext(BlockKitContext);
 }
 
@@ -730,7 +745,7 @@ export function useBlockKit(): BlockKitContextValue {
  * changes.
  */
 export function useContainer(container: Container | undefined): void {
-  const { setContainer } = useBlockKit();
+  const { setContainer } = useBlockKitConfig();
   useEffect(() => {
     setContainer(container);
   });
@@ -748,7 +763,7 @@ export interface SurfaceScopeProps extends SurfaceScopeValue {
  * `<Modal>` and `<HomeTab>` render one; custom surfaces can too.
  */
 export function SurfaceScope({ container, message, errors, children }: SurfaceScopeProps) {
-  const context = useBlockKit();
+  const context = useBlockKitConfig();
   const scopeRef = useRef<SurfaceScopeValue>({ container, message });
   scopeRef.current = { container, message };
   // Keeps the old container registration working for code that reads it (e.g. custom elements
@@ -768,7 +783,7 @@ export function SurfaceScope({ container, message, errors, children }: SurfaceSc
         loadOptions(actionId, blockId, value, scope ?? scopeRef.current)),
     [loadOptions],
   );
-  const value = useMemo<BlockKitContextValue>(
+  const value = useMemo<BlockKitConfig>(
     () => ({
       ...context,
       surface,
@@ -790,8 +805,8 @@ export function SurfaceScope({ container, message, errors, children }: SurfaceSc
  * sets `dispatch_action`.
  */
 export function SuppressActions({ children }: { children: ReactNode }) {
-  const context = useBlockKit();
-  const value = useMemo<BlockKitContextValue>(() => ({ ...context, dispatch: noop }), [context]);
+  const context = useBlockKitConfig();
+  const value = useMemo<BlockKitConfig>(() => ({ ...context, dispatch: noop }), [context]);
   return <BlockKitContext.Provider value={value}>{children}</BlockKitContext.Provider>;
 }
 

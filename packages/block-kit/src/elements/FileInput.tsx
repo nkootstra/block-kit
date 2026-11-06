@@ -1,6 +1,6 @@
 import type { FileInput as FileInputElement } from "@slack/types";
 import { useRef, useState } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { FileUploadIcon } from "../icons";
 import { Tooltip } from "../Tooltip";
 import type { ElementProps } from "../types";
@@ -20,7 +20,7 @@ interface PickedFile {
 /** UI-only: there is no upload backend here, so picking a file just records its metadata in the
  * shape Slack's `files:read`-scoped apps receive, without actually transferring bytes anywhere. */
 export function FileInput({ element, blockId }: ElementProps<FileInputElement>) {
-  const { setValue, dispatch } = useBlockKit();
+  const { setValue, dispatch } = useBlockKitConfig();
   const [files, setFiles] = useState<PickedFile[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const actionId = element.action_id ?? "";

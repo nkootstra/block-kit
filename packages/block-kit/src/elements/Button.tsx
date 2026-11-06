@@ -1,13 +1,13 @@
 import { asObject, asString, classModifier } from "../payloadValues";
 import type { Button as ButtonElement, PlainTextElement } from "@slack/types";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { safeUrl } from "../safeUrl";
 import type { ElementProps } from "../types";
 import { BUTTON_LABEL_MAX, truncate } from "./truncate";
 
 export function Button({ element, blockId }: ElementProps<ButtonElement>) {
-  const { dispatch } = useBlockKit();
+  const { dispatch } = useBlockKitConfig();
   const { ask, dialog } = useConfirm(element.confirm);
   const text = asObject<PlainTextElement>(element.text);
   const className = ["sbk-button", classModifier(element.style) && `sbk-button--${element.style}`]

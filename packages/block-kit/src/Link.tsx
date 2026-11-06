@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { type LinkProps, type MentionRef, useBlockKit } from "./context";
+import { type LinkProps, type MentionRef, useBlockKitConfig } from "./context";
 import { safeUrl } from "./safeUrl";
 
 /**
@@ -12,7 +12,7 @@ export function Link({
   children,
   ...props
 }: Omit<LinkProps, "href"> & { href: string | undefined }) {
-  const { linkComponent: Component } = useBlockKit();
+  const { linkComponent: Component } = useBlockKitConfig();
   const href = safeUrl(rawHref);
   if (Component && href !== undefined)
     return (
@@ -32,7 +32,7 @@ export function Link({
  * returns one, otherwise the plain pill. Both keep the pill's class, so they look the same.
  */
 export function MentionLink({ type, id, children }: MentionRef & { children: ReactNode }) {
-  const { mentionHref } = useBlockKit();
+  const { mentionHref } = useBlockKitConfig();
   const href = mentionHref?.({ type, id });
   return href === undefined ? (
     <span className="sbk-mention">{children}</span>

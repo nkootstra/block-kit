@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 
 /**
  * Slack's `focus_on_load`: the element takes focus when its modal or Home tab opens. Slack ignores
@@ -13,7 +13,7 @@ export function useFocusOnLoad<T extends HTMLElement>(
   element: { focus_on_load?: boolean },
   existing?: { readonly current: T | null },
 ) {
-  const { surface } = useBlockKit();
+  const { surface } = useBlockKitConfig();
   const own = useRef<T>(null);
   const ref = existing ?? own;
   const focus = element.focus_on_load === true && surface !== "message";

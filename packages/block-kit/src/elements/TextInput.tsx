@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
 import { EmailIcon, LinkGlyphIcon } from "../icons";
 import { asString } from "../payloadValues";
@@ -55,7 +55,7 @@ function hiddenCountWidth(field: HTMLElement, remaining: number): number | undef
 }
 
 export function TextInput({ element, blockId }: ElementProps<TextInputElement>) {
-  const { setValue, dispatch, surface } = useBlockKit();
+  const { setValue, dispatch, surface } = useBlockKitConfig();
   // Slack's Builder uses a taller "medium" control (36px, more horizontal padding) for a modal
   // or Home tab form; the message-surface preview uses a smaller 28px control.
   const sizeClass = surface === "message" ? "" : " sbk-text-input--medium";

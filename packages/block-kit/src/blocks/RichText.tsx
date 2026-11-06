@@ -9,7 +9,7 @@ import type {
 } from "@slack/types";
 import { formatSlackDate } from "../parser";
 import { Fragment, type ReactNode } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { Emoji } from "../emoji";
 import { skinToneOf } from "../emoji/lookup";
 import { LinkHoverCard } from "../HoverCard";
@@ -75,7 +75,7 @@ type RichTextEntityLeaf = RichTextEntity & { style?: RichTextElement["style"] };
 const SALESFORCE_CLOUD =
   "M5.959 3.36c1.061.03 2.01.397 2.725 1.03a3.7 3.7 0 0 1 2.083-.639 3.75 3.75 0 0 1 2.897 1.383 4.2 4.2 0 0 1 1.182-.176 4.4 4.4 0 0 1 4.404 4.404 4.4 4.4 0 0 1-4.757 4.39 3.44 3.44 0 0 1-2.715 1.32q-.43-.001-.82-.097a3.79 3.79 0 0 1-3.16 1.664 3.81 3.81 0 0 1-3.322-1.929q-.068.004-.137.004a3.591 3.591 0 0 1-2.32-6.33 4.2 4.2 0 0 1-.127-1.012C1.892 5.16 3.7 3.36 5.937 3.36z";
 
-type Resolvers = ReturnType<typeof useBlockKit>["resolvers"];
+type Resolvers = ReturnType<typeof useBlockKitConfig>["resolvers"];
 
 export interface RenderCtx {
   resolvers: Resolvers;
@@ -83,7 +83,7 @@ export interface RenderCtx {
 }
 
 export function RichText({ block }: BlockProps<RichTextBlock>) {
-  const { resolvers, timeZone } = useBlockKit();
+  const { resolvers, timeZone } = useBlockKitConfig();
   const ctx: RenderCtx = { resolvers, timeZone };
   return (
     <div className="sbk-rich-text">

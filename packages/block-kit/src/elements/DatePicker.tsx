@@ -1,7 +1,7 @@
 import type { Datepicker } from "@slack/types";
 import { useEffect, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { asString } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { CalendarPopover } from "./calendar/CalendarPopover";
@@ -27,7 +27,7 @@ function formatDate(date: string, long: boolean): string {
 }
 
 export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
-  const { setValue, dispatch, surface } = useBlockKit();
+  const { setValue, dispatch, surface } = useBlockKitConfig();
   // Slack draws the small field in messages and the medium one in modals and on App Home.
   const medium = surface !== "message";
   const inInputBlock = useInInputBlock();

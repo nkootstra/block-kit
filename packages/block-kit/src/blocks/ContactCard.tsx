@@ -1,4 +1,4 @@
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import type { BlockProps, Json } from "../types";
 import { useInContainer } from "./containerContext";
 
@@ -16,7 +16,7 @@ import { useInContainer } from "./containerContext";
 export function ContactCard({ block }: BlockProps) {
   const json = block as Json;
   const userId = typeof json.contact_user_id === "string" ? json.contact_user_id : undefined;
-  const { resolvers, identity } = useBlockKit();
+  const { resolvers, identity } = useBlockKitConfig();
   const name = userId ? resolvers.user?.(userId) : undefined;
   const inContainer = useInContainer();
   const missing = resolvers.user !== undefined && !name;

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 
 /** True while rendering the element of an `input` block, where Slack lays some elements out differently. */
 export const InputBlockContext = createContext(false);
@@ -23,7 +23,7 @@ export function useInOptionalInput(): boolean {
 export function useInClearableInput(): boolean {
   const inInput = useContext(InputBlockContext);
   const optional = useContext(InputOptionalContext);
-  const { surface } = useBlockKit();
+  const { surface } = useBlockKitConfig();
   return inInput && (optional || surface === "message");
 }
 

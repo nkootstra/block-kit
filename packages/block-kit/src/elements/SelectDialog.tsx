@@ -1,7 +1,7 @@
 import type { PlainTextOption } from "@slack/types";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { CloseIcon } from "../icons";
 import { Text } from "../Text";
 import { MENU_GAP, Popover } from "./Popover";
@@ -36,7 +36,7 @@ export function SelectDialog({
   onConfirm: (selected: PlainTextOption[]) => void;
   onCancel: () => void;
 }) {
-  const { theme } = useBlockKit();
+  const { theme } = useBlockKitConfig();
   const titleId = useId();
   const [draft, setDraft] = useState(initial);
   const [query, setQuery] = useState("");

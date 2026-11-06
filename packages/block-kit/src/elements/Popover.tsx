@@ -1,6 +1,6 @@
 import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useBlockKit } from "../context";
+import { useBlockKitConfig } from "../context";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
 
 /** Space between the anchor and the popover, as in Slack's menus. */
@@ -45,7 +45,7 @@ export function Popover({
   onPlaced,
   children,
 }: PopoverProps) {
-  const { theme } = useBlockKit();
+  const { theme } = useBlockKitConfig();
   const layerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(
     null,
