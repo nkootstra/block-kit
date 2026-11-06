@@ -11,16 +11,12 @@ import type {
   ListItem,
   Paragraph,
   PhrasingContent,
-  Root,
   RootContent,
   Table,
   TableCell,
   TableRow,
   Text,
 } from "mdast";
-import { fromMarkdown } from "mdast-util-from-markdown";
-import { gfmFromMarkdown } from "mdast-util-gfm";
-import { gfm } from "micromark-extension-gfm";
 import { Fragment, type ReactNode, useRef } from "react";
 import { TableActions } from "../data/HoverActions";
 import { Emoji } from "../emoji";
@@ -29,6 +25,7 @@ import { Link as TextLink } from "../Link";
 import type { BlockProps } from "../types";
 import { asString } from "../payloadValues";
 import { CodeBlock } from "./CodeBlock";
+import { parseMarkdown } from "./markdownParse";
 
 /**
  * Renders the (Builder-only) `markdown` block: a GitHub-flavored-markdown string that the Builder
@@ -39,13 +36,6 @@ import { CodeBlock } from "./CodeBlock";
 export function Markdown({ block }: BlockProps<MarkdownBlock>) {
   const tree = parseMarkdown(asString(block.text) ?? "");
   return <div className="sbk-markdown">{renderBlocks(tree.children)}</div>;
-}
-
-function parseMarkdown(text: string): Root {
-  return fromMarkdown(text, {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
 }
 
 const HEADING_TAGS = { 1: "h1", 2: "h2", 3: "h3" } as const;
