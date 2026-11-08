@@ -140,7 +140,7 @@ means for payloads you don't trust.
     timeZone: {
       type: "string",
       description:
-        "IANA zone for `<!date>` tokens and date and time elements. The datetimepicker reads the picked date and time in it.",
+        "IANA zone for `<!date>` tokens, message times and the datetimepicker, which shows and reads the picked date and time in it. A date picker doesn't use it (it sends a calendar day with no zone), and a time picker names its zone with its own `timezone` field.",
       default: "The viewer's zone; UTC for the datetimepicker",
     },
     children: { type: "ReactNode", description: "The surfaces to render.", required: true },
