@@ -8,8 +8,8 @@ seo:
   title: "Slack table block"
 ---
 
-`table` renders a fixed grid: first row as the header, every cell either `rich_text` or plain
-text. Reach for it when a dataset is small enough to show in full; for anything that needs
+`table` renders a fixed grid: first row as the header, every cell `rich_text`, plain text
+(`raw_text`) or a number (`raw_number`). Reach for it when a dataset is small enough to show in full; for anything that needs
 sorting or pagination, use `data_table` instead.
 
 <Preview
@@ -146,7 +146,7 @@ one data row, both `rich_text` cells.
 ### Alignment and wrapping
 
 `column_settings[i]` controls the column at that index. Here the first column wraps long text and
-the second is right-aligned:
+the third, the hours, is right-aligned:
 
 <Preview
   payload={{
@@ -225,9 +225,12 @@ the second is right-aligned:
 />
 
 Hovering the table also shows Slack's download-as-CSV and copy buttons, same as `data_table`. In
-the downloaded CSV and the copied text, a cell a spreadsheet would read as a formula (starting with
-`=`, `+`, `-` or `@`, and not a number) gets a leading `'`, so opening the file or pasting the text
-can't run it.
+the downloaded CSV and the copied text, a cell a spreadsheet would read as a formula gets a leading
+`'`, so opening the file or pasting the text can't run it. That is a cell that starts with `=`, `+`,
+`-`, `@`, a tab or a carriage return and isn't a number: `-5` and `+1.5` stay as they are, and a
+`raw_number` cell is judged by its `text`, the part that's shown. In the copied text, a cell's tabs
+and line breaks become spaces, so one cell can't spill into the next cell or row. See
+[Untrusted input](/guides/untrusted-input) for what else to check in a payload you didn't write.
 
 ## Related
 

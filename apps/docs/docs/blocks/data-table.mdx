@@ -111,7 +111,8 @@ Each cell is one of four shapes, picked by `type`:
     },
     url: {
       type: '{ type: "url", url: string, text?: string }',
-      description: "A link, opened in a new tab. `text` defaults to the raw URL.",
+      description:
+        "A link, opened in a new tab. `text` defaults to the raw URL. The URL goes through the same check as every payload link ([URL safety](/reference/block-kit-provider#url-safety)): a `javascript:` or other unsafe URL shows its text with no link.",
     },
     rich_text: {
       type: "RichTextBlock",
@@ -129,6 +130,13 @@ once a table has more than 5 data rows, five rows to a page. Slack's `page_size`
 default 5) isn't read, so a table always pages by 5. See [Limits](/reference/limits) for the
 row, column and character limits.
 :::
+
+With only a header row, the table shows the header and no data rows. With an empty `rows`, it shows
+the caption and toolbar and no columns.
+
+Every control is a button, so the keyboard works as it does for any button: Tab moves between the
+toolbar, the column headers, a cell's **Expand cell** button and the page controls, and Enter or
+Space activates the focused one. A header activated this way cycles its sort like a click.
 
 The toolbar's **More actions** button opens Slack's menu with **Copy table**, which copies the
 whole table as tab-separated text that pastes into a spreadsheet, and **Download table**, which

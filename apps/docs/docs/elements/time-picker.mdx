@@ -159,7 +159,9 @@ Setting `timezone` shows a hint underneath the control naming the zone the way S
 its own region list rather than the IANA id: `America/New_York` reads "Time zone: Eastern Time (US
 and Canada)", `Europe/Madrid` "Time zone: Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna", and
 `UTC` "Time zone: Monrovia, Reykjavik". The names were recorded from Block Kit Builder for every
-zone browsers know; a zone it doesn't name shows its IANA id.
+zone browsers know; a zone it doesn't name shows its IANA id. The hint is all `timezone` changes:
+`selected_time` is the `HH:mm` the user picked, as Slack sends it. The provider's `timeZone`
+doesn't apply to a time picker.
 
 <Preview
   actions

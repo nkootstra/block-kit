@@ -197,6 +197,13 @@ When `initial_date` is set, the action carries it too (`"initial_date": "2024-06
 does; the placeholder isn't sent. The initial value is also reported as state as soon as the
 element mounts. You don't need an interaction first to read it back.
 
+### Time zone
+
+A date picker sends a calendar day (`"selected_date": "2024-06-01"`) with no time or zone, so the
+provider's `timeZone` doesn't change what it sends or shows. The calendar marks today by the
+viewer's own clock. The [datetime picker](/elements/datetime-picker#time-zone) is the one that
+reads `timeZone`.
+
 ### Keyboard
 
 As in Slack, the calendar opens with its right edge on the field's (on a screen too narrow for that,

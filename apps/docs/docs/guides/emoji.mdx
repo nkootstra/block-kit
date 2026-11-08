@@ -41,6 +41,10 @@ Override the image source with `emoji.imageUrl`, given a unified codepoint seque
 >
 ```
 
+By default every viewer's browser fetches these images from `cdn.jsdelivr.net`, which then sees
+their IP address and the page they're on, and a Content Security Policy needs it in `img-src`. To
+keep emoji on your own host, copy the image set there and point `imageUrl` at it.
+
 ## Custom emoji
 
 Workspace custom emoji have no fixed set: pass them as a name → URL map with `emoji.custom`:
