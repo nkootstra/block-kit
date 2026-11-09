@@ -63,7 +63,7 @@ text, and buttons) inside a bordered box. It's a library-invented block, not par
     slack_icon: {
       type: '{ type: "icon"; name: string }',
       description:
-        "One of Slack's icon-font glyphs. This library can't render the icon font, so it shows a neutral badge with the icon's name in a tooltip instead.",
+        "One of Slack's icons, by name. `rocket`, `calendar`, `bug`, `lightbulb`, `star-filled` and `warning` are drawn with Slack's own glyphs; any other name shows a neutral badge with the icon's name in a tooltip.",
     },
     title: {
       type: "PlainTextElement | MrkdwnElement",
@@ -180,7 +180,7 @@ An entirely empty card renders just its `hero_image`.
 />
 
 </Tab>
-<Tab title="Slack icon-font glyph">
+<Tab title="Slack icon">
 
 <Preview
   payload={{

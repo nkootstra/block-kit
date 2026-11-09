@@ -39,6 +39,24 @@ describe("<Card>", () => {
     expect(container.querySelector(".sbk-card__icon--fallback")).toBeNull();
   });
 
+  it.each([
+    ["calendar", /^M4\.5 4h11/],
+    ["bug", /^M11\.92 1\.077/],
+    ["lightbulb", /^M5\.5 7a4\.5/],
+    ["star-filled", /^M9\.99 1\.5/],
+    ["warning", /^M10 12\.75/],
+  ])("draws the %s slack_icon with Slack's own glyph", (name, start) => {
+    const block = {
+      type: "card",
+      title: { type: "plain_text", text: "Card" },
+      slack_icon: { type: "icon", name },
+    };
+    const { container } = render(<Card block={block as never} blockId="b1" index={0} />);
+    const path = container.querySelector(".sbk-card__icon svg path");
+    expect(path?.getAttribute("d")).toMatch(start);
+    expect(container.querySelector(".sbk-card__icon--fallback")).toBeNull();
+  });
+
   it("renders a fallback badge for a slack_icon it has no glyph for", () => {
     const block = {
       type: "card",
