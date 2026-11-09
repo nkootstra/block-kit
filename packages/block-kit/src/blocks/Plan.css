@@ -31,6 +31,10 @@
   text-indent: -20px;
   font-size: 15px;
   line-height: 22px;
+  /* The 19.5px title makes each line 22.5px tall, but Slack sets the toggle's height in whole
+     pixels for its height animation (22px for one line, 44px for two), so the content overhangs by
+     half a pixel and the plan below starts at the rounded height. */
+  margin-bottom: -0.5px;
 }
 
 /* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
@@ -58,8 +62,7 @@
 
 .sbk-plan__pill-title {
   font-size: 13px;
-  /* Slack's is 19.5px, but with our Lato metrics that overhangs the 22px line by half a pixel. */
-  line-height: 19px;
+  line-height: 19.5px;
   color: var(--sbk-plan-text);
 }
 
