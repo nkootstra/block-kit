@@ -533,6 +533,19 @@ a.sbk-mention {
   box-shadow: var(--sbk-focus-shadow);
 }
 
+/* Slack marks a keyboard-focused button `c-button--focus-visible`. On an outline button that also
+   rounds it to 8px and makes its 1px border transparent, so the ring stands in for the border
+   (catalog/actions/button@focus-button-1, section/overflow@focus-overflow-1,
+   contexts/file_input/modal-input@focus-file-1). Filled buttons keep their corners. */
+.sbk-button:not(.sbk-button--primary, .sbk-button--danger):focus-visible,
+.sbk-overflow__button:focus-visible,
+.sbk-file-input__button:focus-visible {
+  border-color: transparent;
+  border-radius: 8px;
+  /* Paint the fill under the transparent border, as Slack's does, or the ring shows through it. */
+  background-clip: border-box;
+}
+
 /* Forced-colours mode drops the box-shadow ring; an outline in the system colour shows focus. */
 @media (forced-colors: active) {
   .sbk-button:focus-visible,
