@@ -27,6 +27,10 @@ import { redact, type Sighting } from "./redact";
  *   leaves plain never got `text-decoration:none` and picks up the browser's underline here.
  * - Older snapshots froze a field without a string value as `value="undefined"`, which the
  *   reference then draws as text.
+ * - Chrome prints a computed size to six significant digits, so a box Slack laid out 121.3125px
+ *   tall was stored as 121.312px, which layout floors to the 1/64px below. Each box lost 1/64px
+ *   and a line further down could round to the pixel above Slack's. Layout sizes are whole
+ *   64ths of a pixel, so the nearest one within the printed digits is the size Slack used.
  * - The Builder workspace's members, channels, name and IDs are swapped for placeholders
  *   (redact.ts); `mapping` adds the maintainer's local redact.local.json, and `known` the members
  *   and channels the capture's other references show, so each gets the same placeholder in all.
@@ -39,7 +43,9 @@ export function normalize(
   return redact(
     pinMissingText(
       uprightPseudos(
-        wrapCarouselCards(addDataTableScrollbar(addModalScrollbar(restoreGlyphs(html)))),
+        wrapCarouselCards(
+          addDataTableScrollbar(addModalScrollbar(restoreGlyphs(restoreLayoutUnits(html)))),
+        ),
       ),
     )
       .replace(/<span\b[^>]*>/g, (tag) =>
@@ -71,6 +77,19 @@ export function normalize(
       ),
     mapping,
     known,
+  );
+}
+
+const LAYOUT_SIZE = /(^|[;"])((?:width|height|flex-basis|block-size|inline-size):)(\d+)\.(\d+)px/g;
+
+/** Puts back the 1/64px sizes the snapshot printed to six digits (see normalize). */
+function restoreLayoutUnits(html: string): string {
+  return html.replace(/\sstyle="[^"]*"/g, (attr) =>
+    attr.replace(LAYOUT_SIZE, (decl, lead: string, prop: string, int: string, frac: string) => {
+      const printed = Number(`${int}.${frac}`);
+      const size = Math.round(printed * 64) / 64;
+      return Math.abs(size - printed) < 10 ** -frac.length ? `${lead}${prop}${size}px` : decl;
+    }),
   );
 }
 
