@@ -342,6 +342,36 @@ describe("<RichText>", () => {
     expect(screen.getByText(/Feb 18, 2014/)).toBeTruthy();
   });
 
+  it("links a date with a url as Slack's plain date link, not an underlined one", () => {
+    // extra/fidelity/rich-text-date/mixed: Slack's `mrkdwn_date` link has no underline.
+    const block = {
+      type: "rich_text",
+      elements: [
+        {
+          type: "rich_text_section",
+          elements: [
+            {
+              type: "date",
+              timestamp: 1392734382,
+              format: "{date_short}",
+              url: "https://example.com",
+            },
+            { type: "link", url: "https://example.org", text: "Docs" },
+          ],
+        },
+      ],
+    };
+    render(
+      <BlockKitProvider timeZone="UTC">
+        <RichText block={block as never} blockId="b1" index={0} />
+      </BlockKitProvider>,
+    );
+    const link = screen.getByRole("link", { name: "Feb 18, 2014" });
+    expect(link.classList.contains("sbk-link--date")).toBe(true);
+    // A link element stays an ordinary, underlined link.
+    expect(screen.getByRole("link", { name: "Docs" }).className).toBe("sbk-link");
+  });
+
   it("renders jumbo emoji when a section consists only of emoji", () => {
     const block = {
       type: "rich_text",

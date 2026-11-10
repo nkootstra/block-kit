@@ -75,6 +75,16 @@ describe("<Mrkdwn>", () => {
     expect(screen.getByText("Feb 18, 2014 at 3:39 PM")).toBeTruthy();
   });
 
+  it("links a <!date> with a url as Slack's plain date link", () => {
+    render(
+      <BlockKitProvider timeZone="UTC">
+        <Mrkdwn text="<!date^1392734382^{date_short}^https://example.com|Feb 18, 2014>" />
+      </BlockKitProvider>,
+    );
+    const link = screen.getByRole("link", { name: "Feb 18, 2014" });
+    expect(link.classList.contains("sbk-link--date")).toBe(true);
+  });
+
   it("is SSR-safe", () => {
     expect(renderToStaticMarkup(<Mrkdwn text={"a\nb"} />)).toBe(
       '<span class="sbk-mrkdwn">a<br/>b</span>',
