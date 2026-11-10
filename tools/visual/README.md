@@ -531,6 +531,9 @@ lays out like the live page:
   normal flow, at `auto` (read through CSS Typed OM), whose first or last child's margin collapses
   through it. Leaving every `auto` height out is wrong elsewhere: Slack's checkbox wrapper, a flex
   item, was 14px live and replayed 20px tall around its 14px box and 3px margins.
+- **A radio or checkbox keeps the state on screen.** A click checks one without setting its
+  `checked` attribute, so the snapshot writes the attribute from the `checked` property; without
+  it, `radio-buttons@pick` drew the picked radio empty.
 - **The message time isn't pinned:** the capture writes `12:00 PM` over the time on screen, which
   would otherwise wrap in the narrower time's width.
 - **The Builder's drag wrapper isn't in the motion:** its selection-highlight transition is the
