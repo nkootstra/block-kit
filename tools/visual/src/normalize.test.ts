@@ -18,6 +18,21 @@ describe("normalize", () => {
     ).toBe('<input type="text" value="" style="box-sizing:border-box"><p>undefined</p>');
   });
 
+  it("gives back a size the snapshot cut to six digits", () => {
+    // catalog/agents/plan@expanded: Slack laid the first task out 121.3125px tall, and the
+    // snapshot stored "121.312px", which the reference floored to 121.296875 and drew a later
+    // line a pixel higher than Slack did.
+    expect(normalize('<div style="height:121.312px;width:344px;flex-basis:1234.55px"></div>')).toBe(
+      '<div style="height:121.3125px;width:344px;flex-basis:1234.546875px"></div>',
+    );
+  });
+
+  it("leaves sizes that aren't a cut 1/64 of a pixel, and other properties, alone", () => {
+    const html =
+      '<div style="height:33.3333px;width:10.5px;line-height:19.0668px;margin-top:121.312px"></div>';
+    expect(normalize(html)).toBe(html);
+  });
+
   it("applies a maintainer's local mapping for names Slack doesn't mark up", () => {
     expect(normalize("<p>Acme</p>", { Acme: "Example" })).toBe("<p>Example</p>");
   });
