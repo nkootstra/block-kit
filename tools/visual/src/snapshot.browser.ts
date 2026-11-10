@@ -104,6 +104,22 @@ describe("snapshot.js", () => {
     expect(html).not.toContain('value="undefined"');
   });
 
+  it("freezes the radio or checkbox the user picked as checked, and no other", async () => {
+    // catalog/actions/radio-buttons@pick: a click checks a radio without setting its `checked`
+    // attribute, so the reference drew the picked radio empty.
+    await page.setContent(
+      `<!doctype html><body><div class="p-bkb_preview__message"><input id="a" type="radio" name="r"><input id="b" type="radio" name="r" checked><input id="c" type="checkbox"><input id="d" type="checkbox" checked></div></body>`,
+    );
+    await page.click("#a");
+    await page.click("#c");
+    await page.click("#d");
+    await page.setContent(await snapshot(page));
+    const checked = await page.evaluate(() =>
+      [...document.querySelectorAll("input")].map((el) => `${el.id}:${el.checked}`),
+    );
+    expect(checked).toEqual(["a:true", "b:false", "c:true", "d:false"]);
+  });
+
   it("records the focused field's selected text, and no other field's", async () => {
     // Slack selects a time picker's time when its list opens; a frozen field can't hold that.
     await page.setContent(

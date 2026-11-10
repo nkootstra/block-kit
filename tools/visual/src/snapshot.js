@@ -320,6 +320,10 @@ async (win = window, options = {}) => {
     // setAttribute would write a missing value as the text "undefined", which then paints.
     if (el.localName === "input" || el.localName === "textarea")
       el.setAttribute("value", typeof src.value === "string" ? src.value : "");
+    // A click checks a radio or checkbox without touching its `checked` attribute; write down the
+    // state on screen, or the reference draws the picked one empty.
+    if (el.localName === "input" && (src.type === "radio" || src.type === "checkbox"))
+      el.toggleAttribute("checked", src.checked);
     // A frozen field can't hold a text selection; record the focused field's so the comparison
     // can select it again (Slack selects a time picker's time when its list opens).
     if (src === doc.activeElement && src.selectionStart !== src.selectionEnd)
