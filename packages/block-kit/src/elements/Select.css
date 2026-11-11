@@ -128,6 +128,14 @@
   border-radius: 4px;
 }
 
+/* Keyboard-focused, it is an outline button with `c-button--focus-visible`: 8px corners and a
+   transparent border under the ring (catalog/section/multi-conversations-select@focus-field-1). The
+   border colour above outranks the shared focus rule, so it is cleared here. */
+.sbk-section__accessory .sbk-select--multi .sbk-select__control:focus-visible {
+  border-color: transparent;
+  border-radius: 8px;
+}
+
 .sbk-section__accessory .sbk-select--multi .sbk-select__placeholder {
   color: var(--sbk-text);
 }
