@@ -5,6 +5,7 @@ import { areaFillForIndex, colorForIndex, liftedColorForIndex } from "./palette"
 import { roundedBarPath, smoothLinePath } from "./paths";
 import { crispLine, formatTick, niceLinearScale } from "./scale";
 import { useContainerWidth } from "./useContainerWidth";
+import { useTextWidth } from "./useTextWidth";
 
 export interface ChartSeries {
   name: string;
@@ -54,9 +55,18 @@ export function CartesianChart({
   const { ref, width } = useContainerWidth(406);
   const allValues = series.flatMap((s) => s.data.map((d) => d.value));
   const scale = niceLinearScale(Math.min(0, ...allValues), Math.max(0, ...allValues));
-  // Slack's line and area plots stop 10.7675px short of the edge, leaving room for half the last
-  // category label; bars fill the width.
-  const rightMargin = type === "bar" ? 0 : 10.7675;
+  // Slack's line and area plots end where the last category label, centred on the last point,
+  // stays 3px inside the chart: 3px plus half the label's width short of the edge (10.3222px for
+  // "Fri", 13.5007px for "W3"; extra/charts/area-twelve-series, extra/fidelity/data-visualization/
+  // mixed). Bars fill the width.
+  const lastLabel = categories[categories.length - 1] ?? "";
+  const lastLabelWidth = useTextWidth(
+    ref,
+    lastLabel,
+    "400 13px",
+    lastLabel.length * LABEL_CHAR_WIDTH,
+  );
+  const rightMargin = type === "bar" ? 0 : 3 + lastLabelWidth / 2;
   const n = categories.length;
   // The room each label has: a bar's band, or the distance between two points.
   const slots = type === "bar" ? n : n - 1;
