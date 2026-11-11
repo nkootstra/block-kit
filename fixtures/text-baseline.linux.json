@@ -1237,27 +1237,12 @@
   "extra/fidelity/data-visualization/many-items@mobile+dark": [],
   "extra/fidelity/data-visualization/many-items@mobile+full": [],
   "extra/fidelity/data-visualization/many-items@scrolled-end+mobile": [],
-  "extra/fidelity/data-visualization/mixed": [
-    "x|W2|0",
-    "x|W3|0"
-  ],
-  "extra/fidelity/data-visualization/mixed@dark": [
-    "x|W2|0",
-    "x|W3|0"
-  ],
-  "extra/fidelity/data-visualization/mixed@mobile": [
-    "x|W2|0"
-  ],
-  "extra/fidelity/data-visualization/mixed@mobile+dark": [
-    "x|W2|0"
-  ],
-  "extra/fidelity/data-visualization/mixed@mobile+full": [
-    "x|W2|0",
-    "x|W3|0"
-  ],
-  "extra/fidelity/data-visualization/mixed@scrolled-end+mobile": [
-    "x|W2|0"
-  ],
+  "extra/fidelity/data-visualization/mixed": [],
+  "extra/fidelity/data-visualization/mixed@dark": [],
+  "extra/fidelity/data-visualization/mixed@mobile": [],
+  "extra/fidelity/data-visualization/mixed@mobile+dark": [],
+  "extra/fidelity/data-visualization/mixed@mobile+full": [],
+  "extra/fidelity/data-visualization/mixed@scrolled-end+mobile": [],
   "extra/fidelity/datepicker/empty": [],
   "extra/fidelity/datepicker/empty@dark": [],
   "extra/fidelity/datepicker/empty@mobile": [],
