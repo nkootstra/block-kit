@@ -69,7 +69,7 @@ jobs:
             echo "visual=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          inputs='^(packages/block-kit/|apps/playground/|fixtures/|tools/visual/|bun\.lock$|package\.json$|turbo\.json$|tsconfig\.base\.json$|\.github/workflows/visual\.yml$)'
+          inputs='^(packages/block-kit/|apps/playground/|fixtures/|tools/visual/|bun\.lock$|package\.json$|turbo\.json$|tsconfig\.base\.json$|\.github/workflows/visual\.yml$|\.github/actions/install-bun/)'
           if git diff --name-only "$BASE_SHA"..."$HEAD_SHA" | grep -qE "$inputs"; then
             echo "visual=true" >> "$GITHUB_OUTPUT"
           else
@@ -99,15 +99,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      # setup-bun unpacks Bun's release zip, and the Playwright image ships without unzip. Git comes
-      # first so checkout makes a real clone, which the base branch's sparse checkout needs.
-      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version-file: package.json
+      # The Playwright image has no unzip for setup-bun; see the action.
+      - uses: ./.github/actions/install-bun
       - run: bun install --frozen-lockfile
       - name: Start playground
         run: |
@@ -286,13 +282,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version-file: package.json
+      # The Playwright image has no unzip for setup-bun; see the action.
+      - uses: ./.github/actions/install-bun
       - run: bun install --frozen-lockfile
       - run: bun run --cwd tools/visual ${{ matrix.engine == 'chromium' && 'test:browser' || 'test:interaction' }}
 
@@ -311,14 +305,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - run: apt-get update && apt-get install -y --no-install-recommends unzip git
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version-file: package.json
+      # The Playwright image has no unzip for setup-bun; see the action.
+      - uses: ./.github/actions/install-bun
       - run: bun install --frozen-lockfile
       # The base branch's library, checked out next to the workspace with its own dependencies.
       - name: Check out the base branch

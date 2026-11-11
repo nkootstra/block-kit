@@ -1,0 +1,11 @@
+name: Install Bun
+description: >-
+  Installs the Bun that package.json's packageManager names in a job that runs in the Playwright
+  container. oven-sh/setup-bun unpacks Bun's release zip with unzip, which the image lacks, and
+  installing it from Ubuntu's mirrors made every visual job depend on them. This downloads the
+  release, checks it against the release's SHASUMS256.txt and unpacks it with the image's python3.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: '"$GITHUB_ACTION_PATH/install.sh"'
