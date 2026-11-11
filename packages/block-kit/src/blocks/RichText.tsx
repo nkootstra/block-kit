@@ -329,7 +329,12 @@ export function renderLeaf(
         formatSlackDate(el.timestamp, el.format, { timeZone: ctx.timeZone }) ||
         asString(el.fallback);
       content = el.url ? (
-        <Link className="sbk-link" href={el.url} target="_blank" rel="noopener noreferrer">
+        <Link
+          className="sbk-link sbk-link--date"
+          href={el.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {text}
         </Link>
       ) : (

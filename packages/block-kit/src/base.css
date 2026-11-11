@@ -298,6 +298,12 @@
   text-decoration: underline;
 }
 
+/* A linked date is Slack's `mrkdwn_date` link, which isn't underlined
+   (extra/fidelity/rich-text-date/mixed). */
+.sbk-link--date {
+  text-decoration: none;
+}
+
 .sbk-mention {
   color: var(--sbk-mention-text);
   background: var(--sbk-mention-bg);
@@ -554,6 +560,25 @@ a.sbk-mention {
 /* Slack's `c-link--focus-visible:focus` drops the underline while the ring is up. */
 .sbk-link:focus-visible {
   text-decoration: none;
+}
+
+/* Slack's date link underlines while hovered, pressed or focused, and keyboard focus shows that
+   underline instead of the ring (extra/fidelity/rich-text-date/mixed). */
+@media (hover: hover) and (pointer: fine) {
+  .sbk-link--date:hover {
+    text-decoration: underline;
+  }
+}
+
+.sbk-link--date:active,
+.sbk-link--date:focus,
+.sbk-link--date:focus-visible {
+  text-decoration: underline;
+}
+
+.sbk-link--date:focus-visible {
+  outline-offset: 0;
+  box-shadow: none;
 }
 
 /* Keyboard focus shouldn't also paint the pointer's hover shadow on outline buttons. */

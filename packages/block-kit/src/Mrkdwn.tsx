@@ -105,7 +105,12 @@ function renderNode(
     case "date": {
       const text = formatSlackDate(node.timestamp, node.format, { timeZone });
       return node.url ? (
-        <Link className="sbk-link" href={node.url} target="_blank" rel="noopener noreferrer">
+        <Link
+          className="sbk-link sbk-link--date"
+          href={node.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {text}
         </Link>
       ) : (
