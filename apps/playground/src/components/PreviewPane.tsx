@@ -8,7 +8,7 @@ import {
   type Surface,
 } from "@nkootstra/block-kit";
 import * as stylex from "@stylexjs/stylex";
-import { lazy, memo, type ReactNode, Suspense } from "react";
+import { Component, type ErrorInfo, lazy, memo, type ReactNode, Suspense } from "react";
 import { builderUrl } from "../payload";
 import { toHomeView, toModalView } from "../lib/views";
 import { color, font } from "../theme/tokens.stylex";
@@ -17,7 +17,12 @@ import { sampleIdentity, sampleResolvers } from "../lib/workspace";
 
 export type Delivery = "demo" | "app";
 
-const RelayHint = lazy(() => import("./RelayHint").then((m) => ({ default: m.RelayHint })));
+// A build has no relay (`__RELAY__` is "absent"), so the import folds away and the chunk isn't
+// emitted.
+const RelayHint =
+  __RELAY__ === "absent"
+    ? null
+    : lazy(() => import("./RelayHint").then((m) => ({ default: m.RelayHint })));
 
 const TEAM_ID = import.meta.env.VITE_SLACK_TEAM_ID as string | undefined;
 
@@ -90,6 +95,16 @@ const styles = stylex.create({
   code: {
     fontFamily: font.mono,
   },
+  // Above the frame, at its width, so it reads as part of the preview rather than of the page.
+  sharedNote: {
+    maxWidth: 760,
+    marginTop: 0,
+    marginBottom: 12,
+    marginInline: "auto",
+    color: color.muted,
+    fontSize: 13,
+    textWrap: "pretty",
+  },
   field: {
     display: "inline-flex",
     alignItems: "center",
@@ -112,7 +127,7 @@ function DeliveryPicker({
   value: Delivery;
   onChange: (value: Delivery) => void;
 }) {
-  if (__RELAY__ === "absent") return null;
+  if (__RELAY__ === "absent" || !RelayHint) return null;
   const picker = (
     <span {...stylex.props(styles.field)}>
       Deliver to
@@ -136,6 +151,42 @@ function DeliveryPicker({
 }
 
 type Shown = { blocks: ModalView["blocks"]; raw: unknown };
+
+/**
+ * Keeps a payload that throws while it renders inside the preview, so the rest of the playground
+ * stays up and the JSON can be fixed. The next payload (or surface) tries again.
+ */
+type BoundaryProps = { shown: Shown; surface: Surface; children: ReactNode };
+
+export class PreviewBoundary extends Component<
+  BoundaryProps,
+  { failed: boolean; shown: Shown; surface: Surface }
+> {
+  override state = { failed: false, shown: this.props.shown, surface: this.props.surface };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  // A new payload or surface clears the failure, so it renders again.
+  static getDerivedStateFromProps(props: BoundaryProps, state: { shown: Shown; surface: Surface }) {
+    if (props.shown === state.shown && props.surface === state.surface) return null;
+    return { failed: false, shown: props.shown, surface: props.surface };
+  }
+
+  override componentDidCatch(error: unknown, info: ErrorInfo) {
+    console.error("The preview couldn't render this payload.", error, info.componentStack);
+  }
+
+  override render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <p role="alert" {...stylex.props(styles.empty)}>
+        This payload couldn't be rendered. Edit the JSON or pick an example.
+      </p>
+    );
+  }
+}
 
 /**
  * The payload as Slack draws it. Memoized: the pane re-renders on every keystroke (for the Block
@@ -178,6 +229,7 @@ export function PreviewPane({
   handlers,
   log,
   hiddenOnPhone,
+  shared = false,
 }: {
   source: string;
   surface: Surface;
@@ -189,6 +241,8 @@ export function PreviewPane({
   handlers: Omit<BlockKitProviderProps, "children">;
   log: ReactNode;
   hiddenOnPhone: boolean;
+  /** The payload came from the link's hash, so someone else wrote it. */
+  shared?: boolean;
 }) {
   return (
     <section aria-label="Preview" {...stylex.props(styles.pane, hiddenOnPhone && styles.hidden)}>
@@ -209,9 +263,17 @@ export function PreviewPane({
       </div>
 
       <div {...stylex.props(styles.stage)}>
+        {shared && (
+          <p role="note" {...stylex.props(styles.sharedNote)}>
+            This is a preview of a shared payload. Its links and buttons lead to sites chosen by
+            whoever made the link.
+          </p>
+        )}
         <div {...stylex.props(styles.frame, surface === "modal" && styles.frameModal)}>
           {shown ? (
-            <Rendered shown={shown} surface={surface} handlers={handlers} />
+            <PreviewBoundary shown={shown} surface={surface}>
+              <Rendered shown={shown} surface={surface} handlers={handlers} />
+            </PreviewBoundary>
           ) : (
             <p {...stylex.props(styles.empty)}>
               Paste a <code {...stylex.props(styles.code)}>{'{ "blocks": [...] }'}</code> payload,

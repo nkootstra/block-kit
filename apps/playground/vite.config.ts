@@ -6,6 +6,7 @@ import stylex from "@stylexjs/unplugin/vite";
 import react from "@vitejs/plugin-react";
 import { build, defineConfig, loadEnv, type Plugin, type ResolvedConfig } from "vite";
 import { createInteractionRelay } from "../../packages/block-kit/src/interactivity/relay";
+import { cspProblems, inlineScriptHashes } from "./csp";
 
 const src = (path: string) =>
   fileURLToPath(new URL(`../../packages/block-kit/src/${path}`, import.meta.url));
@@ -118,6 +119,38 @@ function prerender(): Plugin {
   };
 }
 
+/**
+ * Fails the build when the built page has an inline script that the Content-Security-Policy in
+ * the `_headers` it ships doesn't allow by hash (see csp.ts), so a deploy never blocks its own
+ * theme script. Runs after `prerender`, on the page that deploys.
+ */
+function checkCsp(): Plugin {
+  let config: ResolvedConfig;
+  return {
+    name: "check-csp",
+    apply: "build",
+    configResolved(resolved) {
+      config = resolved;
+    },
+    closeBundle: {
+      order: "post",
+      sequential: true,
+      async handler() {
+        if (config.build.ssr) return;
+        const out = join(config.root, config.build.outDir);
+        const html = await readFile(join(out, "index.html"), "utf8");
+        const problems = cspProblems(html, await readFile(join(out, "_headers"), "utf8"));
+        if (problems.length > 0) {
+          throw new Error(
+            `public/_headers doesn't match the built index.html:\n${problems.join("\n")}\n` +
+              `script-src should list 'self' ${inlineScriptHashes(html).join(" ")}`,
+          );
+        }
+      },
+    },
+  };
+}
+
 async function toRequest(req: IncomingMessage): Promise<Request> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
@@ -143,7 +176,14 @@ async function send(res: ServerResponse, response: Response) {
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "SLACK_");
   return {
-    plugins: [stylex(), react(), interactionRelay(env), pierreThemesOnly(), prerender()],
+    plugins: [
+      stylex(),
+      react(),
+      interactionRelay(env),
+      pierreThemesOnly(),
+      prerender(),
+      checkCsp(),
+    ],
     define: {
       // Whether "Deliver to your app" can work: the relay only exists in the dev server, so a built
       // (public) playground never offers it, and the dev server offers it once it's configured.
