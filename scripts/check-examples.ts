@@ -1,7 +1,8 @@
 // Checks that the examples keep the bot token on the server. CI builds them with
 // SLACK_BOT_TOKEN=xoxb-block-kit-canary; this fails if the canary, any bot token or the Slack SDK
 // shows up in what a browser downloads. With --smoke it also starts each example with the canary
-// and checks what its page and routes answer.
+// and checks what its page and routes answer. A local stub stands in for the Slack Web API, so the
+// run never waits on slack.com.
 //
 //   bun scripts/check-examples.ts [--smoke]
 
@@ -74,10 +75,36 @@ function clientFiles(example: Example) {
     .map((path) => ({ path: relative(root, path), text: readFileSync(path, "latin1") }));
 }
 
+/**
+ * Answers every Web API method the way Slack answers the canary: `invalid_auth`. Counts the calls,
+ * so a smoke run can tell when an example ignored it and went to slack.com.
+ */
+function stubSlackApi() {
+  let calls = 0;
+  const server = Bun.serve({
+    port: 0,
+    fetch() {
+      calls++;
+      return Response.json({ ok: false, error: "invalid_auth" });
+    },
+  });
+  return {
+    url: `http://localhost:${server.port}/api/`,
+    calls: () => calls,
+    stop: () => server.stop(true),
+  };
+}
+
 async function smoke(example: Example, port: number): Promise<string[]> {
+  const slackApi = stubSlackApi();
   const proc = Bun.spawn(example.start(port), {
     cwd: example.dir,
-    env: { ...process.env, SLACK_BOT_TOKEN: CANARY, PORT: String(port) },
+    env: {
+      ...process.env,
+      SLACK_BOT_TOKEN: CANARY,
+      SLACK_API_URL: slackApi.url,
+      PORT: String(port),
+    },
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -113,9 +140,13 @@ async function smoke(example: Example, port: number): Promise<string[]> {
       })),
     );
     problems.push(...findLeaks(answered));
+    if (slackApi.calls() === 0) {
+      problems.push(`${example.name}: never called SLACK_API_URL, so it would call slack.com`);
+    }
   } finally {
     proc.kill();
     await proc.exited;
+    slackApi.stop();
   }
   const logs = `${await new Response(proc.stdout).text()}${await new Response(proc.stderr).text()}`;
   problems.push(...findLeaks([{ path: `${example.name} server log`, text: logs }]));
@@ -141,7 +172,7 @@ if (import.meta.main) {
     }
   }
   if (problems.length) {
-    console.error(`\nThe bot token, or the code that uses it, reaches the browser:\n`);
+    console.error(`\nThe examples fail the bot token check:\n`);
     for (const problem of problems) console.error(`  ${problem}`);
     process.exit(1);
   }

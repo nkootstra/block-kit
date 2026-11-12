@@ -43,8 +43,9 @@ against Slack; [`tools/visual/README.md`](tools/visual/README.md) explains how t
 
 The apps in `examples/` keep the Slack bot token on the server. CI builds them with a fake token,
 `xoxb-block-kit-canary`, and `bun scripts/check-examples.ts --smoke` fails if it (or
-`@slack/web-api`) shows up in what a browser downloads or in a response. Never create a `WebClient`
-in browser code.
+`@slack/web-api`) shows up in what a browser downloads or in a response. The smoke run points
+`SLACK_API_URL` at a local stub, so it never waits on slack.com. Never create a `WebClient` in
+browser code.
 
 ## Rendering changes
 

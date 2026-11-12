@@ -60,3 +60,4 @@ sample image. The page says so at the top, and the server logs it when it starts
 **With your workspace:** copy `.env.example` to `.env.local` (Bun loads it), set `SLACK_BOT_TOKEN`
 to a bot token with the scopes above, and change the ids in `server/blocks.ts` to ones in your
 workspace. Never give `SLACK_BOT_TOKEN` a `VITE_` prefix: that publishes it in the page.
+On GovSlack, also set `SLACK_API_URL` to `https://slack-gov.com/api/`.
