@@ -3,6 +3,7 @@ import { Text, type TextObject } from "../Text";
 import { Tooltip } from "../Tooltip";
 import type { BlockProps, Json } from "../types";
 import { asObject, asString, objectsIn, own } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 
 /** Slack's inline icons by `slack_icon` name, their 20-unit paths as Slack ships them. */
 const SLACK_ICONS: Record<string, string> = {
@@ -25,8 +26,8 @@ function CardIcon({ icon, slackIcon }: { icon?: Json; slackIcon?: Json }) {
     return (
       <img
         className="sbk-card__icon"
-        src={"image_url" in icon ? (icon.image_url as string) : undefined}
-        alt={(icon.alt_text as string) ?? ""}
+        src={imageUrl(icon.image_url)}
+        alt={asString(icon.alt_text) ?? ""}
       />
     );
   }
@@ -78,8 +79,8 @@ export function Card({ block, blockId }: BlockProps) {
           {heroImage && (
             <img
               className="sbk-card__hero"
-              src={"image_url" in heroImage ? (heroImage.image_url as string) : undefined}
-              alt={(heroImage.alt_text as string) ?? ""}
+              src={imageUrl(heroImage.image_url)}
+              alt={asString(heroImage.alt_text) ?? ""}
             />
           )}
           {(icon || slackIcon || title || subtitle) && (
@@ -121,7 +122,7 @@ export function Card({ block, blockId }: BlockProps) {
                   (action, i) =>
                     action.style === "danger" && (
                       <Element
-                        key={(action.action_id as string | undefined) ?? i}
+                        key={asString(action.action_id) ?? i}
                         element={action}
                         blockId={blockId}
                       />
@@ -134,11 +135,7 @@ export function Card({ block, blockId }: BlockProps) {
                 ),
                 ...actions.filter((action) => action.style === "primary"),
               ].map((action, i) => (
-                <Element
-                  key={(action.action_id as string | undefined) ?? i}
-                  element={action}
-                  blockId={blockId}
-                />
+                <Element key={asString(action.action_id) ?? i} element={action} blockId={blockId} />
               ))}
             </div>
           )}

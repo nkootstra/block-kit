@@ -1,5 +1,5 @@
 import { Element } from "../elements/Element";
-import { objectsIn } from "../payloadValues";
+import { asString, objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 
 /**
@@ -12,10 +12,7 @@ export function ContextActions({ block, blockId }: BlockProps) {
   return (
     <div className="sbk-context-actions">
       {elements.map((element, i) => (
-        <div
-          key={(element.action_id as string | undefined) ?? i}
-          className="sbk-context-actions__item"
-        >
+        <div key={asString(element.action_id) ?? i} className="sbk-context-actions__item">
           <Element element={element} blockId={blockId} />
         </div>
       ))}

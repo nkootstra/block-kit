@@ -1509,5 +1509,431 @@
     "title": {
       "text": {}
     }
+  },
+  {
+    "blocks": [
+      {
+        "type": "divider",
+        "block_id": {
+          "toString": 1
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "divider",
+        "block_id": {
+          "toString": 1,
+          "valueOf": 1
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "block_id": "__proto__",
+        "label": {
+          "type": "plain_text",
+          "text": "x"
+        },
+        "element": {
+          "type": "plain_text_input",
+          "action_id": "a"
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "action_id": {
+              "toString": 1
+            },
+            "text": {
+              "type": "plain_text",
+              "text": "x"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "checkboxes",
+            "action_id": "a",
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "x"
+                },
+                "value": {
+                  "toString": 1
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "radio_buttons",
+            "action_id": {
+              "toString": 1
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "x"
+                },
+                "value": "a"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "external_select",
+            "action_id": "a",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "x"
+            },
+            "min_query_length": {
+              "toString": 1
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "input",
+        "label": {
+          "type": "plain_text",
+          "text": "x"
+        },
+        "element": {
+          "type": "plain_text_input",
+          "action_id": "a",
+          "max_length": {
+            "toString": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "plain_text",
+          "text": "x"
+        },
+        "accessory": {
+          "type": "image",
+          "image_url": {
+            "toString": 1
+          },
+          "alt_text": {
+            "toString": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "card",
+        "hero_image": {
+          "type": "image",
+          "image_url": {
+            "toString": 1
+          },
+          "alt_text": {
+            "toString": 1
+          }
+        },
+        "title": {
+          "type": "plain_text",
+          "text": "x"
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "carousel",
+        "elements": [
+          {
+            "type": "card",
+            "block_id": {
+              "toString": 1
+            },
+            "title": {
+              "type": "plain_text",
+              "text": "x"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": {
+                  "toString": 1
+                }
+              },
+              {
+                "type": "date",
+                "timestamp": {
+                  "toString": 1
+                },
+                "format": "{date}"
+              },
+              {
+                "type": "broadcast",
+                "range": {
+                  "toString": 1
+                }
+              },
+              {
+                "type": "emoji",
+                "name": "wave",
+                "skin_tone": {
+                  "toString": 1
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "rich_text",
+        "elements": [
+          {
+            "type": "rich_text_list",
+            "style": "bullet",
+            "indent": {
+              "toString": 1
+            },
+            "elements": [
+              {
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "x"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "type": "bar",
+          "axis_config": {
+            "categories": ["a"]
+          },
+          "series": [
+            {
+              "name": "s",
+              "data": [
+                {
+                  "label": "a",
+                  "value": {
+                    "toString": 1
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "data_visualization",
+        "chart": {
+          "type": "pie",
+          "segments": [
+            {
+              "label": "a",
+              "value": {
+                "toString": 1
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "context",
+        "elements": [
+          {
+            "type": "image",
+            "image_url": "hasOwnProperty",
+            "alt_text": "a"
+          }
+        ]
+      },
+      {
+        "type": "context",
+        "elements": [
+          {
+            "type": "image",
+            "image_url": "https://example.com/a.png",
+            "alt_text": "a"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "image",
+        "image_url": "hasOwnProperty",
+        "alt_text": "a"
+      },
+      {
+        "type": "context",
+        "elements": [
+          {
+            "type": "image",
+            "image_url": "https://example.com/a.png",
+            "alt_text": "a"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "blocks": [
+      {
+        "type": "video",
+        "title": {
+          "type": "plain_text",
+          "text": "x"
+        },
+        "video_url": "https://example.com/v",
+        "thumbnail_url": "hasOwnProperty",
+        "alt_text": "a",
+        "provider_name": "p",
+        "provider_icon_url": "hasOwnProperty"
+      },
+      {
+        "type": "context",
+        "elements": [
+          {
+            "type": "image",
+            "image_url": "https://example.com/a.png",
+            "alt_text": "a"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "attachments": [
+      {
+        "image_url": "hasOwnProperty",
+        "text": "a"
+      },
+      {
+        "image_url": "https://example.com/a.png",
+        "text": "b"
+      }
+    ]
+  },
+  {
+    "ts": {
+      "toString": 1
+    },
+    "blocks": [
+      {
+        "type": "divider"
+      }
+    ]
+  },
+  {
+    "type": "modal",
+    "title": {
+      "type": "plain_text",
+      "text": "x"
+    },
+    "blocks": [
+      {
+        "type": "input",
+        "block_id": "__proto__",
+        "label": {
+          "type": "plain_text",
+          "text": "x"
+        },
+        "element": {
+          "type": "plain_text_input",
+          "action_id": {
+            "toString": 1
+          }
+        }
+      }
+    ]
   }
 ]

@@ -97,11 +97,15 @@ value either way leaves that cell empty in **View as table** and the download.
 When the category labels don't fit side by side, as with 20 categories, Slack turns them 45° and
 gives the plot more room below; this does the same.
 
+Slack allows 12 series (or pie segments) of at most 20 data points, one for each category. A chart
+with more draws, and tabulates, the first 12 series or segments, 20 points a series and 20
+categories, and leaves out the rest.
+
 :::note
 Colors come from Slack's fixed 12-color palette, a deeper one in dark mode as in Slack, and are
 assigned by series (or segment) index. There's no field to set a series' color, but the palette is
-themable (`--sbk-chart-1` to `-12`, see [Theming](/guides/theming)). A 13th series or segment
-reuses the first color. Bar, line, and area
+themable (`--sbk-chart-1` to `-12`, see [Theming](/guides/theming)), one color for each of the
+12 series or segments a chart can have. Bar, line, and area
 charts always include zero in the y-axis range, so negative values extend below the zero line;
 pie charts clamp negative values to 0.
 :::

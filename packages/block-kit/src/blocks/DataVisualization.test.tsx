@@ -125,6 +125,54 @@ describe("<DataVisualization>", () => {
     expect(screen.getByText("B")).toBeTruthy();
   });
 
+  it("draws at most Slack's 20 points of a series, however many the payload holds", () => {
+    const n = 40_000;
+    const block = {
+      type: "data_visualization",
+      chart: {
+        type: "bar",
+        axis_config: { categories: Array.from({ length: n }, (_, i) => String(i)) },
+        series: [
+          {
+            name: "s",
+            data: Array.from({ length: n }, (_, i) => ({ label: String(i), value: i })),
+          },
+        ],
+      },
+    };
+    const start = performance.now();
+    const { container } = render(
+      <DataVisualization block={asDataVizBlock(block)} blockId="b1" index={0} />,
+    );
+    expect(performance.now() - start).toBeLessThan(1000);
+    expect(container.querySelectorAll(".sbk-dataviz__body svg path").length).toBe(20);
+  });
+
+  it("draws at most Slack's 12 series and 12 pie segments", () => {
+    const series = Array.from({ length: 30 }, (_, i) => ({
+      name: `s${i}`,
+      data: [{ label: "a", value: i + 1 }],
+    }));
+    const segments = Array.from({ length: 30 }, (_, i) => ({ label: `p${i}`, value: i + 1 }));
+    const { container } = render(
+      <>
+        <DataVisualization
+          block={asDataVizBlock({ type: "data_visualization", chart: { type: "line", series } })}
+          blockId="b1"
+          index={0}
+        />
+        <DataVisualization
+          block={asDataVizBlock({ type: "data_visualization", chart: { type: "pie", segments } })}
+          blockId="b2"
+          index={1}
+        />
+      </>,
+    );
+    expect(container.querySelectorAll(".sbk-dataviz__legend-entry").length).toBe(24);
+    expect(screen.queryByText("s12")).toBeNull();
+    expect(screen.queryByText("p12")).toBeNull();
+  });
+
   it("renders nothing when the block has no chart", () => {
     const block = { type: "data_visualization" };
     const { container } = render(

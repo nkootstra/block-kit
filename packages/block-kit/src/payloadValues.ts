@@ -54,3 +54,60 @@ export function asString(value: unknown): string | undefined {
 export function own<T>(table: Readonly<Record<string, T>>, key: unknown): T | undefined {
   return typeof key === "string" && Object.hasOwn(table, key) ? table[key] : undefined;
 }
+
+/** Keys JavaScript calls to turn an object into a string or a number. */
+const COERCION_KEYS: readonly string[] = ["toString", "valueOf"];
+/** Far deeper than anything renders (blocks nest at most 32 deep); below it a payload is as given. */
+const MAX_INERT_DEPTH = 1000;
+const inertCache = new WeakMap<object, unknown>();
+
+/**
+ * `payload` with every object that has its own `toString` or `valueOf` that isn't a function (as
+ * JSON such as `{"toString": 1}` does) copied without those keys. JavaScript calls them to turn an
+ * object into text, as React does for a key or an attribute and a template literal does, and one
+ * that isn't a function throws, wherever the payload has it. A payload without one comes back as
+ * the same objects, so it keeps its identity, and each object is checked once.
+ */
+export function inert<T>(payload: T): T {
+  return inertAt(payload, 0) as T;
+}
+
+function inertAt(value: unknown, depth: number): unknown {
+  if (typeof value !== "object" || value === null || depth >= MAX_INERT_DEPTH) return value;
+  const cached = inertCache.get(value);
+  if (cached !== undefined) return cached;
+  const isArray = Array.isArray(value);
+  const prototype: unknown = Object.getPrototypeOf(value);
+  if (!isArray && prototype !== Object.prototype && prototype !== null) return value;
+  // Marked before the walk, so an object that contains itself ends it.
+  inertCache.set(value, value);
+
+  const source = value as Record<string, unknown>;
+  let changed = false;
+  const entries: [string, unknown][] = [];
+  for (const key of Object.keys(source)) {
+    const item = source[key];
+    if (!isArray && COERCION_KEYS.includes(key) && typeof item !== "function") {
+      changed = true;
+      continue;
+    }
+    const clean = inertAt(item, depth + 1);
+    if (clean !== item) changed = true;
+    entries.push([key, clean]);
+  }
+  if (!changed) return value;
+
+  const copy: object = isArray ? [...(value as unknown[])] : {};
+  for (const [key, item] of entries) {
+    // defineProperty, not assignment: a `__proto__` key stays an own key, as JSON.parse leaves it.
+    Object.defineProperty(copy, key, {
+      value: item,
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  }
+  inertCache.set(value, copy);
+  inertCache.set(copy, copy);
+  return copy;
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Collapse } from "../data/Collapse";
-import { asObject, objectsIn } from "../payloadValues";
+import { asObject, asString, objectsIn } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import { Text, type TextObject } from "../Text";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
@@ -45,8 +46,8 @@ export function Container({ block }: BlockProps) {
       {icon && (
         <img
           className="sbk-container__icon"
-          src={"image_url" in icon ? (icon.image_url as string) : undefined}
-          alt={(icon.alt_text as string) ?? ""}
+          src={imageUrl(icon.image_url)}
+          alt={asString(icon.alt_text) ?? ""}
         />
       )}
       <div className="sbk-container__title-col">
@@ -75,7 +76,7 @@ export function Container({ block }: BlockProps) {
     <div className="sbk-container__body">
       <InContainerContext.Provider value={true}>
         {children.map((child, i) => (
-          <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+          <Block key={asString(child.block_id) ?? i} block={child} index={i} />
         ))}
       </InContainerContext.Provider>
     </div>

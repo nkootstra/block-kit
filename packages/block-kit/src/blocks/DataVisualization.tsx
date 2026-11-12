@@ -26,10 +26,20 @@ interface DataVisualizationBlock extends Json {
   chart: Chart;
 }
 
+/*
+ * Slack's limits for a chart: 12 series of at most 20 data points, one for each category (so at
+ * most 20 categories), or 12 pie segments. Slack refuses a chart over them; here the rest is left
+ * out, so a payload can't make the chart draw, or tabulate, without end.
+ */
+const MAX_SERIES = 12;
+const MAX_POINTS = 20;
+const MAX_CATEGORIES = 20;
+const MAX_SEGMENTS = 12;
+
 /**
  * The chart's data as Slack tabulates it for "View as table" and "Download chart data": a pie's
  * segments under "Label" and "Value", otherwise one row per series under "Series" and the
- * categories. Values are written as given ("1500", not "1,500").
+ * categories. Values are written as given ("1500", not "1,500"). Built only when it's asked for.
  */
 function chartTable(chart: Chart, categories: string[]): string[][] {
   if (chart.type === "pie") {
@@ -37,12 +47,18 @@ function chartTable(chart: Chart, categories: string[]): string[][] {
   }
   return [
     ["Series", ...categories],
-    ...(chart.series ?? []).map((s) => [
-      s.name,
-      ...categories.map((label, i) =>
-        String(s.data.find((d) => d.label === label)?.value ?? s.data[i]?.value ?? ""),
-      ),
-    ]),
+    ...(chart.series ?? []).map((s) => {
+      // A series' value for a category is its first point with that label, else the point at the
+      // category's position.
+      const byLabel = new Map<string, ChartSeries["data"][number]>();
+      for (const d of s.data) if (!byLabel.has(d.label)) byLabel.set(d.label, d);
+      return [
+        s.name,
+        ...categories.map((label, i) =>
+          String(byLabel.get(label)?.value ?? s.data[i]?.value ?? ""),
+        ),
+      ];
+    }),
   ];
 }
 
@@ -56,20 +72,23 @@ function cleanChart(chart: Chart): Chart {
   const axis = asObject<AxisConfig>(chart.axis_config);
   return {
     ...chart,
-    series: objectsIn<ChartSeries>(chart.series).map((s) => ({
-      ...s,
-      name: label(s.name),
-      data: objectsIn<ChartSeries["data"][number]>(s.data).map((d) => ({
-        ...d,
-        label: label(d.label),
+    series: objectsIn<ChartSeries>(chart.series)
+      .slice(0, MAX_SERIES)
+      .map((s) => ({
+        ...s,
+        name: label(s.name),
+        data: objectsIn<ChartSeries["data"][number]>(s.data)
+          .slice(0, MAX_POINTS)
+          .map((d) => ({ ...d, label: label(d.label) })),
       })),
-    })),
-    segments: objectsIn<{ label: string; value: number }>(chart.segments).map((s) => ({
-      ...s,
-      label: label(s.label),
-    })),
+    segments: objectsIn<{ label: string; value: number }>(chart.segments)
+      .slice(0, MAX_SEGMENTS)
+      .map((s) => ({ ...s, label: label(s.label) })),
     axis_config: axis && {
-      categories: axis.categories === undefined ? undefined : asArray(axis.categories).map(label),
+      categories:
+        axis.categories === undefined
+          ? undefined
+          : asArray(axis.categories).slice(0, MAX_CATEGORIES).map(label),
       x_label: asString(axis.x_label),
       y_label: asString(axis.y_label),
     },
@@ -93,7 +112,7 @@ export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>)
   const categories =
     chart.axis_config?.categories ?? chart.series?.[0]?.data.map((d) => d.label) ?? [];
   const legend = legendEntries(chart);
-  const rows = chartTable(chart, categories);
+  const rows = () => chartTable(chart, categories);
 
   // The actions hang off the card, inside the scroller, as Slack's chartActionsGroup does: in a
   // narrow message the card stays 400px and scrolls inside a block-wide scroller, taking its menu
@@ -146,7 +165,7 @@ export function DataVisualization({ block }: BlockProps<DataVisualizationBlock>)
         </div>
       </div>
       {tableOpen ? (
-        <ChartTableModal title={title} rows={rows} onClose={() => setTableOpen(false)} />
+        <ChartTableModal title={title} rows={rows()} onClose={() => setTableOpen(false)} />
       ) : null}
     </>
   );

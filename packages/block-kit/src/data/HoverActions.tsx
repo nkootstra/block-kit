@@ -333,8 +333,8 @@ export function ChartActions({
   title,
   onViewTable,
 }: {
-  /** The chart's data as Slack tabulates it, header row first. */
-  rows: string[][];
+  /** The chart's data as Slack tabulates it, header row first: built when it's downloaded. */
+  rows: () => string[][];
   title?: string;
   onViewTable: () => void;
 }) {
@@ -352,7 +352,7 @@ export function ChartActions({
               label: "Download chart data",
               icon: <DownloadIcon width="15" height="15" />,
               onSelect: () =>
-                downloadText(chartFileName(title), toTsv(rows), "text/tab-separated-values"),
+                downloadText(chartFileName(title), toTsv(rows()), "text/tab-separated-values"),
             },
             {
               label: "Copy as image",

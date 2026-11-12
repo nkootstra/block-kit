@@ -34,7 +34,18 @@ export function safeUrl(url: string | undefined, options: SafeUrlOptions = {}): 
   if (cleaned === "") return undefined;
   const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(cleaned)?.[1]?.toLowerCase();
   // No scheme before the first `/`, `?` or `#`: a relative URL. A `:` later on is part of the path.
+  if (scheme === undefined && options.image && /^[^/.?#]/.test(cleaned)) {
+    // A bare name such as `a.png` reads the same as `./a.png`. Spelled that way, an image's URL
+    // can't be `hasOwnProperty`, which React's server renderer uses as the key of a plain object
+    // and then can't call, so the next image throws.
+    return `./${cleaned}`;
+  }
   if (scheme === undefined || ALLOWED_SCHEMES.has(scheme)) return cleaned;
   if (options.image && (scheme === "blob" || /^data:image\//i.test(cleaned))) return cleaned;
   return undefined;
+}
+
+/** An image's URL for its `src`: `safeUrl` with the `image` option, for any payload value. */
+export function imageUrl(url: unknown): string | undefined {
+  return safeUrl(typeof url === "string" ? url : undefined, { image: true });
 }

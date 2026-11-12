@@ -29,22 +29,80 @@ const MAX_MARKERS = 32;
 const MARKER = /[ \t]*(?:(?:[-*+]|\d{1,9}[.)])(?:[ \t]+|$)|>[ \t]?)/y;
 const THEMATIC_BREAK = /^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*\r?$/;
 
+/**
+ * Slack's limit for the text of a markdown block ("The cumulative limit for all `markdown` blocks
+ * in a single payload is 12,000 characters"). Slack refuses a longer one; here it shows as plain
+ * text, unparsed, so its length costs only its length.
+ */
+export const MAX_MARKDOWN_LENGTH = 12_000;
+
+/*
+ * micromark also takes time quadratic in the emphasis delimiters and brackets of a paragraph that
+ * never close: 12,000 characters of `*a_` take a second to parse, and `_a* ` half of one. From the
+ * delimiter past the `MAX_DELIMITERS`th in a paragraph, the rest of each of its lines is set aside
+ * as text, behind one placeholder a line: a placeholder per delimiter would make the text longer,
+ * and an unclosed `[` costs time in how much text follows it. Matched delimiters count too, so the
+ * cap is far above what a paragraph uses: 500 is 250 bold words.
+ */
+const MAX_DELIMITERS = 500;
+const DELIMITER = /([*_~])\1*|[[\]]/g;
+/**
+ * A line that always ends the paragraph before it: a blank line, a heading, or a list item that
+ * may interrupt a paragraph (a bullet with text, or an ordered item numbered 1). Anything else may
+ * continue the paragraph above it, so its delimiters count toward the same cap.
+ */
+const PARAGRAPH_START = /^(?:[ \t]*\r?$| {0,3}#{1,6}(?:[ \t]|\r?$)|[ \t]*(?:[-*+]|1[.)])[ \t]+\S)/;
+
 /** The string fields of mdast nodes that carry text from the source. */
 const TEXT_FIELDS = ["value", "url", "title", "alt", "lang", "meta", "label"] as const;
 
 /** Parses a `markdown` block's text as GitHub-flavored markdown. */
 export function parseMarkdown(text: string): Root {
+  if (text.length > MAX_MARKDOWN_LENGTH) {
+    return {
+      type: "root",
+      children: [{ type: "paragraph", children: [{ type: "text", value: text }] }],
+    };
+  }
   const pieces: string[] = [];
   const setAside = (piece: string) => `${MARK}${pieces.push(piece) - 1}${MARK}`;
+  // A set-aside piece holds the text as written, so placeholders inside it are put back first.
+  const asWritten = (piece: string) =>
+    piece.replace(PLACEHOLDER, (_, index: string) => pieces[Number(index)] ?? "");
 
-  const source = text
-    .replaceAll(MARK, setAside)
-    .split("\n")
-    .map((line) => {
-      if (THEMATIC_BREAK.test(line)) return line;
-      return capRuns(capMarkers(line, setAside), setAside);
-    })
-    .join("\n");
+  const lines: string[] = [];
+  let delimiters = 0;
+  /** The piece that takes the rest of the paragraph once it has `MAX_DELIMITERS` delimiters. */
+  let rest = -1;
+  for (const line of text.replaceAll(MARK, setAside).split("\n")) {
+    if (PARAGRAPH_START.test(line)) {
+      delimiters = 0;
+      rest = -1;
+    }
+    if (rest !== -1) {
+      pieces[rest] += `\n${asWritten(line)}`;
+      continue;
+    }
+    if (THEMATIC_BREAK.test(line)) {
+      lines.push(line);
+      continue;
+    }
+    const capped = capRuns(capMarkers(line, setAside), setAside);
+    let cut = -1;
+    for (const match of capped.matchAll(DELIMITER)) {
+      if (++delimiters > MAX_DELIMITERS) {
+        cut = match.index;
+        break;
+      }
+    }
+    if (cut === -1) {
+      lines.push(capped);
+      continue;
+    }
+    lines.push(capped.slice(0, cut) + setAside(asWritten(capped.slice(cut))));
+    rest = pieces.length - 1;
+  }
+  const source = lines.join("\n");
 
   const tree = fromMarkdown(source, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
   if (pieces.length > 0) restore(tree, pieces);

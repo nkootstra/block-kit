@@ -1,4 +1,5 @@
 import { useBlockKitConfig } from "../context";
+import { imageUrl } from "../safeUrl";
 import { Tooltip } from "../Tooltip";
 import { defaultEmojiImageUrl, resolveEmoji } from "./lookup";
 
@@ -32,7 +33,7 @@ export function Emoji({ name, skinTone, size = 22 }: EmojiProps) {
       <span className="sbk-emoji" style={{ width: size, height: size }}>
         <img
           className="sbk-emoji__img"
-          src={src}
+          src={imageUrl(src)}
           alt={label}
           draggable={false}
           style={{ width: size, height: size, top: size / 2, marginTop: -size / 2 }}

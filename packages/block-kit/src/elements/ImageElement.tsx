@@ -1,5 +1,7 @@
 import type { ImageElement as ImageElementType } from "@slack/types";
 import { useBlockKitConfig } from "../context";
+import { asString } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import type { ElementProps, Json } from "../types";
 
 /** An image element; a `slack_file` one shows through `resolvers.slackFile`, like the image block. */
@@ -14,5 +16,5 @@ export function ImageElement({ element }: ElementProps<ImageElementType>) {
       : slackFile
         ? resolvers.slackFile?.(slackFile)?.url
         : undefined;
-  return <img className="sbk-image-element" src={src} alt={element.alt_text} />;
+  return <img className="sbk-image-element" src={imageUrl(src)} alt={asString(element.alt_text)} />;
 }

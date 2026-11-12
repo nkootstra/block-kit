@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKitConfig } from "../context";
 import { Text } from "../Text";
-import { objectsIn } from "../payloadValues";
+import { asString, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -48,7 +48,7 @@ export function Checkboxes({ element, blockId }: ElementProps<CheckboxesElement>
       {objectsIn<Option>(element.options).map((option, i) => {
         const checked = selected.some((o) => sameOption(o, option));
         return (
-          <label className="sbk-checkboxes__option" key={option.value ?? i}>
+          <label className="sbk-checkboxes__option" key={asString(option.value) ?? i}>
             <input
               ref={i === 0 ? focusRef : undefined}
               type="checkbox"

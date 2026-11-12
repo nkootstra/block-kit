@@ -1,5 +1,6 @@
 import { Text, type TextObject } from "../Text";
 import { asString } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import type { BlockProps, Json } from "../types";
 import { Link } from "../Link";
 
@@ -34,9 +35,8 @@ export function Video({ block }: BlockProps) {
   const description = json.description as TextObject | undefined;
   const authorName = typeof json.author_name === "string" ? json.author_name : undefined;
   const providerName = typeof json.provider_name === "string" ? json.provider_name : undefined;
-  const providerIcon =
-    typeof json.provider_icon_url === "string" ? json.provider_icon_url : undefined;
-  const thumbnailUrl = typeof json.thumbnail_url === "string" ? json.thumbnail_url : undefined;
+  const providerIcon = imageUrl(json.provider_icon_url);
+  const thumbnailUrl = imageUrl(json.thumbnail_url);
   const altText =
     typeof json.alt_text === "string" ? json.alt_text : (asString(title?.text) ?? "video");
 

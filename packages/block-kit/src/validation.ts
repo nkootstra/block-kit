@@ -1,4 +1,5 @@
 import type { ElementState, StateValues } from "./context";
+import { asObject, asString, objectsIn, own } from "./payloadValues";
 import type { Json } from "./types";
 
 /**
@@ -30,7 +31,7 @@ function hasText(node: unknown): boolean {
   const { type, text, elements } = node as Json;
   if (type === "text") return typeof text === "string" && text.trim() !== "";
   if (Array.isArray(elements)) return elements.some(hasText);
-  return type !== "rich_text" && !String(type).startsWith("rich_text_");
+  return type !== "rich_text" && !(typeof type === "string" && type.startsWith("rich_text_"));
 }
 
 function isEmpty(state: ElementState | undefined): boolean {
@@ -100,20 +101,30 @@ export function validateView(
   state: StateValues,
 ): Record<string, string> {
   const errors: Record<string, string> = {};
-  (blocks as Json[]).forEach((block, index) => {
-    if (block.type !== "input" || !block.element) return;
+  // Defined, not assigned: a block_id of `__proto__` stays an own key, as `response_action` JSON has it.
+  const setError = (blockId: string, error: string) =>
+    Object.defineProperty(errors, blockId, {
+      value: error,
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  // Own keys only: a block_id or action_id such as `constructor` would find Object.prototype's.
+  objectsIn<Json>(blocks).forEach((block, index) => {
+    const element = asObject<Json>(block.element);
+    if (block.type !== "input" || !element) return;
     const blockId = typeof block.block_id === "string" ? block.block_id : `block-${index}`;
-    const element = block.element as Json;
-    const entry = state[blockId]?.[(element.action_id as string | undefined) ?? ""];
+    const row = asObject<Record<string, ElementState>>(own(state, blockId));
+    const entry = row && own(row, asString(element.action_id) ?? "");
 
     if (isEmpty(entry)) {
-      if (!block.optional) errors[blockId] = VALIDATION_MESSAGES.required;
+      if (!block.optional) setError(blockId, VALIDATION_MESSAGES.required);
       return;
     }
     const value = entry?.value;
     if (typeof value === "string") {
       const error = checkValue(element, value);
-      if (error) errors[blockId] = error;
+      if (error) setError(blockId, error);
     }
   });
   return errors;

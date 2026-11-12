@@ -1,0 +1,48 @@
+import { describe, expect, it } from "vitest";
+import { inert } from "./payloadValues";
+
+describe("inert", () => {
+  it("returns a payload without a toString or valueOf key as the same objects", () => {
+    const payload = JSON.parse('{"blocks":[{"type":"divider","block_id":"a"}],"text":"x"}');
+    expect(inert(payload)).toBe(payload);
+    expect(inert(payload.blocks[0])).toBe(payload.blocks[0]);
+  });
+
+  it("drops a toString or valueOf that isn't a function, wherever it is", () => {
+    const payload = JSON.parse(
+      '{"blocks":[{"type":"divider","block_id":{"toString":1,"valueOf":{},"a":1}}],"toString":"x"}',
+    );
+    const clean = inert(payload);
+    expect(clean).toEqual({ blocks: [{ type: "divider", block_id: { a: 1 } }] });
+    expect(() => `${clean.blocks[0].block_id}`).not.toThrow();
+    // The payload it was given is left as it was.
+    expect(payload.blocks[0].block_id.toString).toBe(1);
+  });
+
+  it("returns the same copy each time, so a cleaned payload keeps its identity across renders", () => {
+    const payload = JSON.parse('{"blocks":[{"type":"divider","block_id":{"toString":1}}]}');
+    expect(inert(payload)).toBe(inert(payload));
+    expect(inert(inert(payload))).toBe(inert(payload));
+  });
+
+  it("keeps a __proto__ key an own key, as JSON.parse leaves it", () => {
+    const payload = JSON.parse('{"__proto__":{"polluted":true},"x":{"toString":1}}');
+    const clean = inert(payload);
+    expect(Object.hasOwn(clean, "__proto__")).toBe(true);
+    expect(Object.getPrototypeOf(clean)).toBe(Object.prototype);
+    expect(({} as { polluted?: boolean }).polluted).toBeUndefined();
+  });
+
+  it("ends on an object that contains itself", () => {
+    const payload: Record<string, unknown> = { toString: 1 };
+    payload.self = payload;
+    expect(() => inert(payload)).not.toThrow();
+  });
+
+  it("leaves values that aren't plain objects or arrays alone", () => {
+    const date = new Date(0);
+    expect(inert(date)).toBe(date);
+    expect(inert("x")).toBe("x");
+    expect(inert(null)).toBe(null);
+  });
+});

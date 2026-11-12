@@ -5,6 +5,7 @@ import { type DirectoryEntry, useBlockKitConfig } from "../context";
 import { ChannelHashIcon, ChevronDownIcon, CloseIcon, LockIcon, SearchIcon } from "../icons";
 import type { OptionsResponse } from "../payloads";
 import { asArray, asObject, asString, objectsIn } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
@@ -541,7 +542,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                 const i = index++;
                 return (
                   <SelectOption
-                    key={option.value ?? i}
+                    key={asString(option.value) ?? i}
                     option={option}
                     entry={option.value !== undefined ? entryById.get(option.value) : undefined}
                     content={
@@ -905,7 +906,7 @@ function DirectoryRow({ entry }: { entry: DirectoryEntry }) {
   return (
     <span className="sbk-select__member">
       <span className="sbk-select__avatar">
-        {entry.avatarUrl && <img src={entry.avatarUrl} alt="" />}
+        {entry.avatarUrl && <img src={imageUrl(entry.avatarUrl)} alt="" />}
       </span>
       <span className="sbk-select__member-text">
         <span className="sbk-select__member-name">
@@ -967,7 +968,7 @@ function ChipEntity({ entry }: { entry: DirectoryEntry }) {
   return (
     <span className="sbk-select__chip-label sbk-select__chip-label--member">
       <span className="sbk-select__chip-avatar">
-        {entry.avatarUrl && <img src={entry.avatarUrl} alt="" />}
+        {entry.avatarUrl && <img src={imageUrl(entry.avatarUrl)} alt="" />}
       </span>
       <span className="sbk-select__chip-text">
         <strong>
