@@ -68,28 +68,37 @@ describe("parseMarkdown on hostile input", () => {
 
   // Two shapes stay slower than the rest, and a CI runner's speed varies too much for a fixed
   // bound, so each is timed against another parse in the same run. The fastest of three runs is
-  // the one least slowed by whatever else the machine is doing.
-  it("parses an opening bracket before long text no slower than micromark", () => {
-    // Each word after an unclosed `[` looks back for it: micromark's own cost, about 0.1s at the
-    // limit. The cap leaves it alone (one bracket), so it must cost no more than micromark does.
-    const text = `[${fill("a ", MAX_MARKDOWN_LENGTH - 1)}`;
-    // Run in turns, so a change in load slows both alike.
-    let ours = Infinity;
-    let raw = Infinity;
-    for (let run = 0; run < 3; run++) {
-      ours = Math.min(ours, timed(text));
-      raw = Math.min(raw, timedRaw(text));
-    }
-    expect(ours, `${ours} ms, micromark ${raw} ms`).toBeLessThan(2 * raw + 100);
-  });
+  // the one least slowed by whatever else the machine is doing. Six parses at the limit take
+  // several seconds on a busy CI runner, longer than vitest's default timeout.
+  it(
+    "parses an opening bracket before long text no slower than micromark",
+    { timeout: 30_000 },
+    () => {
+      // Each word after an unclosed `[` looks back for it: micromark's own cost, about 0.1s at the
+      // limit. The cap leaves it alone (one bracket), so it must cost no more than micromark does.
+      const text = `[${fill("a ", MAX_MARKDOWN_LENGTH - 1)}`;
+      // Run in turns, so a change in load slows both alike.
+      let ours = Infinity;
+      let raw = Infinity;
+      for (let run = 0; run < 3; run++) {
+        ours = Math.min(ours, timed(text));
+        raw = Math.min(raw, timedRaw(text));
+      }
+      expect(ours, `${ours} ms, micromark ${raw} ms`).toBeLessThan(2 * raw + 100);
+    },
+  );
 
-  it("parses underscores in a www link in time that doesn't grow with its length", () => {
-    // Each `www.` after a `_` reads the domain to its end: over a second in micromark at the
-    // limit, about 0.1s past the delimiter cap at any length. Quadratic time would be 16 times
-    // the time of a quarter of the text.
-    const quarter = fastest(() => timed(fill("www.a_", MAX_MARKDOWN_LENGTH / 4)));
-    expect(fastest(() => timed(fill("www.a_")))).toBeLessThan(3 * quarter + 50);
-  });
+  it(
+    "parses underscores in a www link in time that doesn't grow with its length",
+    { timeout: 30_000 },
+    () => {
+      // Each `www.` after a `_` reads the domain to its end: over a second in micromark at the
+      // limit, about 0.1s past the delimiter cap at any length. Quadratic time would be 16 times
+      // the time of a quarter of the text.
+      const quarter = fastest(() => timed(fill("www.a_", MAX_MARKDOWN_LENGTH / 4)));
+      expect(fastest(() => timed(fill("www.a_")))).toBeLessThan(3 * quarter + 50);
+    },
+  );
 
   it("shows text over Slack's limit as it is written, unparsed", () => {
     const text = `**bold** ${"a".repeat(MAX_MARKDOWN_LENGTH)}`;
@@ -142,7 +151,10 @@ function blockShape(node: Nodes): unknown {
 }
 
 const gfmTree = (text: string) =>
-  fromMarkdown(text, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
+  fromMarkdown(text, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
 
 describe("parseMarkdown past a paragraph's delimiter cap", () => {
   // 600 delimiters: past the cap of 500.
