@@ -14,6 +14,9 @@ const web = token
       // Answer "try again later" instead of holding the request while Slack's rate limit resets.
       rejectRateLimitedCalls: true,
       retryConfig: { retries: 1 },
+      // Unset for slack.com. GovSlack is https://slack-gov.com/api/; the smoke check in
+      // scripts/check-examples.ts answers from a local stub.
+      slackApiUrl: process.env.SLACK_API_URL || undefined,
     })
   : undefined;
 

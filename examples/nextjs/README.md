@@ -57,3 +57,4 @@ sample image. The page says so at the top while it's in use.
 **With your workspace:** copy `.env.example` to `.env.local`, set `SLACK_BOT_TOKEN` to a bot token
 with the scopes above, and change the ids in `lib/blocks.ts` to ones in your workspace. Never give
 the variable a `NEXT_PUBLIC_` prefix: that publishes it in the page.
+On GovSlack, also set `SLACK_API_URL` to `https://slack-gov.com/api/`.
