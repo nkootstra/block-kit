@@ -197,6 +197,23 @@ describe("<TextInput>", () => {
     expect(state.b1?.a1).toEqual({ type: "number_input", value: "12" });
   });
 
+  it("checks a long decimal number_input value in linear time", () => {
+    render(
+      <BlockKitProvider>
+        <TextInput
+          element={
+            { type: "number_input", action_id: "a1", is_decimal_allowed: true } as TextInputElement
+          }
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    const start = performance.now();
+    // A pasted run of digits that ends in a letter: rejected, and in milliseconds.
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: `${"1".repeat(50_000)}x` } });
+    expect(performance.now() - start).toBeLessThan(500);
+  });
+
   it("renders a textarea for multiline plain_text_input", () => {
     render(
       <BlockKitProvider>

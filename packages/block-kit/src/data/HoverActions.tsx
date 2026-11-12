@@ -319,7 +319,8 @@ export function chartFileName(title: string | undefined): string {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9_]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    // Each run became one hyphen, so at most one is left at either end.
+    .replace(/^-|-$/g, "");
   return `${slug || "chart"}.tsv`;
 }
 

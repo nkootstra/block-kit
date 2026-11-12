@@ -98,7 +98,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
 
   function onChange(next: string) {
     if (element.type === "number_input") {
-      const pattern = element.is_decimal_allowed ? /^-?\d*\.?\d*$/ : /^-?\d*$/;
+      const pattern = element.is_decimal_allowed ? /^-?\d*(?:\.\d*)?$/ : /^-?\d*$/;
       if (next !== "" && !pattern.test(next)) return;
     }
     setLocalValue(next);

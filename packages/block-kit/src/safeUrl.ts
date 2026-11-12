@@ -31,18 +31,27 @@ export function safeUrl(url: string | undefined, options: SafeUrlOptions = {}): 
   while (start < end && isTrimmed(stripped.charCodeAt(start))) start++;
   while (end > start && isTrimmed(stripped.charCodeAt(end - 1))) end--;
   const cleaned = stripped.slice(start, end);
-  if (cleaned === "") return undefined;
-  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(cleaned)?.[1]?.toLowerCase();
+  if (cleaned === "" || !isSafeUrl(cleaned, options)) return undefined;
   // No scheme before the first `/`, `?` or `#`: a relative URL. A `:` later on is part of the path.
-  if (scheme === undefined && options.image && /^[^/.?#]/.test(cleaned)) {
+  if (options.image && schemeOf(cleaned) === undefined && /^[^/.?#]/.test(cleaned)) {
     // A bare name such as `a.png` reads the same as `./a.png`. Spelled that way, an image's URL
     // can't be `hasOwnProperty`, which React's server renderer uses as the key of a plain object
     // and then can't call, so the next image throws.
     return `./${cleaned}`;
   }
-  if (scheme === undefined || ALLOWED_SCHEMES.has(scheme)) return cleaned;
-  if (options.image && (scheme === "blob" || /^data:image\//i.test(cleaned))) return cleaned;
-  return undefined;
+  return cleaned;
+}
+
+/** The lowercased scheme of `url`, or `undefined` for a relative URL. */
+function schemeOf(url: string): string | undefined {
+  return /^([a-z][a-z0-9+.-]*):/i.exec(url)?.[1]?.toLowerCase();
+}
+
+/** Whether a URL, stripped as browsers strip it, is relative or uses a scheme `safeUrl` keeps. */
+function isSafeUrl(url: string, options: SafeUrlOptions): boolean {
+  const scheme = schemeOf(url);
+  if (scheme === undefined || ALLOWED_SCHEMES.has(scheme)) return true;
+  return options.image === true && (scheme === "blob" || /^data:image\//i.test(url));
 }
 
 /** An image's URL for its `src`: `safeUrl` with the `image` option, for any payload value. */

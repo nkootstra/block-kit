@@ -136,6 +136,7 @@ describe("parse on hostile input", () => {
     "markers before an unclosed backtick": "*a `".repeat(25_000),
     "markers with no closer": "*a ".repeat(33_000),
     "unclosed <": "<".repeat(100_000),
+    "a bare URL with punctuation before its end": `http://a${"!".repeat(100_000)}a`,
   };
 
   it.each(Object.entries(cases))("parses %s in linear time", (_, text) => {

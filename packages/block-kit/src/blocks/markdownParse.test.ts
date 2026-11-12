@@ -34,6 +34,18 @@ function timed(text: string): number {
   return performance.now() - start;
 }
 
+/** How long micromark with GFM takes to parse `text`, without `parseMarkdown`'s caps. */
+function timedRaw(text: string): number {
+  const start = performance.now();
+  gfmTree(text);
+  return performance.now() - start;
+}
+
+/** The median of three runs of `run`. */
+function median(run: () => number): number {
+  return [run(), run(), run()].sort((a, b) => a - b)[1] as number;
+}
+
 describe("parseMarkdown on hostile input", () => {
   // Slack's limit for a markdown block's text is 12,000 characters: each of these is just under it.
   it.each([
@@ -54,14 +66,20 @@ describe("parseMarkdown on hostile input", () => {
     expect(timed(text)).toBeLessThan(500);
   });
 
-  // GFM's link literals stay slower: each word after an unclosed `[` looks back for it, and each
-  // `www.` after a `_` reads the domain to its end. About 0.1s at the limit, so a looser bound
-  // keeps the test steady when the suites run side by side.
-  it.each([
-    ["an opening bracket before long text", `[${fill("a ", MAX_MARKDOWN_LENGTH - 1)}`],
-    ["underscores in a www link", fill("www.a_")],
-  ])("parses %s in bounded time", (_, text) => {
-    expect(timed(text)).toBeLessThan(1500);
+  // Two shapes stay slower than the rest, and a CI runner's speed varies too much for a fixed
+  // bound, so each is timed against micromark parsing the same text in the same run.
+  it("parses an opening bracket before long text no slower than micromark", () => {
+    // Each word after an unclosed `[` looks back for it: micromark's own cost, about 0.1s at the
+    // limit. The cap leaves it alone (one bracket), so it must cost no more than micromark does.
+    const text = `[${fill("a ", MAX_MARKDOWN_LENGTH - 1)}`;
+    expect(median(() => timed(text))).toBeLessThan(1.5 * median(() => timedRaw(text)) + 100);
+  });
+
+  it("parses underscores in a www link far faster than micromark", { timeout: 60_000 }, () => {
+    // Each `www.` after a `_` reads the domain to its end: over a second in micromark at the
+    // limit, about 0.1s past the delimiter cap.
+    const text = fill("www.a_");
+    expect(median(() => timed(text))).toBeLessThan(timedRaw(text) / 3);
   });
 
   it("shows text over Slack's limit as it is written, unparsed", () => {
