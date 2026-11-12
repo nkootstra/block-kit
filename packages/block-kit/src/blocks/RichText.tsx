@@ -1,4 +1,5 @@
 import { asArray, asString, classModifier, hexColor, objectsIn } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import type {
   RichTextBlock,
   RichTextBlockElement,
@@ -402,7 +403,7 @@ export function renderLeaf(
     // app's icon from resolvers.app. Without one Slack shows its default app icon, an image we
     // can't use, so the icon is a square in the colour of a message's placeholder avatar.
     case "work_object_mention": {
-      const iconUrl = el.app_id ? ctx.resolvers.app?.(el.app_id)?.iconUrl : undefined;
+      const iconUrl = el.app_id ? imageUrl(ctx.resolvers.app?.(el.app_id)?.iconUrl) : undefined;
       content = (
         <Link
           className="sbk-link sbk-rich-text__entity-link"

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useBlockKitConfig } from "./context";
 import { Emoji } from "./emoji";
 import { Link } from "./Link";
+import { imageUrl } from "./safeUrl";
 import { Tooltip } from "./Tooltip";
 import { useClientLayoutEffect } from "./useClientLayoutEffect";
 
@@ -115,8 +116,8 @@ export function UserMention({ id, name }: UserMentionProps) {
                 : { top: 0, left: 0, visibility: "hidden" }
             }
           >
-            {profile.avatarUrl ? (
-              <img className="sbk-profile-card__avatar" src={profile.avatarUrl} alt="" />
+            {imageUrl(profile.avatarUrl) ? (
+              <img className="sbk-profile-card__avatar" src={imageUrl(profile.avatarUrl)} alt="" />
             ) : (
               <span
                 className="sbk-profile-card__avatar sbk-profile-card__avatar--placeholder"

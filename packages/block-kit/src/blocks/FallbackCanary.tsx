@@ -1,4 +1,4 @@
-import { objectsIn } from "../payloadValues";
+import { asString, objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Block } from "./Block";
 
@@ -17,7 +17,7 @@ export function FallbackCanary({ block }: BlockProps) {
   return (
     <div className="sbk-fallback-canary">
       {fallback.map((child, i) => (
-        <Block key={(child.block_id as string | undefined) ?? i} block={child} index={i} />
+        <Block key={asString(child.block_id) ?? i} block={child} index={i} />
       ))}
     </div>
   );

@@ -1,7 +1,7 @@
 import type { ActionsBlock } from "@slack/types";
 import { useState } from "react";
 import { Element } from "../elements/Element";
-import { objectsIn } from "../payloadValues";
+import { asString, objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 
 // Slack's Builder gives these element types their own full-width row in an actions block,
@@ -25,7 +25,7 @@ export function Actions({ block, blockId }: BlockProps<ActionsBlock>) {
         const fullWidth = FULL_WIDTH_TYPES.has(element.type as string);
         return (
           <div
-            key={(element.action_id as string | undefined) ?? i}
+            key={asString(element.action_id) ?? i}
             className={`sbk-actions__action${fullWidth ? " sbk-actions__action--full-width" : ""}`}
           >
             <Element element={element} blockId={blockId} />

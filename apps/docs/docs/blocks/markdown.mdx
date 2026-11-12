@@ -36,7 +36,7 @@ produced, where you don't control the exact markdown shape ahead of time.
     text: {
       type: "string",
       description:
-        "Standard markdown-formatted text. Slack allows 12,000 characters across all `markdown` blocks in a payload, not per block.",
+        "Standard markdown-formatted text. Slack allows 12,000 characters across all `markdown` blocks in a payload, not per block. A block whose text is longer than 12,000 characters shows it as plain text, unparsed.",
       required: true,
     },
     block_id: {
@@ -53,6 +53,10 @@ lightweight syntax (`*bold*`, `_italic_`) with no headings or tables. It also di
 `rich_text`, which is a structured JSON tree rather than a text string. `markdown` is closer to
 plain GitHub-flavored markdown, parsed by Slack on render.
 :::
+
+A paragraph keeps its first 500 emphasis markers (`*`, `_`, `~`) and brackets as markdown, far more
+than a paragraph uses; from the next one on, the rest of the paragraph shows as written. Text
+built to slow a markdown parser down still parses in a fraction of a second this way.
 
 ## Examples
 

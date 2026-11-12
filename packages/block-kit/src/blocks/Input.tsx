@@ -9,7 +9,7 @@ import {
   InputOptionalContext,
 } from "../elements/inputBlockContext";
 import { ReturnIcon } from "../icons";
-import { asArray, asObject, asString } from "../payloadValues";
+import { asArray, asObject, asString, own } from "../payloadValues";
 import { Text } from "../Text";
 import type { BlockProps, Json } from "../types";
 
@@ -42,13 +42,13 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
   // In a view, Slack's state lists every input, an untouched one with its empty value. Effects run
   // children first, so an element's initial value is already recorded and this only fills a gap.
   const elementType = blockElement.type as string;
-  const actionId = (blockElement.action_id as string | undefined) ?? "";
+  const actionId = asString(blockElement.action_id) ?? "";
   useEffect(() => {
     if (surface === "message") return;
     const empty = emptyState(elementType);
     if (empty) seedValue(blockId, actionId, empty);
   }, [surface, elementType, blockId, actionId, seedValue]);
-  const error = errors[blockId];
+  const error = own(errors, blockId);
   const errorId = useId();
   const showDispatchHint = dispatchHint(block);
   // Slack's Builder preview never shows the "(optional)" suffix on the message-surface preview

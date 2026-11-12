@@ -33,6 +33,8 @@ A few limits do change how the preview behaves, the same way they do in Slack's 
 | `max_selected_items` on a multi-select      | Stops adding items at the limit and shows "You can select up to N items."                                                      |
 | `max_files` on a file input                 | Keeps the first `max_files` files picked (10 when unset).                                                                      |
 | `page_size` on a data table                 | Not read: the table always shows 5 rows per page, Slack's default.                                                             |
+| 12,000 characters of `markdown` text        | A block whose text is longer shows it as plain text, unparsed. See [Markdown](/blocks/markdown).                               |
+| 12 series or segments, 20 points in a chart | Draws and tabulates the first 12 series or segments, 20 points and 20 categories; leaves out the rest.                         |
 
 ## Surfaces
 

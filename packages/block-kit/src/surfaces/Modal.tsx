@@ -9,7 +9,8 @@ import {
   useLiveView,
 } from "../context";
 import { buildViewClosedPayload, buildViewSubmissionPayload, type ViewLike } from "../payloads";
-import { asObject, asString } from "../payloadValues";
+import { asObject, asString, inert } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import { validateView } from "../validation";
 
 /** A plain_text object's text, when it is one with a string text. */
@@ -27,14 +28,19 @@ export interface ModalProps {
   icon?: string;
 }
 
+const EMPTY_MODAL: ModalView = { type: "modal", blocks: [] };
+
 /** A Slack modal: header (icon + title + close), a scrollable body of blocks, and a close/submit footer. */
-export function Modal({ view: viewProp, icon }: ModalProps) {
+export function Modal({ view: viewGiven, icon }: ModalProps) {
+  // A host may pass a view straight from a payload: one that isn't an object shows an empty modal.
+  const viewProp = asObject<ModalView>(viewGiven) ?? EMPTY_MODAL;
   const { state, identity, onSubmit, onClose, views, stackedView, respond } = useBlockKit();
   // A modal opened through `views`: the X closes the whole stack (Slack's `is_cleared`), the
   // footer's close button goes back one view, and Submit applies the app's `response_action`.
   // Any other modal is standalone: `views.update` can still swap its content.
   const stacked = stackedView?.view.id === viewProp.id && viewProp.id !== undefined;
-  const { view, update } = useLiveView(viewProp, !stacked);
+  const { view: liveView, update } = useLiveView(viewProp, !stacked);
+  const view = inert(liveView);
   const [appErrors, setAppErrors] = useState<Record<string, string>>({});
   // Slack's own pre-submit checks. An error hides once its field changes.
   const [checked, setChecked] = useState<{ errors: Record<string, string>; state: StateValues }>();
@@ -88,7 +94,7 @@ export function Modal({ view: viewProp, icon }: ModalProps) {
     <div className="sbk-root sbk-modal" data-surface="modal">
       <div className="sbk-modal__header">
         <div className="sbk-modal__title-row">
-          {icon && <img className="sbk-modal__icon" src={icon} alt="" />}
+          {icon && <img className="sbk-modal__icon" src={imageUrl(icon)} alt="" />}
           <h2 className="sbk-modal__title">{textOf(view.title)}</h2>
         </div>
         <button type="button" className="sbk-modal__close" aria-label="Close" onClick={dismiss}>

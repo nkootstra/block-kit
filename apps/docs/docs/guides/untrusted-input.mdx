@@ -25,10 +25,11 @@ app should trust as is. This page lists what the package checks for you and what
   accessory type, button or confirm style and list style becomes a class only when it is a single
   word. A header's `level` is used as the heading tag and a class only when it is 1, 2, 3 or 4;
   anything else renders at level 2.
-- **Image URLs:** an image block's `image_url` goes through the same scheme check as links (it
-  also keeps `blob:` and `data:image/` URLs), and is dropped when it isn't a string. Other image
-  URLs (icons, avatars, thumbnails) are left as they are. Either way an image makes the viewer's
-  browser load whatever host the payload names. Render payloads from people you don't trust only where that's acceptable,
+- **Image URLs:** every image URL (image blocks and elements, icons, avatars, thumbnails,
+  attachment images) goes through the same scheme check as links (it also keeps `blob:` and
+  `data:image/` URLs), and is dropped when it isn't a string. A bare name such as `a.png` is
+  written `./a.png`, which loads the same file. An image still makes the viewer's browser load
+  whatever host the payload names. Render payloads from people you don't trust only where that's acceptable,
   or replace the image block with one that checks the host (see [Custom blocks](/reference/custom-blocks#replace-a-built-in)).
 - **Relative URLs:** a relative link or image URL resolves against the page that renders the
   message, not against Slack. `/settings` links to your own app's `/settings`, and an `image_url`
@@ -38,9 +39,11 @@ app should trust as is. This page lists what the package checks for you and what
   which browsers read the same way) is relative too, but names another host: it can lead off your
   site, though never to a script.
 - **Parsing time:** mrkdwn and markdown text built to slow a parser down (long runs of `*` or `_`,
-  unclosed markers, many date tokens, lists or emphasis nested thousands deep) still parses in a
-  fraction of a second at Slack's 12,000-character limit, so it can't stall the tab or a server
-  render.
+  unclosed markers and brackets, many date tokens, lists or emphasis nested thousands deep) still
+  parses in a fraction of a second at Slack's 12,000-character limit, so it can't stall the tab or
+  a server render. A markdown block longer than that shows its text unparsed, and a markdown
+  paragraph past 500 emphasis markers and brackets shows the rest as written. A chart draws at
+  most Slack's 12 series of 20 points, and builds its table only when it's opened or downloaded.
 - **Downloaded and copied tables:** Download table, Copy table and Download chart data write a
   cell that starts with `=`, `+`, `-`, `@`, a tab or a carriage return, and isn't a number, with a
   leading `'`, so a cell someone wrote into the payload can't run as a formula in the spreadsheet
@@ -48,9 +51,16 @@ app should trust as is. This page lists what the package checks for you and what
   can't add cells or rows of its own.
 - **Shape:** a field of the wrong type (a number where text goes, an object where a list goes, a
   missing `text`) is left out rather than thrown on, in the browser and in a server render, so one
-  bad block doesn't take down the rest of the page. Blocks nested more than 32 deep (callouts,
-  containers and conditions hold blocks of their own), and markdown lists and emphasis nested more
-  than 32 deep, render no deeper.
+  bad block doesn't take down the rest of the page. That includes an object JavaScript can't turn
+  into text (`{"toString": 1}`), whose `toString` and `valueOf` are dropped (on every render, so a
+  payload object you change in place is checked again), and a `block_id` or
+  `action_id` that names a property every object has (`__proto__`, `constructor`). Blocks nested
+  more than 32 deep (callouts, containers and conditions hold blocks of their own), and markdown
+  lists and emphasis nested more than 32 deep, render no deeper. The props you might fill from a
+  payload are treated the same way: a `ts` that isn't a string or a finite number, a `timeZone`
+  (on `<Message>` or `<BlockKitProvider>`) that isn't a zone the runtime knows, an `app` or `app.name` of the wrong type, and a `view` that
+  isn't an object count as missing. An unknown `timeZone` shows the viewer's own, and a `view`
+  that isn't an object renders an empty modal or Home tab, or nothing through `<View>`.
 
 Fields your own [custom blocks](/reference/custom-blocks) read are not checked by the renderer;
 check them in the component.

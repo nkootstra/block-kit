@@ -319,7 +319,8 @@ export function chartFileName(title: string | undefined): string {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9_]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    // Each run became one hyphen, so at most one is left at either end.
+    .replace(/^-|-$/g, "");
   return `${slug || "chart"}.tsv`;
 }
 
@@ -333,8 +334,8 @@ export function ChartActions({
   title,
   onViewTable,
 }: {
-  /** The chart's data as Slack tabulates it, header row first. */
-  rows: string[][];
+  /** The chart's data as Slack tabulates it, header row first: built when it's downloaded. */
+  rows: () => string[][];
   title?: string;
   onViewTable: () => void;
 }) {
@@ -352,7 +353,7 @@ export function ChartActions({
               label: "Download chart data",
               icon: <DownloadIcon width="15" height="15" />,
               onSelect: () =>
-                downloadText(chartFileName(title), toTsv(rows), "text/tab-separated-values"),
+                downloadText(chartFileName(title), toTsv(rows()), "text/tab-separated-values"),
             },
             {
               label: "Copy as image",

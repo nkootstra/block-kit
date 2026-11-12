@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CaretIcon } from "../data/icons";
-import { objectsIn } from "../payloadValues";
+import { asString, objectsIn } from "../payloadValues";
 import type { BlockProps, Json } from "../types";
 import { Card } from "./Card";
 
@@ -33,7 +33,7 @@ export function Carousel({ block }: BlockProps) {
     <div className="sbk-carousel">
       <div className="sbk-carousel__scroller" ref={scrollerRef} onScroll={updateEdges}>
         {elements.map((card, i) => (
-          <div className="sbk-carousel__item" key={(card.block_id as string | undefined) ?? i}>
+          <div className="sbk-carousel__item" key={asString(card.block_id) ?? i}>
             <Card
               block={card}
               blockId={(card.block_id as string) ?? `carousel-card-${i}`}

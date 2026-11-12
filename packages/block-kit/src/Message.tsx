@@ -1,4 +1,13 @@
-import { asArray, asObject, asString, hexColor, objectsIn } from "./payloadValues";
+import {
+  asArray,
+  asObject,
+  asString,
+  hexColor,
+  inert,
+  knownTimeZone,
+  objectsIn,
+} from "./payloadValues";
+import { imageUrl } from "./safeUrl";
 import type { AnyBlock } from "@slack/types";
 import { useMemo, useState } from "react";
 import { Blocks } from "./Blocks";
@@ -20,6 +29,12 @@ function fullTimestamp(time: Date, timeZone?: string): string {
   const day = Number(part({ day: "numeric" }));
   const clock = part({ hour: "numeric", minute: "2-digit", second: "2-digit" });
   return `${part({ weekday: "long" })}, ${part({ month: "long" })} ${ordinal(day)} at ${clock}`;
+}
+
+/** A `ts` as text: a string, or a finite number. Anything else is treated as missing. */
+function tsText(ts: unknown): string | undefined {
+  if (typeof ts === "string") return ts;
+  return typeof ts === "number" && Number.isFinite(ts) ? String(ts) : undefined;
 }
 
 export interface MessageApp {
@@ -107,24 +122,20 @@ const DEFAULT_APP: MessageApp = { name: "Block Kit Preview" };
 export function Message({
   blocks,
   text,
-  app = DEFAULT_APP,
+  app: appProp,
   ts,
-  timeZone,
-  message,
+  timeZone: timeZoneProp,
+  message: messageProp,
   channelId,
   isEphemeral,
 }: MessageProps) {
   // Without a `ts`, the message is stamped once at mount, so its timestamp stays stable across
   // renders and interactions still produce a `block_actions` payload with a `message_ts`.
   const [mountTs] = useState(() => actionTs());
-  const givenTs = message?.ts ?? (ts === undefined ? mountTs : String(ts));
-  // A `ts` that isn't a time (`toISOString` throws on one) is treated as missing.
-  const resolvedTs = Number.isNaN(new Date(Number(givenTs) * 1000).getTime()) ? mountTs : givenTs;
-  const time = new Date(Number(resolvedTs) * 1000);
 
   // What an app sent back through the action's `message` handle (`chat.update`/`response_url`).
   // It applies until the props change content, so editing the source still shows the edit.
-  const source = JSON.stringify([message?.blocks, message?.text, blocks, text]);
+  const source = JSON.stringify([messageProp?.blocks, messageProp?.text, blocks, text]);
   const [replaced, setReplaced] = useState<{ source: string; update: MessageUpdate | null }>();
   const override = replaced?.source === source ? replaced.update : undefined;
   const api = useMemo<MessageApi>(
@@ -134,6 +145,19 @@ export function Message({
     }),
     [source],
   );
+
+  const message = inert(messageProp);
+  // Props a host fills from a payload too, so they can be of any shape: a wrong one is ignored.
+  const givenTs = tsText(message?.ts) ?? tsText(ts) ?? mountTs;
+  const timeZone = knownTimeZone(timeZoneProp);
+  const appObject = asObject<Record<string, unknown>>(appProp);
+  const app: MessageApp = {
+    name: asString(appObject?.name) ?? DEFAULT_APP.name,
+    iconUrl: asString(appObject?.iconUrl),
+  };
+  // A `ts` that isn't a time (`toISOString` throws on one) is treated as missing.
+  const resolvedTs = Number.isNaN(new Date(Number(givenTs) * 1000).getTime()) ? mountTs : givenTs;
+  const time = new Date(Number(resolvedTs) * 1000);
 
   const resolvedBlocks = override ? override.blocks : (message?.blocks ?? blocks);
   const resolvedText = override ? override.text : (message?.text ?? text);
@@ -163,8 +187,8 @@ export function Message({
       message={api}
     >
       <div className="sbk-root sbk-message">
-        {header.iconUrl ? (
-          <img className="sbk-message__avatar" src={header.iconUrl} alt="" />
+        {imageUrl(header.iconUrl) ? (
+          <img className="sbk-message__avatar" src={imageUrl(header.iconUrl)} alt="" />
         ) : (
           <span className="sbk-message__avatar sbk-message__avatar--placeholder" aria-hidden>
             {header.name.charAt(0)}
@@ -274,7 +298,11 @@ function Attachment({ attachment: raw }: { attachment: SlackAttachment }) {
         {attachment.author_name && (
           <div className="sbk-attachment__author">
             {attachment.author_icon && (
-              <img className="sbk-attachment__author-icon" src={attachment.author_icon} alt="" />
+              <img
+                className="sbk-attachment__author-icon"
+                src={imageUrl(attachment.author_icon)}
+                alt=""
+              />
             )}
             {attachment.author_link ? (
               <Link
@@ -327,13 +355,17 @@ function Attachment({ attachment: raw }: { attachment: SlackAttachment }) {
           </div>
         )}
         {attachment.image_url && (
-          <img className="sbk-attachment__image" src={attachment.image_url} alt="" />
+          <img className="sbk-attachment__image" src={imageUrl(attachment.image_url)} alt="" />
         )}
         {blocks.length > 0 && <Blocks blocks={blocks as AnyBlock[]} />}
         {attachment.footer && (
           <div className="sbk-attachment__footer">
             {attachment.footer_icon && (
-              <img className="sbk-attachment__footer-icon" src={attachment.footer_icon} alt="" />
+              <img
+                className="sbk-attachment__footer-icon"
+                src={imageUrl(attachment.footer_icon)}
+                alt=""
+              />
             )}
             {attachment.footer}
           </div>

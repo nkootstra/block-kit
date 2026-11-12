@@ -4,7 +4,7 @@ import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKitConfig } from "../context";
 import { KebabIcon } from "../icons";
 import { safeUrl } from "../safeUrl";
-import { asObject, objectsIn } from "../payloadValues";
+import { asObject, asString, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useMenuNavigation } from "./useMenuNavigation";
 import { Popover } from "./Popover";
@@ -84,7 +84,7 @@ export function Overflow({ element, blockId }: ElementProps<OverflowElement>) {
           >
             {options.map((option, i) => (
               <div
-                key={option.value ?? i}
+                key={asString(option.value) ?? i}
                 id={`${idPrefix}-${i}`}
                 role="menuitem"
                 className="sbk-overflow__option"

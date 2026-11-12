@@ -14,7 +14,18 @@ const MARKER_TYPES = { "*": "bold", _: "italic", "~": "strike" } as const;
 
 const EMOJI_RE = /^:([a-z0-9_+'-]+):(?::skin-tone-([2-6]):)?/i;
 const BARE_URL_RE = /^(?:https?:\/\/|www\.)[^\s<>]+/i;
-const TRAILING_PUNCTUATION_RE = /[.,;:!?'")\]]+$/;
+/** Punctuation a bare URL doesn't end with: `see https://slack.com.` links without the period. */
+const TRAILING_PUNCTUATION = new Set([".", ",", ";", ":", "!", "?", "'", '"', ")", "]"]);
+
+/**
+ * `url` without its trailing punctuation. A loop from the end rather than a regex, which would
+ * retry from every punctuation character and take time quadratic in a run of them.
+ */
+function trimTrailingPunctuation(url: string): string {
+  let end = url.length;
+  while (end > 0 && TRAILING_PUNCTUATION.has(url[end - 1] as string)) end--;
+  return url.slice(0, end);
+}
 
 /** Parses Slack mrkdwn into an AST. Never throws: malformed markup is kept as text. */
 export function parse(input: string, options: ParseOptions = {}): Root {
@@ -169,7 +180,7 @@ function parseInline(text: string, options: ParseOptions): InlineNode[] {
       if (isBoundary(prev)) {
         const match = BARE_URL_RE.exec(text.slice(i));
         if (match) {
-          const raw = match[0].replace(TRAILING_PUNCTUATION_RE, "");
+          const raw = trimTrailingPunctuation(match[0]);
           if (raw.length > 0 && !/^www\.$/i.test(raw)) {
             flush();
             const url = decodeEntities(raw);

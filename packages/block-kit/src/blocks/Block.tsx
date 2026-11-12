@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { classModifier } from "../payloadValues";
+import { classModifier, inert } from "../payloadValues";
 import { Unsupported } from "../elements/Unsupported";
 import type { Json } from "../types";
 import { blockComponents } from ".";
@@ -13,9 +13,11 @@ const MAX_DEPTH = 32;
 const DepthContext = createContext(0);
 
 /** Renders one block. `index` is used for the generated block_id, as Slack does for blocks without one. */
-export function Block({ block, index }: { block: Json; index: number }) {
+export function Block({ block: blockProp, index }: { block: Json; index: number }) {
   const depth = useContext(DepthContext);
   if (depth >= MAX_DEPTH) return null;
+  // `Block` is exported, so a block can arrive without passing through `Blocks`.
+  const block = inert(blockProp);
   const blockId = typeof block.block_id === "string" ? block.block_id : `block-${index}`;
   // Own keys only: a type of "constructor" would find a function on Object.prototype. Inline rather
   // than `own()`, which the static-components lint reads as a component created during render.

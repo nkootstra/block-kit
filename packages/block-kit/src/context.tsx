@@ -23,6 +23,7 @@ import {
   type ViewLike,
   type ViewResponseAction,
 } from "./payloads";
+import { knownTimeZone } from "./payloadValues";
 import { Modal, type ModalView } from "./surfaces/Modal";
 import { ModalLayer } from "./surfaces/ModalLayer";
 
@@ -636,7 +637,7 @@ export function BlockKitProvider(props: BlockKitProviderProps) {
       mentionHref,
       emoji: emoji ?? {},
       errors: stackedView?.errors ?? errors ?? {},
-      timeZone,
+      timeZone: knownTimeZone(timeZone),
       setValue,
       seedValue,
       dispatch,

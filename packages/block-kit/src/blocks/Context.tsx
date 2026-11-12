@@ -1,6 +1,7 @@
 import type { ContextBlock } from "@slack/types";
 import { Text, type TextObject } from "../Text";
-import { objectsIn } from "../payloadValues";
+import { asString, objectsIn } from "../payloadValues";
+import { imageUrl } from "../safeUrl";
 import type { BlockProps } from "../types";
 
 export function Context({ block }: BlockProps<ContextBlock>) {
@@ -11,8 +12,8 @@ export function Context({ block }: BlockProps<ContextBlock>) {
           <img
             key={i}
             className="sbk-context__image"
-            src={"image_url" in el ? el.image_url : undefined}
-            alt={el.alt_text}
+            src={"image_url" in el ? imageUrl(el.image_url) : undefined}
+            alt={asString(el.alt_text)}
           />
         ) : (
           <span key={i} className="sbk-context__text">

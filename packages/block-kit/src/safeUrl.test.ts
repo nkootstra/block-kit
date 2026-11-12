@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { safeUrl } from "./safeUrl";
+import { imageUrl, safeUrl } from "./safeUrl";
 
 describe("safeUrl", () => {
   it.each([
     "https://example.com/docs",
     "http://example.com",
-    "HTTPS://EXAMPLE.COM",
     "mailto:name@example.com",
     "slack://channel?team=T0123456789&id=C0123456789",
     "/settings",
@@ -15,6 +14,11 @@ describe("safeUrl", () => {
     "docs/page:2",
   ])("keeps %j", (url) => {
     expect(safeUrl(url)).toBe(url);
+  });
+
+  it("writes a kept scheme in lowercase, as browsers read it", () => {
+    expect(safeUrl("HTTPS://EXAMPLE.COM")).toBe("https://EXAMPLE.COM");
+    expect(safeUrl("Data:image/png;base64,AA", { image: true })).toBe("data:image/png;base64,AA");
   });
 
   it.each([
@@ -64,4 +68,36 @@ describe("safeUrl", () => {
   it("drops a missing url", () => {
     expect(safeUrl(undefined)).toBeUndefined();
   });
+});
+
+describe("imageUrl", () => {
+  it.each([
+    "https://example.com/a.png",
+    "http://example.com/a.png",
+    "/a.png",
+    "./a.png",
+    "../a.png",
+    "//example.com/a.png",
+    "?a",
+    "data:image/png;base64,iVBORw0KGgo=",
+  ])("keeps %s as it is", (url) => {
+    expect(imageUrl(url)).toBe(url);
+  });
+
+  // React's server renderer keys its image preloads by `src` in a plain object, so an image whose
+  // URL is `hasOwnProperty` makes the next image's render throw.
+  it.each([
+    ["a.png", "./a.png"],
+    ["hasOwnProperty", "./hasOwnProperty"],
+    ["__proto__", "./__proto__"],
+  ])("spells the bare name %s as a relative path", (url, expected) => {
+    expect(imageUrl(url)).toBe(expected);
+  });
+
+  it.each([["javascript:alert(1)"], [""], [{ toString: 1 }], [["https://example.com/a.png"]], [1]])(
+    "drops %j",
+    (url) => {
+      expect(imageUrl(url)).toBeUndefined();
+    },
+  );
 });

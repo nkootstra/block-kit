@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKitConfig } from "../context";
 import { Text } from "../Text";
-import { asObject, objectsIn } from "../payloadValues";
+import { asObject, asString, objectsIn } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -40,7 +40,7 @@ export function RadioButtons({ element, blockId }: ElementProps<RadioButtonsElem
   return (
     <div className="sbk-radio-buttons" role="radiogroup">
       {objectsIn<Option>(element.options).map((option, i) => (
-        <label className="sbk-radio-buttons__option" key={option.value ?? i}>
+        <label className="sbk-radio-buttons__option" key={asString(option.value) ?? i}>
           <input
             ref={i === 0 ? focusRef : undefined}
             type="radio"
