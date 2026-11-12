@@ -39,10 +39,12 @@ export const MAX_MARKDOWN_LENGTH = 12_000;
 /*
  * micromark also takes time quadratic in the emphasis delimiters and brackets of a paragraph that
  * never close: 12,000 characters of `*a_` take a second to parse, and `_a* ` half of one. From the
- * delimiter past the `MAX_DELIMITERS`th in a paragraph, the rest of each of its lines is set aside
- * as text, behind one placeholder a line: a placeholder per delimiter would make the text longer,
+ * delimiter past the `MAX_DELIMITERS`th in a paragraph, the rest of the paragraph is set aside as
+ * text behind one placeholder, up to the next line that starts a block (a fence, quote, list item,
+ * heading, setext underline, thematic break, table or HTML block), so a block that interrupts the
+ * paragraph stays a block. A placeholder per delimiter, or per line, would make the text longer,
  * and an unclosed `[` costs time in how much text follows it. Matched delimiters count too, so the
- * cap is far above what a paragraph uses: 500 is 250 bold words.
+ * cap is far above what a paragraph uses: 500 is 250 bold words. A table cell has a cap of its own.
  */
 const MAX_DELIMITERS = 500;
 const DELIMITER = /([*_~])\1*|[[\]]/g;
@@ -52,6 +54,24 @@ const DELIMITER = /([*_~])\1*|[[\]]/g;
  * continue the paragraph above it, so its delimiters count toward the same cap.
  */
 const PARAGRAPH_START = /^(?:[ \t]*\r?$| {0,3}#{1,6}(?:[ \t]|\r?$)|[ \t]*(?:[-*+]|1[.)])[ \t]+\S)/;
+/**
+ * A line that starts a block (a quote, list item, heading, setext underline or HTML block; fences,
+ * thematic breaks and tables are checked on their own). It is never folded into the set-aside rest
+ * of the paragraph above it, so a block that interrupts the paragraph stays a block. Its
+ * delimiters still count, as it may only continue the paragraph. Only real block starts: a line
+ * of its own costs a placeholder of its own, which is slow after an unclosed `[`.
+ */
+const BLOCK_START =
+  /^(?: {0,3}>| {0,3}#{1,6}(?:[ \t]|\r?$)| {0,3}(?:=+|-+)[ \t]*\r?$|[ \t]*(?:[-*+]|\d{1,9}[.)])(?:[ \t]|\r?$)| {0,3}<[A-Za-z/!?])/;
+/** The pipe between two table cells: any but an escaped one. */
+const CELL_SEPARATOR = /(?<!\\)\|/;
+/** A table's delimiter row: the line under a table's header row. */
+const TABLE_DELIMITER_ROW = /^[ \t]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*\|?[ \t]*\r?$/;
+/** The block syntax a line starts with, which stays markdown when the rest is set aside. */
+const BLOCK_PREFIX =
+  /^(?:[ \t]*(?:(?:[-*+]|\d{1,9}[.)])(?=[ \t]|\r?$)[ \t]*|>[ \t]?))*(?:[ \t]*(?:#{1,6}(?=[ \t]|\r?$)|=+[ \t]*\r?$))?/;
+/** A code fence, after any indentation or quote markers: its marker, and what follows it. */
+const FENCE = /^[ \t>]*(`{3,}|~{3,})(.*)$/;
 
 /** The string fields of mdast nodes that carry text from the source. */
 const TEXT_FIELDS = ["value", "url", "title", "alt", "lang", "meta", "label"] as const;
@@ -74,11 +94,38 @@ export function parseMarkdown(text: string): Root {
   let delimiters = 0;
   /** The piece that takes the rest of the paragraph once it has `MAX_DELIMITERS` delimiters. */
   let rest = -1;
-  for (const line of text.replaceAll(MARK, setAside).split("\n")) {
-    if (PARAGRAPH_START.test(line)) {
-      delimiters = 0;
-      rest = -1;
+  /** The open code fence's marker. Its lines are set aside one at a time, never folded together. */
+  let fence: string | undefined;
+  let table = false;
+  const sourceLines = text.replaceAll(MARK, setAside).split("\n");
+  for (const [index, line] of sourceLines.entries()) {
+    const fenceLine = FENCE.exec(line);
+    if (fenceLine) {
+      const [, marker = "", after = ""] = fenceLine;
+      const closes =
+        fence !== undefined &&
+        marker[0] === fence[0] &&
+        marker.length >= fence.length &&
+        after.trim() === "";
+      // A backtick fence's info string can't hold a backtick, or it isn't a fence.
+      const opens = fence === undefined && !(marker[0] === "`" && after.includes("`"));
+      if (closes || opens) {
+        fence = opens ? marker : undefined;
+        delimiters = 0;
+        rest = -1;
+        lines.push(line);
+        continue;
+      }
     }
+    const paragraphStart = PARAGRAPH_START.test(line) || THEMATIC_BREAK.test(line);
+    if (paragraphStart) {
+      delimiters = 0;
+      table = false;
+    }
+    // A table's rows are cells of their own: from its header row to the next blank line, no row
+    // is folded into another.
+    if (line.includes("|") && TABLE_DELIMITER_ROW.test(sourceLines[index + 1] ?? "")) table = true;
+    if (paragraphStart || table || fence !== undefined || BLOCK_START.test(line)) rest = -1;
     if (rest !== -1) {
       pieces[rest] += `\n${asWritten(line)}`;
       continue;
@@ -88,10 +135,30 @@ export function parseMarkdown(text: string): Root {
       continue;
     }
     const capped = capRuns(capMarkers(line, setAside), setAside);
+    if (table) {
+      // Each cell is parsed on its own, so it has a cap of its own, and the pipes stay.
+      lines.push(
+        capped
+          .split(CELL_SEPARATOR)
+          .map((cell) => {
+            let count = 0;
+            for (const match of cell.matchAll(DELIMITER)) {
+              if (++count > MAX_DELIMITERS) {
+                return cell.slice(0, match.index) + setAside(asWritten(cell.slice(match.index)));
+              }
+            }
+            return cell;
+          })
+          .join("|"),
+      );
+      continue;
+    }
+    // The block syntax the line starts with stays markdown, and isn't counted.
+    const prefix = BLOCK_PREFIX.exec(capped)?.[0].length ?? 0;
     let cut = -1;
-    for (const match of capped.matchAll(DELIMITER)) {
+    for (const match of capped.slice(prefix).matchAll(DELIMITER)) {
       if (++delimiters > MAX_DELIMITERS) {
-        cut = match.index;
+        cut = prefix + match.index;
         break;
       }
     }

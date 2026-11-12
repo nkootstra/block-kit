@@ -1,4 +1,7 @@
 import type { Code, InlineCode, Link, Nodes, Paragraph, Root, Text } from "mdast";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { gfmFromMarkdown } from "mdast-util-gfm";
+import { gfm } from "micromark-extension-gfm";
 import { describe, expect, it } from "vitest";
 import { MAX_MARKDOWN_LENGTH, parseMarkdown } from "./markdownParse";
 
@@ -90,6 +93,57 @@ describe("parseMarkdown on hostile input", () => {
 
   it("keeps the text of deeply nested list items", () => {
     expect(textOf(parseMarkdown(`${"- ".repeat(100)}x`))).toContain("x");
+  });
+});
+
+/**
+ * The blocks of `tree` without their inline content: a paragraph past the delimiter cap differs
+ * inside, but its blocks, and every code block's text, must be what the markdown says.
+ */
+function blockShape(node: Nodes): unknown {
+  switch (node.type) {
+    case "code":
+      return ["code", node.lang ?? null, node.value];
+    case "heading":
+      return ["heading", node.depth];
+    case "paragraph":
+    case "tableCell":
+      return node.type;
+    default:
+      return "children" in node ? [node.type, node.children.map(blockShape)] : node.type;
+  }
+}
+
+const gfmTree = (text: string) =>
+  fromMarkdown(text, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
+
+describe("parseMarkdown past a paragraph's delimiter cap", () => {
+  // 600 delimiters: past the cap of 500.
+  const capped = "**b** ".repeat(300).trimEnd();
+  it.each([
+    ["a backtick fence", "```js\nconst a = b * c * d;\n```\nafter"],
+    ["a tilde fence", "~~~\n*not* _emphasis_\n~~~\nafter"],
+    ["a block quote", "> a quote with **bold**\n\nafter"],
+    ["an ATX heading", "# Heading"],
+    ["a setext underline", "==="],
+    ["a thematic break", "***\n\nafter"],
+    ["a bullet list", "- one\n- two"],
+    ["an asterisk bullet list", "* one *a*\n* two"],
+    ["an ordered list", "1. one\n2. two"],
+    ["a table", "\n| a | b |\n| - | - |\n| 1 | 2 |"],
+    ["a table right under it", "| [a] | *b* |\n| - | - |\n| [1] | _2_ |\n| 3 | 4 |"],
+    ["a quote line after line", "> [a\n> [b\n> **c**"],
+    ["an HTML block", "<div>\n*x*\n</div>"],
+    ["a fence in a list item", "- item\n\n  ```\n  a * b * c\n  more\n  ```\n- next"],
+  ])("keeps %s on the next line a block", (_, next) => {
+    const text = `${capped}\n${next}`;
+    expect(blockShape(parseMarkdown(text))).toEqual(blockShape(gfmTree(text)));
+  });
+
+  it("keeps a fenced block's text when the cap falls inside it", () => {
+    const code = `${"a_b ".repeat(600)}\nline *two*\n  indented`;
+    const text = `${capped}\n\n- item\n\n  \`\`\`\n${code.replace(/^/gm, "  ")}\n  \`\`\`\n`;
+    expect(blockShape(parseMarkdown(text))).toEqual(blockShape(gfmTree(text)));
   });
 });
 
