@@ -4,10 +4,6 @@
   --sbk-table-border: rgba(94, 93, 96, 0.13);
 }
 
-.sbk-table {
-  padding: 4px 0;
-}
-
 /* Scrolls wide tables while the hover actions stay pinned to the visible corner. */
 .sbk-table__scroll {
   overflow: auto;
@@ -16,6 +12,10 @@
 /* Separate borders (right + bottom on every cell, plus the outer top and left edges), as Slack
    draws them: collapsed borders land the rows on half pixels. */
 .sbk-table__table {
+  /* On the table, inside the scroll container, as Slack has it: a horizontal scrollbar then sits
+     below this padding rather than over the last 4px of the table (extra/fidelity/table/
+     long-content). */
+  padding: 4px 0;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 15px;
