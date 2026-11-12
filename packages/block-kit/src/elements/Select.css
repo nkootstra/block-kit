@@ -737,6 +737,12 @@
   width: calc(100% + 22px);
 }
 
+/* A single select's list never gets narrower than its 322px outside an input block: a 294px field
+   on a phone opens a 322px list, not 316px (catalog/container/data-entry-form@open+mobile). */
+.sbk-select__menu--typeable.sbk-select__menu--wide {
+  width: max(calc(100% + 22px), 322px);
+}
+
 /* A row with nothing to pick: Slack's minimum-query hint or "Nothing could be found." */
 .sbk-select__option--disabled {
   color: var(--sbk-menu-secondary-text);
