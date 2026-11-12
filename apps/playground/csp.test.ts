@@ -11,6 +11,13 @@ describe("the Content-Security-Policy in public/_headers", () => {
     expect(cspProblems(html, read("./public/_headers"))).toEqual([]);
   });
 
+  it("ends a script at an end tag the HTML parser accepts", () => {
+    const html = "<script>a()</script ><script>b()</script foo>";
+    expect(inlineScriptHashes(html)).toEqual(
+      inlineScriptHashes("<script>a()</script><script>b()</script>"),
+    );
+  });
+
   it("hashes scripts that run and skips the rest", () => {
     const html = [
       "<script>a()</script>",

@@ -9,7 +9,7 @@ import { createHash } from "node:crypto";
 export function inlineScriptHashes(html: string): string[] {
   const hashes: string[] = [];
   for (const [, attributes = "", text = ""] of html.matchAll(
-    /<script\b([^>]*)>([\s\S]*?)<\/script>/gi,
+    /<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi,
   )) {
     if (/\bsrc\s*=/i.test(attributes)) continue;
     const type = /\btype\s*=\s*["']?([^"'\s>]+)/i.exec(attributes)?.[1]?.toLowerCase();
