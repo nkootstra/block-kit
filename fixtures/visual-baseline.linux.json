@@ -273,7 +273,7 @@
   "catalog/card-and-carousel/carousel@scrolled-end+mobile": 0.06,
   "catalog/card-and-carousel/carousel@scrolled-end+mobile+dark": 0.04,
   "catalog/card-and-carousel/carousel@scrolled+dark": 0.05,
-  "catalog/card-and-carousel/carousel@scrolled+mobile": 0.12,
+  "catalog/card-and-carousel/carousel@scrolled+mobile": 0,
   "catalog/card-and-carousel/carousel@scrolled+mobile+dark": 0.06,
   "catalog/condition/client-platforms": 0,
   "catalog/condition/client-platforms@dark": 0,
