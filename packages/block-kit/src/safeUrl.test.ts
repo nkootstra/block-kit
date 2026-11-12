@@ -5,7 +5,6 @@ describe("safeUrl", () => {
   it.each([
     "https://example.com/docs",
     "http://example.com",
-    "HTTPS://EXAMPLE.COM",
     "mailto:name@example.com",
     "slack://channel?team=T0123456789&id=C0123456789",
     "/settings",
@@ -15,6 +14,11 @@ describe("safeUrl", () => {
     "docs/page:2",
   ])("keeps %j", (url) => {
     expect(safeUrl(url)).toBe(url);
+  });
+
+  it("writes a kept scheme in lowercase, as browsers read it", () => {
+    expect(safeUrl("HTTPS://EXAMPLE.COM")).toBe("https://EXAMPLE.COM");
+    expect(safeUrl("Data:image/png;base64,AA", { image: true })).toBe("data:image/png;base64,AA");
   });
 
   it.each([

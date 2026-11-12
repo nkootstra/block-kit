@@ -31,27 +31,59 @@ export function safeUrl(url: string | undefined, options: SafeUrlOptions = {}): 
   while (start < end && isTrimmed(stripped.charCodeAt(start))) start++;
   while (end > start && isTrimmed(stripped.charCodeAt(end - 1))) end--;
   const cleaned = stripped.slice(start, end);
-  if (cleaned === "" || !isSafeUrl(cleaned, options)) return undefined;
-  // No scheme before the first `/`, `?` or `#`: a relative URL. A `:` later on is part of the path.
-  if (options.image && schemeOf(cleaned) === undefined && /^[^/.?#]/.test(cleaned)) {
+  if (cleaned === "") return undefined;
+  // The start of a URL that is kept (its scheme, or the first character of a relative URL) is
+  // written out from the constants below, not copied from the input, so what decides where a
+  // URL leads and whether it can run script is always one of the starts checked here.
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(cleaned)?.[1]?.toLowerCase();
+  if (scheme === undefined) {
+    // No scheme before the first `/`, `?` or `#`: a relative URL. A `:` later on is part of the path.
+    const relative = relativeStart(cleaned.charAt(0));
+    if (relative !== undefined) return relative + cleaned.slice(1);
     // A bare name such as `a.png` reads the same as `./a.png`. Spelled that way, an image's URL
     // can't be `hasOwnProperty`, which React's server renderer uses as the key of a plain object
     // and then can't call, so the next image throws.
-    return `./${cleaned}`;
+    return options.image ? `./${cleaned}` : cleaned;
   }
-  return cleaned;
+  const image = options.image === true && (scheme === "blob" || /^data:image\//i.test(cleaned));
+  const kept = ALLOWED_SCHEMES.has(scheme) || image ? keptScheme(scheme) : undefined;
+  return kept === undefined ? undefined : kept + cleaned.slice(scheme.length + 1);
 }
 
-/** The lowercased scheme of `url`, or `undefined` for a relative URL. */
-function schemeOf(url: string): string | undefined {
-  return /^([a-z][a-z0-9+.-]*):/i.exec(url)?.[1]?.toLowerCase();
+/** The scheme `safeUrl` writes out for a scheme it keeps, followed by its colon. */
+function keptScheme(scheme: string): string | undefined {
+  switch (scheme) {
+    case "http":
+      return "http:";
+    case "https":
+      return "https:";
+    case "mailto":
+      return "mailto:";
+    case "slack":
+      return "slack:";
+    case "blob":
+      return "blob:";
+    case "data":
+      return "data:";
+    default:
+      return undefined;
+  }
 }
 
-/** Whether a URL, stripped as browsers strip it, is relative or uses a scheme `safeUrl` keeps. */
-function isSafeUrl(url: string, options: SafeUrlOptions): boolean {
-  const scheme = schemeOf(url);
-  if (scheme === undefined || ALLOWED_SCHEMES.has(scheme)) return true;
-  return options.image === true && (scheme === "blob" || /^data:image\//i.test(url));
+/** The first character of a relative URL that starts with one `safeUrl` keeps as it is. */
+function relativeStart(first: string): string | undefined {
+  switch (first) {
+    case "/":
+      return "/";
+    case ".":
+      return ".";
+    case "?":
+      return "?";
+    case "#":
+      return "#";
+    default:
+      return undefined;
+  }
 }
 
 /** An image's URL for its `src`: `safeUrl` with the `image` option, for any payload value. */

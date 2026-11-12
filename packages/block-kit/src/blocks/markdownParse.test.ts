@@ -41,9 +41,9 @@ function timedRaw(text: string): number {
   return performance.now() - start;
 }
 
-/** The median of three runs of `run`. */
-function median(run: () => number): number {
-  return [run(), run(), run()].sort((a, b) => a - b)[1] as number;
+/** The fastest of three runs of `run`. */
+function fastest(run: () => number): number {
+  return Math.min(run(), run(), run());
 }
 
 describe("parseMarkdown on hostile input", () => {
@@ -67,19 +67,21 @@ describe("parseMarkdown on hostile input", () => {
   });
 
   // Two shapes stay slower than the rest, and a CI runner's speed varies too much for a fixed
-  // bound, so each is timed against micromark parsing the same text in the same run.
+  // bound, so each is timed against another parse in the same run. The fastest of three runs is
+  // the one least slowed by whatever else the machine is doing.
   it("parses an opening bracket before long text no slower than micromark", () => {
     // Each word after an unclosed `[` looks back for it: micromark's own cost, about 0.1s at the
     // limit. The cap leaves it alone (one bracket), so it must cost no more than micromark does.
     const text = `[${fill("a ", MAX_MARKDOWN_LENGTH - 1)}`;
-    expect(median(() => timed(text))).toBeLessThan(1.5 * median(() => timedRaw(text)) + 100);
+    expect(fastest(() => timed(text))).toBeLessThan(1.5 * fastest(() => timedRaw(text)) + 50);
   });
 
-  it("parses underscores in a www link far faster than micromark", { timeout: 60_000 }, () => {
+  it("parses underscores in a www link in time that doesn't grow with its length", () => {
     // Each `www.` after a `_` reads the domain to its end: over a second in micromark at the
-    // limit, about 0.1s past the delimiter cap.
-    const text = fill("www.a_");
-    expect(median(() => timed(text))).toBeLessThan(timedRaw(text) / 3);
+    // limit, about 0.1s past the delimiter cap at any length. Quadratic time would be 16 times
+    // the time of a quarter of the text.
+    const quarter = fastest(() => timed(fill("www.a_", MAX_MARKDOWN_LENGTH / 4)));
+    expect(fastest(() => timed(fill("www.a_")))).toBeLessThan(3 * quarter + 50);
   });
 
   it("shows text over Slack's limit as it is written, unparsed", () => {
