@@ -308,7 +308,7 @@
   "catalog/container/data-entry-form@mobile+dark": 0.01,
   "catalog/container/data-entry-form@open": 0,
   "catalog/container/data-entry-form@open+dark": 0.12,
-  "catalog/container/data-entry-form@open+mobile": 0.19,
+  "catalog/container/data-entry-form@open+mobile": 0,
   "catalog/container/data-entry-form@open+mobile+dark": 0.08,
   "catalog/container/data-entry-form@pick": 0.01,
   "catalog/container/full-width": 0,
