@@ -1,3 +1,17 @@
+# Every response. The page runs its own scripts only: the bundle from /assets/ and index.html's
+# two inline scripts (the theme script and the about panel's), allowed by hash. csp.test.ts and
+# the build (vite.config.ts) fail when an inline script changes without its hash here; they print
+# the new one. Styles stay 'unsafe-inline': the package and the JSON editor set inline styles.
+# Images may come from anywhere over https (a payload shows whatever images it names, and emoji
+# come from cdn.jsdelivr.net), or be data: and blob: URLs. Fonts are bundled; Vite inlines the
+# smallest as data: URLs. Nothing frames the playground.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-2lmU9TCe/dAa4gyHT4bX1lWyDhNjrUP/9G7oyOC8fAM=' 'sha256-CJ7WxI1VyG1eo8V53AOC95gV5CjkMa+efDuJtc/uLw8='; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=()
+  X-Frame-Options: DENY
+
 # Vite hashes the names of everything in /assets/, so a file there never changes: cache it for a
 # year. The page keeps the default (revalidate every visit), so a deploy shows up at once.
 /assets/*

@@ -18,7 +18,8 @@ const styles = stylex.create({
 
 /**
  * Explains why "Your app" is disabled while the dev server's relay isn't configured. Only the dev
- * server can show it (`__RELAY__`), so `PreviewPane` loads it lazily and a build never ships it.
+ * server can show it (`__RELAY__`), so `PreviewPane` loads it lazily, and only when `__RELAY__`
+ * isn't "absent": a build leaves the import out and never ships this chunk.
  */
 export function RelayHint({ children }: { children: ReactNode }) {
   return (

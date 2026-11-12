@@ -89,7 +89,11 @@ const styles = stylex.create({
 });
 
 export function App() {
-  const [source, setSource] = useState(() => readHash() ?? DEFAULT_EXAMPLE?.json ?? "[]");
+  const [hashed] = useState(readHash);
+  const [source, setSource] = useState(() => hashed ?? DEFAULT_EXAMPLE?.json ?? "[]");
+  // A payload from the link's hash was written by whoever made the link; the preview says so
+  // until an example replaces it.
+  const [shared, setShared] = useState(hashed !== null);
   const [surface, setSurface] = useState<Surface>(() => detectSurface(source));
   const [latestPayload, setLatestPayload] = useState<unknown>(null);
   const [delivery, setDelivery] = useState<Delivery>(readDelivery);
@@ -194,6 +198,7 @@ export function App() {
 
   const load = (json: string) => {
     setSource(json);
+    setShared(false);
     setSurface(detectSurface(json));
     setLatestPayload(null);
     setAppReply(null);
@@ -245,6 +250,7 @@ export function App() {
           shown={shown}
           handlers={handlers}
           hiddenOnPhone={pane !== "preview"}
+          shared={shared}
           log={
             <PayloadLog
               payload={latestPayload}
