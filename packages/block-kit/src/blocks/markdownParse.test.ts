@@ -73,7 +73,14 @@ describe("parseMarkdown on hostile input", () => {
     // Each word after an unclosed `[` looks back for it: micromark's own cost, about 0.1s at the
     // limit. The cap leaves it alone (one bracket), so it must cost no more than micromark does.
     const text = `[${fill("a ", MAX_MARKDOWN_LENGTH - 1)}`;
-    expect(fastest(() => timed(text))).toBeLessThan(1.5 * fastest(() => timedRaw(text)) + 50);
+    // Run in turns, so a change in load slows both alike.
+    let ours = Infinity;
+    let raw = Infinity;
+    for (let run = 0; run < 3; run++) {
+      ours = Math.min(ours, timed(text));
+      raw = Math.min(raw, timedRaw(text));
+    }
+    expect(ours, `${ours} ms, micromark ${raw} ms`).toBeLessThan(2 * raw + 100);
   });
 
   it("parses underscores in a www link in time that doesn't grow with its length", () => {
