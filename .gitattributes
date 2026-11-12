@@ -1,0 +1,3 @@
+# Captured Slack renders and fixture data, not code: keep them out of the language stats
+# while their diffs stay visible for review.
+fixtures/** linguist-vendored
