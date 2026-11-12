@@ -52,7 +52,8 @@ app should trust as is. This page lists what the package checks for you and what
 - **Shape:** a field of the wrong type (a number where text goes, an object where a list goes, a
   missing `text`) is left out rather than thrown on, in the browser and in a server render, so one
   bad block doesn't take down the rest of the page. That includes an object JavaScript can't turn
-  into text (`{"toString": 1}`), whose `toString` and `valueOf` are dropped, and a `block_id` or
+  into text (`{"toString": 1}`), whose `toString` and `valueOf` are dropped (on every render, so a
+  payload object you change in place is checked again), and a `block_id` or
   `action_id` that names a property every object has (`__proto__`, `constructor`). Blocks nested
   more than 32 deep (callouts, containers and conditions hold blocks of their own), and markdown
   lists and emphasis nested more than 32 deep, render no deeper. The props you might fill from a

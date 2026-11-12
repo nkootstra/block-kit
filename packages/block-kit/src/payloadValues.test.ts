@@ -19,10 +19,25 @@ describe("inert", () => {
     expect(payload.blocks[0].block_id.toString).toBe(1);
   });
 
-  it("returns the same copy each time, so a cleaned payload keeps its identity across renders", () => {
-    const payload = JSON.parse('{"blocks":[{"type":"divider","block_id":{"toString":1}}]}');
-    expect(inert(payload)).toBe(inert(payload));
-    expect(inert(inert(payload))).toBe(inert(payload));
+  it("returns a cleaned copy as it is", () => {
+    const clean = inert(JSON.parse('{"blocks":[{"type":"divider","block_id":{"toString":1}}]}'));
+    expect(inert(clean)).toBe(clean);
+  });
+
+  it("checks a payload again after it changes in place", () => {
+    const payload = JSON.parse('{"blocks":[{"type":"divider","block_id":"a"}]}');
+    expect(inert(payload)).toBe(payload);
+    payload.blocks[0].block_id = JSON.parse('{"toString":1}');
+    const clean = inert(payload);
+    expect(clean).not.toBe(payload);
+    expect(() => `${clean.blocks[0].block_id}`).not.toThrow();
+  });
+
+  it("walks an object it meets twice once, and keeps it one object", () => {
+    const shared = JSON.parse('{"toString":1,"a":1}');
+    const clean = inert({ x: shared, y: [shared] });
+    expect(clean.x).toEqual({ a: 1 });
+    expect(clean.y[0]).toBe(clean.x);
   });
 
   it("keeps a __proto__ key an own key, as JSON.parse leaves it", () => {

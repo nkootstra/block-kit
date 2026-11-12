@@ -73,28 +73,28 @@ export function own<T>(table: Readonly<Record<string, T>>, key: unknown): T | un
 const COERCION_KEYS: readonly string[] = ["toString", "valueOf"];
 /** Far deeper than anything renders (blocks nest at most 32 deep); below it a payload is as given. */
 const MAX_INERT_DEPTH = 1000;
-const inertCache = new WeakMap<object, unknown>();
 
 /**
  * `payload` with every object that has its own `toString` or `valueOf` that isn't a function (as
  * JSON such as `{"toString": 1}` does) copied without those keys. JavaScript calls them to turn an
  * object into text, as React does for a key or an attribute and a template literal does, and one
  * that isn't a function throws, wherever the payload has it. A payload without one comes back as
- * the same objects, so it keeps its identity, and each object is checked once.
+ * the same objects, so it keeps its identity. It is checked again on every call, since a host may
+ * change a payload object in place between renders.
  */
 export function inert<T>(payload: T): T {
-  return inertAt(payload, 0) as T;
+  return inertAt(payload, 0, new Map()) as T;
 }
 
-function inertAt(value: unknown, depth: number): unknown {
+/** `seen` maps each object of this call to its result, so a shared or cyclic object is walked once. */
+function inertAt(value: unknown, depth: number, seen: Map<object, unknown>): unknown {
   if (typeof value !== "object" || value === null || depth >= MAX_INERT_DEPTH) return value;
-  const cached = inertCache.get(value);
-  if (cached !== undefined) return cached;
+  if (seen.has(value)) return seen.get(value);
   const isArray = Array.isArray(value);
   const prototype: unknown = Object.getPrototypeOf(value);
   if (!isArray && prototype !== Object.prototype && prototype !== null) return value;
   // Marked before the walk, so an object that contains itself ends it.
-  inertCache.set(value, value);
+  seen.set(value, value);
 
   const source = value as Record<string, unknown>;
   let changed = false;
@@ -105,7 +105,7 @@ function inertAt(value: unknown, depth: number): unknown {
       changed = true;
       continue;
     }
-    const clean = inertAt(item, depth + 1);
+    const clean = inertAt(item, depth + 1, seen);
     if (clean !== item) changed = true;
     entries.push([key, clean]);
   }
@@ -121,7 +121,6 @@ function inertAt(value: unknown, depth: number): unknown {
       configurable: true,
     });
   }
-  inertCache.set(value, copy);
-  inertCache.set(copy, copy);
+  seen.set(value, copy);
   return copy;
 }

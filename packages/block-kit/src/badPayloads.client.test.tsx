@@ -27,7 +27,8 @@ function render(payload: { type?: unknown }): void {
   );
 }
 
-function mount(element: ReactNode): void {
+/** Renders `element`, then, when given, renders again what `next` returns. */
+function mount(element: ReactNode, next?: () => ReactNode): void {
   const container = document.createElement("div");
   document.body.append(container);
   const caught: unknown[] = [];
@@ -36,6 +37,7 @@ function mount(element: ReactNode): void {
   const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
   try {
     act(() => root.render(<Boundary caught={caught}>{element}</Boundary>));
+    if (next) act(() => root.render(<Boundary caught={caught}>{next()}</Boundary>));
   } finally {
     act(() => root.unmount());
     consoleError.mockRestore();
@@ -70,5 +72,30 @@ describe("payloads of the wrong shape, in the browser", () => {
 describe("props of the wrong shape, in the browser", () => {
   it.each(badProps)("renders %s", (_, make) => {
     expect(() => mount(<BlockKitProvider>{make()}</BlockKitProvider>)).not.toThrow();
+  });
+});
+
+describe("a payload changed in place between renders", () => {
+  // A host may keep one payload object and change it before rendering again: each render checks
+  // the payload as it is then, not as it was.
+  it("renders a field that became one JavaScript can't turn into text", () => {
+    const user: Record<string, unknown> = { type: "user", user_id: "U0123456789" };
+    const section = { type: "rich_text_section", elements: [user] };
+    const message = {
+      ts: "1700000000.000000",
+      blocks: [{ type: "rich_text", elements: [section] }],
+    };
+    const element = () => (
+      <BlockKitProvider>
+        <Message message={message as never} />
+      </BlockKitProvider>
+    );
+    expect(() =>
+      mount(element(), () => {
+        user.user_id = { toString: 1 };
+        message.blocks = [...message.blocks];
+        return element();
+      }),
+    ).not.toThrow();
   });
 });
