@@ -7,7 +7,7 @@ function PlayIcon() {
   return (
     <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
       <path
-        d="M6 4.3a1 1 0 0 1 1.5-.9l8.6 5.7a1 1 0 0 1 0 1.8l-8.6 5.7A1 1 0 0 1 6 15.7z"
+        d="M4 5.3a1 1 0 0 1 1.5-.9l10.4 5.7a1 1 0 0 1 0 1.8l-10.4 5.7A1 1 0 0 1 4 16.7z"
         fill="currentColor"
       />
     </svg>
@@ -16,8 +16,8 @@ function PlayIcon() {
 
 function CaretDownIcon() {
   return (
-    <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
-      <path d="M5.5 8l4.5 4.5L14.5 8z" fill="currentColor" />
+    <svg viewBox="0 0 15 15" width="15" height="15" aria-hidden="true">
+      <path d="M5 8h6v2l-3 2.6L5 10z" fill="currentColor" />
     </svg>
   );
 }
