@@ -29,7 +29,9 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 50%;
+  /* Slack centres the arrows on its scroller, which reaches 8px above the cards and 4px below
+     them, so they sit 2px above the cards' middle (catalog/card-and-carousel/carousel@mobile). */
+  top: calc(50% - 2px);
   transform: translateY(-16px);
   width: 32px;
   height: 32px;
@@ -74,4 +76,22 @@
 
 .sbk-carousel__arrow--right {
   right: 12px;
+}
+
+/* A keyboard-focused arrow keeps its round shadow, and Slack's ring goes round the button inside
+   it, 32x36 with 8px corners, 2px above and below the circle
+   (catalog/card-and-carousel/carousel@focus-arrow-2+mobile). */
+.sbk-carousel .sbk-carousel__arrow:focus-visible {
+  box-shadow:
+    rgba(0, 0, 0, 0.098) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.098) 0px 1px 2px -1px;
+}
+
+.sbk-carousel .sbk-carousel__arrow:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: -2px 0;
+  border-radius: 8px;
+  box-shadow: var(--sbk-focus-shadow);
+  pointer-events: none;
 }
