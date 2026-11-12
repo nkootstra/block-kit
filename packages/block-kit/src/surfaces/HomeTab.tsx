@@ -1,7 +1,7 @@
 import { Blocks } from "../Blocks";
 import { SurfaceScope, useLiveView } from "../context";
 import type { ViewLike } from "../payloads";
-import { inert } from "../payloadValues";
+import { asObject, inert } from "../payloadValues";
 
 export interface HomeTabView extends ViewLike {
   type: "home";
@@ -11,8 +11,12 @@ export interface HomeTabProps {
   view: HomeTabView;
 }
 
+const EMPTY_HOME: HomeTabView = { type: "home", blocks: [] };
+
 /** A Slack Home tab: just its blocks, laid out full width like Slack's App Home. */
-export function HomeTab({ view: viewProp }: HomeTabProps) {
+export function HomeTab({ view: viewGiven }: HomeTabProps) {
+  // A host may pass a view straight from a payload: one that isn't an object shows an empty tab.
+  const viewProp = asObject<HomeTabView>(viewGiven) ?? EMPTY_HOME;
   // `views.publish` (or `views.update`) from an action swaps the content, as it would in Slack.
   const { view: liveView } = useLiveView(viewProp);
   const view = inert(liveView);

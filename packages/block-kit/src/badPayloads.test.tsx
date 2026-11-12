@@ -5,6 +5,7 @@ import { BlockKitProvider } from "./context";
 import { Message } from "./Message";
 import { View } from "./surfaces/View";
 import badPayloads from "./badPayloads.test.json";
+import { badProps } from "./badProps.test-cases";
 
 /**
  * A payload is untyped JSON from whoever wrote it, so any field can be missing or of another type.
@@ -34,4 +35,10 @@ describe("payloads of the wrong shape", () => {
       expect(() => render(payload as { type?: unknown })).not.toThrow();
     },
   );
+});
+
+describe("props of the wrong shape", () => {
+  it.each(badProps)("renders %s", (_, make) => {
+    expect(() => renderToString(<BlockKitProvider>{make()}</BlockKitProvider>)).not.toThrow();
+  });
 });

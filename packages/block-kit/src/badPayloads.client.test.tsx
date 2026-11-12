@@ -5,6 +5,7 @@ import { BlockKitProvider } from "./context";
 import { Message } from "./Message";
 import { View } from "./surfaces/View";
 import badPayloads from "./badPayloads.test.json";
+import { badProps } from "./badProps.test-cases";
 
 /**
  * The payloads of `badPayloads.test.tsx`, rendered in the browser instead of on the server: there
@@ -13,7 +14,7 @@ import badPayloads from "./badPayloads.test.json";
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 function render(payload: { type?: unknown }): void {
-  const element =
+  mount(
     payload.type === "modal" || payload.type === "home" ? (
       <BlockKitProvider surface={payload.type}>
         <View view={{ id: "V0123456789", ...payload } as never} />
@@ -22,7 +23,11 @@ function render(payload: { type?: unknown }): void {
       <BlockKitProvider>
         <Message message={{ ts: "1700000000.000000", ...payload } as never} />
       </BlockKitProvider>
-    );
+    ),
+  );
+}
+
+function mount(element: ReactNode): void {
   const container = document.createElement("div");
   document.body.append(container);
   const caught: unknown[] = [];
@@ -60,4 +65,10 @@ describe("payloads of the wrong shape, in the browser", () => {
       expect(() => render(payload as { type?: unknown })).not.toThrow();
     },
   );
+});
+
+describe("props of the wrong shape, in the browser", () => {
+  it.each(badProps)("renders %s", (_, make) => {
+    expect(() => mount(<BlockKitProvider>{make()}</BlockKitProvider>)).not.toThrow();
+  });
 });

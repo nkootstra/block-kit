@@ -182,6 +182,7 @@ framework: https://docs.block-kit.dev/guides/linking-to-your-app.md):
 - Every payload image URL goes through the same scheme check (keeping `blob:` and `data:image/`);
   a bare name such as `a.png` renders as `./a.png`. The built-in blocks render a payload of any
   shape without throwing, on the server and in the browser; custom blocks check their own fields.
+  A `ts`, `timeZone`, `app` or `view` prop of the wrong shape (or an unknown zone) counts as missing.
 - Payload values reach styles and class names only after a check (hex colours, known alignments,
   single-word class modifiers, and a header level of 1, 2, 3 or 4), because a server render writes
   them into the HTML as they are. A custom block that puts a payload value into `style` or

@@ -55,7 +55,11 @@ app should trust as is. This page lists what the package checks for you and what
   into text (`{"toString": 1}`), whose `toString` and `valueOf` are dropped, and a `block_id` or
   `action_id` that names a property every object has (`__proto__`, `constructor`). Blocks nested
   more than 32 deep (callouts, containers and conditions hold blocks of their own), and markdown
-  lists and emphasis nested more than 32 deep, render no deeper.
+  lists and emphasis nested more than 32 deep, render no deeper. The props you might fill from a
+  payload are treated the same way: a `ts` that isn't a string or a finite number, a `timeZone`
+  (on `<Message>` or `<BlockKitProvider>`) that isn't a zone the runtime knows, an `app` or `app.name` of the wrong type, and a `view` that
+  isn't an object count as missing. An unknown `timeZone` shows the viewer's own, and a `view`
+  that isn't an object renders an empty modal or Home tab, or nothing through `<View>`.
 
 Fields your own [custom blocks](/reference/custom-blocks) read are not checked by the renderer;
 check them in the component.

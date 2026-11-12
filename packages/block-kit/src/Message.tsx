@@ -1,4 +1,12 @@
-import { asArray, asObject, asString, hexColor, inert, objectsIn } from "./payloadValues";
+import {
+  asArray,
+  asObject,
+  asString,
+  hexColor,
+  inert,
+  knownTimeZone,
+  objectsIn,
+} from "./payloadValues";
 import { imageUrl } from "./safeUrl";
 import type { AnyBlock } from "@slack/types";
 import { useMemo, useState } from "react";
@@ -21,6 +29,12 @@ function fullTimestamp(time: Date, timeZone?: string): string {
   const day = Number(part({ day: "numeric" }));
   const clock = part({ hour: "numeric", minute: "2-digit", second: "2-digit" });
   return `${part({ weekday: "long" })}, ${part({ month: "long" })} ${ordinal(day)} at ${clock}`;
+}
+
+/** A `ts` as text: a string, or a finite number. Anything else is treated as missing. */
+function tsText(ts: unknown): string | undefined {
+  if (typeof ts === "string") return ts;
+  return typeof ts === "number" && Number.isFinite(ts) ? String(ts) : undefined;
 }
 
 export interface MessageApp {
@@ -108,9 +122,9 @@ const DEFAULT_APP: MessageApp = { name: "Block Kit Preview" };
 export function Message({
   blocks,
   text,
-  app = DEFAULT_APP,
+  app: appProp,
   ts,
-  timeZone,
+  timeZone: timeZoneProp,
   message: messageProp,
   channelId,
   isEphemeral,
@@ -133,7 +147,14 @@ export function Message({
   );
 
   const message = inert(messageProp);
-  const givenTs = message?.ts ?? (ts === undefined ? mountTs : String(ts));
+  // Props a host fills from a payload too, so they can be of any shape: a wrong one is ignored.
+  const givenTs = tsText(message?.ts) ?? tsText(ts) ?? mountTs;
+  const timeZone = knownTimeZone(timeZoneProp);
+  const appObject = asObject<Record<string, unknown>>(appProp);
+  const app: MessageApp = {
+    name: asString(appObject?.name) ?? DEFAULT_APP.name,
+    iconUrl: asString(appObject?.iconUrl),
+  };
   // A `ts` that isn't a time (`toISOString` throws on one) is treated as missing.
   const resolvedTs = Number.isNaN(new Date(Number(givenTs) * 1000).getTime()) ? mountTs : givenTs;
   const time = new Date(Number(resolvedTs) * 1000);

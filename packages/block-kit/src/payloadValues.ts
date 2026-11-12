@@ -48,6 +48,20 @@ export function asString(value: unknown): string | undefined {
 }
 
 /**
+ * `value` if it names a time zone the runtime knows, or `undefined`, which formats in the viewer's
+ * zone. `Intl` throws on any other zone, such as a user's `tz` a host passes on as it is.
+ */
+export function knownTimeZone(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value });
+    return value;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * `table[key]` when `key` is one of `table`'s own keys. A payload string such as `"constructor"` or
  * `"__proto__"` would otherwise find a value on `Object.prototype`.
  */

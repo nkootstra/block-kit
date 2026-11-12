@@ -28,8 +28,12 @@ export interface ModalProps {
   icon?: string;
 }
 
+const EMPTY_MODAL: ModalView = { type: "modal", blocks: [] };
+
 /** A Slack modal: header (icon + title + close), a scrollable body of blocks, and a close/submit footer. */
-export function Modal({ view: viewProp, icon }: ModalProps) {
+export function Modal({ view: viewGiven, icon }: ModalProps) {
+  // A host may pass a view straight from a payload: one that isn't an object shows an empty modal.
+  const viewProp = asObject<ModalView>(viewGiven) ?? EMPTY_MODAL;
   const { state, identity, onSubmit, onClose, views, stackedView, respond } = useBlockKit();
   // A modal opened through `views`: the X closes the whole stack (Slack's `is_cleared`), the
   // footer's close button goes back one view, and Submit applies the app's `response_action`.
