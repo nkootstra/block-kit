@@ -159,8 +159,8 @@ describe("<RichTextInput>", () => {
   });
 
   it.each([
-    [{}, "", "192px"],
-    [{ min_lines: 3, max_lines: 5 }, "82px", "126px"],
+    [{}, "", "196px"],
+    [{ min_lines: 3, max_lines: 5 }, "83.5px", "128.5px"],
   ])("sizes the editor from min_lines and max_lines %j, padding included", (lines, min, max) => {
     render(
       <BlockKitProvider>

@@ -95,30 +95,34 @@ describe("<Card>", () => {
     expect(container.querySelector(".sbk-card__header")).toBeNull();
   });
 
-  // catalog/card-and-carousel/card-actions-and-content, card-with-three-actions and
-  // extra/fidelity/card/mixed: Slack orders a card's buttons danger, default, primary, whatever
-  // the payload's order, and pulls the danger ones into a group on the left.
-  it("puts danger buttons on the left and primary buttons last", () => {
-    const button = (text: string, style?: string) => ({
-      type: "button",
-      action_id: text,
-      text: { type: "plain_text", text },
-      ...(style && { style }),
-    });
-    const block = {
-      type: "card",
-      title: { type: "plain_text", text: "Card" },
-      actions: [
-        button("Confirm", "primary"),
-        button("Delete", "danger"),
-        button("Cancel"),
-        button("Details"),
-      ],
-    };
+  const button = (text: string, style?: string) => ({
+    type: "button",
+    action_id: text,
+    text: { type: "plain_text", text },
+    ...(style && { style }),
+  });
+  const renderActions = (actions: object[]) => {
+    const block = { type: "card", title: { type: "plain_text", text: "Card" }, actions };
     const { container } = render(<Card block={block as never} blockId="b1" index={0} />);
-    const start = container.querySelector(".sbk-card__actions-start") as HTMLElement;
-    expect([...start.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Delete"]);
-    const all = [...container.querySelectorAll(".sbk-card__actions button")];
-    expect(all.map((b) => b.textContent)).toEqual(["Delete", "Cancel", "Details", "Confirm"]);
+    const start = container.querySelector(".sbk-card__actions-start");
+    return {
+      start: start ? [...start.querySelectorAll("button")].map((b) => b.textContent) : null,
+      all: [...container.querySelectorAll(".sbk-card__actions button")].map((b) => b.textContent),
+    };
+  };
+
+  // Measured in Block Kit Builder: Slack orders a card's buttons danger, default, primary,
+  // whatever the payload's order. With three buttons the danger ones get a group on the left.
+  it("puts the danger buttons of a three-button card in a group on the left", () => {
+    expect(
+      renderActions([button("Confirm", "primary"), button("Cancel"), button("Delete", "danger")]),
+    ).toEqual({ start: ["Delete"], all: ["Delete", "Cancel", "Confirm"] });
+  });
+
+  it("keeps the buttons of a two-button card together, danger first", () => {
+    expect(renderActions([button("Confirm", "primary"), button("Delete", "danger")])).toEqual({
+      start: null,
+      all: ["Delete", "Confirm"],
+    });
   });
 });

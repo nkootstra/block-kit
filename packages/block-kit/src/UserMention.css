@@ -71,7 +71,7 @@
 .sbk-profile-card__secondary {
   color: var(--sbk-content-sec);
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
 }
 
 .sbk-profile-card__status {
@@ -79,7 +79,7 @@
   align-items: center;
   gap: 6px;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
 }
 
 .sbk-profile-card__time {

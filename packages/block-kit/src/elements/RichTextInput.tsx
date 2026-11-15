@@ -31,8 +31,8 @@ function isBlank(value: RichTextBlock | undefined): boolean {
 }
 
 /** Slack's line height, the editor's top and bottom padding, and the lines it shows before it
- * scrolls when the payload sets no `max_lines` (Slack's field stops at 192px: 8 × 22 + 16). */
-const LINE = 22;
+ * scrolls when the payload sets no `max_lines` (Slack's field stops at 196px: 8 × 22.5 + 16). */
+const LINE = 22.5;
 const PADDING = 16;
 const MAX_LINES = 8;
 

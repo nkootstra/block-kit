@@ -8,7 +8,7 @@
 .sbk-rich-text {
   font-family: var(--sbk-font);
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-body);
   overflow-wrap: anywhere;
 }
@@ -222,7 +222,7 @@
   margin-bottom: 4px;
   padding: 1px 2px;
   font-size: 12px;
-  line-height: 17.6px;
+  line-height: 18px;
   color: var(--sbk-link);
   text-decoration: none;
   vertical-align: middle;

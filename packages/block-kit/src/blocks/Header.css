@@ -6,19 +6,21 @@
 
 .sbk-header--level-1 {
   font-size: 18px;
-  line-height: 1.33334;
+  /* Slack's level-1 header takes the message's 22.5px line height, smaller than its font calls for
+     (Block Kit Builder, 14 November 2026; 24px before). */
+  line-height: 22.5px;
   font-weight: 900;
 }
 
 .sbk-header--level-2 {
   font-size: 15px;
-  line-height: 1.46668;
+  line-height: 1.5;
   font-weight: 900;
 }
 
 .sbk-header--level-3,
 .sbk-header--level-4 {
   font-size: 15px;
-  line-height: 1.46668;
+  line-height: 1.5;
   font-weight: 700;
 }

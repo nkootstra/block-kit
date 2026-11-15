@@ -26,7 +26,7 @@
   overflow: hidden;
   padding: 0 10px;
   font-weight: 700;
-  line-height: 22px;
+  line-height: 22.5px;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -77,7 +77,7 @@
   height: 29.0625px;
   padding: 4px 0 6px;
   font-size: 13px;
-  line-height: 19.0668px;
+  line-height: 19.5px;
   font-weight: 700;
   color: var(--sbk-content-sec);
 }

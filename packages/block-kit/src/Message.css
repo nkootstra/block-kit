@@ -27,13 +27,16 @@
 .sbk-message__content {
   flex: 1 1 0;
   min-width: 0;
-  padding: 8px 0;
+  /* Slack pulls the content up by its 8px top padding (margin-top: -8px), so the header sits
+     level with the top of the avatar. */
+  padding: 0 0 8px;
 }
 
 .sbk-message__header {
   display: flex;
-  align-items: center;
-  height: 22px;
+  align-items: baseline;
+  height: 16.5px;
+  line-height: 15px;
 }
 
 .sbk-message__sender {
@@ -55,7 +58,7 @@
 .sbk-message__time {
   margin-right: 5px;
   font-size: 12px;
-  line-height: 17.6px;
+  line-height: 12px;
   color: var(--sbk-text-sec);
 }
 

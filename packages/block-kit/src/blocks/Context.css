@@ -6,14 +6,14 @@
   align-items: flex-start;
   margin: 4px 0;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-sec);
 }
 
 .sbk-context .sbk-mrkdwn,
 .sbk-context .sbk-plain-text {
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16.25px;
   color: inherit;
 }
 

@@ -6,20 +6,20 @@
    file size (which we can't know without fetching the image) and the caret button. */
 .sbk-image__title {
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-sec);
 }
 
 .sbk-image__title-text {
   display: inline-block;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16.25px;
   word-break: break-word;
 }
 
 .sbk-image__trigger {
   font-size: 13px;
-  line-height: 18px;
+  line-height: 19.5px;
   white-space: nowrap;
 }
 

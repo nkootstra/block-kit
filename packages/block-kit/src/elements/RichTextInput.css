@@ -1,6 +1,6 @@
 /* Slack's modal rich-text composer (`c-wysiwyg_container`): the formatting bar (38px), the editor
-   (one 22px line plus 8px padding) and the composer actions row (40px), in a box that measures
-   118px with its border. */
+   (one 22.5px line plus 8px padding) and the composer actions row (40px), in a box that measures
+   119px with its border. */
 .sbk-rich-text-input {
   display: flex;
   flex-direction: column;
@@ -29,12 +29,16 @@
   /* Slack's buttons carry no bottom margin, so they sit 2px down the 30px bar, not centred in it. */
   margin: 2px 2px 0;
   padding: 2px;
-  color: var(--sbk-composer-tool);
+  color: var(--sbk-content-sec);
   background: none;
   border: none;
   border-radius: 4px;
   opacity: 0.3;
   cursor: default;
+}
+
+.sbk-rich-text-input__tool:first-child {
+  margin-left: 0;
 }
 
 .sbk-rich-text-input:has(.sbk-rich-text-input__editor:focus) .sbk-rich-text-input__tool {
@@ -63,7 +67,7 @@
 .sbk-rich-text-input__editor {
   flex: 1;
   padding: 8px 12px;
-  font: 15px / 22px var(--sbk-font);
+  font: 15px / 22.5px var(--sbk-font);
   color: var(--sbk-text-body);
   overflow-wrap: break-word;
   overflow-y: auto;
@@ -100,14 +104,15 @@
   right: 12px;
   left: 12px;
   overflow: hidden;
-  font: 15px / 22px var(--sbk-font);
+  font: 15px / 22.5px var(--sbk-font);
   color: var(--sbk-content-ter);
   white-space: nowrap;
   text-overflow: ellipsis;
   pointer-events: none;
 }
 
-/* Slack's `c-wysiwyg_container__footer`: 28px buttons with 2px margins in a 4px-padded row. */
+/* Slack's `c-wysiwyg_container__footer`: 28px buttons with 2px margins in a 4px-padded row, the
+   outer margins dropped. */
 .sbk-rich-text-input__footer {
   display: flex;
   padding: 4px 4px 4px 6px;
@@ -134,6 +139,14 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.sbk-rich-text-input__action:first-child {
+  margin-left: 0;
+}
+
+.sbk-rich-text-input__action:last-child {
+  margin-right: 0;
 }
 
 .sbk-rich-text-input__action[aria-disabled="true"] {

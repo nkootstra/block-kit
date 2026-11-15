@@ -30,7 +30,7 @@
   padding-left: 20px;
   text-indent: -20px;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
 }
 
 /* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
@@ -83,7 +83,7 @@
    then a step whose 5px dot and rule sit in a 12px rail 8px left of the output and sources. */
 .sbk-task-card__body {
   font-size: 13px;
-  line-height: 19.0668px;
+  line-height: 19.5px;
   color: var(--sbk-task-card-text);
 }
 
