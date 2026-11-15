@@ -279,8 +279,9 @@ Dropping `subtitle` centers a lone title on the icon instead of stacking the two
 />
 
 Slack orders a card's buttons by style, regardless of where they appear in `actions`: `danger`
-buttons are grouped to the left, then default buttons and finally `primary` ones on the right. Buttons
-with the same style keep their order from `actions`.
+buttons first, then default buttons and finally `primary` ones. Buttons with the same style keep their
+order from `actions`. With three buttons, the `danger` ones sit on the left and the rest on the right;
+with one or two, all of them sit together on the right.
 
 ## Interactivity
 

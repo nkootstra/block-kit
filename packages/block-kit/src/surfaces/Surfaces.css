@@ -225,7 +225,7 @@
   margin-left: 25px;
   /* Slack's tab title is a size up from body text, at the same 22/15 line-height ratio. */
   font-size: 16px;
-  line-height: 1.4667;
+  line-height: 1.5;
   font-weight: 700;
   /* Slack's aubergine, independent of the app's primary (green) buttons. */
   box-shadow: inset 0 -2px 0 0 rgb(74, 21, 75);
@@ -250,14 +250,10 @@
   padding: 25px;
 }
 
-/* Slack insets the blocks 8px and pads them, keeping the full width so they run 8px into the
-   right padding: 12px on three sides, and 36px plus a clear 4px border on the right. */
+/* Slack sets the blocks straight inside the content's 25px padding, with no inset of their own. */
 .sbk-home__blocks {
   box-sizing: border-box;
   width: 100%;
-  margin-left: 8px;
-  padding: 12px 36px 12px 12px;
-  border-right: 4px solid transparent;
 }
 
 /* Modals opened through `views` sit centred on a dimmed, full-viewport overlay, as in Slack. The

@@ -35,3 +35,9 @@
 .sbk-radio-buttons__description .sbk-mrkdwn {
   color: var(--sbk-content-ter);
 }
+
+/* Slack sets an option's mrkdwn in its label's 22px line height, which it kept when the rest of
+   the text moved to 22.5px (Block Kit Builder, 14 November 2026). */
+.sbk-radio-buttons__option .sbk-mrkdwn {
+  line-height: inherit;
+}

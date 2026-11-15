@@ -34,6 +34,8 @@ const SURFACE_SEC = "rgb(248, 248, 248)"; // #f8f8f8
 const CONTENT_TER = "rgb(94, 93, 96)"; // #5e5d60, Slack's `content-ter`
 const CONTENT_SEC = "rgb(69, 68, 71)"; // #454447, Slack's `content-sec`
 const SLACK_CURVE = "cubic-bezier(0.36, 0.19, 0.29, 1)";
+// Popovers open on whole pixels, as Slack's do (Popover.tsx), so their gaps are measured between
+// whole-pixel edges: below 22.5px lines a field can end on a half pixel.
 
 const plain = (text: string) => ({ type: "plain_text", text });
 const option = (value: string) => ({ text: plain(value), value });
@@ -291,7 +293,12 @@ describe.each(engines)("%s", (engine) => {
     it("keeps the checkmark where it painted with a 1px border", async () => {
       const page = await harness.open(checkboxes, { scale: 2 });
       await checked(page);
-      expect(await checkmarkBounds(page, BOX)).toEqual(CHECKMARK_2X);
+      // Below Slack's 16.5px message header the box starts on a half pixel, and WebKit snaps the
+      // rotated check to a whole one: a device pixel lower than Chromium and Firefox paint it.
+      const [left, top, right, bottom] = CHECKMARK_2X;
+      expect(await checkmarkBounds(page, BOX)).toEqual(
+        engine === "webkit" ? [left, top + 1, right, bottom + 1] : CHECKMARK_2X,
+      );
     });
   });
 
@@ -813,9 +820,9 @@ describe.each(engines)("%s", (engine) => {
   });
 
   // Slack's `c-truncate--break_words` in a data table cell (fixtures/extra/fidelity/data-table/
-  // long-content.reference.html): the text breaks anywhere and only its first 22px line shows.
+  // long-content.reference.html): the text breaks anywhere and only its first 22.5px line shows.
   describe("data table cell text", () => {
-    it("wraps a long cell mid-word and clamps it to one 22px line", async () => {
+    it("wraps a long cell mid-word and clamps it to one 22.5px line", async () => {
       const page = await harness.open(await fixture("extra/fidelity/data-table/long-content"));
       const cells = await page.evaluate(() =>
         [
@@ -831,7 +838,8 @@ describe.each(engines)("%s", (engine) => {
             height: Math.round(r.height),
             // Slack's text box is only as wide as its text, up to the cell's content box.
             fits: r.width <= box.width - 24 + 0.5,
-            wraps: el.scrollHeight > r.height,
+            // scrollHeight is a whole number: a single 22.5px line reports 23.
+            wraps: el.scrollHeight > Math.ceil(r.height),
             lineHeight: s.lineHeight,
             overflow: s.overflowY,
             whiteSpace: s.whiteSpaceCollapse,
@@ -841,9 +849,9 @@ describe.each(engines)("%s", (engine) => {
         }),
       );
       const rule = {
-        height: 22,
+        height: 23,
         fits: true,
-        lineHeight: "22px",
+        lineHeight: "22.5px",
         overflow: "hidden",
         whiteSpace: "break-spaces",
         wordBreak: "break-all",
@@ -1218,7 +1226,9 @@ describe.each(engines)("%s", (engine) => {
       const [field, menu] = await Promise.all(
         [".sbk-select__control", ".sbk-select__menu"].map((s) => page.locator(s).boundingBox()),
       );
-      expect(Math.round((menu?.y ?? 0) - ((field?.y ?? 0) + (field?.height ?? 0)))).toBe(-4);
+      expect(Math.round(menu?.y ?? 0) - Math.round((field?.y ?? 0) + (field?.height ?? 0))).toBe(
+        -4,
+      );
     });
 
     it("highlights the first option on open and narrows the list to what's typed", async () => {
@@ -1330,7 +1340,7 @@ describe.each(engines)("%s", (engine) => {
       const [field, menu] = (await Promise.all(
         [".sbk-select__control", ".sbk-select__menu"].map((s) => box(page, s)),
       )) as [Box, Box];
-      expect(Math.round(menu.y - (field.y + field.height))).toBe(-4);
+      expect(Math.round(menu.y) - Math.round(field.y + field.height)).toBe(-4);
     });
 
     // Captured in Block Kit Builder (`catalog/input/static-select@open`): in an input block the
@@ -1387,7 +1397,7 @@ describe.each(engines)("%s", (engine) => {
       )) as [Box, Box];
       expect([
         Math.round(menu.x - field.x),
-        Math.round(menu.y - (field.y + field.height)),
+        Math.round(menu.y) - Math.round(field.y + field.height),
         Math.round(menu.width),
         Math.round(menu.height),
       ]).toEqual([-12, -4, 322, 52]);
@@ -1586,7 +1596,9 @@ describe.each(engines)("%s", (engine) => {
       expect(menu?.width).toBe(212);
       expect(Math.round((menu?.x ?? 0) - (field?.x ?? 0))).toBe(-12);
       expect(menu?.height).toBe(264);
-      expect(Math.round((menu?.y ?? 0) - ((field?.y ?? 0) + (field?.height ?? 0)))).toBe(-4);
+      expect(Math.round(menu?.y ?? 0) - Math.round((field?.y ?? 0) + (field?.height ?? 0))).toBe(
+        -4,
+      );
     });
 
     // Measured in Block Kit Builder: typing neither filters nor highlights Slack's time list.
@@ -2120,7 +2132,7 @@ describe.each(engines)("%s", (engine) => {
           page.locator(s).first().boundingBox(),
         ),
       )) as [Rect, Rect];
-      expect(Math.round(menu.y - (button.y + button.height))).toBe(4);
+      expect(Math.round(menu.y) - Math.round(button.y + button.height)).toBe(4);
     });
 
     // Captured in Block Kit Builder (`catalog/section/overflow@open`): each option's label
@@ -2160,7 +2172,7 @@ describe.each(engines)("%s", (engine) => {
       expect({
         width: menu.width,
         left: Math.round(menu.x - trigger.x),
-        gap: Math.round(menu.y - (trigger.y + trigger.height)),
+        gap: Math.round(menu.y) - Math.round(trigger.y + trigger.height),
       }).toEqual({ width: 250, left: 0, gap: 4 });
     });
 
@@ -2300,7 +2312,7 @@ describe.each(engines)("%s", (engine) => {
       expect({
         width: menu.width,
         left: Math.round(menu.x - (button.x + button.width)),
-        top: Math.round(menu.y - button.y),
+        top: Math.round(menu.y) - Math.round(button.y),
       }).toEqual({ width: 300, left: 0, top: 0 });
     });
 
@@ -2324,7 +2336,7 @@ describe.each(engines)("%s", (engine) => {
       expect({
         width: menu.width,
         right: Math.round(button.x - (menu.x + menu.width)),
-        top: Math.round(menu.y - button.y),
+        top: Math.round(menu.y) - Math.round(button.y),
       }).toEqual({ width: 300, right: 4, top: 0 });
     });
 
@@ -3085,7 +3097,7 @@ describe.each(engines)("%s", (engine) => {
       expect({
         size: [popup.width, popup.height],
         right: Math.round(popup.x + popup.width - (field.x + field.width)),
-        gap: Math.round(popup.y - (field.y + field.height)),
+        gap: Math.round(popup.y) - Math.round(field.y + field.height),
         apply: await page.getByText("Apply").count(),
       }).toEqual({ size: [349, 372], right: -4, gap: -4, apply: 0 });
     });
@@ -3099,7 +3111,7 @@ describe.each(engines)("%s", (engine) => {
       expect({
         size: [menu.width, menu.height],
         left: Math.round(menu.x - field.x),
-        gap: Math.round(menu.y - (field.y + field.height)),
+        gap: Math.round(menu.y) - Math.round(field.y + field.height),
         first: await page.locator(".sbk-timepicker__option").first().textContent(),
       }).toEqual({ size: [230, 264], left: -12, gap: -4, first: "12:00 AM" });
     });
@@ -3153,7 +3165,7 @@ describe.each(engines)("%s", (engine) => {
     const NAV = ".sbk-calendar__nav";
 
     // From the open-calendar references: Slack's weekday cells start at 24.5px into the popup, in a
-    // 29.5625px row whose 13px labels sit on a 19.0668px line, and the first week's day buttons
+    // 29.5625px row whose 13px labels sit on a 19.5px line, and the first week's day buttons
     // start at 101.0625px (they overlap the row's bottom half-pixel border).
     it("places the weekday row and the first week as Slack does", async () => {
       const page = await harness.open(datepicker);
@@ -3174,7 +3186,7 @@ describe.each(engines)("%s", (engine) => {
       // Engines round sub-pixel layout differently (Firefox works in 1/60px), so compare to a few
       // hundredths of a pixel.
       expect(geometry.weekdayLeft).toBe(24.5);
-      expect(geometry.weekdayLineHeight).toBeCloseTo(19.0668, 2);
+      expect(geometry.weekdayLineHeight).toBeCloseTo(19.5, 2);
       expect(geometry.firstDayTop).toBeCloseTo(101.0625, 1);
     });
 
@@ -3193,7 +3205,7 @@ describe.each(engines)("%s", (engine) => {
       const popup = (await page.locator(POPUP).boundingBox())!;
       expect({
         right: Math.round(popup.x + popup.width - (field.x + field.width)),
-        gap: Math.round(popup.y - (field.y + field.height)),
+        gap: Math.round(popup.y) - Math.round(field.y + field.height),
       }).toEqual({ right: 0, gap: -4 });
     });
 
@@ -3218,7 +3230,7 @@ describe.each(engines)("%s", (engine) => {
       const popup = (await page.locator(POPUP).boundingBox())!;
       expect({
         right: Math.round(popup.x + popup.width - (field.x + field.width)),
-        gap: Math.round(popup.y - (field.y + field.height)),
+        gap: Math.round(popup.y) - Math.round(field.y + field.height),
       }).toEqual({ right: -4, gap: -4 });
     });
 
@@ -3252,7 +3264,7 @@ describe.each(engines)("%s", (engine) => {
       expect(boxes).toEqual([
         [24, 24, 32, 32],
         [56, 24, 32, 32],
-        [88, 29, 173, 22],
+        [88, 29, 173, 23],
         [261, 24, 32, 32],
         [293, 24, 32, 32],
       ]);
@@ -3604,8 +3616,9 @@ describe.each(engines)("%s", (engine) => {
       return page;
     };
     // Captured in Block Kit Builder (`extra/actions/more-elements@confirm`): a 520 x 166 dialog with
-    // a 68px header whose 36px close button reaches 8px into the padding.
-    it("lays the confirm dialog out at Slack's 520 x 166, with a 36px close button", async () => {
+    // a 68px header whose 36px close button reaches 8px into the padding. Slack's 22.5px body line
+    // (November 2026) makes it 166.5px tall.
+    it("lays the confirm dialog out at Slack's 520 x 167, with a 36px close button", async () => {
       const page = await open();
       await settle(page);
       const geometry = await page.evaluate(() => {
@@ -3621,7 +3634,7 @@ describe.each(engines)("%s", (engine) => {
         };
       });
       expect(geometry).toEqual({
-        dialog: [520, 166],
+        dialog: [520, 167],
         header: [0, 0, 520, 68],
         close: [468, 16, 36, 36],
       });
@@ -3662,7 +3675,7 @@ describe.each(engines)("%s", (engine) => {
       const body = await css(page, ".sbk-confirm__text");
       expect({ padding: body.padding, font: body.font }).toEqual({
         padding: "0px 24px",
-        font: "400 15px/22px",
+        font: "400 15px/22.5px",
       });
       expect((await css(page, ".sbk-confirm__actions")).padding).toBe("20px 24px");
     });
@@ -4241,13 +4254,13 @@ describe.each(engines)("%s", (engine) => {
       light: {
         box: ["rgb(255, 255, 255)", "rgba(29, 28, 29, 0.13)"],
         toolbar: "rgb(248, 248, 248)",
-        tool: "rgba(29, 28, 29, 0.7)",
+        tool: CONTENT_SEC,
         separator: "rgb(234, 234, 234)",
       },
       dark: {
         box: ["rgb(34, 37, 41)", "rgb(86, 88, 86)"],
         toolbar: "rgb(34, 37, 41)",
-        tool: "rgba(232, 232, 232, 0.7)",
+        tool: "rgb(185, 186, 189)", // content-sec, dark
         separator: "rgb(33, 36, 40)",
       },
     } as const;
@@ -5525,11 +5538,11 @@ describe.each(engines)("%s", (engine) => {
     });
 
     // extra/context/mixed@mobile: a context block that wraps in a 320px block stacks its rows with
-    // no gap, a 25px row holding images on a 22px text row (Slack's p-context_block is 47px).
+    // no gap, a 26px row holding images on a 22.5px text row (Slack's p-context_block is 48px).
     it("stacks a wrapped context block's rows without a gap on a phone", async () => {
       const page = await harness.open(await fixture("extra/context/mixed"), { viewport: PHONE });
       const context = await page.locator(".sbk-context").first().boundingBox();
-      expect(Math.round(context!.height)).toBe(47);
+      expect(Math.round(context!.height)).toBe(48);
     });
   });
 
@@ -5632,7 +5645,7 @@ async function greenExtent(page: Page, selector: string) {
  * pixels, inclusive. Measured with the 1px border (Slack's checkmark sits 5px from the box's left
  * edge and 2px from its top), the same in Chromium, Firefox and WebKit.
  */
-const CHECKMARK_2X = [6, 7, 21, 19];
+const CHECKMARK_2X: [number, number, number, number] = [6, 7, 21, 19];
 
 async function checkmarkBounds(page: Page, selector: string): Promise<number[]> {
   const { PNG } = await import("pngjs");

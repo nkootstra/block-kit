@@ -40,7 +40,7 @@
   height: 36px;
   padding: 4px 28px 4px 12px;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
 }
 
 /* With chips it grows to fit their rows: each chip sits 4px in from the box and the one above. */
@@ -84,7 +84,7 @@
 .sbk-select--field-typed.sbk-select--chips .sbk-select__typed {
   height: 28px;
   margin: 4px 0 0 4px;
-  line-height: 22px;
+  line-height: 22.5px;
 }
 
 /* Slack's p-block_kit_max_selected_items__info, tucked into the label's 8px bottom padding. */
@@ -96,7 +96,7 @@
   display: block;
   margin: -8px 0 8px;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-sec);
 }
 
@@ -366,12 +366,21 @@
   padding: 0 4px 0 0;
   font-size: 18px;
   font-weight: 700;
-  line-height: 26.4px;
+  line-height: 27px;
   white-space: nowrap;
   color: var(--sbk-text);
   background: var(--sbk-chip-bg);
   border: 1px solid transparent;
   border-radius: 4px;
+}
+
+/* Slack's text token measures 29.5px with its border: its label's line box runs half a pixel past
+   the 27px line. A user's or channel's token, led by an avatar or icon, stays 28px (Block Kit
+   Builder, 14 November 2026). */
+.sbk-select__chip:not(
+  :has(.sbk-select__chip-label--member, .sbk-select__chip-label--channel, .sbk-select__chip-entity)
+) {
+  height: 29.5px;
 }
 
 .sbk-select__chip-label {

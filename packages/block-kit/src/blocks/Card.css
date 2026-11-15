@@ -111,24 +111,25 @@
 }
 
 .sbk-card__body {
-  line-height: 22px;
+  line-height: 22.5px;
 }
 
 .sbk-card__subtext {
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16.25px;
   color: var(--sbk-text-sec);
 }
 
 .sbk-card__subtext .sbk-mrkdwn,
 .sbk-card__subtext .sbk-plain-text {
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16.25px;
   color: inherit;
 }
 
 .sbk-card__actions {
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
 }
 

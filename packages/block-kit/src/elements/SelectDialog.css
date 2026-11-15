@@ -125,7 +125,7 @@
   position: absolute;
   top: 6px;
   left: 12px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-content-ter);
   pointer-events: none;
 }

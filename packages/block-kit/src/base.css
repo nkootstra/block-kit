@@ -145,7 +145,7 @@
 .sbk-root {
   font-family: var(--sbk-font);
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-body);
   font-variant-ligatures: common-ligatures;
   text-rendering: optimizeLegibility;
@@ -249,7 +249,7 @@
 .sbk-mrkdwn {
   font-family: var(--sbk-font);
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-body);
   overflow-wrap: anywhere;
 }

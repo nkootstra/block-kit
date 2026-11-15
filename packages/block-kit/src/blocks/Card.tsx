@@ -71,6 +71,12 @@ export function Card({ block, blockId }: BlockProps) {
   const body = json.body as TextObject | undefined;
   const subtext = json.subtext as TextObject | undefined;
   const actions = objectsIn<Json>(json.actions);
+  const danger = actions.filter((action) => action.style === "danger");
+  const rest = [
+    ...actions.filter((action) => action.style !== "danger" && action.style !== "primary"),
+    ...actions.filter((action) => action.style === "primary"),
+  ];
+  const split = actions.length >= 3 && danger.length > 0;
 
   return (
     <div className="sbk-card">
@@ -114,27 +120,23 @@ export function Card({ block, blockId }: BlockProps) {
           )}
           {actions.length > 0 && (
             <div className="sbk-card__actions">
-              {/* catalog/card-and-carousel/card-actions-and-content and extra/fidelity/card/mixed:
-                  Slack orders a card's buttons danger, default, primary, each keeping the
-                  payload's order, and pulls the danger ones into a left-aligned group. */}
-              <div className="sbk-card__actions-start">
-                {actions.map(
-                  (action, i) =>
-                    action.style === "danger" && (
-                      <Element
-                        key={asString(action.action_id) ?? i}
-                        element={action}
-                        blockId={blockId}
-                      />
-                    ),
-                )}
-              </div>
-              {[
-                ...actions.filter(
-                  (action) => action.style !== "danger" && action.style !== "primary",
-                ),
-                ...actions.filter((action) => action.style === "primary"),
-              ].map((action, i) => (
+              {/* Measured in Block Kit Builder (14 November 2026; card-actions-and-content,
+                  card-with-three-actions, extra/fidelity/card/mixed): Slack orders a card's buttons
+                  danger, default, primary, each keeping the payload's order. With three buttons
+                  the danger ones fill a group on the left; with fewer, all sit together on the
+                  right. */}
+              {split && (
+                <div className="sbk-card__actions-start">
+                  {danger.map((action, i) => (
+                    <Element
+                      key={asString(action.action_id) ?? i}
+                      element={action}
+                      blockId={blockId}
+                    />
+                  ))}
+                </div>
+              )}
+              {[...(split ? [] : danger), ...rest].map((action, i) => (
                 <Element key={asString(action.action_id) ?? i} element={action} blockId={blockId} />
               ))}
             </div>

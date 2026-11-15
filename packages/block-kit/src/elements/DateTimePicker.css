@@ -107,6 +107,6 @@
 .sbk-datetimepicker__timezone {
   margin: 4px 0 0;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16.25px;
   color: var(--sbk-badge-text);
 }

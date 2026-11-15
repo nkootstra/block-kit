@@ -117,3 +117,9 @@
 .sbk-checkboxes__description .sbk-mrkdwn {
   color: var(--sbk-content-sec);
 }
+
+/* Slack sets an option's mrkdwn in its label's 22px line height, which it kept when the rest of
+   the text moved to 22.5px (Block Kit Builder, 14 November 2026). */
+.sbk-checkboxes__option .sbk-mrkdwn {
+  line-height: inherit;
+}

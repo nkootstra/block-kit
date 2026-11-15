@@ -5,7 +5,7 @@
   flex-direction: column;
   font-family: var(--sbk-font);
   font-size: 15px;
-  line-height: 22px;
+  line-height: 22.5px;
   color: var(--sbk-text-body);
   overflow-wrap: anywhere;
 }

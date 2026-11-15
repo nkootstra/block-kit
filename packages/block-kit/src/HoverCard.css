@@ -3,7 +3,7 @@
 .sbk-hover-card {
   box-sizing: border-box;
   font-size: 15px;
-  line-height: 1.46668;
+  line-height: 1.5;
   color: var(--sbk-text-body);
   background: var(--sbk-menu-bg);
   border-radius: 8px;
