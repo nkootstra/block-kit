@@ -428,7 +428,7 @@
 
 /*
  * Slack's `c-truncate--break_words`: overlong text breaks anywhere, even mid-word, and only its first
- * 22px line shows, ending in an ellipsis. The box is as wide as its text, up to the cell. The
+ * 22.5px line shows, ending in an ellipsis. The box is as wide as its text, up to the cell. The
  * max-height clips the lines below in engines that ignore the clamp.
  */
 .sbk-data-table__truncate {
@@ -436,7 +436,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   max-width: 100%;
-  max-height: 22px;
+  max-height: 22.5px;
   overflow: hidden;
   line-height: 22.5px;
   white-space: break-spaces;
