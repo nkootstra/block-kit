@@ -4520,7 +4520,7 @@ describe.each(engines)("%s", (engine) => {
         clear: "rgb(209, 210, 211)",
         title: "rgb(209, 210, 211)",
         here: "rgb(222, 167, 0)",
-        selected: "rgb(29, 155, 209)",
+        selected: "rgb(43, 165, 206)",
       },
     } as const;
     const colour = (page: Page, selector: string) =>
@@ -5155,7 +5155,7 @@ describe.each(engines)("%s", (engine) => {
           "rgba(232, 232, 232, 0.13) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 4px 12px 0px",
         day: "rgb(209, 210, 211)",
         grid: "rgb(53, 55, 59)",
-        today: "rgb(29, 155, 209)",
+        today: "rgb(43, 165, 206)",
       },
     } as const;
 

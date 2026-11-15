@@ -138,8 +138,11 @@ function builderResolvers(listed: string[], icon: string | undefined): Resolvers
     const at = order.indexOf(entry.name);
     return at === -1 ? order.length : at;
   };
+  // A list that shows channels shows every one the select offers (the Builder workspace has seven),
+  // so a channel it leaves out is one its filter hides: public where it lists private ones only.
+  const listsChannels = order.some((name) => name.startsWith("channel-"));
   const shown = (entry: DirectoryEntry): DirectoryEntry =>
-    entry.type === "channel" && order.includes(entry.name)
+    entry.type === "channel" && listsChannels
       ? { ...entry, private: listed.includes(`${entry.name}:private`) }
       : entry;
   return {
