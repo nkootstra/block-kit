@@ -95,7 +95,7 @@ describe("popovers", () => {
   });
 
   it("puts a calendar right-aligned to a fractional-width field on a whole pixel", () => {
-    // Slack's datepicker field is 194.5px wide; its 349px calendar is right-aligned to it, which
+    // Slack's datepicker field is 194.5px wide; its 348px calendar is right-aligned to it, which
     // would start it on a half pixel.
     vi.spyOn(document.documentElement, "clientWidth", "get").mockReturnValue(1200);
     vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
@@ -103,7 +103,7 @@ describe("popovers", () => {
     ) {
       if (this.classList.contains("sbk-popover")) return DOMRect.fromRect({ x: 0, y: 0 });
       if (this.parentElement?.classList.contains("sbk-popover"))
-        return DOMRect.fromRect({ x: -154.5, y: 0, width: 349, height: 372 });
+        return DOMRect.fromRect({ x: -153.5, y: 0, width: 348, height: 372 });
       return DOMRect.fromRect({ x: 300, y: 40, width: 194.5, height: 28 });
     });
     render(

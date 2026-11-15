@@ -3085,7 +3085,7 @@ describe.each(engines)("%s", (engine) => {
       expect(texts).toEqual(["Select a date", "Time"]);
     });
 
-    it("opens the datepicker's 349 x 372 calendar from the date field, with no Apply", async () => {
+    it("opens the datepicker's 348 x 372 calendar from the date field, with no Apply", async () => {
       // A datetimepicker can't be a section accessory, so give the field room on its left for a
       // calendar aligned to its right edge; otherwise it would shift inside the window.
       const page = await harness.open(picker(), { viewport: { width: 1000, height: 700 } });
@@ -3099,7 +3099,7 @@ describe.each(engines)("%s", (engine) => {
         right: Math.round(popup.x + popup.width - (field.x + field.width)),
         gap: Math.round(popup.y) - Math.round(field.y + field.height),
         apply: await page.getByText("Apply").count(),
-      }).toEqual({ size: [349, 372], right: -4, gap: -4, apply: 0 });
+      }).toEqual({ size: [348, 372], right: -4, gap: -4, apply: 0 });
     });
 
     it("opens a 230px hourly list from the time field, 12px to its left", async () => {
@@ -3235,19 +3235,19 @@ describe.each(engines)("%s", (engine) => {
     });
 
     // Slack's calendar keeps room for six weeks (`min-height: 340px`), so a five-week month like
-    // April 1990 opens at the same 349 x 372 as any other.
-    it("opens at Slack's 349 x 372, with room for six weeks", async () => {
+    // April 1990 opens at the same 348 x 372 as any other.
+    it("opens at Slack's 348 x 372, with room for six weeks", async () => {
       const page = await harness.open(datepicker);
       await page.click(".sbk-datepicker__input");
       const popup = (await page.locator(POPUP).boundingBox())!;
-      expect([popup.width, popup.height]).toEqual([349, 372]);
+      expect([popup.width, popup.height]).toEqual([348, 372]);
     });
 
     it("adds Slack's 45px Clear selection footer in an optional input", async () => {
       const page = await harness.open(optionalInput);
       await page.click(".sbk-datepicker__input");
       const popup = (await page.locator(POPUP).boundingBox())!;
-      expect([popup.width, popup.height]).toEqual([349, 417]);
+      expect([popup.width, popup.height]).toEqual([348, 417]);
     });
 
     it("lays out the header like Slack: year and month buttons around a centred month", async () => {
@@ -3264,9 +3264,9 @@ describe.each(engines)("%s", (engine) => {
       expect(boxes).toEqual([
         [24, 24, 32, 32],
         [56, 24, 32, 32],
-        [88, 29, 173, 23],
-        [261, 24, 32, 32],
-        [293, 24, 32, 32],
+        [88, 29, 172, 23],
+        [260, 24, 32, 32],
+        [292, 24, 32, 32],
       ]);
     });
 

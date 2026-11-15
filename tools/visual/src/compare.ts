@@ -195,6 +195,19 @@ const restoreSelection = (p: Page) =>
   });
 
 /**
+ * snapshot.js draws a dialog after the preview in the page's flow, and the preview can end on a
+ * half pixel (a message's 16.5px header). Slack centres its dialogs on whole pixels, so start the
+ * dialog's layer on the next one rather than draw it half a pixel off.
+ */
+const snapDialog = (p: Page) =>
+  p.evaluate(() => {
+    const host = document.querySelector<HTMLElement>('[data-sbk-layer="dialog"]');
+    if (!host) return;
+    const top = host.getBoundingClientRect().top;
+    host.style.marginTop = `${Math.ceil(top) - top}px`;
+  });
+
+/**
  * snapshot.js places a popover at its offset from the preview and draws a dialog after the
  * preview in the page's flow, so a list Slack opened over a dialog lands beside it instead. Moves
  * each popover into the dialog's layer at its offset from the dialog, where Slack drew it.
@@ -390,6 +403,7 @@ for (const name of names) {
   await settle(page);
   await restoreSelection(page);
   await restoreScroll(page, meta.scrollers ?? []);
+  if (dialog) await snapDialog(page);
   const state = stateFor(name, probes);
   if (parsed.interaction && !state)
     console.warn(`  no STATES entry for ${name}; comparing its initial state`);
@@ -406,7 +420,10 @@ for (const name of names) {
     await settle(refPage);
     await restoreSelection(refPage);
     await restoreScroll(refPage, meta.scrollers ?? []);
-    if (dialog) await layOverDialog(refPage, layers);
+    if (dialog) {
+      await snapDialog(refPage);
+      await layOverDialog(refPage, layers);
+    }
     const anchor = meta.input && meta.targets?.[meta.input.target];
     await refPage.evaluate(followResizedBars, anchor);
   }
