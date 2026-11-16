@@ -1,8 +1,8 @@
 /* Slack's `c-date_picker_calendar`: room for six weeks whatever the month, so the popup keeps its
-   size as the month turns. Its `c-mini_calendar` is at most 301px wide. */
+   size as the month turns. Its `c-mini_calendar` is at most 300px wide (301px before November 2026). */
 .sbk-calendar {
   box-sizing: border-box;
-  width: 317px;
+  width: 316px;
   min-height: 340px;
   padding: 8px;
   font-family: var(--sbk-font);

@@ -47,7 +47,8 @@
   display: block;
   position: relative;
   margin: 4px 0;
-  padding: 8px;
+  /* Room on the right for the copy control (32px since November 2026, 8px before). */
+  padding: 8px 32px 8px 8px;
   font-family: var(--sbk-font-mono);
   font-size: 12px;
   line-height: 1.50001;

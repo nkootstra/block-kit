@@ -405,11 +405,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             .filter((group) => group.options.length > 0)
         : [{ options: filteredOptions }];
   const flatOptions = visibleGroups.flatMap((g) => g.options);
-  // A click opens Slack's list of option groups with no row highlighted until a key or the pointer
-  // moves; a chosen row shows as chosen (extra/fidelity/static-select/mixed@open,
-  // option-group/many-items@open). A plain list highlights its first or chosen row
-  // (extra/payloads/selects@open).
-  const grouped = !!element.option_groups?.length;
+  // A click opens Slack's list on its first or chosen row, highlighted, with option groups or
+  // without (extra/payloads/selects@open, extra/fidelity/static-select/mixed@open).
   const isSelected = (option: PlainTextOption) =>
     items.some((i) => i.id === (option.value ?? option.text.text));
 
@@ -553,7 +550,6 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                     selected={isSelected(option)}
                     check={(multi || typeable) && isSelected(option)}
                     typed={combo.typed && combo.active === i}
-                    quiet={grouped && combo.untouched}
                     onSelect={() => clickItem(optionToItem(option))}
                     navProps={combo.optionProps(i)}
                   />
@@ -987,7 +983,6 @@ function SelectOption({
   selected,
   check,
   typed,
-  quiet,
   onSelect,
   navProps,
 }: {
@@ -1001,8 +996,6 @@ function SelectOption({
   check?: boolean;
   /** The typed highlight, which shows an Enter key to pick it. */
   typed?: boolean;
-  /** A row of a grouped list a click just opened: not drawn highlighted, though it may be active. */
-  quiet?: boolean;
   onSelect: () => void;
   navProps?: ReturnType<ReturnType<typeof useCombobox>["optionProps"]>;
 }) {
@@ -1014,7 +1007,6 @@ function SelectOption({
       data-typed={typed || undefined}
       onClick={onSelect}
       {...navProps}
-      data-active={quiet ? undefined : navProps?.["data-active"]}
     >
       {check && (
         <svg

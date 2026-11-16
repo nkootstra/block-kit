@@ -59,7 +59,9 @@ describe("<Select> static_select", () => {
     expect(state.b1?.a1).toEqual({ type: "static_select", selected_option: sent("a", "A") });
   });
 
-  it("draws a clicked-open grouped list's chosen row as chosen, not highlighted, until a key moves it", () => {
+  // Block Kit Builder, 15 November 2026 (extra/fidelity/static-select/mixed@open): a click opens a
+  // grouped list with its chosen row highlighted, as a plain list does.
+  it("highlights a clicked-open grouped list's chosen row, and the keyboard moves on from it", () => {
     render(
       <BlockKitProvider>
         <Select
@@ -85,8 +87,7 @@ describe("<Select> static_select", () => {
     fireEvent.click(input, { detail: 1 });
     const row = (text: string) => screen.getByText(text).closest('[role="option"]')!;
     expect(row("A").getAttribute("aria-selected")).toBe("true");
-    expect(row("A").hasAttribute("data-active")).toBe(false);
-    // The keyboard starts from the chosen row, as Slack's does.
+    expect(row("A").hasAttribute("data-active")).toBe(true);
     fireEvent.keyDown(input, { key: "ArrowDown" });
     expect(row("B").hasAttribute("data-active")).toBe(true);
   });

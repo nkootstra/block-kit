@@ -42,7 +42,7 @@ export function HomeTab({ view: viewGiven }: HomeTabProps) {
 /** A filled house with a small window, like the glyph on Slack's Home tab. */
 function HomeIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden>
+    <svg width="15" height="15" viewBox="0 0 20 20" aria-hidden>
       <path
         fill="currentColor"
         fillRule="evenodd"
