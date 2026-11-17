@@ -350,7 +350,7 @@
   "catalog/data-visualization/area-multi-series": 0.02,
   "catalog/data-visualization/area-multi-series@dark": 0.14,
   "catalog/data-visualization/area-multi-series@focus-menu-1+dark": 0.14,
-  "catalog/data-visualization/area-multi-series@focus-menu-1+mobile": 3.34,
+  "catalog/data-visualization/area-multi-series@focus-menu-1+mobile": 0,
   "catalog/data-visualization/area-multi-series@full": 2.26,
   "catalog/data-visualization/area-multi-series@hover-menu-1+mobile": 0,
   "catalog/data-visualization/area-multi-series@mobile": 0.02,
