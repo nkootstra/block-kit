@@ -621,7 +621,8 @@ a.sbk-mention {
   font-family: var(--sbk-font);
   font-size: 13px;
   font-weight: 700;
-  line-height: 1.38463;
+  /* 16.25px since November 2026 (18px before). */
+  line-height: 1.25;
   text-align: center;
   overflow-wrap: break-word;
   color: var(--sbk-tooltip-text);
