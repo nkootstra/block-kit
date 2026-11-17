@@ -1,7 +1,7 @@
 // Needs Chromium (`bunx playwright install chromium`); run with `bun run test:browser`.
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { type Browser, chromium, type Page } from "playwright";
-import { OPEN_STATES } from "./states";
+import { inputState, OPEN_STATES } from "./states";
 
 let browser: Browser;
 beforeAll(async () => {
@@ -48,5 +48,28 @@ describe("the open state on a time picker", () => {
 
   it("keeps the field focused when the reference's field has Slack's focus ring", async () => {
     expect(await openWith(true)).toEqual(["true", "input"]);
+  });
+});
+
+/** A chart in a 320px message: its 400px card scrolls sideways, its menu button out of view. */
+const NARROW_CHART = `<!doctype html><body><div id="sbk-render" style="width:320px">
+  <div id="scroller" style="overflow:auto">
+    <div style="width:400px;position:relative;height:60px">
+      <div class="sbk-hover-actions sbk-hover-actions--chart" style="position:absolute;top:12px;right:12px;opacity:0">
+        <span class="sbk-hover-actions__menu-root"><button class="sbk-hover-actions__button">More actions</button></span>
+      </div>
+    </div>
+  </div>
+</div></body>`;
+
+describe("keyboard focus on a control a scroller hides", () => {
+  it("scrolls it into view, as capture.js does before it asks for the Tab", async () => {
+    const page = await browser.newPage();
+    await page.setContent(NARROW_CHART);
+    await inputState({ input: "focus", target: { kind: "menu", index: 1 } }).ours(page, page);
+    const scrolled = await page.evaluate(() => document.getElementById("scroller")!.scrollLeft);
+    await page.close();
+    // The button's right edge, 12px in from the card's 400px, lands on the scroller's 320px edge.
+    expect(scrolled).toBe(68);
   });
 });
