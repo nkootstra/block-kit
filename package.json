@@ -34,6 +34,8 @@
     "vitest": "5.0.2"
   },
   "overrides": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
     "@scalar/json-magic>undici": "7.29.1",
     "@vercel/routing-utils>path-to-regexp": "6.3.0",
     "lodash-es": "4.18.1"
