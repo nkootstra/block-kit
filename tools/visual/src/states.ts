@@ -398,6 +398,12 @@ export function inputState({ input, target }: InputState): State {
   return {
     ours: async (p) => {
       const el = await ourTarget(p, target);
+      // capture.js brings the control into view (`nearest`) when it asks for the Tab, so a control
+      // a scroller hides (a chart's menu button in a narrow message) is focused scrolled into view
+      // (catalog/data-visualization/area-multi-series@focus-menu-1+mobile).
+      await el.evaluate((node) =>
+        (node as Element).scrollIntoView({ block: "nearest", inline: "nearest" }),
+      );
       const focus = () =>
         el.evaluate((node) => {
           const FOCUSABLE =
