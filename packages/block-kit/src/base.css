@@ -27,10 +27,13 @@
   --sbk-broadcast-text: #1d1c1d;
   --sbk-bg: #fff;
   --sbk-muted: #616061;
-  /* Secondary text: the timestamp, context, image titles, video bylines and card subtext. */
+  /* Secondary text: the timestamp, context, image titles and card subtext. */
   --sbk-text-sec: #616061;
-  /* The "|" between a video's provider and author. */
-  --sbk-video-separator: rgb(221, 221, 221);
+  /* A video's byline: the author and the "|" before it, and the provider name (November 2026). */
+  --sbk-video-byline: #5e5d60;
+  /* The "|" between a video's provider and author, in the byline's colour. */
+  --sbk-video-separator: var(--sbk-video-byline);
+  --sbk-video-provider: var(--sbk-text-body);
   --sbk-badge-text: #454447;
   --sbk-badge-bg: rgba(29, 28, 29, 0.06);
   /* A rich text entity the viewer can't open (Slack's `p-rich_text_slug--disabled`). */

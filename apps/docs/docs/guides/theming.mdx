@@ -108,8 +108,7 @@ stylesheet to restyle without touching the components. The main tokens:
     },
     "--sbk-text-sec": {
       type: "color",
-      description:
-        "Secondary text: the timestamp, context, image titles, video bylines and card subtext.",
+      description: "Secondary text: the timestamp, context, image titles and card subtext.",
     },
     "--sbk-muted": {
       type: "color",
@@ -128,9 +127,17 @@ stylesheet to restyle without touching the components. The main tokens:
       type: "color",
       description: "A rich text `tag` label's background; `--sbk-tag-text` is its text.",
     },
+    "--sbk-video-byline": {
+      type: "color",
+      description: "A video's author name, below its title.",
+    },
+    "--sbk-video-provider": {
+      type: "color",
+      description: "A video's provider name, before the author.",
+    },
     "--sbk-video-separator": {
       type: "color",
-      description: "The | between a video's provider and author.",
+      description: "The | between a video's provider and author; defaults to --sbk-video-byline.",
     },
     "--sbk-block-error-text": {
       type: "color",
