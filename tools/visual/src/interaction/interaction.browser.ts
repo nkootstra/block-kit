@@ -4409,8 +4409,8 @@ describe.each(engines)("%s", (engine) => {
         what: "a video's provider separator",
         fixture: "extra/media/video",
         selector: ".sbk-video__separator",
-        light: "rgb(221, 221, 221)",
-        dark: "rgb(53, 55, 59)",
+        light: "rgb(94, 93, 96)",
+        dark: "rgb(154, 155, 158)",
       },
       {
         what: "a multi-select's placeholder in an input block",
