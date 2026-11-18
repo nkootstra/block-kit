@@ -2044,6 +2044,37 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  describe("salesforce data field", () => {
+    // extra/fidelity/rich-text-salesforce-data-field/default: Slack's pill is its 22.5px text line
+    // plus 1px of padding above and below, so it stands 24.5px tall.
+    it("stands the pill 24.5px tall, around a 22.5px line", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "rich_text",
+            elements: [
+              {
+                type: "rich_text_section",
+                elements: [
+                  { type: "text", text: "See " },
+                  {
+                    type: "salesforce_data_field",
+                    salesforce_record_id: "001000000000001",
+                    salesforce_field_label: "Amount",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      const height = await page
+        .locator(".sbk-rich-text__salesforce")
+        .evaluate((el) => el.getBoundingClientRect().height);
+      expect(height).toBe(24.5);
+    });
+  });
+
   describe("context rows", () => {
     // `extra/fidelity/context/long-content@mobile`: Slack's 20px image sits on the baseline of a
     // 22.5px line, so a row holding one is 25.5px tall and wrapped text starts 25.5px down.
