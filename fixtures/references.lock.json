@@ -3676,8 +3676,8 @@
   },
   "catalog/table/basic-data-table@full": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "b8e7a99d6d09567cf05445a0517db1710c06d7c6ecbb8fac69d8856df27931e0",
-    "captured": "2026-11-18"
+    "reference": "43636e8bec4fe61d5818bcf1b556226305d78f87810b27a25343cb5a73ac757f",
+    "captured": "2026-10-21"
   },
   "catalog/table/basic-data-table@hover-cell-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
