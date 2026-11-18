@@ -71,10 +71,12 @@
 }
 
 /* Slack's weekday labels: 13px on a 19.0668px line with 4px/6px padding. Its 29.5625px row loses
-   its bottom half-pixel border under the day buttons, which start 29.0625px below the row's top. */
+   its bottom border under the day buttons, which start 29.5px below the row's top once its table
+   collapses the borders (extra/fidelity/datepicker/empty@open), putting the grid lines on whole
+   pixels. */
 .sbk-calendar__weekdays span {
   box-sizing: border-box;
-  height: 29.0625px;
+  height: 29.5px;
   padding: 4px 0 6px;
   font-size: 13px;
   line-height: 19.5px;
@@ -101,12 +103,10 @@
   cursor: default;
 }
 
-/* Slack's hover, which keyboard focus and the active day share: a light-blue border raised above
-   the neighbouring grid lines, and a light-blue wash on any day but the selected one. The active
-   day is the one the calendar opens on (Slack's `c-date_picker_calendar__date--is_active`); when
-   it isn't selected it keeps the look without focus (extra/fidelity/datepicker/empty@open). A
-   selected active day keeps the grey grid line, as measured in the Builder. */
-.sbk-calendar__cell--active:not(.sbk-calendar__cell--selected),
+/* Slack's hover, which keyboard focus shares: a light-blue border raised above the neighbouring
+   grid lines, and a light-blue wash on any day but the selected one. The day the calendar opens on
+   (Slack's `c-date_picker_calendar__date--is_active`) looks like any other until then
+   (extra/fidelity/datepicker/empty@open). */
 .sbk-calendar__cell:focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:focus {
   z-index: 1;
@@ -135,7 +135,6 @@
   }
 }
 
-.sbk-calendar__cell--active:not(.sbk-calendar__cell--selected),
 .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus-visible,
 .sbk-calendar__grid--keyboard .sbk-calendar__cell:not(.sbk-calendar__cell--selected):focus {
   background: rgba(29, 155, 209, 0.2);

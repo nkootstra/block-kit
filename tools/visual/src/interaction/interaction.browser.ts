@@ -3166,7 +3166,8 @@ describe.each(engines)("%s", (engine) => {
 
     // From the open-calendar references: Slack's weekday cells start at 24.5px into the popup, in a
     // 29.5625px row whose 13px labels sit on a 19.5px line, and the first week's day buttons
-    // start at 101.0625px (they overlap the row's bottom half-pixel border).
+    // start at 101.5px: rendered, the reference's buttons sit 29.5px below the weekday row's top
+    // (extra/fidelity/datepicker/empty@open), so the grid lines fall on whole pixels.
     it("places the weekday row and the first week as Slack does", async () => {
       const page = await harness.open(datepicker);
       await page.click(".sbk-datepicker__input");
@@ -3187,7 +3188,7 @@ describe.each(engines)("%s", (engine) => {
       // hundredths of a pixel.
       expect(geometry.weekdayLeft).toBe(24.5);
       expect(geometry.weekdayLineHeight).toBeCloseTo(19.5, 2);
-      expect(geometry.firstDayTop).toBeCloseTo(101.0625, 1);
+      expect(geometry.firstDayTop).toBeCloseTo(101.5, 1);
     });
 
     it("opens over the field's bottom edge with its right edge on the field's", async () => {
@@ -3302,6 +3303,29 @@ describe.each(engines)("%s", (engine) => {
       await page.mouse.move(790, 690);
       await settle(page);
       expect((await cell(page, DAY(10))).border).toBe(GRID);
+    });
+
+    // extra/fidelity/datepicker/empty@open: the day an empty calendar opens on (today, Slack's
+    // `--is_active` tab stop) keeps the grey grid line and no wash until it's hovered or focused.
+    it("draws the day it opens on like any other until it's hovered or focused", async () => {
+      const page = await harness.open({
+        blocks: [{ type: "actions", elements: [{ type: "datepicker", action_id: "d" }] }],
+      });
+      await page.click(".sbk-datepicker__input");
+      await page.mouse.move(790, 690);
+      await settle(page);
+      const look = async (selector: string) => {
+        const { border, fill } = await cell(page, selector);
+        return { border, fill };
+      };
+      expect(await look(".sbk-calendar__cell--active")).toEqual({
+        border: GRID,
+        fill: (
+          await look(
+            ".sbk-calendar__cell:not(.sbk-calendar__cell--empty, .sbk-calendar__cell--active)",
+          )
+        ).fill,
+      });
     });
 
     it("washes a hovered day light blue", async () => {
