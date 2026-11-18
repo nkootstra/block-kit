@@ -3640,9 +3640,9 @@ describe.each(engines)("%s", (engine) => {
       return page;
     };
     // Captured in Block Kit Builder (`extra/actions/more-elements@confirm`): a 520 x 166 dialog with
-    // a 68px header whose 36px close button reaches 8px into the padding. Slack's 22.5px body line
-    // (November 2026) makes it 166.5px tall.
-    it("lays the confirm dialog out at Slack's 520 x 167, with a 36px close button", async () => {
+    // a 68px header whose 36px close button reaches 8px into the padding, one 22px body line and a
+    // 76px footer.
+    it("lays the confirm dialog out at Slack's 520 x 166, with a 36px close button", async () => {
       const page = await open();
       await settle(page);
       const geometry = await page.evaluate(() => {
@@ -3658,7 +3658,7 @@ describe.each(engines)("%s", (engine) => {
         };
       });
       expect(geometry).toEqual({
-        dialog: [520, 167],
+        dialog: [520, 166],
         header: [0, 0, 520, 68],
         close: [468, 16, 36, 36],
       });
@@ -3697,11 +3697,38 @@ describe.each(engines)("%s", (engine) => {
       // Measured in Block Kit Builder (`extra/actions/more-elements@confirm`).
       expect((await css(page, ".sbk-confirm__close")).size).toBe("36 x 36");
       const body = await css(page, ".sbk-confirm__text");
+      // The dialog's body kept Slack's 22px line when message text moved to 22.5px in November 2026
+      // (every `@confirm` reference measures 22.0001px).
       expect({ padding: body.padding, font: body.font }).toEqual({
         padding: "0px 24px",
-        font: "400 15px/22.5px",
+        font: "400 15px/22px",
       });
       expect((await css(page, ".sbk-confirm__actions")).padding).toBe("20px 24px");
+    });
+
+    // `extra/fidelity/confirm/long-content@confirm`: a mrkdwn body's wrapped lines sit 22px apart in
+    // Slack, not the 22.5px of message text.
+    it("keeps a mrkdwn body's wrapped lines on Slack's 22px line", async () => {
+      const long = "This sentence is long enough to wrap onto several lines of the dialog. ".repeat(
+        4,
+      );
+      const mrkdwn = structuredClone(withConfirm);
+      const button = (mrkdwn.blocks![0] as { elements: { confirm: { text: unknown } }[] })
+        .elements[0]!;
+      button.confirm.text = { type: "mrkdwn", text: long };
+      const page = await harness.open(mrkdwn);
+      await page.click(".sbk-button");
+      await page.waitForSelector(".sbk-confirm");
+      await settle(page);
+      const { lines, height } = await page.evaluate(() => {
+        const text = document.querySelector(".sbk-confirm__text")!;
+        const range = document.createRange();
+        range.selectNodeContents(text);
+        const tops = [...new Set([...range.getClientRects()].map((r) => Math.round(r.top)))];
+        return { lines: tops.length, height: text.getBoundingClientRect().height };
+      });
+      expect(lines).toBeGreaterThan(2);
+      expect(height).toBe(lines * 22);
     });
 
     it("draws Slack's 36px dialog buttons", async () => {
