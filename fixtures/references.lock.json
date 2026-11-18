@@ -2156,18 +2156,18 @@
   },
   "catalog/image/slack-image": {
     "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
-    "reference": "6cfd6675de20c938b22617831cbb3291ab97263228c4245bd14dcfa521cf0552",
-    "captured": "2026-10-07"
+    "reference": "bfd5da0ab54afbf697dc6a94b70c0f768443987c17975ea08e0ffa1f86a6b28d",
+    "captured": "2026-11-18"
   },
   "catalog/image/slack-image@dark": {
     "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
-    "reference": "d8f70f1e6880d8791867bf4ffa8999ea8b393b3bc671b4531d292f488a528f3e",
-    "captured": "2026-10-07"
+    "reference": "255a116f993983525782a9bade2ef913bb8f119f079419c86fd57d2524d05df1",
+    "captured": "2026-11-18"
   },
   "catalog/image/slack-image@mobile": {
     "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
-    "reference": "1bfde0fdd1173cf5d4476a2f3e3dd1d3d6fff56e94a656144b36f0f92a9af965",
-    "captured": "2026-10-07"
+    "reference": "bfaadda53b62843e86e440e0d0a9691d3b9401ff17ba402cfeebfbf3e8540e55",
+    "captured": "2026-11-18"
   },
   "catalog/image/title": {
     "payload": "4fcd8b354d2cc4b8ccbbd8a1053722549923320f786e99cc05db3ae34135f16f",
@@ -3276,18 +3276,18 @@
   },
   "catalog/section/slack-image": {
     "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
-    "reference": "6732ad9c9b99498bf458aab8bdc68774f4fbf2e0a53c3fcf1a8e5328056ff033",
-    "captured": "2026-10-07"
+    "reference": "b8c1bad88452d94e6ee9c97ed0542f33d57f968d512138ed10e1e5adf6163f45",
+    "captured": "2026-11-18"
   },
   "catalog/section/slack-image@dark": {
     "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
-    "reference": "e36ede3ba183431e8b0146ffe02acfa14c15f3f00aba8d44d9e857d58c3bf278",
-    "captured": "2026-10-07"
+    "reference": "027a6165c2615dd1ba70a24b2ef8e0402c5ebc7d137016dceeafe1c7a8b43d2c",
+    "captured": "2026-11-18"
   },
   "catalog/section/slack-image@mobile": {
     "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
-    "reference": "94b8914b8b328ecaa2dc8133c5145d7c51bc935186edf1c7e1e613fb8db28b85",
-    "captured": "2026-10-07"
+    "reference": "fbba9a397e7e50436e007ce5c586851140c1d228b6816e692462575f063e04b1",
+    "captured": "2026-11-18"
   },
   "catalog/section/static-select": {
     "payload": "09524f971ea3eb0d8ed28eba84c719df4692905b58ed7dc2f4eab180b6518f64",
