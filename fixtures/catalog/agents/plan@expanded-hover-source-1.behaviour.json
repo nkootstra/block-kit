@@ -16,7 +16,7 @@
       "layers": [],
       "activeOption": null,
       "tooltip": null,
-      "busy": true,
+      "busy": false,
       "controls": {
         "pill-1": {
           "expanded": "false",
@@ -34,7 +34,7 @@
       "layers": [],
       "activeOption": null,
       "tooltip": null,
-      "busy": true,
+      "busy": false,
       "controls": {
         "pill-1": {
           "expanded": "true",
@@ -65,7 +65,7 @@
       "layers": [],
       "activeOption": null,
       "tooltip": null,
-      "busy": true,
+      "busy": false,
       "controls": {
         "pill-1": {
           "expanded": "true",
@@ -96,7 +96,7 @@
       "layers": [],
       "activeOption": null,
       "tooltip": null,
-      "busy": true,
+      "busy": false,
       "controls": {
         "pill-1": {
           "expanded": "true",
