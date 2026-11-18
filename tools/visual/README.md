@@ -231,7 +231,9 @@ select, whose options come from an app's options URL that Block Kit Builder does
 control through the screenshot, or the control gets focus the way the capture gave it (a scripted
 focus, after one Tab press when that isn't keyboard focus). In the Builder the capture always asks
 for that Tab: Slack draws a button's focus halo (`c-button--focus-visible`) only for focus that
-follows a key press it saw, and its own clicks between items undo that. A held reference records
+follows a key press it saw, and its own clicks between items undo that. A Tab into a text field
+selects its value, and the snapshot records that selection (`data-sbk-selection`); a scripted focus
+selects nothing, so `compare.ts` selects the same text in our focused field when it has none. A held reference records
 the input in its meta (`input`), its controls' `data-ref`s (`targets`) and, as every snapshot does,
 its motion.
 

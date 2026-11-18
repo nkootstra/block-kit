@@ -194,6 +194,29 @@ const restoreSelection = (p: Page) =>
     field.setSelectionRange(start ?? 0, end ?? 0);
   });
 
+/** The selection snapshot.js recorded in the reference's focused field, as "start end". */
+const recordedSelection = (p: Page) =>
+  p.evaluate(
+    () =>
+      document.querySelector("[data-sbk-selection]")?.getAttribute("data-sbk-selection") ?? null,
+  );
+
+/**
+ * Selects the same text in our focused field when the reference recorded a selection and ours has
+ * none. The Builder's Tab into a text field selects its value, as a Tab into ours does; our states
+ * focus by script, which doesn't (catalog/actions/timepicker@focus-field-1+dark).
+ */
+const mirrorSelection = (p: Page, selection: string | null) =>
+  selection === null
+    ? undefined
+    : p.evaluate((selection) => {
+        const field = document.activeElement;
+        if (!(field instanceof HTMLInputElement) || field.selectionStart !== field.selectionEnd)
+          return;
+        const [start, end] = selection.split(" ").map(Number);
+        field.setSelectionRange(start ?? 0, end ?? 0);
+      }, selection);
+
 /**
  * snapshot.js draws a dialog after the preview in the page's flow, and the preview can end on a
  * half pixel (a message's 16.5px header). Slack centres its dialogs on whole pixels, so start the
@@ -428,6 +451,7 @@ for (const name of names) {
     await refPage.evaluate(followResizedBars, anchor);
   }
   const refBoxes = popovers ? await boxesOf(refPage, refTarget) : [];
+  const refSelection = await recordedSelection(refPage);
   let reference = popovers ? undefined : await shot(page, refTarget);
   const referenceRuns: TextRun[] = await refPage.evaluate(collectTextRuns, refTarget);
 
@@ -470,6 +494,7 @@ for (const name of names) {
     if (state) {
       await state.ours(page, popovers ? refPage : undefined);
       await afterInteraction(page, state.keepPointer);
+      await mirrorSelection(page, refSelection);
     }
     if (parsed.full) await expandOurs(page);
     if (popovers) {

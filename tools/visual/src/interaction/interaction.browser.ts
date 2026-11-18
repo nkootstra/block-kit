@@ -1562,6 +1562,23 @@ describe.each(engines)("%s", (engine) => {
       ],
     };
 
+    // catalog/actions/timepicker@focus-field-1+dark: tabbed into, Slack's field selects its time, and
+    // the selection shows over the time drawn above the field's transparent text.
+    it("selects the chosen time when tabbed into, with the list closed", async () => {
+      const page = await harness.open(picker);
+      await page.keyboard.press("Tab");
+      await settle(page);
+      const got = await page.evaluate(() => {
+        const input = document.activeElement as HTMLInputElement;
+        return {
+          field: input.classList.contains("sbk-timepicker__input"),
+          selected: input.value.slice(input.selectionStart ?? 0, input.selectionEnd ?? 0),
+          open: !!document.querySelector(".sbk-timepicker__menu"),
+        };
+      });
+      expect(got).toEqual({ field: true, selected: "1:37 PM", open: false });
+    });
+
     // From catalog/input/timepicker@open: in an input block the list is the field's width plus 22px
     // (454 for a 432px field), starts 12px left of it, and opens with a 28px "Clear selection" row
     // above 12:00 AM.
