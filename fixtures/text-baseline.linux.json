@@ -2447,20 +2447,8 @@
   "extra/fidelity/condition/mixed@mobile": [],
   "extra/fidelity/condition/mixed@mobile+dark": [],
   "extra/fidelity/confirm/long-content": [],
-  "extra/fidelity/confirm/long-content@confirm": [
-    "y|wrapping, the line height and any truncation Slack applies all show. It|0",
-    "y|goes on a little longer, past three hundred characters, which is where|0",
-    "y|long text starts to.|0",
-    "y|Cancel|0",
-    "y|Delete|0"
-  ],
-  "extra/fidelity/confirm/long-content@confirm+dark": [
-    "y|wrapping, the line height and any truncation Slack applies all show. It|0",
-    "y|goes on a little longer, past three hundred characters, which is where|0",
-    "y|long text starts to.|0",
-    "y|Cancel|0",
-    "y|Delete|0"
-  ],
+  "extra/fidelity/confirm/long-content@confirm": [],
+  "extra/fidelity/confirm/long-content@confirm+dark": [],
   "extra/fidelity/confirm/long-content@dark": [],
   "extra/fidelity/confirm/long-content@mobile": [],
   "extra/fidelity/confirm/long-content@mobile+dark": [],
