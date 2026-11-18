@@ -80,6 +80,11 @@
   /* A disabled `c-menu` item ("Copy as image"), and the hover actions menu's `c-menu_separator`. */
   --sbk-menu-disabled: #5e5d60;
   --sbk-hover-actions-separator: rgba(29, 28, 29, 0.13);
+  /* A chart's and an image's "More actions" button under the pointer, and an image's pressed one. */
+  --sbk-chart-action-hover-bg: rgba(29, 28, 29, 0.04);
+  --sbk-image-action-hover-bg: #eaeaea;
+  --sbk-image-action-pressed-tint: rgba(69, 68, 71, 0.13);
+  --sbk-image-action-pressed-blend: multiply;
   --sbk-menu-secondary-text: #454447;
   --sbk-popover-shadow: 0 0 0 1px rgba(29, 28, 29, 0.13), 0 4px 12px 0 rgba(0, 0, 0, 0.08);
   /* The select and time lists' `c-select_options_list__wrapper` ring and shadow. */

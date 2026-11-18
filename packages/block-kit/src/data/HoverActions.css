@@ -38,11 +38,17 @@
   top: 10px;
   right: 10px;
   --sbk-hover-actions-icon: var(--sbk-content-sec);
+  /* Slack's image button turns an opaque grey under the pointer (catalog/image/slack-image). */
+  --sbk-hover-actions-hover-bg: var(--sbk-image-action-hover-bg);
 }
 
+/* A chart's takes a 4% tint, and a dark theme's icon stays at the body text grey
+   (catalog/data-visualization/area-multi-series@dark). */
 .sbk-hover-actions--chart {
   top: 16px;
   right: 16px;
+  --sbk-hover-actions-hover-bg: var(--sbk-chart-action-hover-bg);
+  --sbk-hover-actions-hover-icon: var(--sbk-text-body);
 }
 
 .sbk-hover-actions__button {
@@ -68,15 +74,24 @@ a.sbk-hover-actions__button {
 }
 
 .sbk-hover-actions__button[aria-expanded="true"] {
-  background: var(--sbk-row-hover-bg);
-  color: var(--sbk-text);
+  background: var(--sbk-hover-actions-hover-bg, var(--sbk-row-hover-bg));
+  color: var(--sbk-hover-actions-hover-icon, var(--sbk-text));
 }
 
 @media (hover: hover) and (pointer: fine) {
   .sbk-hover-actions__button:hover {
-    background: var(--sbk-row-hover-bg);
-    color: var(--sbk-text);
+    background: var(--sbk-hover-actions-hover-bg, var(--sbk-row-hover-bg));
+    color: var(--sbk-hover-actions-hover-icon, var(--sbk-text));
   }
+}
+
+/* A pressed image button lays Slack's pressed overlay over its grey, as a pressed button does. */
+.sbk-hover-actions--image .sbk-hover-actions__button:active {
+  background-image: linear-gradient(
+    var(--sbk-image-action-pressed-tint),
+    var(--sbk-image-action-pressed-tint)
+  );
+  background-blend-mode: var(--sbk-image-action-pressed-blend);
 }
 
 .sbk-hover-actions__button:focus-visible {

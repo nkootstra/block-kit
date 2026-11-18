@@ -265,6 +265,10 @@
     --sbk-icon-button-hover-bg: #212428;
     --sbk-hover-overlay: #f8f8f80f;
     --sbk-row-hover-bg: #f8f8f80f;
+    --sbk-chart-action-hover-bg: rgba(232, 232, 232, 0.04);
+    --sbk-image-action-hover-bg: #212428;
+    --sbk-image-action-pressed-tint: rgba(248, 248, 248, 0.18);
+    --sbk-image-action-pressed-blend: lighten;
     --sbk-mention-hover-bg: #03669673;
     --sbk-mention-hover-text: rgb(136, 187, 226);
     --sbk-citation-hover-bg: rgba(29, 155, 209, 0.2);
@@ -441,6 +445,10 @@
   --sbk-icon-button-hover-bg: #212428;
   --sbk-hover-overlay: #f8f8f80f;
   --sbk-row-hover-bg: #f8f8f80f;
+  --sbk-chart-action-hover-bg: rgba(232, 232, 232, 0.04);
+  --sbk-image-action-hover-bg: #212428;
+  --sbk-image-action-pressed-tint: rgba(248, 248, 248, 0.18);
+  --sbk-image-action-pressed-blend: lighten;
   --sbk-mention-hover-bg: #03669673;
   --sbk-mention-hover-text: rgb(136, 187, 226);
   --sbk-citation-hover-bg: rgba(29, 155, 209, 0.2);
