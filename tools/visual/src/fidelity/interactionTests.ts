@@ -159,6 +159,10 @@ export const INTERACTION_TESTS: Record<string, TestFacts[]> = {
     },
     { components: ["data_visualization", "image"], states: ["open"], facts: ["behaviour"] },
   ],
+  "chart and image menu button states": [
+    { components: ["data_visualization"], states: ["hover"], facts: ["styles"], themes: BOTH },
+    { components: ["image"], states: ["hover", "pressed"], facts: ["styles"], themes: BOTH },
+  ],
   "chart and image menu items": [
     {
       components: ["data_visualization"],
