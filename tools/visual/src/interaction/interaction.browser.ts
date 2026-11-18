@@ -2044,6 +2044,30 @@ describe.each(engines)("%s", (engine) => {
     });
   });
 
+  describe("context rows", () => {
+    // `extra/fidelity/context/long-content@mobile`: Slack's 20px image sits on the baseline of a
+    // 22.5px line, so a row holding one is 25.5px tall and wrapped text starts 25.5px down.
+    it("starts text that wraps below an image 25.5px down, like Slack", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "context",
+            elements: [
+              { type: "image", image_url: WIDE_GREEN_ICON, alt_text: "Icon" },
+              { type: "mrkdwn", text: "Long enough to need a row of its own. ".repeat(8) },
+            ],
+          },
+        ],
+      });
+      const offset = await page.evaluate(() => {
+        const block = document.querySelector(".sbk-context")!.getBoundingClientRect();
+        const text = document.querySelector(".sbk-context__text")!.getBoundingClientRect();
+        return text.top - block.top;
+      });
+      expect(offset).toBe(25.5);
+    });
+  });
+
   describe("card subtitle", () => {
     // extra/fidelity/card/mixed: Slack clamps a card's title and subtitle to one line
     // (`-webkit-line-clamp: 1`) rather than cutting it with `nowrap`, so a long subtitle ends
