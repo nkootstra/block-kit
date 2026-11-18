@@ -166,28 +166,28 @@
   },
   "catalog/actions/all-selects@pick": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "3ddcac380a763940781b0b23bd127cfcc78ed1d4f18718b9fceed0de0a897447",
-    "captured": "2026-10-18"
+    "reference": "5f9693e4c888ca5d09d521da46c30e92a039bcaac6caae87d81c33f454a88fb1",
+    "captured": "2026-11-18"
   },
   "catalog/actions/all-selects@pick-static": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "288d74cee956923767e5b2a319e1af28c94097b10503aad96b0d02e49b92f145",
-    "captured": "2026-10-18"
+    "reference": "c4e885b68a366118a3ef32d47bc1ad0c6dc07e0ed181c755f224ed3da3288890",
+    "captured": "2026-11-18"
   },
   "catalog/actions/all-selects@pick+dark": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "6b27c1d69911e9eaa32b99228c122d474b3197eae20a09ca6eb01d62206b336a",
-    "captured": "2026-10-18"
+    "reference": "e30496ab306c5116822524fc8f672762a2c0f201aeff58cdc9627fc3850d7cc5",
+    "captured": "2026-11-18"
   },
   "catalog/actions/all-selects@pick+mobile": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "5afe29053a015d33105bb4bd5f9e54ca20978110462c7a758436c9ce7aa43d81",
-    "captured": "2026-10-18"
+    "reference": "b3795afe5fae53a521d1cf23faec3f5ac813f8cb74034d17a127ceaa6b9336cd",
+    "captured": "2026-11-18"
   },
   "catalog/actions/all-selects@pick+mobile+dark": {
     "payload": "8f34643482f609240980b4cb4b7c7b7985e860e41bffdc769b4f1c0a2bb850e2",
-    "reference": "ef8b6517c470c06fcf514ce0f449285ad3a56fc21966f883ddf98416d06f3aec",
-    "captured": "2026-10-18"
+    "reference": "c9cd5c52c0905495f98d6dbb2ea8593606680b93e5092e5602b513be1f79fc86",
+    "captured": "2026-11-18"
   },
   "catalog/actions/button": {
     "payload": "4e152a2a9b08829e97c29a26b66e9a155b2dd66836a2e796c5ad71ed40ba4514",
@@ -351,13 +351,13 @@
   },
   "catalog/actions/datepickers@pick+mobile": {
     "payload": "8142cbdf2d2a1cad4f6a47754b2847718c8da367a215a93f9eacfcb1e1e7f110",
-    "reference": "7b50ce8ac104a44c6e4f3ae866abdb02cd8a3531dfa02c5b0dc6c9779c8056e7",
-    "captured": "2026-10-14"
+    "reference": "6e399228a4a9b4ce9b54bb5f6fddbb3ba5cbebf300bd97a0ce073ae13d4cb9d6",
+    "captured": "2026-11-18"
   },
   "catalog/actions/datepickers@pick+mobile+dark": {
     "payload": "8142cbdf2d2a1cad4f6a47754b2847718c8da367a215a93f9eacfcb1e1e7f110",
-    "reference": "3d333a2890bdefc816bf4a39f94edd8bafe81403f0e5c4344c9ae8fc227469e5",
-    "captured": "2026-10-14"
+    "reference": "271024d93c399e504a1b257869ed7ed71aa6bea1c41d319c56872ade03fc93b5",
+    "captured": "2026-11-18"
   },
   "catalog/actions/filtered-conversations-select": {
     "payload": "dd853792bc0eee78b474123fdeaabf6637730bb3c604d1fec340f480463436fa",
@@ -391,13 +391,13 @@
   },
   "catalog/actions/filtered-conversations-select@pick+mobile": {
     "payload": "dd853792bc0eee78b474123fdeaabf6637730bb3c604d1fec340f480463436fa",
-    "reference": "dedcaa2764e427906e2d69a03fed50c3abad22c4173f7c541711a22f191b7354",
-    "captured": "2026-10-18"
+    "reference": "d28a4a98e955af2dc8fb93ad0803ba7dd3689473c4ed62923e5f365702eaf561",
+    "captured": "2026-11-18"
   },
   "catalog/actions/filtered-conversations-select@pick+mobile+dark": {
     "payload": "dd853792bc0eee78b474123fdeaabf6637730bb3c604d1fec340f480463436fa",
-    "reference": "316a86f5de80bc76c9324c2d2317661aad8a3f45873a7dd53ddc9522f7696796",
-    "captured": "2026-10-18"
+    "reference": "3257acd0afdd09605caa14bc2e5870f54654324ac3858a2ce4adb92e60d43700",
+    "captured": "2026-11-18"
   },
   "catalog/actions/radio-buttons": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
@@ -451,23 +451,23 @@
   },
   "catalog/actions/radio-buttons@pick": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "b9a7b82ef980a57f1e307f051ad323152af4d2e7e4d975b1cd265a865429afae",
-    "captured": "2026-10-13"
+    "reference": "1b7ee4fe725ffb53bae4052dd3ca73e03cd5b263ecbf5247b6c4e5226885eac5",
+    "captured": "2026-11-18"
   },
   "catalog/actions/radio-buttons@pick+dark": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "9b23f6dd5294ed22d9babe86aef8a523167d38ee8c9f77e06dad8737998a3b57",
-    "captured": "2026-10-14"
+    "reference": "ddd982c3560aa4cb1920be50484e6037bc5d71cbdbdfc3c15ed7ec80981964fc",
+    "captured": "2026-11-18"
   },
   "catalog/actions/radio-buttons@pick+mobile": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "903f0e06a37f55e5b45d3925a5ce89bcd21aee5f6340c749fd0931c1c1401b63",
-    "captured": "2026-10-14"
+    "reference": "9d5191ecf53f1f7af1f5e6194c5ad0e66a24e44d796e69384546dec3851348cf",
+    "captured": "2026-11-18"
   },
   "catalog/actions/radio-buttons@pick+mobile+dark": {
     "payload": "e9f0e2ff2dc6f278a6cd9186ba22fc28347b9bc32c34c5807d98e331c0365592",
-    "reference": "99ae945de8382129c6604d484dc751efd415ed89ce14b4ba283fc97c9ba58347",
-    "captured": "2026-10-14"
+    "reference": "4515496db4e00f6e206d6c79cd1993df2b77704c6d65a1ed4f24914baa940094",
+    "captured": "2026-11-18"
   },
   "catalog/actions/selects-with-initial-options": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
@@ -501,13 +501,13 @@
   },
   "catalog/actions/selects-with-initial-options@pick": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "f96251b84a2fb90e0541660e3ed568da07059638d63d66806a6f3c94459bcc77",
-    "captured": "2026-10-18"
+    "reference": "5e375449e82b26319392fb76b7b68ff4f70968417a54aadb792227af996d2191",
+    "captured": "2026-11-18"
   },
   "catalog/actions/selects-with-initial-options@pick+mobile+dark": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "e8cc6ee1d5e5705701f2b29ac9453bc2e32ae45f899a2af30d823e9c9d2857db",
-    "captured": "2026-10-18"
+    "reference": "a3abdeb7172882eecf402888209321009fd8450d7057daccae56a4c32850029c",
+    "captured": "2026-11-18"
   },
   "catalog/actions/timepicker": {
     "payload": "e35edcb7eecdba3e4e4d76e324296a399db87b138d3a90166f5db94026f94b62",
@@ -571,8 +571,8 @@
   },
   "catalog/actions/timepicker@pick+dark": {
     "payload": "e35edcb7eecdba3e4e4d76e324296a399db87b138d3a90166f5db94026f94b62",
-    "reference": "6dbeaf82e5bae90ed997adb41feb8282eca978e36e882c0103974cdf4f013d39",
-    "captured": "2026-10-20"
+    "reference": "aa904893f74faebf3f61cffdd21ba9d49e7306ad935985586287e30d30d56f2b",
+    "captured": "2026-11-18"
   },
   "catalog/agents/message-feedback": {
     "payload": "244eeeb7db99806f921e82725cd66dc5d952ce698fdc3118a48fe83f4e7d0e3d",
@@ -651,13 +651,13 @@
   },
   "catalog/agents/message-feedback@pick+mobile": {
     "payload": "244eeeb7db99806f921e82725cd66dc5d952ce698fdc3118a48fe83f4e7d0e3d",
-    "reference": "f7cfccf1327604879c051adb0768a0ae8468c6645315d18b3bbabb96e8416d9a",
-    "captured": "2026-10-13"
+    "reference": "9ebdbbfd413ac411a8abefbfa774cb72ea100f13e58812510c6ce1cc27afdb39",
+    "captured": "2026-11-18"
   },
   "catalog/agents/message-feedback@pick+mobile+dark": {
     "payload": "244eeeb7db99806f921e82725cd66dc5d952ce698fdc3118a48fe83f4e7d0e3d",
-    "reference": "ed5cb4f8fb6534cd7a89ccade2d03714ad595e429782cf8c365d10e87b7d5bf6",
-    "captured": "2026-10-13"
+    "reference": "ff2eaa4621e64bcc7088a57811654be2eac9b875378a37303e3b3d50edf2c837",
+    "captured": "2026-11-18"
   },
   "catalog/agents/message-feedback@tooltip-over-icon-1": {
     "payload": "244eeeb7db99806f921e82725cd66dc5d952ce698fdc3118a48fe83f4e7d0e3d",
@@ -681,23 +681,23 @@
   },
   "catalog/agents/plan-error@expanded": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
-    "reference": "5dae9005884a203eec3dd536acc99ae1a979ba4f0728c71b92af1e61a9780ff6",
-    "captured": "2026-09-28"
+    "reference": "a61274df0f94e1107b58edd50cb98be5cec6a6baf33736c09f745e21a8bd9db2",
+    "captured": "2026-11-18"
   },
   "catalog/agents/plan-error@expanded+dark": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
-    "reference": "859df99750e42b2b09bddaa8ffd337d39377b100e4b57eb0962c562b882efdbd",
-    "captured": "2026-10-13"
+    "reference": "ff8cbe56b9bc4ef8c95a9c2ad2aceac0a0a66c3f3235f5a97f892fd7951a07d8",
+    "captured": "2026-11-18"
   },
   "catalog/agents/plan-error@expanded+mobile": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
-    "reference": "e33669d46a1654d52fec510cfe7a882512df86e50ff571fda1b2fcaa360f7bf5",
-    "captured": "2026-10-13"
+    "reference": "cedda079a905e787d8a49de8f17936d89cdbbd443f6b30ba0c9f8436e0119054",
+    "captured": "2026-11-18"
   },
   "catalog/agents/plan-error@expanded+mobile+dark": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
-    "reference": "e61a93ae13cc8e0758d135290e9a74a20e2f8f21b93cda4a95877421ffa48609",
-    "captured": "2026-10-13"
+    "reference": "cc8b7aec78aa54b6fd7f144b7d5adad322afefe7faf4977b4544517d41941a3a",
+    "captured": "2026-11-18"
   },
   "catalog/agents/plan-error@focus-pill-1+dark": {
     "payload": "833bedb983efaa8c0318d0b316192fefc13ec68047de5ad4a0fbc856a6b84b6a",
@@ -741,8 +741,8 @@
   },
   "catalog/agents/plan@expanded": {
     "payload": "b47bb069990e83b849b9b69a3d3b7b25b238224083a23e9866d2d856147e2df8",
-    "reference": "587a05bd40d671a2381cacf360f126ec6948e640b998247f1a8898aa817b178e",
-    "captured": "2026-09-28"
+    "reference": "a1691b4145142fbf10f93b5f5947808acb18c9cc1201d43bc77eca0099c5b105",
+    "captured": "2026-11-18"
   },
   "catalog/agents/plan@expanded-hover-source-1": {
     "payload": "b47bb069990e83b849b9b69a3d3b7b25b238224083a23e9866d2d856147e2df8",
@@ -776,8 +776,8 @@
   },
   "catalog/agents/plan@tasks-collapsed": {
     "payload": "b47bb069990e83b849b9b69a3d3b7b25b238224083a23e9866d2d856147e2df8",
-    "reference": "efde199577b3a53401f8169796e11075d906c0d4abf6a88aa90409d5de6b7696",
-    "captured": "2026-09-28"
+    "reference": "37dc6503a55aec0c75ce6cbc71ae9981601abe9d781219d280fa2bb3fc329642",
+    "captured": "2026-11-18"
   },
   "catalog/agents/task-card": {
     "payload": "abef04b953550c0f623193b220a06ad4b21f884fabd3a966d2b84a958fc7cea4",
@@ -796,18 +796,18 @@
   },
   "catalog/agents/task-card-statuses@expanded+dark": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
-    "reference": "18f64545524db0c75e89a9404737f9489381acfa7e19f65b45a7e2a9b5a3f6e4",
-    "captured": "2026-10-13"
+    "reference": "561c2b5bb24375e1b9383da5fc01ce392c36387ba2eb2c3a0646f892b92cfcb3",
+    "captured": "2026-11-18"
   },
   "catalog/agents/task-card-statuses@expanded+mobile": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
-    "reference": "121db7b41d7df5c118e68b93b6945b4dcd389d652c5817794db2477b6af5ecf7",
-    "captured": "2026-10-13"
+    "reference": "d78e871f5506f6992bf95f2b36be930c97ed9e9fb08f1b686d7f63bbe6eee443",
+    "captured": "2026-11-18"
   },
   "catalog/agents/task-card-statuses@expanded+mobile+dark": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
-    "reference": "13b1669e0584e31971e880dbadf426f6b2aba42ddc8aabf752bd5e94ef5248e0",
-    "captured": "2026-10-13"
+    "reference": "b1b80fe8ea79952f2c48d01c950dc5b0c7e1636303ad0376041fc1d8757df8c6",
+    "captured": "2026-11-18"
   },
   "catalog/agents/task-card-statuses@focus-pill-1+dark": {
     "payload": "4c236610820278b4d2b8664b256fd31b1ea26932a4ed72b912e009654c994a62",
@@ -851,8 +851,8 @@
   },
   "catalog/agents/task-card@expanded": {
     "payload": "abef04b953550c0f623193b220a06ad4b21f884fabd3a966d2b84a958fc7cea4",
-    "reference": "3d55e99f941870fa7c8d76588bf823e861df29ab35829fdd74171f445f98da01",
-    "captured": "2026-09-28"
+    "reference": "0f5c459da9a366c5e2d668d8c0d00c08ecbb464e4b7af358a66429d5e7be1b2c",
+    "captured": "2026-11-18"
   },
   "catalog/agents/task-card@mobile": {
     "payload": "abef04b953550c0f623193b220a06ad4b21f884fabd3a966d2b84a958fc7cea4",
@@ -921,13 +921,13 @@
   },
   "catalog/callout/callout@menu+mobile": {
     "payload": "e96a4d26bf9e12de2b3416fd5d6ae12669857d0af888b1d724f5d5754c60690b",
-    "reference": "98a67cf07fa10599ee4058db19d4f4324a82480cecffbea3e59c59d608ba3cdc",
-    "captured": "2026-10-21"
+    "reference": "b97e8e3441f72652f32f3dae1cf6b1e1f023f8f22d9e2b3e9be5614b0d806bcc",
+    "captured": "2026-11-18"
   },
   "catalog/callout/callout@menu+mobile+dark": {
     "payload": "e96a4d26bf9e12de2b3416fd5d6ae12669857d0af888b1d724f5d5754c60690b",
-    "reference": "18fd4d4f5eaf1533d9d381d81e4b183fd98f4c5cde40cfe36b161af4eb0b2f51",
-    "captured": "2026-10-21"
+    "reference": "ba737aa5676d30aaef47111bb24aa14e33e4fbe6039842a7de8fa0c69f0bff6a",
+    "captured": "2026-11-18"
   },
   "catalog/callout/callout@mobile": {
     "payload": "e96a4d26bf9e12de2b3416fd5d6ae12669857d0af888b1d724f5d5754c60690b",
@@ -1341,8 +1341,8 @@
   },
   "catalog/card-and-carousel/carousel@scrolled": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
-    "reference": "0b15014f2e7c85e9529afb9f5232420b6213b2a6df486c450de3425a4fdeef43",
-    "captured": "2026-10-23"
+    "reference": "3c6a8504b9d65c45890d2d52e9f84df4489fde6907b3515185b22a4a05bbf17d",
+    "captured": "2026-11-18"
   },
   "catalog/card-and-carousel/carousel@scrolled-end": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
@@ -1366,8 +1366,8 @@
   },
   "catalog/card-and-carousel/carousel@scrolled+dark": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
-    "reference": "d6791ece4256019ddb08cdfc103142578d28234c0c6d5dcc0f45a950cb12e91f",
-    "captured": "2026-10-23"
+    "reference": "ba8d4e73d90dbf207b0fa38c26f57cfa0d472c15daceb316dd85007945a55d49",
+    "captured": "2026-11-18"
   },
   "catalog/card-and-carousel/carousel@scrolled+mobile": {
     "payload": "bc33585e75d34b342eaf391582c8e394cc72547919a28637cafdcf13e96a045a",
@@ -1406,23 +1406,23 @@
   },
   "catalog/container/collapsible@collapsed": {
     "payload": "1889600abaeab79af1bcc5691e6403effea9bcd609ef2c64bab381044a23428b",
-    "reference": "dbe972e722dcffdd6f4090ec4e4a7d700a4d2e3334ffe3d1f245f220425a87bb",
-    "captured": "2026-10-26"
+    "reference": "94c296e090566720772eba0eaab0fb1468405379b242cc0c2af47efc2d836dba",
+    "captured": "2026-11-18"
   },
   "catalog/container/collapsible@collapsed+dark": {
     "payload": "1889600abaeab79af1bcc5691e6403effea9bcd609ef2c64bab381044a23428b",
-    "reference": "ecc84bf260f0018c1ea504c357e3ba38c997b4a6844c89556727080119f7901c",
-    "captured": "2026-10-13"
+    "reference": "1bd2345c5f80d881935e6da5839bd32faf47e7444ec06ed02b4306e1b28f5e50",
+    "captured": "2026-11-18"
   },
   "catalog/container/collapsible@collapsed+mobile": {
     "payload": "1889600abaeab79af1bcc5691e6403effea9bcd609ef2c64bab381044a23428b",
-    "reference": "52999fab74e40cdae80bb4351f3676f910442026d74e50ab667fba49206c470c",
-    "captured": "2026-10-13"
+    "reference": "72c4bac74e3b83aee00e6b3f70fb4850f8d4daf2ea3d900a1faaf2150cb09f3c",
+    "captured": "2026-11-18"
   },
   "catalog/container/collapsible@collapsed+mobile+dark": {
     "payload": "1889600abaeab79af1bcc5691e6403effea9bcd609ef2c64bab381044a23428b",
-    "reference": "1fa49e049234153cc9b323aed7b092a02796a96063cf94faf896823dce2aef74",
-    "captured": "2026-10-13"
+    "reference": "a0c6ecb02a89a046c712c97cd491be36ea611ce194069f46488030b51dca1013",
+    "captured": "2026-11-18"
   },
   "catalog/container/collapsible@dark": {
     "payload": "1889600abaeab79af1bcc5691e6403effea9bcd609ef2c64bab381044a23428b",
@@ -1556,8 +1556,8 @@
   },
   "catalog/container/data-entry-form@pick": {
     "payload": "f0a38a4801364fc94b6110d28cac48d2ebd8c7ab3c8fa55e59bfa1c4ce32db2a",
-    "reference": "2076d8f7ef2be49fb5404e75e320240170996bb2785215183cc09df51d0c90b4",
-    "captured": "2026-10-18"
+    "reference": "a7d1b8dfdf878905dbdaa38f76fb12019be3bc2a849d5f8e9a60406cf865941e",
+    "captured": "2026-11-18"
   },
   "catalog/container/full-width": {
     "payload": "2f9f6468510856c1c2391f465d5fe15432cddabc84562fe16aba95c69bab088d",
@@ -2341,13 +2341,13 @@
   },
   "catalog/input/multi-static-select@pick+mobile": {
     "payload": "d4c4eb73aa4f29addca664f84adde59bf15226cd6f560c388a792898f75fc164",
-    "reference": "f12eb48e80759374a8c0e82519998161007cf9958c49c64ad19cc219b595ecad",
-    "captured": "2026-10-27"
+    "reference": "fc0cc63216a3789b8000edeab3f4dea45bfbaf8313f227b1bcdcdfae27978ad6",
+    "captured": "2026-11-18"
   },
   "catalog/input/multi-static-select@pick+mobile+dark": {
     "payload": "d4c4eb73aa4f29addca664f84adde59bf15226cd6f560c388a792898f75fc164",
-    "reference": "470850369e50ddc6a67df2d6f3e28bcc75c6212b42d565197ce4ee78ee66c169",
-    "captured": "2026-10-27"
+    "reference": "3f0fa39e1ffac34de7eb7bb44911cec3e8f5f16a1a37fbf238d0b0c7bd0b3dae",
+    "captured": "2026-11-18"
   },
   "catalog/input/multi-users-select": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
@@ -2416,13 +2416,13 @@
   },
   "catalog/input/multi-users-select@pick": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "9785b4f8f0c95d2d912213f67b56abe1d2b21e2634340d4ff7b784d624866ae4",
-    "captured": "2026-10-27"
+    "reference": "782e38ef704f1e4779d8d1062f0355340cd7ac389d470f5aa669a601c1e3d0d1",
+    "captured": "2026-11-18"
   },
   "catalog/input/multi-users-select@pick+dark": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
-    "reference": "2cb0673366f6cc8e1762ebd7268bf8b8109f14aa6c3be25e1c1e7e3d382b47da",
-    "captured": "2026-10-27"
+    "reference": "7cb430eb020847eb3678f64ebb7a9fb2e3a78f89e23dd76663f18728116faac2",
+    "captured": "2026-11-18"
   },
   "catalog/input/multiline-plain-text-input": {
     "payload": "dc38565d44db7e479f61a7712145cd0bf370141015a98f711ee27298e629da85",
@@ -2486,8 +2486,8 @@
   },
   "catalog/input/radio-buttons@pick": {
     "payload": "d979bb6465d1b4c0c19a7cd2ea734bfcb663d57b14fdee97c6004a54fe4b3011",
-    "reference": "3655158818739d90e8b59b43f331ae37c0082f35fa11eafcb72d6678f061a2d9",
-    "captured": "2026-10-13"
+    "reference": "178bd000f40cb533b935b1fb16eda0f7d60059eb734aa0fb4b6403464e25ffb3",
+    "captured": "2026-11-18"
   },
   "catalog/input/static-select": {
     "payload": "7d931d0a273f2b7e8d2e8b5d694a8399b8647b21c0f0d1b82b500ddf9d9e35f6",
@@ -2521,8 +2521,8 @@
   },
   "catalog/input/static-select@pick": {
     "payload": "7d931d0a273f2b7e8d2e8b5d694a8399b8647b21c0f0d1b82b500ddf9d9e35f6",
-    "reference": "26db068bb58e17f8034656e4916fed048cf6efee9c3ef60228c83efe600cba94",
-    "captured": "2026-10-27"
+    "reference": "041fbca62e8a09ddfe503a0d837f0ed2e243ddbc3c42919173cf21604a66c619",
+    "captured": "2026-11-18"
   },
   "catalog/input/timepicker": {
     "payload": "431a72ca2315c4da6059ba93744007c6a925719c4515d1346ff107ac80a93d7e",
@@ -3081,23 +3081,23 @@
   },
   "catalog/section/multi-conversations-select@pick": {
     "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
-    "reference": "f4b2534d6cebe8717df7cd3b55ceb7acfe7d8704ca5d92af6940a8f9fe5a83d6",
-    "captured": "2026-10-14"
+    "reference": "774df448b266c146c5cdea8313d4aeacd5edd09b8ab85b4963dd26b54f621730",
+    "captured": "2026-11-18"
   },
   "catalog/section/multi-conversations-select@pick+dark": {
     "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
-    "reference": "0ef49ec4ceae26c4b7c874eeba3f819ce781a1c0d2c73a888567972582b36409",
-    "captured": "2026-10-14"
+    "reference": "9f294812a95bf5ca7ba26455a61ec3c6cb5a566f0634b1a4b24675b1004328ff",
+    "captured": "2026-11-18"
   },
   "catalog/section/multi-conversations-select@pick+mobile": {
     "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
-    "reference": "963909ed2ad4d03f89f65527d35913b329f73da1882506612df96a7d91591536",
-    "captured": "2026-10-14"
+    "reference": "bcebc89d8719cbafdfaff2e630ad86d4c26fbbf1a83c140f35db695d572b02c4",
+    "captured": "2026-11-18"
   },
   "catalog/section/multi-conversations-select@pick+mobile+dark": {
     "payload": "a9459faa14e5735dfa693438b8095e6dd5ab2edc0e67a38ad43330bfec358e09",
-    "reference": "b68fe2cd8449a27eca6ba60440f2b8d764d03ee27a3f4900171a55744e4bbb61",
-    "captured": "2026-10-14"
+    "reference": "f55574d93997464a45f24a1923778c9a08a64b4a974beb6d6ac31ac0c0638fad",
+    "captured": "2026-11-18"
   },
   "catalog/section/multi-static-select": {
     "payload": "5057310aed1172399b025c526cfd247a33c246f47e60bb2b6e318872d692f4f6",
@@ -3141,13 +3141,13 @@
   },
   "catalog/section/multi-static-select@pick+mobile": {
     "payload": "5057310aed1172399b025c526cfd247a33c246f47e60bb2b6e318872d692f4f6",
-    "reference": "e4718df02a749f0cc2dd6b4cba77b3f379a4f9696d382af03813e3860abcaec8",
-    "captured": "2026-10-14"
+    "reference": "a22abc629e65336fbd4c3899c3a7d8fe4e910ddec3d0a4c8b5b6d30ebbb929f6",
+    "captured": "2026-11-18"
   },
   "catalog/section/multi-static-select@pick+mobile+dark": {
     "payload": "5057310aed1172399b025c526cfd247a33c246f47e60bb2b6e318872d692f4f6",
-    "reference": "439acbdc340b6d98ce97d94898f7614e1d83d8abff958ea0fd5620f0838edd70",
-    "captured": "2026-10-14"
+    "reference": "8a95afc5d65660ec8eedaf3c4164b3e1512fb93401eb45c0083df368d3ddd6a5",
+    "captured": "2026-11-18"
   },
   "catalog/section/overflow": {
     "payload": "8752b6fe918c41b994f8877c57e952ca8c072c621c0b284f3438913b95a6399f",
@@ -3221,13 +3221,13 @@
   },
   "catalog/section/overflow@pick+mobile": {
     "payload": "8752b6fe918c41b994f8877c57e952ca8c072c621c0b284f3438913b95a6399f",
-    "reference": "985f15f4152cfd8a77632dc959f27e159ae106f5cff44e471f47f3a00ba7d8e2",
-    "captured": "2026-10-14"
+    "reference": "24ee0083542647725b70a98e0d458b2afc8fb72b9314f177c3c7f2bba191553a",
+    "captured": "2026-11-18"
   },
   "catalog/section/overflow@pick+mobile+dark": {
     "payload": "8752b6fe918c41b994f8877c57e952ca8c072c621c0b284f3438913b95a6399f",
-    "reference": "23609403468894c016244f18c79c670b29a7bf3e80e60b58ca0f52a172069f2b",
-    "captured": "2026-10-13"
+    "reference": "8fb71b53c91a513936cd17b143a603ad88437dab3edbe86af51f30e1a2cb0b41",
+    "captured": "2026-11-18"
   },
   "catalog/section/plain-text": {
     "payload": "39a1ac14d61e90e67cdb8db9054620c858998afc95d0229a8efd70bf4065fb63",
@@ -3271,8 +3271,8 @@
   },
   "catalog/section/radio-buttons@pick": {
     "payload": "71603d252812165950048fce57b06f15e58b7f19640fb47091ea25da96dc0cfc",
-    "reference": "18271e9bbc88f8cbb6269a3aadc2fae48febdc9503c09ae1153d3e0d61bc4446",
-    "captured": "2026-10-13"
+    "reference": "6e075e86ce06de6592845774c739522374c5c876378e8dd0ab1ac1583de0e3df",
+    "captured": "2026-11-18"
   },
   "catalog/section/slack-image": {
     "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
@@ -3411,18 +3411,18 @@
   },
   "catalog/section/users-select@pick+dark": {
     "payload": "012ac95643f89c0662d5b8b7074db764f137bbf6bdac7e3e8d7bed9c5a819194",
-    "reference": "4d55b455efb5eba5c8334c044b5e773bad25166394006d6c0a823049e324a016",
-    "captured": "2026-10-21"
+    "reference": "bd085cb902bb4ba410ee6bde5183838f40e9878850cffc66479b811212ad8b4f",
+    "captured": "2026-11-18"
   },
   "catalog/section/users-select@pick+mobile": {
     "payload": "012ac95643f89c0662d5b8b7074db764f137bbf6bdac7e3e8d7bed9c5a819194",
-    "reference": "d09b0f81b6606522ad34f38094b37d185f588db011f3781e3a0d8efc3831afd8",
-    "captured": "2026-10-21"
+    "reference": "43d4c8c463981acaa90d7b0374cff3097f30200479bd41a5d657ac9cdf4ad68d",
+    "captured": "2026-11-18"
   },
   "catalog/section/users-select@pick+mobile+dark": {
     "payload": "012ac95643f89c0662d5b8b7074db764f137bbf6bdac7e3e8d7bed9c5a819194",
-    "reference": "120facd8fa2fa430e82983243990db30db0e34ad557bad4282615ea3fd117796",
-    "captured": "2026-10-21"
+    "reference": "8ab1f30045b3a3e6d8f217064127747787140b3b0b5cab35b0617cbe17e1ac56",
+    "captured": "2026-11-18"
   },
   "catalog/structure/default": {
     "payload": "ed552a0bfeef70e7c93c73ad33ad94918f830c51186d7d586083243dbffab514",
@@ -3631,33 +3631,33 @@
   },
   "catalog/table/basic-data-table@filter-empty": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "511e262ca45c72918db48b0e4660577b7c30457f31ec7c543a729dab0be4f036",
-    "captured": "2026-10-24"
+    "reference": "92d28384efc0fc49f84195541c663990b278415ee17069e1f5adf80984610e51",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@filter-empty+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "b8286baec82b277bce94c30a1ed8ae070b7ddedb52ff7a51132f2dd286479ae8",
-    "captured": "2026-10-24"
+    "reference": "679d53f8b4d726a5e1064ae56e6db88c7ede751af87c570ce870d6827cc9b99a",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@filter-empty+mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "c256bb6e1ce64f9cf8fb76660836cd1c54ae34425e6754b742be77332d5fc1e2",
-    "captured": "2026-10-24"
+    "reference": "e121063b1459b5ead7804dd4f6ecd856e008bac2f53153cbd38071035b4d287f",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@filter-match": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "b250a419d5fa053f8a4277edda69f176d3623d25c16ca082819e950b14ad438b",
-    "captured": "2026-10-24"
+    "reference": "af80c665f818cde8c35cf5f2303fdb35755a37b0bab19f6af280290bd4fc6a4f",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@filter-match+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "c5c93c53c676747b242c6bb05006c0b4b2881a22e10365f1d78d8ceb36f9e77e",
-    "captured": "2026-10-24"
+    "reference": "94a6426ac164a57f14abcdc9d71cc50475f5c21edda5ae029b37caa7b157185b",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@filter-match+mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "1ad8345422f7603ae671bbc2f47180e316347aa70b6c2bd06f536fc4d4ead2b3",
-    "captured": "2026-10-24"
+    "reference": "c3103e152ec2d00c09573dfcf60becd22ced952e77e2237e4bd036b7a50b750a",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@focus-column-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
@@ -3706,13 +3706,13 @@
   },
   "catalog/table/basic-data-table@menu+mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "1b375ce6a7ac5abc671dbe86c6db2bea00eae697bdee469b843202d83b4db362",
-    "captured": "2026-10-21"
+    "reference": "14805f6d4764f7192ee3a5a5d3794808e9a651ba3b66dd9984ef4dc2fc190a88",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@menu+mobile+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "80335331bb0a9024d9c00f64e9c4b9208fd92a9b7d182ea1d4665e15205574bc",
-    "captured": "2026-10-21"
+    "reference": "e8ae461cc6af29626914e7283910ec62673a698f2222683b8b43c5608064d051",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
@@ -3746,18 +3746,18 @@
   },
   "catalog/table/basic-data-table@sort-asc+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "2e425d6f0e17de279c1d30eeac55807bee25e2c7662afdae15cb43d57a5b988b",
-    "captured": "2026-10-21"
+    "reference": "580e62f0b4293d58e3cfe1a3a339eefbac69270ec76a28fc26882e43aa839887",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@sort-asc+mobile": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "92c5f636d1d2b684aac96e2a50cbb018bd5fd95b98344653217fca5dea518cb7",
-    "captured": "2026-10-21"
+    "reference": "04562f7a9e196369e00c5544abac183f9e5cd3631553c719a2c9587e455c20bc",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@sort-asc+mobile+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "dd3003aef3d6fb26b3cc13be85c635279099272c1233c1fa6857b0708030cc9c",
-    "captured": "2026-10-21"
+    "reference": "beb19ec301fde10ab2eee2982e9d16ab81bc2b3f1146554219c224ecaed07a48",
+    "captured": "2026-11-18"
   },
   "catalog/table/numeric-sort-data-table": {
     "payload": "69faeeccbf284d813fa0a7a7909ed55f1212a41d551bfa5cd2c0737ce260628b",
@@ -3781,8 +3781,8 @@
   },
   "catalog/table/numeric-sort-data-table@sort-asc": {
     "payload": "69faeeccbf284d813fa0a7a7909ed55f1212a41d551bfa5cd2c0737ce260628b",
-    "reference": "11770b84c92a384590c7edce95b31b935ebd3bb8e835cc426345709823895115",
-    "captured": "2026-10-21"
+    "reference": "7132d36e74f11e28e20bc1f87428304b7a72f12ff9edf077396cc3ce0ed5ee49",
+    "captured": "2026-11-18"
   },
   "catalog/table/paginated-data-table": {
     "payload": "f1bfc9af6437fc738ac96510191c91c574291ae8eb9303eac50b79c197054f09",
@@ -3806,8 +3806,8 @@
   },
   "catalog/table/paginated-data-table@page-2": {
     "payload": "f1bfc9af6437fc738ac96510191c91c574291ae8eb9303eac50b79c197054f09",
-    "reference": "da799441dea37f84cdf23835596fc2df651f52fe57f207d77eb1026105651b08",
-    "captured": "2026-10-21"
+    "reference": "4c04417939d353ade1c109fa919a54b4a1fd55c1756bfe710ead82f5a062cc2a",
+    "captured": "2026-11-18"
   },
   "catalog/table/simple-table": {
     "payload": "edfc602d231b575fb16de857f69f5dee5e249c305f32a014f1b52bbd82aad0c5",
@@ -4356,13 +4356,13 @@
   },
   "contexts/datetimepicker/actions@pick": {
     "payload": "bf0d11b69273acc23582ed86e09190fc1807d2975c0e83890b232f090903e90d",
-    "reference": "7cc3e664477bfad510c0b8139f022ce1c2394b70a7f1cc0f3698b01e9c702610",
-    "captured": "2026-10-14"
+    "reference": "de9ef0b171bb4941fcba6adf6c81f5e79234c04bf2088c8c05d5a38582b3805c",
+    "captured": "2026-11-18"
   },
   "contexts/datetimepicker/actions@pick+dark": {
     "payload": "bf0d11b69273acc23582ed86e09190fc1807d2975c0e83890b232f090903e90d",
-    "reference": "c5c45502f08343636ed566755eb3cca34193e826832a2cbf9c5a787e0b1a5072",
-    "captured": "2026-10-14"
+    "reference": "37a7b93070d7ba65a76ed9e896ded57d88d6d933a7748974b1d24352229097cf",
+    "captured": "2026-11-18"
   },
   "contexts/datetimepicker/modal-input": {
     "payload": "fa5e4b7b9d75520d34f687a057d10e9156e3e6dbbcc118c23de2f2c3fdc54d62",
@@ -4646,13 +4646,13 @@
   },
   "contexts/multi_static_select/accessory@pick+mobile": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
-    "reference": "fb0609be53ab2daa7251f2ad92208651f9dc222c6e804d602ec660056c4eb292",
-    "captured": "2026-10-14"
+    "reference": "600b9b0e6138e46744b6b5f7e24b708aa1adc9951b83c393bf1e69748c9e319d",
+    "captured": "2026-11-18"
   },
   "contexts/multi_static_select/accessory@pick+mobile+dark": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
-    "reference": "d77c812fbbe7f55c7cf85807e8f2923f001df5e5803c5cfbe67ecdf808129868",
-    "captured": "2026-10-14"
+    "reference": "5a40166675e434e1113fab989ec46231010322df0d1a44a00b59d41f6ff6ce5e",
+    "captured": "2026-11-18"
   },
   "contexts/multi_static_select/modal-input": {
     "payload": "d5730726b87fa5dc719cb90e6e41fc9604726460eabe0c87f92e35367a83fdbd",
@@ -4716,13 +4716,13 @@
   },
   "contexts/multi_users_select/accessory@pick+mobile": {
     "payload": "8284b568186a0327b4e7879837c1fa6697693023e904438027c3f464c0f90ded",
-    "reference": "eb4b8ad9244afb695a0253b90da20b0b7ee22cd2674eb2cfce216323cd6d8895",
-    "captured": "2026-10-14"
+    "reference": "43d22bf835b8f79574f68764c1a43e9a3a21e9bf0f382566c3f0d5411deba3de",
+    "captured": "2026-11-18"
   },
   "contexts/multi_users_select/accessory@pick+mobile+dark": {
     "payload": "8284b568186a0327b4e7879837c1fa6697693023e904438027c3f464c0f90ded",
-    "reference": "cfe5a0d4c5ead746fc6f41c756e2d2e859259eb7bf8605cc5e1576867a6362fd",
-    "captured": "2026-10-14"
+    "reference": "59fc036c4634610df93bbb9e5f4613a5006d044f1a836dbac2abf0835c0e4e16",
+    "captured": "2026-11-18"
   },
   "contexts/multi_users_select/modal-input": {
     "payload": "2d9c19b5a4bd78573b646f9a1e4ab4ee9334896b3a3c1517d5b355ceacd14d2e",
@@ -5391,18 +5391,18 @@
   },
   "extra/actions/more-elements@pick": {
     "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
-    "reference": "63f9d106dab8d3f9e11ab3289c30dc46f6a8284a8d82ac13cf961e64e7738f4c",
-    "captured": "2026-10-18"
+    "reference": "0070113ad1e3fbc3e6e2e93aee829158fb6251de83170bd2f253af8a957996f4",
+    "captured": "2026-11-18"
   },
   "extra/actions/more-elements@pick+dark": {
     "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
-    "reference": "3fe7b4852d968422429ea537919b47c104b25cc2124d92a741cfc810e42e01ab",
-    "captured": "2026-10-18"
+    "reference": "ad882b9be9361b2d8d9972ad98e27ac4dc0984a6712b4d80a403d4733e9eeaac",
+    "captured": "2026-11-18"
   },
   "extra/actions/more-elements@pick+mobile": {
     "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
-    "reference": "f7f415fa784caef52d7cfbd5a0d0aa44cde660d0719740fd8654295e76034f35",
-    "captured": "2026-10-18"
+    "reference": "6957a48d3a0de0b2f400bcdf8980d954aaef2580e2a6770a7b16c8866368d4e8",
+    "captured": "2026-11-18"
   },
   "extra/charts/area-twelve-series": {
     "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
@@ -5606,8 +5606,8 @@
   },
   "extra/fidelity/channels-select/long-content@pick": {
     "payload": "5d8eef2c2aa3f8b98417bea90cc37ca3fe931563aad7dc5a8c374507effc0456",
-    "reference": "ded33d64d7a8529907a6eb65a9a759c9423b6a18536fc1b702b4e553e13cab73",
-    "captured": "2026-10-18"
+    "reference": "93f6b888a94bc3fdbfc18bebea2c7b139e71d85274828903112eaef76cea049d",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/chart-table-modal/many-items": {
     "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
@@ -5661,18 +5661,18 @@
   },
   "extra/fidelity/checkboxes/long-content@pick+dark": {
     "payload": "c5cdfc56a7a5dc60caf9802458828a595950f60e5f8cdfffc1b06400f17834b6",
-    "reference": "027c8d3514084cb62e0e41f8f31e42ffc5ce3086181811f419ffd7c6ba9e6b2c",
-    "captured": "2026-10-13"
+    "reference": "19a28f3179c789647500db1c9fdacb2248381657867edb8b88124c2556eb576f",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/checkboxes/long-content@pick+mobile": {
     "payload": "c5cdfc56a7a5dc60caf9802458828a595950f60e5f8cdfffc1b06400f17834b6",
-    "reference": "5a4c304762875e560956522bc72ddf8ea940d6ddb4a2748e558fb56a96f70690",
-    "captured": "2026-10-13"
+    "reference": "af07fbd340c1dfbdf9d7ac99664963522beb992f41324529d6bd417c273d050a",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/checkboxes/long-content@pick+mobile+dark": {
     "payload": "c5cdfc56a7a5dc60caf9802458828a595950f60e5f8cdfffc1b06400f17834b6",
-    "reference": "6a1af7ec47c523f80e3bd93332b511388a7329b43d5872618c33892a44584254",
-    "captured": "2026-10-13"
+    "reference": "b265a5f404cbe84015753fa70a2b4faa49daf53bca8903eb52ff7262c3252c1e",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/checkboxes/many-items": {
     "payload": "39c4d205d1201cda83ba9952f65be3b68414e73c549c5519d0edf7009d2a999e",
@@ -5756,8 +5756,8 @@
   },
   "extra/fidelity/confirm/long-content@pick": {
     "payload": "bd02dab02a5e22678e7187b5c79dfdc6cdb48cbcb7f2aa9fb8aa658a3e8b0d21",
-    "reference": "572068a310ff8551f126f621cff7ef264ce38ef8edea7377f098ce34675780cf",
-    "captured": "2026-10-18"
+    "reference": "288c73cacfbf9d27564a815b1a486540bfe237d2b1d3435ab3b813e8b8843965",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/contact-card/mixed": {
     "payload": "04b617bb1720965f5587ac7941858d4e0e6acf6ee32e63c701ce00f76fbdfa38",
@@ -6101,13 +6101,13 @@
   },
   "extra/fidelity/datetimepicker/empty@pick+mobile": {
     "payload": "df664928ce98a97af738477d87366852c61a1f614838f0aa47004d8ab224cd5a",
-    "reference": "df338eb09f536d221dccdbd0465b45fb678e674a98583aaad9136588a1806bad",
-    "captured": "2026-10-14"
+    "reference": "26b6e36a13d3e24c17c3ed15f827ff6ff0ed25ae1f08c576961340f2b63f3a3f",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/datetimepicker/empty@pick+mobile+dark": {
     "payload": "df664928ce98a97af738477d87366852c61a1f614838f0aa47004d8ab224cd5a",
-    "reference": "ffea7d57665dbc4beb4c159cb7967af1ab31512acbe310ee3e24397636d2d402",
-    "captured": "2026-10-27"
+    "reference": "eaf2acc19a154b5025379ab61df02d09f4aa1d417f8ce07808d4fa5171843535",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/divider/mixed": {
     "payload": "92fb2be2db7bd99b6245d73eb775df4b5ad4b8991cf9f1e2db9f32fa0e098b60",
@@ -6446,13 +6446,13 @@
   },
   "extra/fidelity/multi-channels-select/empty@pick": {
     "payload": "7540d5ae9fb690c0e28a8619d123b30d096d785d3e969227bf6cbf0f588c73c9",
-    "reference": "4bf7f36f551decb6b2bc5d380f7ad4659f0a9d35287b4d7876e59fd66d6a34c8",
-    "captured": "2026-10-27"
+    "reference": "a4f9f36122480738576eaff80568a1dd268642beb70a03b598a622fa28bf8031",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/multi-channels-select/empty@pick+dark": {
     "payload": "7540d5ae9fb690c0e28a8619d123b30d096d785d3e969227bf6cbf0f588c73c9",
-    "reference": "b562f73f38c7e047b5a50a6dcc8efc85b67bd34f869aa7ea586848338fd4137a",
-    "captured": "2026-10-27"
+    "reference": "0bcdbdc81ad4b3b0ba714f21eb9adedc985e553bfa218dbd057e50666adbde90",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/multi-channels-select/long-content": {
     "payload": "806ed7bb7123df226f596d77fe5934e25e9a001a33d4487de77a96f01fedc863",
@@ -6556,13 +6556,13 @@
   },
   "extra/fidelity/multi-conversations-select/initial-value@pick+mobile": {
     "payload": "e7ff642d3739bcc7b65603d9d9006bc7189c44fe73c39c60322426bb4a6d645f",
-    "reference": "0f133ea3c64e454044b8d2a2632c14bbbc3eba1e17623f205d37c2bec5da32b7",
-    "captured": "2026-10-14"
+    "reference": "dc0c6b1f97cd374fc9687754e6cf0ffa4f6d12a19fdf2420b946db14fa58960d",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/multi-conversations-select/initial-value@pick+mobile+dark": {
     "payload": "e7ff642d3739bcc7b65603d9d9006bc7189c44fe73c39c60322426bb4a6d645f",
-    "reference": "620eda55d879ad127af85e17ac9a26afc183124aff044cab38fbe9627595f421",
-    "captured": "2026-10-14"
+    "reference": "eda3ccd5c31cbd1c4cc4c8f08bbbb1ea22a0bb7a0f2d4777dcab4f380ac4b440",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/multi-conversations-select/long-content": {
     "payload": "d273c78c961fde73908ac650c43ef53703cafb8dfd379e942b5a8d0c09b9ae44",
@@ -6986,13 +6986,13 @@
   },
   "extra/fidelity/option/long-content@pick": {
     "payload": "67264e02dc70b51b6be20ffa0fa6d58b52ec033d6e58c3e56061737ec5ba44d5",
-    "reference": "3e7d37a5c8cbb9b41c2a3f20b2544564441251f0fbc2e199d640e66fcc591889",
-    "captured": "2026-10-14"
+    "reference": "bd08234770810f8f2ba7bd5646b619015b74b4dbb58ec765e6ade2717a2a967d",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/option/long-content@pick+dark": {
     "payload": "67264e02dc70b51b6be20ffa0fa6d58b52ec033d6e58c3e56061737ec5ba44d5",
-    "reference": "494a72795b2c76edf284371a15f16b8ef25bab1986580b5e65c6c5b4ff78f79e",
-    "captured": "2026-10-27"
+    "reference": "2486209d6e751f4504c841748016faa9101f9a6455e8059a283e9442ddc7d3ca",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/option/mixed": {
     "payload": "625a90958e5a9c9965049f7b6dccfef47894bb468d7021dbc95cded0f742c8c0",
@@ -8086,8 +8086,8 @@
   },
   "extra/fidelity/users-select/long-content@pick": {
     "payload": "ac2768f32fc327bb82c3f5f03e1aadb28a1441695c9da956adc68a1bd89b7d03",
-    "reference": "6ed68ea3e2c40506f36bb22a6915d9379d7962e36bda7e005e264b23b1c23a9c",
-    "captured": "2026-10-21"
+    "reference": "2dd870454007d7cbb955657b5d557b4a241cf826ea1aaea00aaf724846345c3f",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/video/long-content": {
     "payload": "c5439ebbc350dc8bd258e6054f86643ac00b3dfb3eebc8ab4cecaec99e558c35",
@@ -8191,13 +8191,13 @@
   },
   "extra/input/more-selects@pick": {
     "payload": "402a7b1fc7de6ac6b272568c0189df727280d1520822e1bed036fa0761cb7e9d",
-    "reference": "db91876e4332f52aa0d1ed591cdb00f58d164765039d8436ca14443d8ffc176a",
-    "captured": "2026-10-18"
+    "reference": "14529fef8bdc2953dfaaf05b775689d9ce215b40bed87257d8351be6618a79d4",
+    "captured": "2026-11-18"
   },
   "extra/input/more-selects@pick+dark": {
     "payload": "402a7b1fc7de6ac6b272568c0189df727280d1520822e1bed036fa0761cb7e9d",
-    "reference": "8810de7ea9f3aaea893a76bd0a87156b9935fe2bcd84066faa151ea35ac27fd5",
-    "captured": "2026-10-18"
+    "reference": "83c31e1846704fbf6b14abc3432e91c08e4dc2d1340b5f59e8e32881674caf8f",
+    "captured": "2026-11-18"
   },
   "extra/input/text-inputs": {
     "payload": "ddc630b1fa42a6b563bf3336051781314a8c5cf2ab2f7dd15e26dc53e6fe673c",
@@ -8321,13 +8321,13 @@
   },
   "extra/modal/required-multi-selects@pick": {
     "payload": "69a0e6e0957771f7dd97512d9d6c4479616209b466f55469cc5cfeb0a7d1d808",
-    "reference": "7fdda722eae951a780761de3ca7ee52a16d6dd9cd444389ff779c283c7435153",
-    "captured": "2026-10-23"
+    "reference": "6bda3f862c088473f71d0c8a2b40eb0d5a23d5cf76efbe5d1441ff1644ef9bd8",
+    "captured": "2026-11-18"
   },
   "extra/modal/required-multi-selects@submit-errors": {
     "payload": "69a0e6e0957771f7dd97512d9d6c4479616209b466f55469cc5cfeb0a7d1d808",
-    "reference": "afacd39e4f34eed0ab13e90aff28fa13b146020ecbf801d22c824fa9c5a74c4f",
-    "captured": "2026-10-12"
+    "reference": "3169b5c3dd0f24c7ed5176cdd54316310bf3d90a63470648b09dc6e13fbd9a08",
+    "captured": "2026-11-18"
   },
   "extra/modal/rich-and-file": {
     "payload": "da0bf26d945a72ff8ae94ba75e41b40ba5c759fd18bb65b42c5b79369a25b2d1",
@@ -8381,13 +8381,13 @@
   },
   "extra/payloads/accessory-multi-selects@pick+mobile": {
     "payload": "d27c845e12c3781cb6c14bf91c09f06d432aa58e2679731842bee3802b82021d",
-    "reference": "a2a0ecd4a5809308b2c1a8e391b55ed4b303e40bf718b96e60708f7bbe0656a1",
-    "captured": "2026-10-13"
+    "reference": "bf0de6a8729ed32c262a9c34221250abaa68625911ffa7179747803da2ef11b0",
+    "captured": "2026-11-18"
   },
   "extra/payloads/accessory-multi-selects@pick+mobile+dark": {
     "payload": "d27c845e12c3781cb6c14bf91c09f06d432aa58e2679731842bee3802b82021d",
-    "reference": "c7f1945f064850614d2f5ba750b9fa9ee0f935a8f2206662a0b34db467570e62",
-    "captured": "2026-10-13"
+    "reference": "d24ac7088e759486c5048f5e9f32d902a1112ad8f87e3aaca95db939255d3c0f",
+    "captured": "2026-11-18"
   },
   "extra/payloads/buttons": {
     "payload": "9427ee0bacb0673ddcb708b76d457819e1bfbeb87ec737d651fffd26df2c3b74",
@@ -8531,13 +8531,13 @@
   },
   "extra/payloads/pickers@pick+mobile": {
     "payload": "fd5c11786789b4ca75548c5381c56cdcf89f0e702392909a7b75d904cad90cdf",
-    "reference": "2272fe323e546aebdfbf894068548c613376174a526861825ae7c55dc84703f1",
-    "captured": "2026-10-18"
+    "reference": "2229f5c7f47c4b9432b0bd761c79c59f4cbcb9e0ffbcafcdc0313d35a36918ac",
+    "captured": "2026-11-18"
   },
   "extra/payloads/pickers@pick+mobile+dark": {
     "payload": "fd5c11786789b4ca75548c5381c56cdcf89f0e702392909a7b75d904cad90cdf",
-    "reference": "4b4d0ace05b0b389793b35c78fc763053a97e000c2a82495b3b1802ba8585366",
-    "captured": "2026-10-18"
+    "reference": "3a52d373530e37f313fd21dd64665e0671ed8295683fc0d70027f714e3be4c6b",
+    "captured": "2026-11-18"
   },
   "extra/payloads/selects": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
@@ -8546,8 +8546,8 @@
   },
   "extra/payloads/selects@change-single": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
-    "reference": "c81446bb7a256bcdd2e2fb6c76fe66f3d64e6d6b9a5e6244bf234b6b68dc73ef",
-    "captured": "2026-10-18"
+    "reference": "8350a3d347025deb5beaf4116f2a40e0b3d6e570f4624028400f7c494cb72a01",
+    "captured": "2026-11-18"
   },
   "extra/payloads/selects@dark": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
@@ -8556,8 +8556,8 @@
   },
   "extra/payloads/selects@keyboard-single": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
-    "reference": "e9dc99cee75d830c6e06bbacbad610247a58b72b8a8599f67f80c73a11593b31",
-    "captured": "2026-10-27"
+    "reference": "dbdda28684230ace83daa0097c9e3600759a0d2b145afee909d70adfc7b49fa4",
+    "captured": "2026-11-18"
   },
   "extra/payloads/selects@mobile": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
@@ -8581,8 +8581,8 @@
   },
   "extra/payloads/selects@pick-accessory": {
     "payload": "0cf05f009846b492e200460130779aedcf04b965c3e04d197ce24645eaf969a8",
-    "reference": "33c6b286067e2f655f99547f10c89daabdabda92c3d38c25d473a51bb50427a3",
-    "captured": "2026-10-18"
+    "reference": "0b15520361ebf84e812ea0ee11f19eb3db5675f5a34324805b67bfd78e1217a1",
+    "captured": "2026-11-18"
   },
   "extra/rich-text/mentions-and-styles": {
     "payload": "5170379412f358b28ec8efe56a0608415cf55ab44bcc5547bc1d3b50e2fe5b4e",
