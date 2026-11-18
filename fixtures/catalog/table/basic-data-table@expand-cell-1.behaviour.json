@@ -16,7 +16,13 @@
   "observations": [
     {
       "focus": null,
-      "layers": [],
+      "layers": [
+        {
+          "kind": "dialog",
+          "role": "dialog",
+          "scrollTop": 0
+        }
+      ],
       "activeOption": null,
       "tooltip": null,
       "busy": false,
@@ -29,12 +35,6 @@
         },
         "column-3": {
           "sort": "none"
-        },
-        "cell-1": {
-          "expanded": "false"
-        },
-        "cellexpand-1": {
-          "expanded": "false"
         }
       }
     },
