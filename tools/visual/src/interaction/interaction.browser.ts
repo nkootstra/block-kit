@@ -42,6 +42,7 @@ const option = (value: string) => ({ text: plain(value), value });
 
 const PROPERTIES = [
   "backgroundColor",
+  "backgroundImage",
   "borderTopColor",
   "borderTopWidth",
   "boxShadow",
@@ -2505,6 +2506,70 @@ describe.each(engines)("%s", (engine) => {
           });
         });
       }
+    }
+  });
+
+  // The state styles of catalog/data-visualization/area-multi-series(@dark) and
+  // catalog/image/slack-image(@dark): a chart's "More actions" button takes a 4% tint under the
+  // pointer, keeping a dark theme's icon at its body text grey; an image's turns an opaque grey and
+  // a pressed one adds Slack's pressed overlay on top.
+  describe("chart and image menu button states", () => {
+    const photo = `data:image/svg+xml,${encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#888"/></svg>',
+    )}`;
+    const mounts = {
+      chart: async (theme: "light" | "dark"): Promise<Mount> => ({
+        ...(await fixture("catalog/data-visualization/bar-single-series")),
+        theme,
+      }),
+      image: async (theme: "light" | "dark"): Promise<Mount> => ({
+        theme,
+        blocks: [{ type: "image", image_url: photo, alt_text: "A grey square" }],
+      }),
+    };
+    const button = (host: "chart" | "image") =>
+      `.sbk-hover-actions--${host} button.sbk-hover-actions__button`;
+    const hovered = async (host: "chart" | "image", theme: "light" | "dark") => {
+      const page = await harness.open(await mounts[host](theme));
+      await page.hover(".sbk-hover-actions-host");
+      await page.hover(button(host));
+      await settle(page);
+      return page;
+    };
+
+    const HOVER = {
+      chart: {
+        light: { background: "rgba(29, 28, 29, 0.04)", color: "rgb(29, 28, 29)" },
+        dark: { background: "rgba(232, 232, 232, 0.04)", color: "rgb(209, 210, 211)" },
+      },
+      image: {
+        light: { background: "rgb(234, 234, 234)", color: "rgb(29, 28, 29)" },
+        dark: { background: "rgb(33, 36, 40)", color: "rgb(248, 248, 248)" },
+      },
+    } as const;
+    for (const host of ["chart", "image"] as const) {
+      for (const theme of ["light", "dark"] as const) {
+        it(`tints a ${theme} ${host}'s button like Slack under the pointer`, async () => {
+          const page = await hovered(host, theme);
+          const s = await style(page, button(host));
+          expect({ background: s.backgroundColor, color: s.color }).toEqual(HOVER[host][theme]);
+        });
+      }
+    }
+
+    const PRESSED = {
+      light: "linear-gradient(rgba(69, 68, 71, 0.13), rgba(69, 68, 71, 0.13))",
+      dark: "linear-gradient(rgba(248, 248, 248, 0.18), rgba(248, 248, 248, 0.18))",
+    } as const;
+    for (const theme of ["light", "dark"] as const) {
+      it(`lays Slack's pressed overlay over a ${theme} image's pressed button`, async () => {
+        const page = await hovered("image", theme);
+        await page.mouse.down();
+        await settle(page);
+        const s = await style(page, button("image"));
+        await page.mouse.up();
+        expect(s.backgroundImage).toBe(PRESSED[theme]);
+      });
     }
   });
 
