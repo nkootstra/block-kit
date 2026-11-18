@@ -501,13 +501,13 @@
   },
   "catalog/actions/selects-with-initial-options@pick": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "f96251b84a2fb90e0541660e3ed568da07059638d63d66806a6f3c94459bcc77",
-    "captured": "2026-10-18"
+    "reference": "f910b01e7ae4effb4a965a26abf0717101e8c5195c6f013abb3bac4a9b7ed47b",
+    "captured": "2026-11-18"
   },
   "catalog/actions/selects-with-initial-options@pick+mobile+dark": {
     "payload": "cc9e63b047040111a71b6eb7f20746950e19988a1d86b41e55a41a874f4b4f35",
-    "reference": "e8cc6ee1d5e5705701f2b29ac9453bc2e32ae45f899a2af30d823e9c9d2857db",
-    "captured": "2026-10-18"
+    "reference": "88a113aff630bc96abb2b175e41375090060e779a5984714e90b2f8c8b03bcd9",
+    "captured": "2026-11-18"
   },
   "catalog/actions/timepicker": {
     "payload": "e35edcb7eecdba3e4e4d76e324296a399db87b138d3a90166f5db94026f94b62",
@@ -2346,8 +2346,8 @@
   },
   "catalog/input/multi-static-select@pick+mobile+dark": {
     "payload": "d4c4eb73aa4f29addca664f84adde59bf15226cd6f560c388a792898f75fc164",
-    "reference": "470850369e50ddc6a67df2d6f3e28bcc75c6212b42d565197ce4ee78ee66c169",
-    "captured": "2026-10-27"
+    "reference": "f03b111c591432ca22e843d7443cafec67dfa6646efc005805f0910ae5d5d9ee",
+    "captured": "2026-11-18"
   },
   "catalog/input/multi-users-select": {
     "payload": "2880cf0a802d42f8101e0c93fd6a32a23e9b0d9185541506cb7a5e0ab0ba514d",
@@ -3676,8 +3676,8 @@
   },
   "catalog/table/basic-data-table@full": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "43636e8bec4fe61d5818bcf1b556226305d78f87810b27a25343cb5a73ac757f",
-    "captured": "2026-10-21"
+    "reference": "5311d5211a0be699ebcd403635ef8623d15b3dce3a95fefbbd0b87fb64617562",
+    "captured": "2026-11-18"
   },
   "catalog/table/basic-data-table@hover-cell-1": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
@@ -3756,7 +3756,7 @@
   },
   "catalog/table/basic-data-table@sort-asc+mobile+dark": {
     "payload": "c5637337a85880440492f5d4a7638cdccb717405b37c289de543a91c6adcbc17",
-    "reference": "beb19ec301fde10ab2eee2982e9d16ab81bc2b3f1146554219c224ecaed07a48",
+    "reference": "413f666ab12c60fe67201c08d3374dd5bfb55dddcb57e994b15c4cdb93cecaa2",
     "captured": "2026-11-18"
   },
   "catalog/table/numeric-sort-data-table": {
@@ -5766,8 +5766,8 @@
   },
   "extra/fidelity/contact-card/mixed@dark": {
     "payload": "04b617bb1720965f5587ac7941858d4e0e6acf6ee32e63c701ce00f76fbdfa38",
-    "reference": "aefb9446b4cb945e6991284856bb539293bc4bbd1a82fe91121b107d8c2ef0b8",
-    "captured": "2026-11-14"
+    "reference": "9041ceceeb01fec7d5a63c160d972b10d1fb75bf83e00ab117ea48da2e03521d",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/contact-card/mixed@mobile": {
     "payload": "04b617bb1720965f5587ac7941858d4e0e6acf6ee32e63c701ce00f76fbdfa38",
@@ -8086,8 +8086,8 @@
   },
   "extra/fidelity/users-select/long-content@pick": {
     "payload": "ac2768f32fc327bb82c3f5f03e1aadb28a1441695c9da956adc68a1bd89b7d03",
-    "reference": "6ed68ea3e2c40506f36bb22a6915d9379d7962e36bda7e005e264b23b1c23a9c",
-    "captured": "2026-10-21"
+    "reference": "ae1e64bcf58eb3cdef5705f7ae1381a1e71e77b0f2652a9d8a06f449ff1b9ed9",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/video/long-content": {
     "payload": "c5439ebbc350dc8bd258e6054f86643ac00b3dfb3eebc8ab4cecaec99e558c35",
@@ -8191,13 +8191,13 @@
   },
   "extra/input/more-selects@pick": {
     "payload": "402a7b1fc7de6ac6b272568c0189df727280d1520822e1bed036fa0761cb7e9d",
-    "reference": "db91876e4332f52aa0d1ed591cdb00f58d164765039d8436ca14443d8ffc176a",
-    "captured": "2026-10-18"
+    "reference": "69b6196b8ea0a0599eb09410aee8a40f9c5af54b556e1c69c0f085bebba37c79",
+    "captured": "2026-11-18"
   },
   "extra/input/more-selects@pick+dark": {
     "payload": "402a7b1fc7de6ac6b272568c0189df727280d1520822e1bed036fa0761cb7e9d",
-    "reference": "8810de7ea9f3aaea893a76bd0a87156b9935fe2bcd84066faa151ea35ac27fd5",
-    "captured": "2026-10-18"
+    "reference": "d02abc00e7e8a2782f4324f1418e0550818517f11395e1e2f3b5b03d6567fca8",
+    "captured": "2026-11-18"
   },
   "extra/input/text-inputs": {
     "payload": "ddc630b1fa42a6b563bf3336051781314a8c5cf2ab2f7dd15e26dc53e6fe673c",
