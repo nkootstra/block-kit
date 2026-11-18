@@ -501,24 +501,9 @@
   "catalog/image/no-title@hidden": [],
   "catalog/image/no-title@mobile": [],
   "catalog/image/no-title@mobile+dark": [],
-  "catalog/image/slack-image": [
-    "y|Your App|0",
-    "y|APP|0",
-    "y|12:00 PM|0",
-    "y|(400 kB)|0"
-  ],
-  "catalog/image/slack-image@dark": [
-    "y|Your App|0",
-    "y|APP|0",
-    "y|12:00 PM|0",
-    "y|(400 kB)|0"
-  ],
-  "catalog/image/slack-image@mobile": [
-    "y|Your App|0",
-    "y|APP|0",
-    "y|12:00 PM|0",
-    "y|(400 kB)|0"
-  ],
+  "catalog/image/slack-image": [],
+  "catalog/image/slack-image@dark": [],
+  "catalog/image/slack-image@mobile": [],
   "catalog/image/title": [],
   "catalog/image/title@dark": [],
   "catalog/image/title@hidden": [],
@@ -764,25 +749,9 @@
   "catalog/section/radio-buttons@mobile": [],
   "catalog/section/radio-buttons@mobile+dark": [],
   "catalog/section/radio-buttons@pick": [],
-  "catalog/section/slack-image": [
-    "y|Your App|0",
-    "y|APP|0",
-    "y|12:00 PM|0",
-    "y|This is a section block with an accessory image.|0"
-  ],
-  "catalog/section/slack-image@dark": [
-    "y|Your App|0",
-    "y|APP|0",
-    "y|12:00 PM|0",
-    "y|This is a section block with an accessory image.|0"
-  ],
-  "catalog/section/slack-image@mobile": [
-    "y|Your App|0",
-    "y|APP|0",
-    "y|12:00 PM|0",
-    "y|This is a section block with an|0",
-    "y|accessory image.|0"
-  ],
+  "catalog/section/slack-image": [],
+  "catalog/section/slack-image@dark": [],
+  "catalog/section/slack-image@mobile": [],
   "catalog/section/static-select": [],
   "catalog/section/static-select@dark": [],
   "catalog/section/static-select@mobile": [],
