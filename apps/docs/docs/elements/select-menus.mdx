@@ -185,8 +185,10 @@ block's `hint` as well.
 />
 
 As an `input` block, a multi-static-select shows selected options as removable chips inside the
-field, and grows to fit them. A chip's "x" removes it on click, or with Enter or Space once it has
-keyboard focus; either way the action fires with the remaining `selected_options`:
+field, and grows to fit them. Empty, any multi-select in an `input` block shows its placeholder
+across the whole field and cuts it off after the first line at a whole word, with no "…", as Slack
+does. A chip's "x" removes it on click, or with Enter or Space once it has keyboard focus; either
+way the action fires with the remaining `selected_options`:
 
 <Preview
   payload={{

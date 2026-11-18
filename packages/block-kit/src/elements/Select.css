@@ -43,6 +43,13 @@
   line-height: 22.5px;
 }
 
+/* Empty, its placeholder (Slack's `placeholder__`) sits 6px inside the border rather than centred
+   (extra/fidelity/multi-users-select/long-content). */
+.sbk-input__element .sbk-select--multi:not(.sbk-select--chips) .sbk-select__control {
+  align-items: flex-start;
+  padding-top: 6px;
+}
+
 /* With chips it grows to fit their rows: each chip sits 4px in from the box and the one above. */
 .sbk-input__element .sbk-select--chips .sbk-select__control {
   height: auto;
@@ -72,8 +79,10 @@
 }
 
 /* Slack wraps a long placeholder across the field and clips it after the first line, so it ends on
-   a whole word rather than an ellipsis (`extra/fidelity/multi-static-select/long-content`). */
-.sbk-select__typed .sbk-select__placeholder {
+   a whole word rather than an ellipsis, whether the field is typed into or opens a picker
+   (`extra/fidelity/multi-static-select/long-content`, `multi-users-select/long-content`). */
+.sbk-select__typed .sbk-select__placeholder,
+.sbk-input__element .sbk-select--multi .sbk-select__placeholder {
   height: 1lh;
   color: var(--sbk-content-ter);
   white-space: normal;
@@ -102,15 +111,11 @@
 
 /* With no chevron, Slack's placeholder runs to the field's right edge (`right: 0`), into the
    padding the chevron would have. */
-.sbk-input__element .sbk-select--field-typed .sbk-select__placeholder {
+.sbk-input__element .sbk-select--multi .sbk-select__placeholder {
   margin-right: -28px;
 }
 
 /* Its closed input-block box is a text field, not a dropdown: no chevron, 15px placeholder. */
-.sbk-input__element .sbk-select--multi .sbk-select__placeholder {
-  color: var(--sbk-content-ter);
-}
-
 .sbk-input__element .sbk-select--multi .sbk-select__chevron {
   display: none;
 }

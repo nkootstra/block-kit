@@ -940,36 +940,50 @@ describe.each(engines)("%s", (engine) => {
       });
     }
 
-    // Slack wraps a typed multi-select's placeholder across the field and clips it after the
-    // first line, so it ends on a whole word (`extra/fidelity/multi-static-select/long-content`).
-    it("multi-select: shows a long placeholder's first line whole, with no ellipsis", async () => {
-      const page = await harness.open({
-        blocks: [
-          {
-            type: "input",
-            label: plain("Colours"),
-            element: {
-              type: "multi_static_select",
-              action_id: "m",
-              placeholder: plain(
-                "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone",
-              ),
-              options: [option("Alpha")],
+    // Slack wraps a multi-select's placeholder across the field and clips it after the first line,
+    // so it ends on a whole word. Its `placeholder__` sits 6px inside the border and 12px in from
+    // each side (extra/fidelity/multi-static-select/long-content, multi-users-select/long-content).
+    for (const type of ["multi_static_select", "multi_users_select"]) {
+      it(`${type}: shows a long placeholder's first line whole, where Slack puts it`, async () => {
+        const page = await harness.open({
+          blocks: [
+            {
+              type: "input",
+              label: plain("Colours"),
+              element: {
+                type,
+                action_id: "m",
+                placeholder: plain(
+                  "This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone",
+                ),
+                ...(type === "multi_static_select" ? { options: [option("Alpha")] } : {}),
+              },
             },
-          },
-        ],
+          ],
+        });
+        const got = await page.locator(".sbk-select__placeholder").evaluate((el) => {
+          const s = getComputedStyle(el);
+          const box = el.getBoundingClientRect();
+          const field = el.closest(".sbk-select__control")!.getBoundingClientRect();
+          return {
+            textOverflow: s.textOverflow,
+            visibleLines: Math.round(el.clientHeight / parseFloat(s.lineHeight)),
+            wraps: el.scrollHeight > el.clientHeight,
+            top: box.top - field.top,
+            left: box.left - field.left,
+            right: field.right - box.right,
+          };
+        });
+        expect(got).toEqual({
+          textOverflow: "clip",
+          visibleLines: 1,
+          wraps: true,
+          top: 7,
+          left: 13,
+          right: 1,
+        });
       });
-      const placeholder = page.locator(".sbk-select__typed .sbk-select__placeholder");
-      const got = await placeholder.evaluate((el) => {
-        const s = getComputedStyle(el);
-        return {
-          textOverflow: s.textOverflow,
-          visibleLines: Math.round(el.clientHeight / parseFloat(s.lineHeight)),
-          wraps: el.scrollHeight > el.clientHeight,
-        };
-      });
-      expect(got).toEqual({ textOverflow: "clip", visibleLines: 1, wraps: true });
-    });
+    }
   });
 
   describe("multi-select section accessory", () => {
