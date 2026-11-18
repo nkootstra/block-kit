@@ -107,12 +107,17 @@
 }
 
 /* Slack's `c-dialog__body--slack_scrollbar` keeps a 4px transparent border on the right for its
-   scrollbar, so long text wraps 4px sooner (extra/fidelity/confirm/long-content@confirm). */
+   scrollbar, so long text wraps 4px sooner (extra/fidelity/confirm/long-content@confirm). Its lines
+   stayed 22px when message text moved to 22.5px in November 2026. */
 .sbk-confirm__text {
   padding: 0 24px;
   border-right: 4px solid transparent;
   font-size: 15px;
-  line-height: 22.5px;
+  line-height: 22px;
+}
+
+.sbk-confirm__text .sbk-mrkdwn {
+  line-height: inherit;
 }
 
 .sbk-confirm__actions {
