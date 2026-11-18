@@ -2499,20 +2499,8 @@
   "extra/fidelity/context/long-content@mobile+dark": [],
   "extra/fidelity/context/many-items": [],
   "extra/fidelity/context/many-items@dark": [],
-  "extra/fidelity/context/many-items@mobile": [
-    "y|Michael Scott|1",
-    "y|and|1",
-    "y|2 others|1",
-    "y|reacted|1",
-    "y|Last updated 5 min ago|1"
-  ],
-  "extra/fidelity/context/many-items@mobile+dark": [
-    "y|Michael Scott|1",
-    "y|and|1",
-    "y|2 others|1",
-    "y|reacted|1",
-    "y|Last updated 5 min ago|1"
-  ],
+  "extra/fidelity/context/many-items@mobile": [],
+  "extra/fidelity/context/many-items@mobile+dark": [],
   "extra/fidelity/conversations-select/long-content": [
     "y|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0",
     "width|This sentence is here to make the text long enough to wrap onto several lines at the desktop width, and further still on a phone, so the wrapping, the|0"
