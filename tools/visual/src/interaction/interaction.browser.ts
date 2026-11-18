@@ -175,6 +175,20 @@ describe.each(engines)("%s", (engine) => {
   });
 
   describe("plan tasks", () => {
+    // catalog/agents/plan@expanded: Slack's toggle is its title's full 22.5px line, and the first
+    // task starts right below it.
+    it("starts the first task 22.5px below the toggle's top", async () => {
+      const page = await harness.open(await fixture("catalog/agents/plan"));
+      await page.click(".sbk-plan__pill");
+      await settle(page);
+      const offset = await page.evaluate(() => {
+        const pill = document.querySelector(".sbk-plan__pill")!.getBoundingClientRect();
+        const task = document.querySelector(".sbk-plan__task")!.getBoundingClientRect();
+        return task.top - pill.top;
+      });
+      expect(offset).toBe(22.5);
+    });
+
     // Slack's expanded tasks are focusable list items with the standard ring, rounded 8px.
     it("shows the focus ring on a task reached with the keyboard", async () => {
       const page = await harness.open(await fixture("catalog/agents/plan"));

@@ -30,11 +30,9 @@
   padding-left: 20px;
   text-indent: -20px;
   font-size: 15px;
+  /* The 19.5px title makes each line 22.5px tall, and since November 2026 Slack's toggle is that
+     full height, so the plan below starts 22.5px down (catalog/agents/plan@expanded). */
   line-height: 22.5px;
-  /* The 19.5px title makes each line 22.5px tall, but Slack sets the toggle's height in whole
-     pixels for its height animation (22px for one line, 44px for two), so the content overhangs by
-     half a pixel and the plan below starts at the rounded height. */
-  margin-bottom: -0.5px;
 }
 
 /* Slack's `toggleBarButton toggleBarButtonSlim`: the slim variant cancels the toggle bar's hover tint
