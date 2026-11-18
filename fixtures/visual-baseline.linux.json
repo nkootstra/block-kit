@@ -103,7 +103,7 @@
   "catalog/actions/selects-with-initial-options@pick+mobile+dark": 5.23,
   "catalog/actions/timepicker": 0.03,
   "catalog/actions/timepicker@dark": 0.03,
-  "catalog/actions/timepicker@focus-field-1+dark": 1.64,
+  "catalog/actions/timepicker@focus-field-1+dark": 0.31,
   "catalog/actions/timepicker@focus-field-1+mobile": 0.04,
   "catalog/actions/timepicker@hover-field-1+mobile": 0.03,
   "catalog/actions/timepicker@hover-field-1+mobile+dark": 0.02,
