@@ -81,7 +81,7 @@ links, mentions, emoji, and dates.
     rich_text_preformatted: {
       type: '{ type: "rich_text_preformatted"; border?: number; elements: (RichTextText | RichTextLink)[] }',
       description:
-        "A monospace code block. A `language` renders it as a syntax-highlighted fenced code block with a copy button; without one it's a plain `<pre>`, whose links keep its text colour. `border: 1` draws it inside a quote, as Slack does.",
+        "A monospace code block. A `language` renders it as a syntax-highlighted fenced code block with a copy button; without one it's a plain `<pre>`, whose links keep its text colour, with a copy button that shows on hover or keyboard focus. The copy buttons are drawn as Slack draws them and copy nothing. `border: 1` draws it inside a quote, as Slack does.",
     },
   }}
 />
@@ -238,7 +238,7 @@ one keeps counting and ignores it, as Slack does.
 
 ### Preformatted / code block
 
-Without a `language`, preformatted text renders as a plain monospace block:
+Without a `language`, preformatted text renders as a plain monospace block. Its copy button appears when the pointer or the keyboard focus reaches the block, with a "Copy" tooltip, as in Slack:
 
 <Preview
   payload={{

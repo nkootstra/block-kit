@@ -113,10 +113,36 @@ export function controlNodes(payload: unknown): Partial<Record<Kind, ControlNode
     // Links and mentions in rich text, and in mrkdwn and markdown text in the order they appear.
     if (type === "link") push("link", "rich_text.link");
     if (MENTIONS.has(type)) push("mention", `rich_text.${type}`);
-    if ((type === "mrkdwn" || type === "markdown") && typeof o.text === "string")
+    // Slack draws an attachment mention, a citation, a work object and a linked date as links,
+    // and a file, canvas, list record, message, work object or workflow as a pill (`entity`).
+    if (RICH_LINKS.has(type) || (type === "date" && o.url)) push("link", `rich_text.${type}`);
+    if (type === "date" && !o.url) push("date", "rich_text.date");
+    if (ENTITIES.has(type) && (type !== "file" || "file_id" in o))
+      push("entity", `rich_text.${type}`);
+    if (type === "emoji") push("emoji", "rich_text.emoji");
+    if (type === "rich_text_preformatted") push("copy", "rich_text.rich_text_preformatted");
+    if (
+      ((type === "plain_text" && o.emoji !== false) || type === "mrkdwn" || type === "markdown") &&
+      typeof o.text === "string"
+    )
+      // Shortcodes in text, outside `<…>` (a URL's colon); a skin tone belongs to the emoji before.
+      push(
+        "emoji",
+        "text-emoji",
+        o.text
+          .replace(/<[^>]*>/g, "")
+          .replace(/::skin-tone-\d:/g, ":")
+          .match(SHORTCODE)?.length ?? 0,
+      );
+    if ((type === "mrkdwn" || type === "markdown") && typeof o.text === "string") {
+      // Each fenced code block has a copy button.
+      push("copy", "code-fence", Math.floor((o.text.match(/```/g)?.length ?? 0) / 2));
       for (const [m] of o.text.matchAll(INLINE))
-        // Any other `<…>` (a date) is consumed so the URL inside isn't counted as a bare link.
-        if (
+        if (m.startsWith("<!date^"))
+          // `<!date^ts^format^link|fallback>`: a link when it carries a URL, a date otherwise.
+          push(m.split("|")[0]!.split("^").length > 3 ? "link" : "date", "mrkdwn-date");
+        // Any other `<…>` is consumed so the URL inside isn't counted as a bare link.
+        else if (
           m.startsWith("<") &&
           !/^<(@|#|!subteam\^|!here|!channel|!everyone|https?:|mailto:)/.test(m)
         )
@@ -134,6 +160,7 @@ export function controlNodes(payload: unknown): Partial<Record<Kind, ControlNode
                   ? "rich_text.usergroup"
                   : "rich_text.broadcast",
           );
+    }
     if (type === "card") push("card", "card");
     if (type === "plan" || type === "task_card") push("pill", type);
     if (type === "url" && key === "sources") push("source", "url_source");
@@ -198,7 +225,18 @@ export function revealedBy(payload: unknown, address: string): string | undefine
   return i >= 0 ? `pill-${i + 1}` : undefined;
 }
 
-const MENTIONS = new Set(["user", "channel", "usergroup", "broadcast"]);
+const MENTIONS = new Set(["user", "channel", "usergroup", "broadcast", "canvas_user_mention"]);
+const RICH_LINKS = new Set(["attachment_mention", "citation", "work_object_mention"]);
+const ENTITIES = new Set([
+  "file",
+  "canvas",
+  "list_record",
+  "message_mention",
+  "work_object_mention",
+  "workflow_mention",
+]);
+/** An emoji shortcode: `:name:` with a letter or a sign in it (`:+1:`), so a time's `:30:` isn't one. */
+const SHORTCODE = /:[a-z0-9_+-]*[a-z+-][a-z0-9_+-]*:/g;
 const BLOCK_KEYS = new Set([undefined, "blocks", "child_blocks"]);
 /**
  * mrkdwn's `<@U…>`, `<#C…>`, `<!subteam^…>`, `<!here>`, `<https://…>` and bare URLs (which Slack links

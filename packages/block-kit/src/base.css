@@ -538,6 +538,7 @@ a.sbk-mention {
 .sbk-file-input__button:focus-visible,
 .sbk-icon-button:focus-visible,
 .sbk-code-block__copy:focus-visible,
+.sbk-rich-text__pre-copy:focus-visible,
 .sbk-carousel__arrow:focus-visible,
 .sbk-calendar__nav:focus-visible,
 .sbk-calendar__cell:focus-visible,

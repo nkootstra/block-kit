@@ -70,6 +70,10 @@
         video: ".p-video_overlay__button",
         tooltip: '[role="tooltip"], .c-tooltip',
         chip: ".c-token",
+        entity: ".p-rich_text_slug",
+        date: ".c-mrkdwn__date",
+        emoji: ".c-emoji",
+        copy: '.c-mrkdwn__pre button[aria-label="Copy"]',
       },
     },
     ours: {
@@ -120,6 +124,10 @@
         video: "a.sbk-video__frame",
         tooltip: ".sbk-tooltip",
         chip: ".sbk-select__chip",
+        entity: ".sbk-rich-text__slug",
+        date: ".sbk-mrkdwn__date",
+        emoji: ".sbk-emoji",
+        copy: ".sbk-rich-text__pre-copy, .sbk-code-block__copy",
       },
     },
   };

@@ -352,6 +352,10 @@ const OURS: Record<string, string> = {
   video: "a.sbk-video__frame",
   tooltip: ".sbk-tooltip",
   chip: ".sbk-select__chip",
+  entity: ".sbk-rich-text__slug",
+  date: ".sbk-mrkdwn__date",
+  emoji: ".sbk-emoji",
+  copy: ".sbk-rich-text__pre-copy, .sbk-code-block__copy",
 };
 
 /** As tools/visual/src/probes.ts IMPLICIT_ROLES: the role an element has by its tag. */
