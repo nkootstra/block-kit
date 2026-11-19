@@ -1,0 +1,30 @@
+{
+  "type": "modal",
+  "title": {
+    "type": "plain_text",
+    "text": "Notes"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Save"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "input",
+      "label": {
+        "type": "plain_text",
+        "text": "Notes"
+      },
+      "element": {
+        "type": "rich_text_input",
+        "action_id": "notes"
+      },
+      "dispatch_action": true,
+      "block_id": "notes"
+    }
+  ]
+}

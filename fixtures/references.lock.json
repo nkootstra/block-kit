@@ -2169,6 +2169,11 @@
     "reference": "bfaadda53b62843e86e440e0d0a9691d3b9401ff17ba402cfeebfbf3e8540e55",
     "captured": "2026-11-18"
   },
+  "catalog/image/slack-image@mobile+dark": {
+    "payload": "63fc6d9cf77e5b13f0cd8f93764146d8f4838c01a5427a82c525b8cbb954e5f2",
+    "reference": "10985313a37f2bccca948dcbc788ca047c78984f8aed5a0a573beade91eda559",
+    "captured": "2026-11-18"
+  },
   "catalog/image/title": {
     "payload": "4fcd8b354d2cc4b8ccbbd8a1053722549923320f786e99cc05db3ae34135f16f",
     "reference": "f7b9527202d73ce9b387df66de68494cc02937d97095c466d67d4f71b9d3ec02",
@@ -3287,6 +3292,11 @@
   "catalog/section/slack-image@mobile": {
     "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
     "reference": "fbba9a397e7e50436e007ce5c586851140c1d228b6816e692462575f063e04b1",
+    "captured": "2026-11-18"
+  },
+  "catalog/section/slack-image@mobile+dark": {
+    "payload": "b4bcba058acfaf67f9ee76ccde6670150ba69b5aedfdfcd79c10203844cf2f16",
+    "reference": "dae34752b542f536ee21d39c99530c599843a9faaabe8ba2fb4eb5860e6f64a1",
     "captured": "2026-11-18"
   },
   "catalog/section/static-select": {
@@ -5414,6 +5424,26 @@
     "reference": "e0b6d16ad742708aa60269f09226b95a83252c8de6832a2a3941767dc6a19a74",
     "captured": "2026-11-14"
   },
+  "extra/charts/area-twelve-series@mobile": {
+    "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
+    "reference": "2ccb5d6a3248ba208735248db797869dee110de8e4f760017ec0902b5f67b22f",
+    "captured": "2026-11-18"
+  },
+  "extra/charts/area-twelve-series@mobile+dark": {
+    "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
+    "reference": "e04b67837e6ae856bc185e2bacd649249558da0af898be558fabe02d3fcaab24",
+    "captured": "2026-11-18"
+  },
+  "extra/charts/area-twelve-series@mobile+full": {
+    "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
+    "reference": "8c30bc70e66996cd3149a47c904667ac124a8f40342396c201c4c51b0c377fd6",
+    "captured": "2026-11-18"
+  },
+  "extra/charts/area-twelve-series@scrolled-end+mobile": {
+    "payload": "eba54abe13997210bdbf224d108cbec3035fb7a691ec70f0cb5caa4f338bac0c",
+    "reference": "74aa3a9dad1e2ffc90e6a344c233466ab97fed2e16d8eea149639594afa88de2",
+    "captured": "2026-11-18"
+  },
   "extra/charts/pie-twelve-segments": {
     "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
     "reference": "285ef6278107f6f721e469c9968a96e5c6ce3eff29013d39f9dba8b263e57d29",
@@ -5423,6 +5453,26 @@
     "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
     "reference": "17b0e2d4292acad295e29825dff8336550083c22f97de928e87499a015934add",
     "captured": "2026-11-14"
+  },
+  "extra/charts/pie-twelve-segments@mobile": {
+    "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
+    "reference": "6e66ec759891c7bc7599258f719fc415d3ea7ce8bcfcf6497fb9a581dfcb7e16",
+    "captured": "2026-11-18"
+  },
+  "extra/charts/pie-twelve-segments@mobile+dark": {
+    "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
+    "reference": "afb29f40352976fde62e9b9efc0e15f83b759d6c7fe18328eeaef1512b8204d8",
+    "captured": "2026-11-18"
+  },
+  "extra/charts/pie-twelve-segments@mobile+full": {
+    "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
+    "reference": "5cc9b6cc945f40d657daf569d31ad692220a283a02a345cc404a00527da7c86f",
+    "captured": "2026-11-18"
+  },
+  "extra/charts/pie-twelve-segments@scrolled-end+mobile": {
+    "payload": "9ba82487c3f918c80e6e019e57e1fe111b04df7f03847f39e45a24668d0ebc4b",
+    "reference": "577bb993e930beb3493d4ff0dda606848712ca45a79f2a7811306d803254c09b",
+    "captured": "2026-11-18"
   },
   "extra/context-actions/feedback-row": {
     "payload": "56b49e49f30ad7a650e9c58e5890593602d8d47b8772a2e3668a00074e5cd1a2",
@@ -6239,6 +6289,16 @@
     "reference": "4015f300de03cb1f3d41e0265c11c3863e5e84bb1f299950201f4f52dfbbcd32",
     "captured": "2026-11-14"
   },
+  "extra/fidelity/home-tab/long-content": {
+    "payload": "e6ac3b195968e671cf17cdd39886113a1e2ba8b8c065a4b91d15cdf0d8995aad",
+    "reference": "ee9c4423339661f1e53a7b29203c78dfb632b8e92f429cdd1ce28923b89af700",
+    "captured": "2026-11-18"
+  },
+  "extra/fidelity/home-tab/long-content@dark": {
+    "payload": "e6ac3b195968e671cf17cdd39886113a1e2ba8b8c065a4b91d15cdf0d8995aad",
+    "reference": "ea0e61cd252ef882185288f27b915f2ac36387fa9ce445616b1e77e2c601432f",
+    "captured": "2026-11-18"
+  },
   "extra/fidelity/icon-button/mixed": {
     "payload": "f1c2ad29212e8ccb47d329e6243a1e085a3240661693c41522cfe271c102fca6",
     "reference": "34762e54f8a3d91e0ff3c0daa2a3365d4daf2f2e308a0ba85c8fa6bf27249c69",
@@ -6378,6 +6438,16 @@
     "payload": "c836a4cbc821fde55bf62c4c90485e0b26643196532e427ac2e49b18f595dfe3",
     "reference": "9e1fe0b6fb9ebc7026e4ece32a97ab94bcfdcf22987a65aee1b1f3a2e43f975b",
     "captured": "2026-11-14"
+  },
+  "extra/fidelity/modal-frame/long-content": {
+    "payload": "ebf522e15fd4f80d9bedd1811fe86e5e4a694c24bbd1da54d2cfe6925ca53cd3",
+    "reference": "172a6245c7d187d6b308943853644c004f744e28823c98f4ab64c7ee9c37fe24",
+    "captured": "2026-11-18"
+  },
+  "extra/fidelity/modal-frame/long-content@dark": {
+    "payload": "ebf522e15fd4f80d9bedd1811fe86e5e4a694c24bbd1da54d2cfe6925ca53cd3",
+    "reference": "5208035b9f94c2e0859a44f295c0181baf8e6ee48fe137c3532685865be2901e",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/multi-channels-select/empty": {
     "payload": "7540d5ae9fb690c0e28a8619d123b30d096d785d3e969227bf6cbf0f588c73c9",
@@ -6623,6 +6693,11 @@
     "payload": "8d2901f6e357a0c26cae5e09c7f28078ef6e63f076cddd6d3eece14ed67d155c",
     "reference": "13035bf651d6b2706498cf3ba4228b3b0055ad8a02616a9d9e3d2125502ca1ae",
     "captured": "2026-11-16"
+  },
+  "extra/fidelity/multi-external-select/empty@focus-field-1+mobile+dark": {
+    "payload": "8d2901f6e357a0c26cae5e09c7f28078ef6e63f076cddd6d3eece14ed67d155c",
+    "reference": "15c244823ba00393e2d16bed93fa75636965e1219f8789281eab4190e0c935f5",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/multi-external-select/empty@hover-field-1": {
     "payload": "8d2901f6e357a0c26cae5e09c7f28078ef6e63f076cddd6d3eece14ed67d155c",
@@ -7448,6 +7523,11 @@
     "payload": "011d3f9f54b397362756bc5ec95995c9911f1a0f4bd095b9398673b8bfea01bc",
     "reference": "19291f252ed2c838640392075ffdb5a576b63b6daaed243373ee44d90ea8725e",
     "captured": "2026-11-14"
+  },
+  "extra/fidelity/rich-text-input/many-lines@dark": {
+    "payload": "011d3f9f54b397362756bc5ec95995c9911f1a0f4bd095b9398673b8bfea01bc",
+    "reference": "4f9eb66e614f9da8ec64df37ae71509d98db74f5b13e6a5603e67410f16cc6d1",
+    "captured": "2026-11-18"
   },
   "extra/fidelity/rich-text-input/mixed": {
     "payload": "43ec3010a1bb9c85b6defc2e961eb6cf147c293a7283a1a2f6dee11489fa7b3e",
@@ -8468,6 +8548,26 @@
     "payload": "b8a006ed7f0cde3862ae8f7f090fb42ce3c09a0a28b2dca921e29b13a475e807",
     "reference": "70f3ebf17f88228b8be2f83cfe77ed98770a5d34953d1f3733670d18e91c5d49",
     "captured": "2026-11-14"
+  },
+  "extra/payloads/dispatch-rich-text": {
+    "payload": "d5d20f2ba7e67b1ade8673ff36e10ebcd043c303612ab51603f56b0ad0a85ffb",
+    "reference": "dd1b4f3356f98e0d1970a4eaec2c03d12d45da979852d4d009a0641a6f44bacc",
+    "captured": "2026-11-18"
+  },
+  "extra/payloads/dispatch-rich-text@dark": {
+    "payload": "d5d20f2ba7e67b1ade8673ff36e10ebcd043c303612ab51603f56b0ad0a85ffb",
+    "reference": "0142d2719b5685233c5e6e94c32309be7791ae70e7e92c5586c9212a72f20f1a",
+    "captured": "2026-11-18"
+  },
+  "extra/payloads/notify-on-close": {
+    "payload": "0cdea9b5cb3b5545c6538c396fd534b77dc9d7b115f4a8cb6a89b5d3f82d6872",
+    "reference": "373d956ce1b0add10fc6341e613f072143d4dba815b694464c896cb16d54f06c",
+    "captured": "2026-11-18"
+  },
+  "extra/payloads/notify-on-close@dark": {
+    "payload": "0cdea9b5cb3b5545c6538c396fd534b77dc9d7b115f4a8cb6a89b5d3f82d6872",
+    "reference": "4b974c1f689f48acb58bcd9032c01408d56ba205a74da263ce6b0f78755faa58",
+    "captured": "2026-11-18"
   },
   "extra/payloads/overflow-url": {
     "payload": "6df6057d8823f70bdcfd8f6a6a6f21f1aeff672d62d9462efa3db05c6fb39d17",
