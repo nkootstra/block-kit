@@ -1,0 +1,30 @@
+{
+  "type": "modal",
+  "notify_on_close": true,
+  "title": {
+    "type": "plain_text",
+    "text": "Feedback"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Send"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "input",
+      "block_id": "comment",
+      "label": {
+        "type": "plain_text",
+        "text": "Comment"
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "comment"
+      }
+    }
+  ]
+}

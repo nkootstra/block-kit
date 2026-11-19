@@ -489,10 +489,18 @@ export const COMPONENTS: Component[] = [
   el("email_text_input", "email-input-element", ["modal"], 2, TEXT_INPUT, {
     events: INPUT_EVENTS,
     variantSurface: "modal",
+    unobservable: {
+      block_actions:
+        "Block Kit Builder sends no block_actions when Enter is pressed in a dispatch_action input of this type (November 2026 probe, extra/payloads/dispatch-*@enter); only the real Slack client does",
+    },
   }),
   el("url_text_input", "url-input-element", ["modal"], 2, TEXT_INPUT, {
     events: INPUT_EVENTS,
     variantSurface: "modal",
+    unobservable: {
+      block_actions:
+        "Block Kit Builder sends no block_actions when Enter is pressed in a dispatch_action input of this type (November 2026 probe, extra/payloads/dispatch-*@enter); only the real Slack client does",
+    },
   }),
   el("number_input", "number-input-element", ["modal"], 2, TEXT_INPUT, {
     events: INPUT_EVENTS,
@@ -501,6 +509,10 @@ export const COMPONENTS: Component[] = [
   el("rich_text_input", "rich-text-input-element", ["modal", "home"], 2, [...TEXT_INPUT, "mixed"], {
     events: INPUT_EVENTS,
     notes: "mixed: the formatting toolbar and formatted text.",
+    unobservable: {
+      block_actions:
+        "Block Kit Builder sends no block_actions when Enter is pressed in a dispatch_action input of this type (November 2026 probe, extra/payloads/dispatch-*@enter); only the real Slack client does",
+    },
   }),
   el(
     "file_input",
@@ -513,6 +525,8 @@ export const COMPONENTS: Component[] = [
       unobservable: {
         loading: NO_BACKEND,
         selected: "Builder's preview may not accept a file (verify)",
+        view_submission:
+          "Block Kit Builder sends no view_submission for a modal with a file input (November 2026 probe, contexts/file_input/modal-input@submit); only the real Slack client does",
       },
     },
   ),
@@ -848,6 +862,8 @@ export const COMPONENTS: Component[] = [
     unobservable: {
       loading: "Submitting waits on the app's response, which the Builder doesn't have",
       disabled: "submit_disabled only applies to legacy workflow step views (verify in Builder)",
+      view_closed:
+        "Block Kit Builder sends no view_closed, even with notify_on_close (November 2026 probe, extra/payloads/notify-on-close@cancel); only the real Slack client does",
     },
     notes: "long-content: a long title, and a body taller than the window (scrolling).",
   },

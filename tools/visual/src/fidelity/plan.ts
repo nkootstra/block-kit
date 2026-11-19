@@ -201,6 +201,8 @@ export const NOT_CAPTURABLE: Record<string, string> = {
     "Block Kit Builder refuses a workflow_button whose trigger isn't a real workflow's",
   "extra/actions/workflow-button.unverified":
     "Block Kit Builder refuses a workflow_button whose trigger isn't a real workflow's",
+  "extra/file/remote-file.unverified":
+    "Block Kit Builder draws nothing for a file block whose external_id isn't a real remote file's",
 };
 
 /** The placeholder a fixture names a real workspace file by (samples.ts, capture.local.json). */

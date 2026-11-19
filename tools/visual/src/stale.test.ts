@@ -23,6 +23,19 @@ describe("foreignText", () => {
     );
   });
 
+  it("accepts a run of its own text that formatting split off, even when it is another fixture's whole text", () => {
+    const payload = {
+      blocks: [
+        {
+          type: "section",
+          text: { type: "mrkdwn", text: "*Section 1.* Pick an item from the list" },
+        },
+      ],
+    };
+    const html = reference(payload, "<p><b>Section 1.</b> Pick an item from the list</p>");
+    expect(foreignText(html, known)).toEqual([]);
+  });
+
   it("ignores text no fixture writes, such as the Builder's own hints", () => {
     const html = reference({ blocks: [] }, "<p>Type a minimum of 3 characters to see options.</p>");
     expect(foreignText(html, known)).toEqual([]);

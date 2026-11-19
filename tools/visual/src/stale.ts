@@ -83,10 +83,13 @@ export function fixtureSentences(payloads: Iterable<unknown>): Set<string> {
 export function foreignText(html: string, sentences: Set<string>): string[] {
   const payload = JSON.parse(html.match(META)?.[1] ?? "{}").payload ?? null;
   const own = new Set(payloadStrings(payload).map((s) => s.trim()));
+  // Formatting splits a string into several text nodes ("*Section 1.* This sentence…"), so a
+  // run of the payload's own text can equal another fixture's whole string.
+  const isOwn = (text: string) => own.has(text) || [...own].some((s) => s.includes(text));
   const found = new Set<string>();
   for (const raw of textNodes(html)) {
     const text = unescapeHtml(raw).replace(/\s+/g, " ").trim();
-    if (text && sentences.has(text) && !own.has(text)) found.add(text);
+    if (text && sentences.has(text) && !isOwn(text)) found.add(text);
   }
   return [...found];
 }

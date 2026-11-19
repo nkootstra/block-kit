@@ -1,0 +1,39 @@
+{
+  "steps": [
+    {
+      "click": "cancel-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "cancel-1",
+        "role": "button",
+        "name": "Cancel",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "input-1": {
+          "value": ""
+        }
+      },
+      "action": null
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "steps": [
+    {
+      "click": "richtext-1"
+    },
+    {
+      "type": "Hello"
+    },
+    {
+      "key": "Enter"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": {
+        "target": "richtext-1",
+        "role": "textbox",
+        "name": "Notes",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "richtext-1",
+        "role": "textbox",
+        "name": "Notes",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "richtext-1",
+        "role": "textbox",
+        "name": "Notes",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

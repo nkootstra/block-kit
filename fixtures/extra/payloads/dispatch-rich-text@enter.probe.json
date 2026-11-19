@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "richtext-1"
+    },
+    {
+      "type": "Hello"
+    },
+    {
+      "key": "Enter"
+    }
+  ]
+}
