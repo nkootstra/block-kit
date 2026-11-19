@@ -151,6 +151,71 @@ describe("capture evidence", () => {
     });
   });
 
+  it("counts rich text entities, dates, emoji and code blocks the way Slack draws them", () => {
+    const rich = {
+      blocks: [
+        {
+          type: "header",
+          text: { type: "plain_text", text: "Hi :wave:", emoji: true },
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "On <!date^1767261600^{date}|Jan 1> and <!date^1767261600^{date}^https://a.example|Jan 1>\n```npm i```",
+          },
+        },
+        {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: [
+                { type: "emoji", name: "basketball" },
+                { type: "file", file_id: "F0123456789" },
+                { type: "date", timestamp: 1767261600, format: "{date}", fallback: "Jan 1" },
+                {
+                  type: "date",
+                  timestamp: 1767261600,
+                  format: "{date}",
+                  fallback: "Jan 1",
+                  url: "https://b.example",
+                },
+                { type: "attachment_mention", url: "https://c.example", text: "A file" },
+                { type: "citation", url: "https://d.example", text: "1", index: 1 },
+                {
+                  type: "work_object_mention",
+                  entity_id: "E0123456789",
+                  text: "A work object",
+                  url: "https://e.example",
+                },
+                { type: "canvas_user_mention", user_id: "U0123456789" },
+                { type: "workflow_mention", workflow_id: "Wf0123456789" },
+              ],
+            },
+            { type: "rich_text_preformatted", elements: [{ type: "text", text: "x" }] },
+          ],
+        },
+        // A file block is no rich text entity.
+        { type: "file", external_id: "x", source: "remote" },
+      ],
+    };
+    expect(controlComponents(rich)).toMatchObject({
+      emoji: ["text-emoji", "rich_text.emoji"],
+      date: ["mrkdwn-date", "rich_text.date"],
+      link: [
+        "mrkdwn-date",
+        "rich_text.date",
+        "rich_text.attachment_mention",
+        "rich_text.citation",
+        "rich_text.work_object_mention",
+      ],
+      entity: ["rich_text.file", "rich_text.work_object_mention", "rich_text.workflow_mention"],
+      mention: ["rich_text.canvas_user_mention"],
+      copy: ["code-fence", "rich_text.rich_text_preformatted"],
+    });
+  });
+
   it("covers a submitted modal's validation errors", () => {
     expect(referenceEvidence("x/f@submit-errors", modal, COMPONENTS)).toMatchObject([
       { component: "input", state: "validation-error", fact: "styles" },

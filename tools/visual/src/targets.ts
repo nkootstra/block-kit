@@ -72,6 +72,10 @@ export const KINDS = [
   "video",
   "tooltip",
   "chip",
+  "entity",
+  "date",
+  "emoji",
+  "copy",
 ] as const;
 export type Kind = (typeof KINDS)[number];
 
@@ -151,6 +155,14 @@ export const SLACK: Record<Kind, string> = {
   tooltip: '[role="tooltip"], .c-tooltip',
   // A multi-select's chosen option, as a token in the field.
   chip: ".c-token",
+  // A rich text entity drawn as a pill: a file, canvas, list record, message, work object or
+  // workflow. (An attachment mention and a citation are links; a canvas user mention a mention.)
+  entity: ".p-rich_text_slug",
+  // A date without a link (a linked one is a link).
+  date: ".c-mrkdwn__date",
+  emoji: ".c-emoji",
+  // A code block's copy button, rich text's or a fenced one's in mrkdwn and markdown.
+  copy: '.c-mrkdwn__pre button[aria-label="Copy"]',
 };
 
 /** Our rendering. */
@@ -199,6 +211,10 @@ export const OURS: Record<Kind, string> = {
   video: "a.sbk-video__frame",
   tooltip: ".sbk-tooltip",
   chip: ".sbk-select__chip",
+  entity: ".sbk-rich-text__slug",
+  date: ".sbk-mrkdwn__date",
+  emoji: ".sbk-emoji",
+  copy: ".sbk-rich-text__pre-copy, .sbk-code-block__copy",
 };
 
 /** Kinds counted in the open layers rather than the message. */

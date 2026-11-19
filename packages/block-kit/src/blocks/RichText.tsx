@@ -26,6 +26,7 @@ import {
   MessageIcon,
   TrashIcon,
 } from "../icons";
+import { Tooltip } from "../Tooltip";
 import { CodeBlock } from "./CodeBlock";
 
 // Builder-only/undocumented extensions to `@slack/types`' definitions.
@@ -166,9 +167,11 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
           const pre = (
             <pre key={key++} className="sbk-rich-text__pre">
               {renderPreformattedLines(el.elements)}
-              <span className="sbk-rich-text__pre-copy" aria-label="Copy code">
-                <CopyIcon width={16} height={16} />
-              </span>
+              <Tooltip label="Copy">
+                <button type="button" className="sbk-rich-text__pre-copy" aria-label="Copy code">
+                  <CopyIcon width={16} height={16} />
+                </button>
+              </Tooltip>
             </pre>
           );
           // Like a bordered list, Slack draws a bordered block inside a quote

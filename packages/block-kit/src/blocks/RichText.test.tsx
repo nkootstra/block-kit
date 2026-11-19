@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider } from "../context";
 import { RichText } from "./RichText";
 
@@ -104,6 +104,36 @@ describe("<RichText>", () => {
     expect(pre?.textContent).toBe("line one\n\nline two");
     // A copy-button overlay is always present on a plain preformatted block.
     expect(container.querySelector(".sbk-rich-text__pre-copy")).toBeTruthy();
+  });
+
+  // catalog/rich-text/kitchen-sink@focus-copy-1: Slack's copy control is a button the keyboard
+  // reaches, with the focus ring.
+  it("lets the keyboard reach a plain preformatted block's copy button", () => {
+    const block = {
+      type: "rich_text",
+      elements: [{ type: "rich_text_preformatted", elements: [{ type: "text", text: "x" }] }],
+    };
+    render(<RichText block={block as never} blockId="b1" index={0} />);
+    const copy = screen.getByRole("button", { name: "Copy code" });
+    copy.focus();
+    expect(document.activeElement).toBe(copy);
+  });
+
+  // catalog/rich-text/kitchen-sink@hover-copy-1: Slack names the button in a tooltip, "Copy".
+  it("names a preformatted block's copy button in a tooltip on hover", () => {
+    vi.useFakeTimers();
+    try {
+      const block = {
+        type: "rich_text",
+        elements: [{ type: "rich_text_preformatted", elements: [{ type: "text", text: "x" }] }],
+      };
+      render(<RichText block={block as never} blockId="b1" index={0} />);
+      fireEvent.mouseEnter(screen.getByRole("button", { name: "Copy code" }));
+      act(() => vi.advanceTimersByTime(500));
+      expect(screen.getByRole("tooltip").textContent).toBe("Copy");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("renders a preformatted block with a Builder-only language as code chrome", () => {

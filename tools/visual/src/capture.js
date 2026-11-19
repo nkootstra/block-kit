@@ -306,6 +306,10 @@ async ({
     video: ".p-video_overlay__button",
     tooltip: '[role="tooltip"], .c-tooltip',
     chip: ".c-token",
+    entity: ".p-rich_text_slug",
+    date: ".c-mrkdwn__date",
+    emoji: ".c-emoji",
+    copy: '.c-mrkdwn__pre button[aria-label="Copy"]',
   };
   // Counted in the open layers, not the preview (targets.ts LAYER_KINDS).
   const LAYER_KINDS = ["option", "menuitem", "confirm", "deny", "tooltip"];
