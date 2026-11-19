@@ -168,7 +168,7 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
             <pre key={key++} className="sbk-rich-text__pre">
               {renderPreformattedLines(el.elements)}
               <Tooltip label="Copy">
-                <button type="button" className="sbk-rich-text__pre-copy" aria-label="Copy code">
+                <button type="button" className="sbk-rich-text__pre-copy" aria-label="Copy">
                   <CopyIcon width={16} height={16} />
                 </button>
               </Tooltip>

@@ -28,8 +28,19 @@ export function Emoji({ name, skinTone, size = 22 }: EmojiProps) {
       ? resolved.url
       : (emoji.imageUrl ?? defaultEmojiImageUrl)(resolved.unified);
 
+  // Slack's tooltip shows the emoji again, 64px on a white tile, above its shortcode
+  // (catalog/rich-text/emoji@hover-emoji-1).
+  const tip = (
+    <>
+      <span className="sbk-tooltip__emoji">
+        <img className="sbk-tooltip__emoji-img" src={imageUrl(src)} alt="" draggable={false} />
+      </span>
+      {label}
+    </>
+  );
+
   return (
-    <Tooltip label={label}>
+    <Tooltip label={tip}>
       <span className="sbk-emoji" style={{ width: size, height: size }}>
         <img
           className="sbk-emoji__img"

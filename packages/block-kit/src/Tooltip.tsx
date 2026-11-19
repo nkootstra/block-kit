@@ -61,6 +61,17 @@ export function Tooltip({ label, children, placement = "top", align = "center" }
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
+  // Escape dismisses the tooltip without moving the pointer or focus, as Slack's does
+  // (catalog/rich-text/kitchen-sink@poke-copy-1).
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   useClientLayoutEffect(() => {
     if (!open) {
       setPosition(null);

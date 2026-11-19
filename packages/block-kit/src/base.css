@@ -676,6 +676,26 @@ a.sbk-mention {
   margin-left: 0;
 }
 
+/* An emoji's tooltip previews it above the shortcode: Slack's `c-emoji__emoji-tooltip`, a 64px
+   image on a white tile in both themes (catalog/rich-text/emoji@hover-emoji-1). */
+.sbk-tooltip .sbk-tooltip__emoji {
+  display: block;
+  height: 64px;
+  margin-bottom: 4px;
+}
+
+.sbk-tooltip .sbk-tooltip__emoji-img {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 64px;
+  height: 64px;
+  padding: 4px;
+  vertical-align: top;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 4px;
+}
+
 .sbk-tooltip__secondary {
   display: block;
   font-weight: 400;

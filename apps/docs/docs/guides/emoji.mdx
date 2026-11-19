@@ -87,6 +87,9 @@ base emoji renders instead. In a `rich_text` block, an `emoji` element takes its
 `skin_tone`, or from a modifier in its `unicode` (`{ name: "wave", unicode: "1f44b-1f3fd" }` draws
 `:wave::skin-tone-4:`), as Slack does. The image's alt text and tooltip name the tone.
 
+Hovering an emoji shows Slack's tooltip: the emoji again, 64px on a white tile, above its
+shortcode. Escape hides it.
+
 <Preview
   payload={{
     blocks: [

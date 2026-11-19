@@ -465,39 +465,4 @@ export const FINDINGS: Finding[] = [
     next: "Re-record extra/payloads/selects@outside-click, then replay it on ours (bun tools/visual/src/probes.ts extra/payloads/selects).",
     components: ["static_select"],
   },
-  {
-    id: "list-scroll-keeps-padding",
-    title: "Slack's long option list scrolls one step earlier, keeping its bottom padding in view",
-    evidence: [
-      "Probes extra/fidelity/static-select/many-items@scroll-field-1 and multi-static-select/many-items@scroll-field-1 (19 November 2026), replayed with probes.ts: Slack's list starts scrolling when the ninth option is highlighted (scrollTop 12, then 40, 68, 96, 124); ours starts at the tenth (0, then 28, 56, 84), 12px behind at every step.",
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/useMenuNavigation.ts: scrollIntoView({ block: \"nearest\" }) brings the option flush with the list's edge; Slack keeps the list's 12px padding below it.",
-    ],
-    next: "Scroll the highlighted option into view with the list's padding (scroll-padding, or scrollTop by hand), then replay both probes (bun tools/visual/src/probes.ts extra/fidelity/static-select extra/fidelity/multi-static-select).",
-    components: ["static_select", "multi_static_select", "option"],
-  },
-  {
-    id: "copy-button-name-and-tooltip",
-    title: 'A code block\'s copy button is named "Copy code", and its tooltip outlives Escape',
-    evidence: [
-      'Probe catalog/rich-text/kitchen-sink@poke-copy-1 (19 November 2026), replayed with probes.ts: the focused copy button is named "Copy" in Slack and "Copy code" in ours; after Escape, Slack\'s "Copy" tooltip is gone and ours still shows.',
-    ],
-    suspect: [
-      'packages/block-kit/src/blocks/RichText.tsx and CodeBlock.tsx: aria-label="Copy code"; packages/block-kit/src/Tooltip.tsx: whether Escape hides a tooltip.',
-    ],
-    next: 'Name both copy buttons "Copy", hide the tooltip on Escape, and replay the probe (bun tools/visual/src/probes.ts catalog/rich-text/kitchen-sink).',
-    components: ["rich_text.rich_text_preformatted"],
-  },
-  {
-    id: "emoji-hover-card",
-    title: "Hovering an emoji shows a preview card in Slack and a plain tooltip in ours",
-    evidence: [
-      "Probe catalog/rich-text/emoji@poke-emoji-1 (19 November 2026): Slack opens a popover card on hover that stays through the click and closes on Escape; ours shows a plain tooltip with the shortcode and no layer. The recording's tooltip text reads <member> because the redaction took the card's text for a name.",
-      "The jumbo emoji's @hover-emoji-1 references differ by about 6% for the same card.",
-    ],
-    suspect: ["packages/block-kit/src/blocks/RichText.tsx: the emoji's hover tooltip."],
-    next: "Draw the preview card from the @hover-emoji-1 references, then replay the probe (bun tools/visual/src/probes.ts catalog/rich-text/emoji).",
-    components: ["rich_text.emoji"],
-  },
 ];

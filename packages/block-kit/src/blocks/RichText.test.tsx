@@ -107,14 +107,14 @@ describe("<RichText>", () => {
   });
 
   // catalog/rich-text/kitchen-sink@focus-copy-1: Slack's copy control is a button the keyboard
-  // reaches, with the focus ring.
+  // reaches, with the focus ring; @poke-copy-1: it's named "Copy".
   it("lets the keyboard reach a plain preformatted block's copy button", () => {
     const block = {
       type: "rich_text",
       elements: [{ type: "rich_text_preformatted", elements: [{ type: "text", text: "x" }] }],
     };
     render(<RichText block={block as never} blockId="b1" index={0} />);
-    const copy = screen.getByRole("button", { name: "Copy code" });
+    const copy = screen.getByRole("button", { name: "Copy" });
     copy.focus();
     expect(document.activeElement).toBe(copy);
   });
@@ -128,7 +128,7 @@ describe("<RichText>", () => {
         elements: [{ type: "rich_text_preformatted", elements: [{ type: "text", text: "x" }] }],
       };
       render(<RichText block={block as never} blockId="b1" index={0} />);
-      fireEvent.mouseEnter(screen.getByRole("button", { name: "Copy code" }));
+      fireEvent.mouseEnter(screen.getByRole("button", { name: "Copy" }));
       act(() => vi.advanceTimersByTime(500));
       expect(screen.getByRole("tooltip").textContent).toBe("Copy");
     } finally {
@@ -151,6 +151,7 @@ describe("<RichText>", () => {
     expect(container.querySelector(".sbk-code-block")).toBeTruthy();
     expect(screen.getByText("TypeScript")).toBeTruthy();
     expect(screen.getByText("const x = 1;")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copy" })).toBeTruthy();
   });
 
   it("renders a quote block", () => {
