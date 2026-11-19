@@ -1,0 +1,41 @@
+{
+  "steps": [
+    {
+      "scroll": "scroller-1",
+      "left": "end"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 2155,
+          "clientWidth": 424
+        }
+      }
+    },
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "scroller-1": {
+          "scrollLeft": 1731,
+          "scrollTop": 0,
+          "scrollWidth": 2155,
+          "clientWidth": 424
+        }
+      },
+      "action": null
+    }
+  ]
+}
