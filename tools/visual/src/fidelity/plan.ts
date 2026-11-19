@@ -1067,7 +1067,7 @@ const preference = (fixture: string) =>
 /**
  * Probe specs for the behaviour cells no probe reaches: per component, one on the first fixture
  * (by preference) where it's addressable. A control is hovered (its tooltip and delay), clicked
- * (what a press opens, picks or toggles) and let go with Escape; a link or mention is only hovered,
+ * (what a press opens, picks or toggles) and let go with Escape; a link, mention or entity pill is only hovered,
  * since a click leaves the preview; a layer's option or item is reached by opening the layer first;
  * a long list is opened and scrolled with the arrow keys.
  */
@@ -1242,6 +1242,24 @@ function scrollProbes(
   return out;
 }
 
+/** The arrow presses a list-scrolling probe sends after it opens the list. */
+const SCROLL_PRESSES = 12;
+
+/** The most options one select or overflow in the payload lists, its option groups' together. */
+function longestList(payload: unknown): number {
+  let most = 0;
+  for (const [o] of objects(payload)) {
+    const groups = Array.isArray(o.option_groups)
+      ? (o.option_groups as { options?: unknown[] }[])
+      : [];
+    const n = Array.isArray(o.options)
+      ? o.options.length
+      : groups.reduce((sum, g) => sum + (g.options?.length ?? 0), 0);
+    most = Math.max(most, n);
+  }
+  return most;
+}
+
 function behaviourProbes(
   cells: Cell[],
   where: Map<string, Where>,
@@ -1269,6 +1287,13 @@ function behaviourProbes(
     const fixtures = [...(where.get(id) ?? [])].toSorted(
       ([a], [b]) => preference(a) - preference(b) || a.localeCompare(b),
     );
+    const add = (payload: unknown, name: string, probe: Probe) => {
+      if (existing.has(name) || out.has(name)) return;
+      const covers = forecastProbe(name, probe, payload, components)
+        .behaviour.filter((b) => b.component === id && states.has(b.state))
+        .map((b) => `${b.component} ${b.state}`);
+      if (covers.length > 0) out.set(name, { name, probe, covers });
+    };
     for (const [fixture, f] of fixtures) {
       const addresses = addressesOf(f.payload, id, components);
       const first =
@@ -1287,7 +1312,8 @@ function behaviourProbes(
       let steps: Step[];
       // A control inside a collapsed plan or task card is there once its pill expands it.
       const reveal = revealSteps(f.payload, address);
-      if (kind === "link" || kind === "mention")
+      // A link, mention or entity pill opens what it names, away from the preview: hover it only.
+      if (kind === "link" || kind === "mention" || kind === "entity")
         steps = [...reveal, { hover: address }, { wait: 1500 }];
       else if (kind === "option" || kind === "menuitem") {
         if (!opener) continue;
@@ -1329,25 +1355,26 @@ function behaviourProbes(
           { wait: 300 },
           { key: "Escape" },
         ];
-      const add = (name: string, probe: Probe) => {
-        if (existing.has(name) || out.has(name)) return;
-        const forecast = forecastProbe(name, probe, f.payload, components);
-        const covers = forecast.behaviour
-          .filter((b) => b.component === id && states.has(b.state))
-          .map((b) => `${b.component} ${b.state}`);
-        if (covers.length > 0) out.set(name, { name, probe, covers });
-      };
-      add(`${fixture}@poke-${address}`, { steps });
-      if (states.has("many-items") && opener)
-        add(`${fixture}@scroll-${opener}-1`, {
+      add(f.payload, `${fixture}@poke-${address}`, { steps });
+      if ([...out.values()].some((p) => p.covers.some((c) => c.startsWith(`${id} `)))) break;
+    }
+    // A long list scrolls once the arrow keys pass the options it shows: open the first list on a
+    // fixture with more options than the presses, so the highlight doesn't wrap back to the top.
+    if (states.has("many-items"))
+      for (const [fixture, f] of fixtures) {
+        const opener = (["field", "overflow", "menu"] as const).find(
+          (k) => (controlComponents(f.payload)[k]?.length ?? 0) > 0,
+        );
+        if (!opener || longestList(f.payload) <= SCROLL_PRESSES) continue;
+        add(f.payload, `${fixture}@scroll-${opener}-1`, {
           steps: [
             ...openSteps(f.payload, `${opener}-1`),
-            ...Array.from({ length: 12 }, () => ({ key: "ArrowDown" })),
+            ...Array.from({ length: SCROLL_PRESSES }, () => ({ key: "ArrowDown" })),
             { key: "Escape" },
           ],
         });
-      if ([...out.values()].some((p) => p.covers.some((c) => c.startsWith(`${id} `)))) break;
-    }
+        break;
+      }
   }
   return [...out.values()].toSorted((a, b) => a.name.localeCompare(b.name));
 }

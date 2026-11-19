@@ -224,6 +224,31 @@ describe("proposed probes", () => {
     expect(poke.covers).toContain("static_select hover");
     expect(poke.covers).toContain("static_select open");
   });
+
+  it("scrolls a list on a fixture with enough options to scroll", () => {
+    const options = (n: number) =>
+      Array.from({ length: n }, (_, i) => ({ text: plain(`Option ${i + 1}`), value: `${i}` }));
+    const withOptions = (n: number) => ({
+      blocks: [
+        { type: "actions", elements: [{ ...select.blocks[0]!.elements[0], options: options(n) }] },
+      ],
+    });
+    const payloads = new Map<string, unknown>([
+      ["contexts/static_select/actions", withOptions(3)],
+      ["extra/fidelity/static-select/many-items", withOptions(30)],
+    ]);
+    const c = pick("static_select");
+    const plan = capturePlan(
+      buildInventory(c, sources(payloads, [...payloads.keys()])),
+      c,
+      payloads,
+      new Set(payloads.keys()),
+    );
+    const scroll = plan.probeProposals.filter((p) => p.covers.includes("static_select many-items"));
+    expect(scroll.map((p) => p.name)).toEqual([
+      "extra/fidelity/static-select/many-items@scroll-field-1",
+    ]);
+  });
 });
 
 describe("probes on controls Slack draws only after a click", () => {

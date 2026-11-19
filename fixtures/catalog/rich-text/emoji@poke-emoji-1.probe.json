@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "hover": "emoji-1"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "emoji-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

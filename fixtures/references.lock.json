@@ -5399,6 +5399,26 @@
     "reference": "216dd3cecca3f7a653835f268661d74cffd5fc4b7ece75051e8b39930fbdc1d1",
     "captured": "2026-11-18"
   },
+  "extra/actions/more-elements@confirm-focus-tab-2": {
+    "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
+    "reference": "c25eb0b996dc0efaa43a761471472199b6bc9ec688c91e4e59025d2025db44c4",
+    "captured": "2026-11-19"
+  },
+  "extra/actions/more-elements@confirm-focus-tab-2+dark": {
+    "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
+    "reference": "b22c47eb98d5fba49e46ae24dceef46763ab17cb2646ee15d3b0a7a5ebef2f86",
+    "captured": "2026-11-19"
+  },
+  "extra/actions/more-elements@confirm-focus-tab-2+mobile": {
+    "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
+    "reference": "bcfec49b05644cd9bd17e28cac25f6bcb14763a0f9f4514c23c1c247d1f39f62",
+    "captured": "2026-11-19"
+  },
+  "extra/actions/more-elements@confirm-focus-tab-2+mobile+dark": {
+    "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
+    "reference": "6f21322f7963e27aa0ff3b368c33fa6c01e8ef609c6f5ae32d46077f30a23d4f",
+    "captured": "2026-11-19"
+  },
   "extra/actions/more-elements@confirm-hover-confirm-1": {
     "payload": "5a16c03ab22f5fd94766ddb53ac6733b8dddbb1b702abbcf0d5b9efda3c582a9",
     "reference": "d748632b5509d8e7275f12a82e1ac510cd24b3467b772eccd4a8129430bd8340",
