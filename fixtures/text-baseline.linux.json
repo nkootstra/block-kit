@@ -627,6 +627,10 @@
   "catalog/rich-text/bold@mobile+dark": [],
   "catalog/rich-text/emoji": [],
   "catalog/rich-text/emoji@dark": [],
+  "catalog/rich-text/emoji@hover-emoji-1": [],
+  "catalog/rich-text/emoji@hover-emoji-1+dark": [],
+  "catalog/rich-text/emoji@hover-emoji-1+mobile": [],
+  "catalog/rich-text/emoji@hover-emoji-1+mobile+dark": [],
   "catalog/rich-text/emoji@mobile": [],
   "catalog/rich-text/emoji@mobile+dark": [],
   "catalog/rich-text/italic": [],
@@ -635,7 +639,31 @@
   "catalog/rich-text/italic@mobile+dark": [],
   "catalog/rich-text/kitchen-sink": [],
   "catalog/rich-text/kitchen-sink@dark": [],
+  "catalog/rich-text/kitchen-sink@focus-copy-1": [
+    "x|Copy|0"
+  ],
+  "catalog/rich-text/kitchen-sink@focus-copy-1+dark": [
+    "x|Copy|0"
+  ],
+  "catalog/rich-text/kitchen-sink@focus-copy-1+mobile": [
+    "x|Copy|0"
+  ],
+  "catalog/rich-text/kitchen-sink@focus-copy-1+mobile+dark": [
+    "x|Copy|0"
+  ],
   "catalog/rich-text/kitchen-sink@full": [],
+  "catalog/rich-text/kitchen-sink@hover-copy-1": [
+    "x|Copy|0"
+  ],
+  "catalog/rich-text/kitchen-sink@hover-copy-1+dark": [
+    "x|Copy|0"
+  ],
+  "catalog/rich-text/kitchen-sink@hover-copy-1+mobile": [
+    "x|Copy|0"
+  ],
+  "catalog/rich-text/kitchen-sink@hover-copy-1+mobile+dark": [
+    "x|Copy|0"
+  ],
   "catalog/rich-text/kitchen-sink@mobile": [],
   "catalog/rich-text/kitchen-sink@mobile+dark": [],
   "catalog/rich-text/kitchen-sink@mobile+full": [],
@@ -1662,6 +1690,10 @@
   "extra/fidelity/radio-buttons/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-attachment-mention/default": [],
   "extra/fidelity/rich-text-attachment-mention/default@dark": [],
+  "extra/fidelity/rich-text-attachment-mention/default@hover-link-1": [],
+  "extra/fidelity/rich-text-attachment-mention/default@hover-link-1+dark": [],
+  "extra/fidelity/rich-text-attachment-mention/default@hover-link-1+mobile": [],
+  "extra/fidelity/rich-text-attachment-mention/default@hover-link-1+mobile+dark": [],
   "extra/fidelity/rich-text-attachment-mention/default@mobile": [],
   "extra/fidelity/rich-text-attachment-mention/default@mobile+dark": [],
   "extra/fidelity/rich-text-broadcast/mixed": [],
@@ -1678,10 +1710,26 @@
   "extra/fidelity/rich-text-canvas-message-unfurl/default@mobile+dark": [],
   "extra/fidelity/rich-text-canvas-user-mention/default": [],
   "extra/fidelity/rich-text-canvas-user-mention/default@dark": [],
+  "extra/fidelity/rich-text-canvas-user-mention/default@hover-mention-1": [],
+  "extra/fidelity/rich-text-canvas-user-mention/default@hover-mention-1+dark": [],
+  "extra/fidelity/rich-text-canvas-user-mention/default@hover-mention-1+mobile": [],
+  "extra/fidelity/rich-text-canvas-user-mention/default@hover-mention-1+mobile+dark": [],
   "extra/fidelity/rich-text-canvas-user-mention/default@mobile": [],
   "extra/fidelity/rich-text-canvas-user-mention/default@mobile+dark": [],
   "extra/fidelity/rich-text-canvas/default": [],
   "extra/fidelity/rich-text-canvas/default@dark": [],
+  "extra/fidelity/rich-text-canvas/default@hover-entity-1": [
+    "color|Private canvas|0"
+  ],
+  "extra/fidelity/rich-text-canvas/default@hover-entity-1+dark": [
+    "color|Private canvas|0"
+  ],
+  "extra/fidelity/rich-text-canvas/default@hover-entity-1+mobile": [
+    "color|Private canvas|0"
+  ],
+  "extra/fidelity/rich-text-canvas/default@hover-entity-1+mobile+dark": [
+    "color|Private canvas|0"
+  ],
   "extra/fidelity/rich-text-canvas/default@mobile": [],
   "extra/fidelity/rich-text-canvas/default@mobile+dark": [],
   "extra/fidelity/rich-text-channel/mixed": [],
@@ -1718,6 +1766,10 @@
   "extra/fidelity/rich-text-emoji/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-file/default": [],
   "extra/fidelity/rich-text-file/default@dark": [],
+  "extra/fidelity/rich-text-file/default@hover-entity-1": [],
+  "extra/fidelity/rich-text-file/default@hover-entity-1+dark": [],
+  "extra/fidelity/rich-text-file/default@hover-entity-1+mobile": [],
+  "extra/fidelity/rich-text-file/default@hover-entity-1+mobile+dark": [],
   "extra/fidelity/rich-text-file/default@mobile": [],
   "extra/fidelity/rich-text-file/default@mobile+dark": [],
   "extra/fidelity/rich-text-input/initial-value": [],
@@ -1730,10 +1782,42 @@
   "extra/fidelity/rich-text-input/mixed@dark": [],
   "extra/fidelity/rich-text-list-record/default": [],
   "extra/fidelity/rich-text-list-record/default@dark": [],
+  "extra/fidelity/rich-text-list-record/default@hover-entity-1": [
+    "color|Private list|0"
+  ],
+  "extra/fidelity/rich-text-list-record/default@hover-entity-1+dark": [
+    "color|Private list|0"
+  ],
+  "extra/fidelity/rich-text-list-record/default@hover-entity-1+mobile": [
+    "color|Private list|0"
+  ],
+  "extra/fidelity/rich-text-list-record/default@hover-entity-1+mobile+dark": [
+    "color|Private list|0"
+  ],
   "extra/fidelity/rich-text-list-record/default@mobile": [],
   "extra/fidelity/rich-text-list-record/default@mobile+dark": [],
   "extra/fidelity/rich-text-message-mention/default": [],
   "extra/fidelity/rich-text-message-mention/default@dark": [],
+  "extra/fidelity/rich-text-message-mention/default@hover-entity-1": [
+    "missing|You don’t have access to this message (it may|0",
+    "missing|be private, in a workspace you’re not a part of,|0",
+    "missing|or deleted)|0"
+  ],
+  "extra/fidelity/rich-text-message-mention/default@hover-entity-1+dark": [
+    "missing|You don’t have access to this message (it may|0",
+    "missing|be private, in a workspace you’re not a part of,|0",
+    "missing|or deleted)|0"
+  ],
+  "extra/fidelity/rich-text-message-mention/default@hover-entity-1+mobile": [
+    "missing|You don’t have access to this message (it may|0",
+    "missing|be private, in a workspace you’re not a part of,|0",
+    "missing|or deleted)|0"
+  ],
+  "extra/fidelity/rich-text-message-mention/default@hover-entity-1+mobile+dark": [
+    "missing|You don’t have access to this message (it may|0",
+    "missing|be private, in a workspace you’re not a part of,|0",
+    "missing|or deleted)|0"
+  ],
   "extra/fidelity/rich-text-message-mention/default@mobile": [],
   "extra/fidelity/rich-text-message-mention/default@mobile+dark": [],
   "extra/fidelity/rich-text-rich-text-list/many-items": [],
@@ -1774,10 +1858,26 @@
   "extra/fidelity/rich-text-usergroup/mixed@mobile+dark": [],
   "extra/fidelity/rich-text-work-object-mention/default": [],
   "extra/fidelity/rich-text-work-object-mention/default@dark": [],
+  "extra/fidelity/rich-text-work-object-mention/default@hover-link-1": [
+    "color|A work object|0"
+  ],
+  "extra/fidelity/rich-text-work-object-mention/default@hover-link-1+dark": [
+    "color|A work object|0"
+  ],
+  "extra/fidelity/rich-text-work-object-mention/default@hover-link-1+mobile": [
+    "color|A work object|0"
+  ],
+  "extra/fidelity/rich-text-work-object-mention/default@hover-link-1+mobile+dark": [
+    "color|A work object|0"
+  ],
   "extra/fidelity/rich-text-work-object-mention/default@mobile": [],
   "extra/fidelity/rich-text-work-object-mention/default@mobile+dark": [],
   "extra/fidelity/rich-text-workflow-mention/default": [],
   "extra/fidelity/rich-text-workflow-mention/default@dark": [],
+  "extra/fidelity/rich-text-workflow-mention/default@hover-entity-1": [],
+  "extra/fidelity/rich-text-workflow-mention/default@hover-entity-1+dark": [],
+  "extra/fidelity/rich-text-workflow-mention/default@hover-entity-1+mobile": [],
+  "extra/fidelity/rich-text-workflow-mention/default@hover-entity-1+mobile+dark": [],
   "extra/fidelity/rich-text-workflow-mention/default@mobile": [],
   "extra/fidelity/rich-text-workflow-mention/default@mobile+dark": [],
   "extra/fidelity/section/long-content": [],
