@@ -251,8 +251,8 @@ const INLINE =
 
 /**
  * Kinds that only one component has: an address of the kind is that component wherever the
- * fixture has it (a data table's column headers and pages, a carousel's arrows, a confirm dialog's
- * buttons, a list's options and a menu's items).
+ * fixture has it (a data table's column headers and pages, a carousel's arrows, a list's options and
+ * a menu's items).
  */
 const ONLY: Partial<Record<Kind, [string, (root: Obj, nodes: Obj[]) => boolean]>> = {
   column: ["data_table", (_, n) => n.some((o) => o.type === "data_table")],
@@ -262,8 +262,6 @@ const ONLY: Partial<Record<Kind, [string, (root: Obj, nodes: Obj[]) => boolean]>
   action: ["message-actions", (root) => root.type !== "modal" && root.type !== "home"],
   option: ["option", (_, n) => n.some((o) => Array.isArray(o.options))],
   menuitem: ["option", (_, n) => n.some((o) => Array.isArray(o.options))],
-  confirm: ["confirm", (_, n) => n.some((o) => "confirm" in o)],
-  deny: ["confirm", (_, n) => n.some((o) => "confirm" in o)],
   collapse: ["container", (_, n) => n.some((o) => o.type === "container")],
   task: ["plan", (_, n) => n.some((o) => o.type === "plan")],
   contact: ["contact_card", (_, n) => n.some((o) => o.type === "contact_card")],
@@ -291,6 +289,17 @@ const componentAt = (payload: unknown, address: string): string | undefined => {
   // A block that scrolls itself: the fixture's first carousel, data table, table or chart.
   if (target.kind === "scroller")
     return [...objects(payload)].map(([o]) => o.type as string).find((t) => SCROLLING.includes(t));
+  // A confirm dialog's buttons, or else the selection dialog's: Slack draws both dialogs' Cancel
+  // and confirm buttons alike, and so do our addresses (targets.ts).
+  if (target.kind === "confirm" || target.kind === "deny") {
+    const nodes = [...objects(payload)];
+    if (nodes.some(([o]) => "confirm" in o)) return "confirm";
+    return nodes.some(
+      ([o, key]) => key === "accessory" && /^multi_.*select$/.test(o.type as string),
+    )
+      ? "select-dialog"
+      : undefined;
+  }
   if (only)
     return only[1](
       (payload ?? {}) as Obj,
@@ -299,6 +308,13 @@ const componentAt = (payload: unknown, address: string): string | undefined => {
       ? only[0]
       : undefined;
   return controlComponents(payload)[target.kind]?.[target.index - 1];
+};
+
+/** Whether the field at `address` is a section accessory's multi-select, which opens a dialog. */
+const opensDialog = (payload: unknown, address: string) => {
+  const t = parseTarget(address);
+  const c = t && controlNodes(payload)[t.kind]?.[t.index - 1];
+  return c?.key === "accessory" && /^multi_.*select$/.test(String(c.node.type));
 };
 
 /** The components a fixture holds that have `state`. */
@@ -365,6 +381,7 @@ export function referenceEvidence(
   if (steps) {
     const what = `reference ${name}`;
     const opened = new Set<string>();
+    let dialog = false;
     let last: string | undefined;
     for (const step of steps) {
       const t = "click" in step ? step.click : "hover" in step ? step.hover : undefined;
@@ -372,9 +389,13 @@ export function referenceEvidence(
       const kind = parseTarget(t)?.kind;
       const id = componentAt(payload, t);
       if ("click" in step && kind && OPENERS.has(kind) && id) opened.add(id);
+      // A section accessory's multi-select opens the selection dialog, which shows what's picked
+      // in its list until Confirm.
+      if ("click" in step && kind === "field" && opensDialog(payload, t)) dialog = true;
       // Picking an option or a menu item closes what it was in, and selects.
       if ("click" in step && (kind === "option" || kind === "menuitem")) {
         for (const o of opened) styles(o, "selected", what);
+        if (dialog) styles("select-dialog", "selected", what);
         opened.clear();
       }
       if ("click" in step && kind && TOGGLERS.has(kind) && id) styles(id, "toggled", what);

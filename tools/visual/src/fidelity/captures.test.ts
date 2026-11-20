@@ -427,6 +427,42 @@ describe("capture evidence", () => {
     ).toEqual(["static_select selected"]);
   });
 
+  it("takes a dialog's Confirm and Cancel for the selection dialog when no confirm dialog is set", () => {
+    const dialog: Component = {
+      ...component("select-dialog", ["open", "hover", "focus-visible", "pressed", "selected"]),
+      match: (o, key) => key === "accessory" && o.type === "multi_static_select",
+    };
+    const states = [...COMPONENTS, component("confirm", ["open", "hover"], "x"), dialog];
+    const accessory = {
+      blocks: [
+        {
+          type: "section",
+          text: { type: "mrkdwn", text: "Pick" },
+          accessory: { type: "multi_static_select", action_id: "m", options: [] },
+        },
+      ],
+    };
+    const confirming = {
+      blocks: [{ type: "actions", elements: [{ type: "button", confirm: {} }] }],
+    };
+    const hovered = (payload: unknown, button: string) =>
+      referenceEvidence("x/m@dialog-hover", payload, states, {}, [
+        { click: "button-1" },
+        { hover: button },
+      ] as never).map((e) => `${e.component} ${e.state}`);
+    expect(hovered(accessory, "confirm-1")).toEqual(["select-dialog hover"]);
+    expect(hovered(accessory, "deny-1")).toEqual(["select-dialog hover"]);
+    expect(hovered(confirming, "confirm-1")).toEqual(["confirm hover"]);
+    // An option picked in the dialog's list shows as chosen there until Confirm.
+    expect(
+      referenceEvidence("x/m@dialog-pick", accessory, states, {}, [
+        { click: "field-1" },
+        { click: { role: "combobox", name: "Pick" } },
+        { click: "option-1" },
+      ] as never).map((e) => `${e.component} ${e.state}`),
+    ).toContain("select-dialog selected");
+  });
+
   it("covers many items for a block that scrolled itself", () => {
     const states = [...COMPONENTS, component("carousel", ["default", "many-items"])];
     const carousel = { blocks: [{ type: "carousel", elements: [] }] };

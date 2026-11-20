@@ -124,6 +124,7 @@ export const SLACK: Record<Kind, string> = {
   action: '.c-message_actions__group:not([class*="chartActionsGroup"]) .c-message_actions__button',
   option: '.ReactModalPortal [role="option"]',
   menuitem: '.ReactModalPortal [role="menuitem"], .ReactModalPortal [role="menuitemradio"]',
+  // A confirm dialog's buttons, and the selection dialog's, which Slack draws the same way.
   confirm: ".ReactModalPortal .c-dialog__go",
   deny: ".ReactModalPortal .c-dialog__cancel",
   richtext: '.ql-editor[role="textbox"]',
@@ -192,8 +193,10 @@ export const OURS: Record<Kind, string> = {
   action: ".sbk-message-actions__button",
   option: '.sbk-popover [role="option"], .sbk-select-dialog [role="option"]',
   menuitem: '.sbk-popover [role="menuitem"], .sbk-popover [role="menuitemradio"]',
-  confirm: ".sbk-confirm__button:not(.sbk-confirm__button--deny)",
-  deny: ".sbk-confirm__button--deny",
+  // A confirm dialog's buttons, and the selection dialog's Confirm and Cancel.
+  confirm:
+    ".sbk-confirm__button:not(.sbk-confirm__button--deny), .sbk-select-dialog__footer .sbk-modal__button--primary",
+  deny: ".sbk-confirm__button--deny, .sbk-select-dialog__footer .sbk-modal__button:not(.sbk-modal__button--primary)",
   richtext: ".sbk-rich-text-input__editor",
   file: ".sbk-file-input__button",
   // Our feedback buttons are icon buttons too, with the radio role.
