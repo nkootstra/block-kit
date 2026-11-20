@@ -313,6 +313,25 @@ describe("probes on controls Slack draws only after a click", () => {
       expect(p.probe.steps.slice(0, 2)).toEqual(openSteps(accessory, "field-1"));
   });
 
+  it("proposes probes that hover the selection dialog's Confirm and Cancel", () => {
+    const c = pick("select-dialog");
+    const payloads = new Map<string, unknown>([["contexts/m/accessory", accessory]]);
+    const proposals = capturePlan(
+      buildInventory(c, sources(payloads, ["contexts/m/accessory"])),
+      c,
+      payloads,
+      new Set(["contexts/m/accessory"]),
+    ).probeProposals;
+    const hover = proposals.find((p) => p.name === "contexts/m/accessory@dialog-hover-confirm-1");
+    expect(hover?.probe.steps).toEqual([
+      { click: "field-1" },
+      { hover: "confirm-1" },
+      { snapshot: "dialog-hover-confirm-1" },
+      { key: "Escape" },
+    ]);
+    expect(hover?.covers).toEqual(["select-dialog hover"]);
+  });
+
   it("expands a plan before it hovers a source, and plans no plain capture of one", () => {
     expect(revealSteps(plan, "source-1")).toEqual([{ click: "pill-1" }]);
     expect(revealSteps(plan, "pill-1")).toEqual([]);

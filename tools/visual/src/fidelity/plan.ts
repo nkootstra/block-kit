@@ -1089,7 +1089,8 @@ export function proposeProbes(
 
 /**
  * Probes that snapshot a state no single capture reaches (light desktop, as probes record): an
- * open list with an option hovered or picked, an open confirm dialog with a button hovered.
+ * open list with an option hovered or picked, an open confirm or selection dialog with a button
+ * hovered.
  */
 function snapshotProbes(
   cells: Cell[],
@@ -1172,6 +1173,22 @@ function snapshotProbes(
             [...reveal, { hover: address }, { snapshot: `expanded-hover-${address}` }],
           ]);
       }
+    // A section accessory's multi-select opens the selection dialog, whose Cancel and Confirm are
+    // the confirm dialog's buttons to Slack and to our addresses (targets.ts).
+    const dialog = (controlNodes(payload).field ?? []).findIndex(
+      (c) => c.key === "accessory" && /^multi_.*select$/.test(String(c.node.type)),
+    );
+    if (dialog >= 0 && confirming < 0)
+      for (const b of ["confirm", "deny"])
+        specs.push([
+          `dialog-hover-${b}-1`,
+          [
+            { click: `field-${dialog + 1}` },
+            { hover: `${b}-1` },
+            { snapshot: `dialog-hover-${b}-1` },
+            { key: "Escape" },
+          ],
+        ]);
     if (confirming >= 0)
       for (const b of ["confirm", "deny"])
         specs.push([

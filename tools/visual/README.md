@@ -164,29 +164,29 @@ of the kind" to any control.
 
 The other kinds cover what isn't a form control:
 
-| Kind                 | What                                                              |
-| -------------------- | ----------------------------------------------------------------- |
-| `link`               | a mrkdwn, rich text or markdown link                              |
-| `mention`            | a user, channel, user group or broadcast mention, resolved or not |
-| `card`               | a card (its buttons are `button`s)                                |
-| `arrow`              | a carousel's scroll buttons, left before right                    |
-| `menu`               | the More actions trigger of an image block or a chart             |
-| `column`, `page`     | a data table's sortable column header, and its pagination buttons |
-| `more`               | a section's Show more toggle                                      |
-| `action`             | a button in the message's hover toolbar                           |
-| `option`, `menuitem` | an option of an open list, an item of an open menu                |
-| `confirm`, `deny`    | the buttons of an open confirm dialog                             |
-| `richtext`, `file`   | a rich text input's editor, a file input's button                 |
-| `icon`, `feedback`   | an icon button; each of a feedback pair, positive first           |
-| `collapse`           | a collapsible container's header                                  |
-| `pill`, `task`       | a plan's or task card's status pill; a plan's task header         |
-| `source`             | a plan's or task card's source link (once expanded)               |
-| `contact`, `expand`  | a contact card; an image block's title toggle                     |
-| `sender`, `time`     | the message header's app name and time                            |
-| `scroller`           | a block that scrolls itself (below)                               |
-| `video`              | a video block's player (the play overlay)                         |
-| `chip`               | a multi-select's chosen option, as a token in the field           |
-| `tooltip`            | a tooltip showing, after a hover; counted in the open layers      |
+| Kind                 | What                                                                  |
+| -------------------- | --------------------------------------------------------------------- |
+| `link`               | a mrkdwn, rich text or markdown link                                  |
+| `mention`            | a user, channel, user group or broadcast mention, resolved or not     |
+| `card`               | a card (its buttons are `button`s)                                    |
+| `arrow`              | a carousel's scroll buttons, left before right                        |
+| `menu`               | the More actions trigger of an image block or a chart                 |
+| `column`, `page`     | a data table's sortable column header, and its pagination buttons     |
+| `more`               | a section's Show more toggle                                          |
+| `action`             | a button in the message's hover toolbar                               |
+| `option`, `menuitem` | an option of an open list, an item of an open menu                    |
+| `confirm`, `deny`    | the confirm and Cancel buttons of an open confirm or selection dialog |
+| `richtext`, `file`   | a rich text input's editor, a file input's button                     |
+| `icon`, `feedback`   | an icon button; each of a feedback pair, positive first               |
+| `collapse`           | a collapsible container's header                                      |
+| `pill`, `task`       | a plan's or task card's status pill; a plan's task header             |
+| `source`             | a plan's or task card's source link (once expanded)                   |
+| `contact`, `expand`  | a contact card; an image block's title toggle                         |
+| `sender`, `time`     | the message header's app name and time                                |
+| `scroller`           | a block that scrolls itself (below)                                   |
+| `video`              | a video block's player (the play overlay)                             |
+| `chip`               | a multi-select's chosen option, as a token in the field               |
+| `tooltip`            | a tooltip showing, after a hover; counted in the open layers          |
 
 `scroller` isn't a class: it's any element whose content overflows the way it scrolls
 (`overflow-x` or `-y` `auto` or `scroll`), found by its computed style on both sides, which is what

@@ -4654,6 +4654,26 @@
     "reference": "d5de5d955e1e2401cadcc8a28b7bc58b81aab7d7a07fad12dec3e1250a9f0966",
     "captured": "2026-11-15"
   },
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "d6531d86362314908eafce01af17d355cbf182940f8d953060ef69de5ae5c5ce",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "6f28ee37a491e15bd0d1670ff4cade9915084bea94901104c01d08ceb404f513",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1+mobile": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "adb15050de006ac4ddeb548fb859b8b2974653847c40f04d00b8f92a48269d64",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1+mobile+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "3001c3c511fc6a4e8e5f62ef6763c5f529cb762d92ba37e87bacd7d63ff8f3bc",
+    "captured": "2026-11-20"
+  },
   "contexts/multi_static_select/accessory@dialog+dark": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
     "reference": "ad77c1c34380f5fdfc2563913f187e4a33231b3fe6e48016a06930a0fa95d153",
@@ -4708,6 +4728,21 @@
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
     "reference": "01a17d68d5eb58e41100dc467ef12e45d6c13451b1a8f5d9ce140f65f8c656df",
     "captured": "2026-11-18"
+  },
+  "contexts/multi_static_select/accessory@open-pick-option-1": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "d5e1e6aa0955665bb5b5174b179bcac2c02443755492c2c2ad3922ddc703e03a",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@open-pick-option-1+mobile": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "747789f4f020ac474c07f6129be8058e89fb8b1aaf98619f7bd5216bcec9c202",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@open-pick-option-1+mobile+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "5b257fb89465e3495cbe180bb84bfffc96c008bd4f245d86f3217a899f9cdb5d",
+    "captured": "2026-11-20"
   },
   "contexts/multi_static_select/accessory@open+dark": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",

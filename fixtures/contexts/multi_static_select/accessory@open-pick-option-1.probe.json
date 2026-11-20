@@ -1,0 +1,25 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "click": {
+        "role": "combobox",
+        "name": "Select items"
+      }
+    },
+    {
+      "click": "option-1"
+    },
+    {
+      "snapshot": "open-pick-option-1"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}
