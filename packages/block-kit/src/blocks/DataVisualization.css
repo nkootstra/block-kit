@@ -366,6 +366,12 @@
   overflow: auto;
 }
 
+/* Inside the side padding and as tall as the table, as Slack's; focused, it keeps the browser's
+   outline (extra/fidelity/chart-table-modal/many-items@table-focus-tab-2). */
+.sbk-chart-table__scroll {
+  overflow: auto;
+}
+
 /* The `table` block's grid, stretched to the modal's width, 4px from the header as in Slack. */
 .sbk-chart-table__table {
   width: 100%;

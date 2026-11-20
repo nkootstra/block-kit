@@ -478,16 +478,4 @@ export const FINDINGS: Finding[] = [
     next: "Check in the Slack client (not the Builder) whether Escape keeps an unconfirmed pick before changing ours.",
     components: ["select-dialog", "multi_static_select"],
   },
-  {
-    id: "chart-table-focusable",
-    title: "Tab reaches the table in Slack's chart table modal; ours goes only to the close button",
-    evidence: [
-      "extra/fidelity/chart-table-modal/many-items@table-focus-tab-2: in Slack's modal Tab focuses the table's scroll container (tabindex 0, drawn with a focus ring), then the close button, and wraps. Ours keeps every Tab on the close button, so the table can't be scrolled from the keyboard.",
-    ],
-    suspect: [
-      "packages/block-kit/src/charts/ChartTableModal.tsx: the Tab handler that pins the focus to the close button, and the table container without a tabindex.",
-    ],
-    next: "Make the table container focusable with Slack's focus ring and cycle Tab through it, then replay the recording (bun tools/visual/src/probes.ts extra/fidelity/chart-table-modal).",
-    components: ["chart-table-modal"],
-  },
 ];

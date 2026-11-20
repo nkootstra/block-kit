@@ -13,8 +13,8 @@ export interface ChartTableModalProps {
 /**
  * What a chart's "View as table" opens in Slack: a modal (`c-sk-modal`) that fills the window but
  * for 28px on each side, up to 1280px wide, titled with the chart's title and holding the data as a
- * `table` block, without its hover actions. Escape, the close button and a click on the dimmed
- * overlay close it. Slack leaves focus on the page when it closes; this returns it to whatever
+ * `table` block, without its hover actions, in a scroll container Tab reaches before the close
+ * button. Escape, the close button and a click on the dimmed overlay close it. Slack leaves focus on the page when it closes; this returns it to whatever
  * opened it (the chart's "More actions" button), so keyboard users keep their place.
  */
 export function ChartTableModal({ title, rows, onClose }: ChartTableModalProps) {
@@ -22,6 +22,7 @@ export function ChartTableModal({ title, rows, onClose }: ChartTableModalProps) 
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [header, ...body] = rows;
 
   useEffect(() => {
@@ -37,9 +38,12 @@ export function ChartTableModal({ title, rows, onClose }: ChartTableModalProps) 
       event.stopPropagation();
       onClose();
     } else if (event.key === "Tab") {
-      // The close button is the only control: Tab stays on it.
+      // As in Slack, Tab goes from the table to the close button and back, and stays in the modal.
       event.preventDefault();
-      closeRef.current?.focus();
+      const order = [scrollRef.current, closeRef.current];
+      const at = order.indexOf(document.activeElement as HTMLDivElement | HTMLButtonElement);
+      const next = event.shiftKey ? (at <= 0 ? 1 : at - 1) : at === 0 ? 1 : 0;
+      order[next]?.focus();
     }
   }
 
@@ -79,30 +83,41 @@ export function ChartTableModal({ title, rows, onClose }: ChartTableModalProps) 
           </button>
         </div>
         <div className="sbk-chart-table__content">
-          <table className="sbk-table__table sbk-chart-table__table">
-            {header ? (
-              <thead className="sbk-table__thead">
-                <tr>
-                  {header.map((cell, i) => (
-                    <th key={i} className="sbk-table__th">
-                      {cell}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-            ) : null}
-            <tbody className="sbk-table__tbody">
-              {body.map((row, r) => (
-                <tr key={r}>
-                  {row.map((cell, i) => (
-                    <td key={i} className="sbk-table__td">
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Slack's table scrolls in a container the keyboard can reach, so a wide or long table
+              can be scrolled without a pointer; it keeps the browser's own focus outline. */}
+          <div
+            ref={scrollRef}
+            className="sbk-chart-table__scroll"
+            role="region"
+            aria-labelledby={titleId}
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region
+            tabIndex={0}
+          >
+            <table className="sbk-table__table sbk-chart-table__table">
+              {header ? (
+                <thead className="sbk-table__thead">
+                  <tr>
+                    {header.map((cell, i) => (
+                      <th key={i} className="sbk-table__th">
+                        {cell}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              ) : null}
+              <tbody className="sbk-table__tbody">
+                {body.map((row, r) => (
+                  <tr key={r}>
+                    {row.map((cell, i) => (
+                      <td key={i} className="sbk-table__td">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>,
