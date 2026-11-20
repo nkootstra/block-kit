@@ -37,6 +37,8 @@ export interface ReferenceMeta {
   motionFacts?: boolean;
   /** The control that had focus at the snapshot, and whether it was drawn as keyboard focus. */
   focus?: { target?: string; visible: boolean; active?: string };
+  /** Whether the capture shows Slack's tooltip (`c-tooltip__tip`), over what it hovered or focused. */
+  tooltip?: boolean;
 }
 
 export interface Evidence {
@@ -50,8 +52,9 @@ export interface Evidence {
 
 /** Reads the parts of a reference's meta the inventory counts. */
 export function referenceMeta(html: string): ReferenceMeta {
+  const tooltip = html.includes('data-qa="tooltip-tip"');
   const json = /id="sbk-reference-meta"[^>]*>([\s\S]*?)<\/script>/.exec(html)?.[1];
-  if (!json) return {};
+  if (!json) return tooltip ? { tooltip } : {};
   const meta = JSON.parse(json) as {
     stateStyles?: Record<string, { target: string; states: Record<string, unknown> }>;
     scrollers?: { scrollWidth?: number; clientWidth?: number }[];
@@ -78,6 +81,7 @@ export function referenceMeta(html: string): ReferenceMeta {
   if (meta.focus) out.focus = meta.focus;
   if (meta.targets && Object.keys(meta.targets).length > 0) out.targets = Object.keys(meta.targets);
   if (meta.motion && Object.keys(meta.motion).length > 0) out.motionFacts = true;
+  if (tooltip) out.tooltip = true;
   return out;
 }
 
@@ -345,6 +349,8 @@ export function referenceEvidence(
   if (input) {
     const component = componentAt(payload, `${input.target.kind}-${input.target.index}`);
     if (component) styles(component, INPUT[input.input], `reference ${name}`);
+    // The tooltip the hovered or focused control shows, drawn in the same capture.
+    if (meta.tooltip) styles("tooltip", INPUT[input.input], `tooltip in ${name}`);
   }
   if (interaction === "submit-errors")
     for (const id of withState(payload, components, "validation-error"))
@@ -471,6 +477,8 @@ export function behaviourEvidence(
   const ids = new Set(
     [...addressesOf(steps), ...changed].flatMap((a) => componentAt(payload, a) ?? []),
   );
+  // A tooltip the steps brought up (observe.js records its text).
+  if (observations.some((o) => o.tooltip)) ids.add("tooltip");
   if (interaction === "submit-errors") {
     states.push("validation-error");
     for (const id of withState(payload, components, "validation-error")) ids.add(id);

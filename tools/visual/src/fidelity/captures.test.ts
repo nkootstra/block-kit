@@ -29,6 +29,15 @@ const COMPONENTS = [
   component("modal-frame", ["default", "hover", "focus-visible"], "modal"),
 ];
 
+/** An observation with nothing but the tooltip observe.js read. */
+const showing = (tooltip: string | null) => ({
+  focus: null,
+  layers: [],
+  activeOption: null,
+  tooltip,
+  controls: {},
+});
+
 const message = {
   blocks: [
     {
@@ -450,6 +459,38 @@ describe("capture evidence", () => {
     expect(
       referenceEvidence("x/v@hover-tooltip-1", payload, components).map((e) => e.component),
     ).toEqual(["tooltip"]);
+  });
+
+  // catalog/rich-text/emoji@hover-emoji-1 and kitchen-sink@focus-copy-1 draw Slack's tooltip over
+  // the control they hover or focus.
+  it("credits the tooltip a hovered or focused control shows in its reference", () => {
+    const components = [...COMPONENTS, component("tooltip", ["hover", "focus-visible"], "x")];
+    const html = '<div data-qa="tooltip-tip" class="c-tooltip__tip">Copy</div>';
+    const meta = referenceMeta(html);
+    expect(meta).toEqual({ tooltip: true });
+    const tooltip = (name: string, m = meta) =>
+      referenceEvidence(name, message, components, m)
+        .filter((e) => e.component === "tooltip")
+        .map((e) => `${e.state} ${e.theme} ${e.width}`);
+    expect(tooltip("x/m@hover-button-1+mobile")).toEqual(["hover light mobile"]);
+    expect(tooltip("x/m@focus-button-1+dark")).toEqual(["focus-visible dark desktop"]);
+    expect(tooltip("x/m@hover-button-1", {})).toEqual([]);
+  });
+
+  it("credits the tooltip a recording saw", () => {
+    const components = [
+      ...COMPONENTS,
+      component("tooltip", ["default", "hover", "focus-visible"], "x"),
+    ];
+    const evidence = behaviourEvidence("x/m@poke", message, components, {
+      steps: [{ hover: "button-1" }, { key: "Escape" }],
+      observations: [showing(null), showing("Copy"), showing(null)],
+    });
+    expect(evidence.filter((e) => e.component === "tooltip").map((e) => e.state)).toEqual([
+      "default",
+      "focus-visible",
+      "hover",
+    ]);
   });
 
   it("credits the control that had keyboard focus at the snapshot", () => {
