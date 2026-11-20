@@ -9,6 +9,7 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, setDefaultTimeout } from "bun:test";
 import { join, resolve } from "node:path";
 import type { Page } from "playwright";
+import { reveal } from "../probes";
 import {
   createHarness,
   ENGINES,
@@ -2645,6 +2646,22 @@ describe.each(engines)("%s", (engine) => {
       });
     const copied = (page: Page) =>
       page.evaluate(() => (window as unknown as { copied: string[] }).copied);
+
+    // A probe's `{ "click": "menu-1" }`: the pointer reaches the block before the button, which
+    // only shows while the block is hovered, as in Slack.
+    it("lets a probe step reach a chart's menu button, shown on hover", async () => {
+      const page = await harness.open(await chart());
+      const trigger = (await page.$(CHART_TRIGGER))!;
+      const reachable = () =>
+        trigger.evaluate(
+          (el) => getComputedStyle(el.closest(".sbk-hover-actions")!).pointerEvents !== "none",
+        );
+      expect(await reachable()).toBe(false);
+      await reveal(trigger);
+      expect(await reachable()).toBe(true);
+      await trigger.click({ timeout: 2000 });
+      expect(await page.$(MENU)).not.toBeNull();
+    });
 
     it("lists Slack's chart actions, with a separator before a disabled Copy as image", async () => {
       const page = await harness.open(await chart());

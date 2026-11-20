@@ -56,6 +56,7 @@ export const KINDS = [
   "menuitem",
   "confirm",
   "deny",
+  "close",
   "richtext",
   "file",
   "icon",
@@ -127,6 +128,8 @@ export const SLACK: Record<Kind, string> = {
   // A confirm dialog's buttons, and the selection dialog's, which Slack draws the same way.
   confirm: ".ReactModalPortal .c-dialog__go",
   deny: ".ReactModalPortal .c-dialog__cancel",
+  // The close button of a Slack Kit modal: a chart's "View as table", in its own portal.
+  close: '.c-sk-modal_portal [data-qa="sk_close_modal_button"]',
   richtext: '.ql-editor[role="textbox"]',
   file: ".p-block_kit_input_block .c-fieldset > button.c-button",
   icon: '[data-qa="bk_icon_button"]',
@@ -197,6 +200,7 @@ export const OURS: Record<Kind, string> = {
   confirm:
     ".sbk-confirm__button:not(.sbk-confirm__button--deny), .sbk-select-dialog__footer .sbk-modal__button--primary",
   deny: ".sbk-confirm__button--deny, .sbk-select-dialog__footer .sbk-modal__button:not(.sbk-modal__button--primary)",
+  close: ".sbk-chart-table__close",
   richtext: ".sbk-rich-text-input__editor",
   file: ".sbk-file-input__button",
   // Our feedback buttons are icon buttons too, with the radio role.
@@ -221,7 +225,14 @@ export const OURS: Record<Kind, string> = {
 };
 
 /** Kinds counted in the open layers rather than the message. */
-export const LAYER_KINDS: readonly Kind[] = ["option", "menuitem", "confirm", "deny", "tooltip"];
+export const LAYER_KINDS: readonly Kind[] = [
+  "option",
+  "menuitem",
+  "confirm",
+  "deny",
+  "close",
+  "tooltip",
+];
 
 /** Kinds whose Slack selector no reference has confirmed yet. */
 export const UNVERIFIED: readonly Kind[] = ["more", "action", "tooltip"];

@@ -463,6 +463,24 @@ describe("capture evidence", () => {
     ).toContain("select-dialog selected");
   });
 
+  it("covers a chart's table modal, opened from its menu", () => {
+    const states = [
+      ...COMPONENTS,
+      {
+        ...component("chart-table-modal", ["open", "hover", "focus-visible"]),
+        match: (o: Record<string, unknown>) => o.type === "data_visualization",
+      },
+    ];
+    const chart = { blocks: [{ type: "data_visualization", title: "T", chart: {} }] };
+    expect(
+      referenceEvidence("x/c@table-hover-close-1", chart, states, {}, [
+        { click: "menu-1" },
+        { click: { role: "menuitem", name: "View as table" } },
+        { hover: "close-1" },
+      ] as never).map((e) => `${e.component} ${e.state}`),
+    ).toEqual(["chart-table-modal open", "chart-table-modal hover"]);
+  });
+
   it("covers many items for a block that scrolled itself", () => {
     const states = [...COMPONENTS, component("carousel", ["default", "many-items"])];
     const carousel = { blocks: [{ type: "carousel", elements: [] }] };

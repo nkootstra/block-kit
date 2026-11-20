@@ -15,6 +15,8 @@ export interface Box {
 /** A frozen popover or dialog, as snapshot.js records it in the reference's meta. */
 export interface Layer extends Box {
   kind: "popover" | "dialog";
+  /** A fullscreen modal, sized by the window it was captured in (the meta's `window`). */
+  fullscreen?: boolean;
 }
 
 /** The union of each side's boxes (message first, then its popovers), relative to the message. */

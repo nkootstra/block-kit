@@ -1,0 +1,25 @@
+{
+  "steps": [
+    {
+      "click": "menu-1"
+    },
+    {
+      "click": {
+        "role": "menuitem",
+        "name": "View as table"
+      }
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "snapshot": "table-focus-tab-2"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

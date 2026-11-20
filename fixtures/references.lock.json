@@ -4654,6 +4654,26 @@
     "reference": "d5de5d955e1e2401cadcc8a28b7bc58b81aab7d7a07fad12dec3e1250a9f0966",
     "captured": "2026-11-15"
   },
+  "contexts/multi_static_select/accessory@dialog-focus-tab-3": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "8d82bd1de28a2d69f32fff3aa83626be1e182e086143918261344701cce2ffcb",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@dialog-focus-tab-3+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "560f97495be9852df53c09ea534fa656082785a6be718a21d226b02bae342aec",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@dialog-focus-tab-3+mobile": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "ee63e67b2650a0919469c7a0d20860917bbde86b6f4d1786206c2aeee2d6f6aa",
+    "captured": "2026-11-20"
+  },
+  "contexts/multi_static_select/accessory@dialog-focus-tab-3+mobile+dark": {
+    "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
+    "reference": "3c5c873bbcef6cf9be0d9332dcd7cb94f5b293a66d61fb09d02dc8ea94d47c21",
+    "captured": "2026-11-20"
+  },
   "contexts/multi_static_select/accessory@dialog-hover-confirm-1": {
     "payload": "65166b80e794568e4636b04a2ff1c41efe0a77865da22c12775e1a327d7866fc",
     "reference": "d6531d86362314908eafce01af17d355cbf182940f8d953060ef69de5ae5c5ce",
@@ -5803,6 +5823,46 @@
     "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
     "reference": "313e448bebe2942124268aea96e4f80e3b85ccb83e745d0928cb393ff352ae05",
     "captured": "2026-11-15"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-focus-tab-2": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "d78ac5a591ff727e1ef1f461a5edfe765ae7f93f53a98ecde853adac66030158",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-focus-tab-2+dark": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "8b0903298eb3527abf30348062488d07c02812d322b395f599971ff30d9a8e74",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-focus-tab-2+mobile": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "2585d5e6d80758b6448e2782070be92a3d7d41a14dcc3ebf55d0769dc0b4e8af",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-focus-tab-2+mobile+dark": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "8340a1661aeee7fdb5c81ba8fc8bf18f6d97a21d0087ab6b72d31a78a20276c7",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-hover-close-1": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "8f3a22dae43beeff4b838a7bfd1fa8678e65f16a3151db729fcf9247a798e181",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-hover-close-1+dark": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "a53e8f678b5e49cba8142128731809e6b6d4ed260ec40d916429fd36615e75eb",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-hover-close-1+mobile": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "7d91ec0485e57dc015f36f6f9ee4f9d79f046ec4d2fc845392853f4f9ae3f4ec",
+    "captured": "2026-11-20"
+  },
+  "extra/fidelity/chart-table-modal/many-items@table-hover-close-1+mobile+dark": {
+    "payload": "51d376fc8d3917e4a5295f45ab8897742c3bd3d1029d72e1850efec9ecb5955e",
+    "reference": "185753007d3e42b6e6273d339333c33451d9d8e2cfc9748f39688715ccbce4bf",
+    "captured": "2026-11-20"
   },
   "extra/fidelity/checkboxes/long-content": {
     "payload": "c5cdfc56a7a5dc60caf9802458828a595950f60e5f8cdfffc1b06400f17834b6",

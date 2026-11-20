@@ -332,6 +332,44 @@ describe("probes on controls Slack draws only after a click", () => {
     expect(hover?.covers).toEqual(["select-dialog hover"]);
   });
 
+  it("tabs to the selection dialog's Cancel and Confirm", () => {
+    // contexts/multi_static_select/accessory@dialog-tab: Close, the field, Cancel, Confirm.
+    const tabs = (n: number) => [
+      { click: "field-1" },
+      ...Array.from({ length: n }, () => ({ key: "Tab" })),
+    ];
+    expect(forecastFocus(tabs(2), accessory)).toBeUndefined();
+    expect(forecastFocus(tabs(3), accessory)).toEqual({ target: "deny-1", visible: true });
+    expect(forecastFocus(tabs(4), accessory)).toEqual({ target: "confirm-1", visible: true });
+    const c = pick("select-dialog");
+    const payloads = new Map<string, unknown>([["contexts/m/accessory", accessory]]);
+    const proposals = capturePlan(
+      buildInventory(c, sources(payloads, ["contexts/m/accessory"])),
+      c,
+      payloads,
+      new Set(["contexts/m/accessory"]),
+    ).probeProposals;
+    const focus = proposals.find((p) => p.name === "contexts/m/accessory@dialog-focus-tab-3");
+    expect(focus?.probe.steps).toEqual([
+      ...tabs(3),
+      { snapshot: "dialog-focus-tab-3" },
+      { key: "Escape" },
+    ]);
+    expect(focus?.covers).toEqual(["select-dialog focus-visible"]);
+  });
+
+  it("tabs to a chart table modal's close button", () => {
+    // Slack's modal takes the focus; Tab reaches its table, then the close button, and wraps.
+    const chart = { blocks: [{ type: "data_visualization", title: "T", chart: {} }] };
+    const tabs = (n: number) => [
+      { click: "menu-1" },
+      { click: { role: "menuitem", name: "View as table" } },
+      ...Array.from({ length: n }, () => ({ key: "Tab" })),
+    ];
+    expect(forecastFocus(tabs(1), chart)).toBeUndefined();
+    expect(forecastFocus(tabs(2), chart)).toEqual({ target: "close-1", visible: true });
+  });
+
   it("expands a plan before it hovers a source, and plans no plain capture of one", () => {
     expect(revealSteps(plan, "source-1")).toEqual([{ click: "pill-1" }]);
     expect(revealSteps(plan, "pill-1")).toEqual([]);

@@ -337,6 +337,7 @@ const OURS: Record<string, string> = {
   confirm:
     ".sbk-confirm__button:not(.sbk-confirm__button--deny), .sbk-select-dialog__footer .sbk-modal__button--primary",
   deny: ".sbk-confirm__button--deny, .sbk-select-dialog__footer .sbk-modal__button:not(.sbk-modal__button--primary)",
+  close: ".sbk-chart-table__close",
   richtext: ".sbk-rich-text-input__editor",
   file: ".sbk-file-input__button",
   icon: '.sbk-icon-button:not([role="radio"])',

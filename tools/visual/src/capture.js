@@ -290,6 +290,7 @@ async ({
     menuitem: '.ReactModalPortal [role="menuitem"], .ReactModalPortal [role="menuitemradio"]',
     confirm: ".ReactModalPortal .c-dialog__go",
     deny: ".ReactModalPortal .c-dialog__cancel",
+    close: '.c-sk-modal_portal [data-qa="sk_close_modal_button"]',
     richtext: '.ql-editor[role="textbox"]',
     file: ".p-block_kit_input_block .c-fieldset > button.c-button",
     icon: '[data-qa="bk_icon_button"]',
@@ -312,7 +313,7 @@ async ({
     copy: '.c-mrkdwn__pre button[aria-label="Copy"]',
   };
   // Counted in the open layers, not the preview (targets.ts LAYER_KINDS).
-  const LAYER_KINDS = ["option", "menuitem", "confirm", "deny", "tooltip"];
+  const LAYER_KINDS = ["option", "menuitem", "confirm", "deny", "close", "tooltip"];
   const target = (address) => {
     const match = /^([a-z]+)-([1-9]\d*)$/.exec(address);
     return match && SLACK[match[1]] ? { kind: match[1], index: Number(match[2]) } : undefined;

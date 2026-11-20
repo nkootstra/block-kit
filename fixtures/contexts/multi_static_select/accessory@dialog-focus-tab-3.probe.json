@@ -1,0 +1,22 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "snapshot": "dialog-focus-tab-3"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

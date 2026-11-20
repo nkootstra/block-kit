@@ -22,7 +22,8 @@
   const SIDES = {
     slack: {
       root: ".p-bkb_preview__message, .p-bkb_preview_modal, .p-bkb_app_home",
-      popovers: ".ReactModalPortal .ReactModal__Content",
+      // A chart's "View as table" modal has its own portal.
+      popovers: ".ReactModalPortal .ReactModal__Content, .c-sk-modal_portal .ReactModal__Content",
       dialogs: '[role="dialog"], [role="alertdialog"]',
       activeOption: ".c-select_options_list__option--active",
       kinds: {
@@ -54,6 +55,7 @@
         menuitem: '.ReactModalPortal [role="menuitem"], .ReactModalPortal [role="menuitemradio"]',
         confirm: ".ReactModalPortal .c-dialog__go",
         deny: ".ReactModalPortal .c-dialog__cancel",
+        close: '.c-sk-modal_portal [data-qa="sk_close_modal_button"]',
         richtext: '.ql-editor[role="textbox"]',
         file: ".p-block_kit_input_block .c-fieldset > button.c-button",
         icon: '[data-qa="bk_icon_button"]',
@@ -78,7 +80,7 @@
     },
     ours: {
       root: "#sbk-render",
-      popovers: ".sbk-popover, .sbk-confirm, .sbk-select-dialog",
+      popovers: ".sbk-popover, .sbk-confirm, .sbk-select-dialog, .sbk-chart-table",
       dialogs: '[role="dialog"], [role="alertdialog"]',
       activeOption: "[data-active]",
       kinds: {
@@ -109,6 +111,7 @@
         confirm:
           ".sbk-confirm__button:not(.sbk-confirm__button--deny), .sbk-select-dialog__footer .sbk-modal__button--primary",
         deny: ".sbk-confirm__button--deny, .sbk-select-dialog__footer .sbk-modal__button:not(.sbk-modal__button--primary)",
+        close: ".sbk-chart-table__close",
         richtext: ".sbk-rich-text-input__editor",
         file: ".sbk-file-input__button",
         icon: '.sbk-icon-button:not([role="radio"])',
@@ -197,7 +200,7 @@
     );
   };
   // Counted in the open layers, not the message (targets.ts LAYER_KINDS).
-  const LAYER_KINDS = ["option", "menuitem", "confirm", "deny", "tooltip"];
+  const LAYER_KINDS = ["option", "menuitem", "confirm", "deny", "close", "tooltip"];
   for (const [kind, selector] of Object.entries(at.kinds)) {
     const scope = LAYER_KINDS.includes(kind) ? doc : root;
     // The scroller kind isn't a selector: a block that overflows the way it scrolls.

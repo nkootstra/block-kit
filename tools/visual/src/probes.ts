@@ -41,7 +41,7 @@
  */
 import { join } from "node:path";
 import { Glob } from "bun";
-import type { Page } from "playwright";
+import type { ElementHandle, Page } from "playwright";
 import { parseInputState } from "./names";
 import { findTarget, OURS, ourRoot, parseTarget } from "./targets";
 
@@ -223,6 +223,22 @@ async function locate(page: Page, spec: TargetSpec) {
   return el;
 }
 
+/**
+ * Moves the pointer over the block whose hover toolbar holds `el` when `el` only shows on hover
+ * (a chart's or an image's More actions), as the pointer passes over the block on its way in
+ * Slack. Leaves anything already shown alone.
+ */
+export async function reveal(el: ElementHandle<Element>): Promise<void> {
+  // The toolbar stays in place but transparent and deaf to the pointer until its host is hovered.
+  const host = await el.evaluateHandle((node) => {
+    const bar = node.closest(".sbk-hover-actions");
+    return bar && getComputedStyle(bar).pointerEvents === "none"
+      ? node.closest(".sbk-hover-actions-host")
+      : null;
+  });
+  await host.asElement()?.hover();
+}
+
 /** Performs the steps on our rendering with Playwright's real pointer and keyboard. */
 export async function runSteps(page: Page, steps: Step[]): Promise<void> {
   for (const step of steps) await runStep(page, step);
@@ -249,8 +265,11 @@ export async function runStep(page: Page, step: Step): Promise<void> {
     );
   } else if ("key" in step) await page.keyboard.press(step.key);
   else if ("type" in step) await page.keyboard.type(step.type);
-  else if ("hover" in step) await (await locate(page, step.hover)).hover();
-  else await (await locate(page, step.click)).click();
+  else {
+    const el = await locate(page, "hover" in step ? step.hover : step.click);
+    await reveal(el);
+    await ("hover" in step ? el.hover() : el.click());
+  }
 }
 
 // A bare function expression; the file ends its statement with a semicolon.

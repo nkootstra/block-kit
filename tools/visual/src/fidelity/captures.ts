@@ -262,6 +262,8 @@ const ONLY: Partial<Record<Kind, [string, (root: Obj, nodes: Obj[]) => boolean]>
   action: ["message-actions", (root) => root.type !== "modal" && root.type !== "home"],
   option: ["option", (_, n) => n.some((o) => Array.isArray(o.options))],
   menuitem: ["option", (_, n) => n.some((o) => Array.isArray(o.options))],
+  // The close button of a chart's "View as table" modal.
+  close: ["chart-table-modal", (_, n) => n.some((o) => o.type === "data_visualization")],
   collapse: ["container", (_, n) => n.some((o) => o.type === "container")],
   task: ["plan", (_, n) => n.some((o) => o.type === "plan")],
   contact: ["contact_card", (_, n) => n.some((o) => o.type === "contact_card")],
@@ -310,8 +312,11 @@ const componentAt = (payload: unknown, address: string): string | undefined => {
   return controlComponents(payload)[target.kind]?.[target.index - 1];
 };
 
+/** The chart menu item that opens a chart's table modal, in Slack's menu and ours. */
+const TABLE = "View as table";
+
 /** Whether the field at `address` is a section accessory's multi-select, which opens a dialog. */
-const opensDialog = (payload: unknown, address: string) => {
+export const opensDialog = (payload: unknown, address: string) => {
   const t = parseTarget(address);
   const c = t && controlNodes(payload)[t.kind]?.[t.index - 1];
   return c?.key === "accessory" && /^multi_.*select$/.test(String(c.node.type));
@@ -385,6 +390,9 @@ export function referenceEvidence(
     let last: string | undefined;
     for (const step of steps) {
       const t = "click" in step ? step.click : "hover" in step ? step.hover : undefined;
+      // A chart menu's "View as table" opens the chart's table modal.
+      if ("click" in step && typeof t === "object" && t.role === "menuitem" && t.name === TABLE)
+        styles("chart-table-modal", "open", what);
       if (typeof t !== "string") continue;
       const kind = parseTarget(t)?.kind;
       const id = componentAt(payload, t);
