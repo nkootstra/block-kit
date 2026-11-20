@@ -30,6 +30,7 @@ import {
   behaviourEvidence,
   controlComponents,
   controlNodes,
+  opensDialog,
   referenceEvidence,
   revealedBy,
 } from "./captures";
@@ -420,6 +421,29 @@ export function forecastFocus(
   const kind = typeof opened === "string" ? parseTarget(opened)?.kind : undefined;
   const tabs =
     keys.filter((k) => k === "Tab").length - keys.filter((k) => k === "Shift+Tab").length;
+  // A chart's table modal takes the focus too; Tab reaches its table (no address), then its close
+  // button, and wraps.
+  if (
+    typeof opened === "object" &&
+    opened.role === "menuitem" &&
+    opened.name === "View as table" &&
+    tabs > 0
+  )
+    return tabs % 2 === 0 ? { target: "close-1", visible: true } : undefined;
+  // Slack's selection dialog takes the focus itself too; Tab then reaches its Close button, its
+  // field, then Cancel (deny-1) and Confirm (contexts/multi_static_select/accessory@dialog-tab).
+  if (
+    typeof opened === "string" &&
+    "click" in steps[last]! &&
+    steps[last]!.click === opened &&
+    opensDialog(payload, opened) &&
+    tabs > 0
+  )
+    return tabs === 3
+      ? { target: "deny-1", visible: true }
+      : tabs === 4
+        ? { target: "confirm-1", visible: true }
+        : undefined;
   // Slack's confirm dialog takes the focus itself; Tab then reaches its Close button (no address),
   // then Cancel (deny-1), then the confirm button (extra/actions/more-elements@confirm-focus-tab-1:
   // the first Tab focused "Close").
@@ -1178,6 +1202,17 @@ function snapshotProbes(
     const dialog = (controlNodes(payload).field ?? []).findIndex(
       (c) => c.key === "accessory" && /^multi_.*select$/.test(String(c.node.type)),
     );
+    if (dialog >= 0 && confirming < 0)
+      for (const tabs of [3, 4])
+        specs.push([
+          `dialog-focus-tab-${tabs}`,
+          [
+            { click: `field-${dialog + 1}` },
+            ...Array.from({ length: tabs }, () => ({ key: "Tab" })),
+            { snapshot: `dialog-focus-tab-${tabs}` },
+            { key: "Escape" },
+          ],
+        ]);
     if (dialog >= 0 && confirming < 0)
       for (const b of ["confirm", "deny"])
         specs.push([

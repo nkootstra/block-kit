@@ -176,6 +176,7 @@ The other kinds cover what isn't a form control:
 | `action`             | a button in the message's hover toolbar                               |
 | `option`, `menuitem` | an option of an open list, an item of an open menu                    |
 | `confirm`, `deny`    | the confirm and Cancel buttons of an open confirm or selection dialog |
+| `close`              | the close button of an open chart table modal ("View as table")       |
 | `richtext`, `file`   | a rich text input's editor, a file input's button                     |
 | `icon`, `feedback`   | an icon button; each of a feedback pair, positive first               |
 | `collapse`           | a collapsible container's header                                      |
@@ -201,7 +202,7 @@ between them (hover, wait for the tooltip, snapshot); a click or a scroll after 
 away as usual. `compare.ts` counts ours (`.sbk-tooltip`) with the popovers, as Slack's capture
 counts its own (`catalog/agents/message-feedback@tooltip-over-icon-1`).
 
-`option`, `menuitem`, `confirm`, `deny` and `tooltip` are counted in the open layers rather than the message,
+`option`, `menuitem`, `confirm`, `deny`, `close` and `tooltip` are counted in the open layers rather than the message,
 in page order: both sides portal them out of the message, and only the open layer has any. An
 alert block has no close button in Block Kit Builder's preview, so its links are `link`s and
 nothing else of it is addressable. Block Kit Builder shows neither a section's Show more (not
@@ -816,7 +817,11 @@ captures a reference after the last step, named after the probe, and a `snapshot
 one at that point, named `<fixture>@<label>` with the item's theme and width; a hover right before
 either is held through it. That's how a state that takes more than one interaction becomes a
 reference: open a list, hover its second option, snapshot (`@open-hover-green`); compare.ts replays
-the steps before it. A step in the name (`@open-field-1+hover-option-2`) would have needed a second
+the steps before it. On our side a step's pointer reaches the block before its target, so a
+chart's or an image's More actions button, which only shows while its block is hovered, can be
+clicked as it is in Slack. A chart's "View as table" opens a fullscreen modal sized by the window:
+its snapshot records the Builder's window (`window`), and compare.ts draws ours in a page that
+size. A step in the name (`@open-field-1+hover-option-2`) would have needed a second
 interaction grammar in names.ts, compare.ts, import.ts and the inventory, and still couldn't say
 "after typing" or "after two arrow presses"; a probe already says all of that, so the label only
 names the result.

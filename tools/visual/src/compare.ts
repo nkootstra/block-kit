@@ -128,6 +128,8 @@ interface Meta {
   height: number;
   /** Open popovers and dialogs frozen with the preview (snapshot.js); absent in older captures. */
   layers?: Layer[];
+  /** The Builder's window, recorded with a fullscreen modal (snapshot.js). */
+  window?: { width: number; height: number };
   /** What each control's state rules change (snapshot.js); absent in older captures. */
   stateStyles?: StateStyles;
   /** The preview's horizontal scroll containers (snapshot.js); absent in older captures. */
@@ -144,11 +146,11 @@ interface Meta {
 const OUR_POPOVERS = ".sbk-popover > *, .sbk-tooltip";
 /** Above anything in the frozen preview; snapshot.js writes the same on new captures. */
 const POPOVER_LAYER_Z = 1000;
-const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog";
+const OUR_DIALOGS = ".sbk-confirm, .sbk-select-dialog, .sbk-chart-table";
 /** snapshot.js freezes Slack's dialog on a plain page, without the dim Slack draws behind it, so a
  * menu reaching past the dialog's edge shows the page there. Take ours without our dim too. */
 const UNDIMMED_DIALOGS =
-  ".sbk-select-dialog__overlay{background:none!important}.sbk-confirm__overlay::before{content:none!important}";
+  ".sbk-select-dialog__overlay{background:none!important}.sbk-confirm__overlay::before,.sbk-chart-table-layer::before{content:none!important}";
 
 const names = shard(
   (await referenceNames(FIXTURES)).filter(
@@ -397,8 +399,12 @@ for (const name of names) {
     : meta.capturedAt && /"type":"(datetimepicker|date)"/.test(html)
       ? new Date(meta.capturedAt)
       : undefined;
-  const page = clock ? await context.newPage() : sharedPage;
+  // A fullscreen modal (a chart's "View as table") is as large as the window: draw ours in one
+  // the size of the Builder's, so both modals get the same box.
+  const modalWindow = meta.layers?.some((l) => l.fullscreen) ? meta.window : undefined;
+  const page = clock || modalWindow ? await context.newPage() : sharedPage;
   if (clock) await page.clock.setFixedTime(clock);
+  if (modalWindow) await page.setViewportSize(modalWindow);
 
   const parsed = parseReferenceName(name);
   const layers = meta.layers ?? [];

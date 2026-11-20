@@ -460,6 +460,24 @@ describe("snapshot.js", () => {
       expect(dialog).toEqual({ width: 520, height: 164, text: "Are you sure?" });
     });
 
+    // Measured on a chart's "View as table" in Block Kit Builder: a fullscreen Slack Kit modal in
+    // its own portal (.c-sk-modal_portal), not a .ReactModalPortal, sized by the window.
+    it("freezes a fullscreen modal, with the window it was sized by", async () => {
+      await page.setViewportSize({ width: 900, height: 600 });
+      await page.setContent(`<!doctype html><body style="margin:0;font:15px sans-serif">
+        <div class="p-bkb_preview__message" style="width:400px;height:60px"></div>
+        <div class="c-sk-modal_portal"><div class="ReactModal__Overlay c-sk-overlay" style="position:fixed;inset:0">
+          <div role="dialog" class="ReactModal__Content c-sk-modal c-sk-modal--fullscreen" style="position:fixed;left:28px;top:28px;width:calc(100% - 56px);height:calc(100% - 56px);background:#fff">Twelve series</div>
+        </div></div>
+      </body>`);
+      const meta = metaOf(await snapshot(page));
+      await page.setViewportSize({ width: 1280, height: 720 });
+      expect(meta.layers).toMatchObject([
+        { kind: "dialog", width: 844, height: 544, fullscreen: true },
+      ]);
+      expect(meta.window).toEqual({ width: 900, height: 600 });
+    });
+
     it("records the Builder's theme in the meta", async () => {
       for (const theme of ["light", "dark"] as const) {
         await page.setContent(

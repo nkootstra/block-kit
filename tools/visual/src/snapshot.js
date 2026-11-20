@@ -524,7 +524,10 @@ async (win = window, options = {}) => {
     return content;
   };
   const layers = [];
-  for (const content of doc.querySelectorAll(".ReactModalPortal .ReactModal__Content")) {
+  // A Slack Kit modal (a chart's "View as table") has its own portal, .c-sk-modal_portal.
+  for (const content of doc.querySelectorAll(
+    ".ReactModalPortal .ReactModal__Content, .c-sk-modal_portal .ReactModal__Content",
+  )) {
     if (content.getBoundingClientRect().height === 0) continue;
     const overlay = content.closest(".ReactModal__Overlay");
     // Slack's confirm dialog carries the role on the modal content itself.
@@ -545,6 +548,8 @@ async (win = window, options = {}) => {
     );
     layers.push({
       kind,
+      // A fullscreen modal is sized by the window (meta.window), so ours is drawn in one that size.
+      ...(content.matches(".c-sk-modal--fullscreen") && { fullscreen: true }),
       x: Math.round(r.x - origin.x),
       y: Math.round(r.y - origin.y),
       width: Math.round(r.width),
@@ -630,6 +635,9 @@ async (win = window, options = {}) => {
         ? "dark"
         : "light",
     layers: layers.map(({ el, ...box }) => box),
+    ...(layers.some((l) => l.fullscreen) && {
+      window: { width: win.innerWidth, height: win.innerHeight },
+    }),
     ...(Object.keys(targetRefs).length > 0 && { targets: targetRefs }),
     ...(scrollers.length > 0 && { scrollers }),
     ...(options.full && { full: options.full }),

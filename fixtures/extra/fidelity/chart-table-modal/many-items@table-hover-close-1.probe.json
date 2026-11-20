@@ -1,0 +1,22 @@
+{
+  "steps": [
+    {
+      "click": "menu-1"
+    },
+    {
+      "click": {
+        "role": "menuitem",
+        "name": "View as table"
+      }
+    },
+    {
+      "hover": "close-1"
+    },
+    {
+      "snapshot": "table-hover-close-1"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}
