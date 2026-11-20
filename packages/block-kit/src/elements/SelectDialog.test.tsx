@@ -127,6 +127,42 @@ describe("a multi_static_select section accessory", () => {
     expect(active && document.getElementById(active)?.textContent).toBe("Alpha");
   });
 
+  // `contexts/multi_static_select/accessory@dialog-tab`: Tab goes Close, the field, Cancel,
+  // Confirm, then back to Close; focus never leaves Slack's dialog.
+  it("keeps Tab inside the dialog", async () => {
+    renderAccessory();
+    await act(async () => fireEvent.click(trigger()));
+    const close = within(dialog()).getByRole("button", { name: "Close" });
+    const confirm = within(dialog()).getByRole("button", { name: "Confirm" });
+    confirm.focus();
+    await keyDownAsync(confirm, "Tab");
+    expect(document.activeElement).toBe(close);
+    await act(async () => fireEvent.keyDown(close, { key: "Tab", shiftKey: true }));
+    expect(document.activeElement).toBe(confirm);
+    // From the dialog itself, which has the focus as it opens, Shift+Tab goes to Confirm too.
+    dialog().focus();
+    await act(async () => fireEvent.keyDown(dialog(), { key: "Tab", shiftKey: true }));
+    expect(document.activeElement).toBe(confirm);
+  });
+
+  // The same recording: the field Tab reaches opens its list, with nothing highlighted.
+  it("opens its list when the field takes the focus", async () => {
+    renderAccessory();
+    await act(async () => fireEvent.click(trigger()));
+    const field = within(dialog()).getByRole("combobox");
+    await act(async () => fireEvent.focus(field));
+    expect(screen.getByRole("listbox")).toBeTruthy();
+    expect(field.getAttribute("aria-activedescendant")).toBeNull();
+    // A click on the field focuses it and clicks it: the list stays open.
+    await keyDownAsync(field, "Tab");
+    expect(screen.queryByRole("listbox")).toBeNull();
+    await act(async () => {
+      fireEvent.focus(field);
+      fireEvent.click(field);
+    });
+    expect(screen.getByRole("listbox")).toBeTruthy();
+  });
+
   it("leaves a hovered row unhighlighted, as Slack's dialog list does", async () => {
     renderAccessory();
     fireEvent.click(trigger());
