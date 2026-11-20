@@ -1,5 +1,5 @@
 import type { PlainTextOption } from "@slack/types";
-import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBlockKitConfig } from "../context";
 import { CloseIcon } from "../icons";
@@ -13,7 +13,7 @@ const optionId = (option: PlainTextOption) => option.value ?? option.text.text;
  * Slack's selection dialog, which a multi-select in a section accessory opens instead of an inline
  * menu, titled with the select's placeholder. Picks are a draft: the option list stays open while
  * choosing, and nothing is sent until Confirm. Cancel, the close button and Escape discard the
- * draft. A users, conversations or channels select lists its `resolvers.directory` entries, and
+ * draft. Tab stays inside the dialog, and the field opens its list when it takes the focus. A users, conversations or channels select lists its `resolvers.directory` entries, and
  * `addTyped` turns a typed id no entry matches into a chip on Enter. `chipLabel` draws a chip's
  * label in place of its option text when it returns one.
  */
@@ -81,6 +81,27 @@ export function SelectDialog({
     dialogRef.current?.focus();
   }, []);
 
+  // Tab stays in the dialog, as in Slack's: past Confirm it wraps to the close button, and
+  // Shift+Tab from the close button (or from the dialog itself, as it opens) to Confirm.
+  function trapTab(e: KeyboardEvent<HTMLDivElement>) {
+    const focusable = [
+      ...e.currentTarget.querySelectorAll<HTMLElement>("button:not(:disabled), input"),
+    ];
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    const at = document.activeElement;
+    const target = e.shiftKey
+      ? at === first || at === e.currentTarget
+        ? last
+        : undefined
+      : at === last
+        ? first
+        : undefined;
+    if (!target) return;
+    e.preventDefault();
+    target.focus();
+  }
+
   if (typeof document === "undefined") return null;
   return createPortal(
     <div className="sbk-root sbk-select-dialog__overlay" data-theme={theme}>
@@ -92,6 +113,10 @@ export function SelectDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         onKeyDown={(e) => {
+          if (e.key === "Tab") {
+            trapTab(e);
+            return;
+          }
           if (e.key !== "Escape") return;
           e.preventDefault();
           e.stopPropagation();
@@ -140,6 +165,10 @@ export function SelectDialog({
             )}
             <input
               {...combo.inputProps(undefined, placeholder)}
+              // Slack's field opens its list when it takes the focus, with nothing highlighted.
+              onFocus={() => {
+                if (!combo.open) combo.openAsClicked();
+              }}
               placeholder=""
               className="sbk-select-dialog__input"
             />

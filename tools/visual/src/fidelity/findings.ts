@@ -466,28 +466,6 @@ export const FINDINGS: Finding[] = [
     components: ["static_select"],
   },
   {
-    id: "select-dialog-focus-trap",
-    title: "Tab leaves our selection dialog; Slack's keeps the focus inside",
-    evidence: [
-      "contexts/multi_static_select/accessory@dialog-tab: in Slack's dialog Tab goes Close, the field, Cancel, Confirm, then wraps back to Close. Ours goes the same way to Confirm, but the fifth Tab moves the focus out of the dialog, and Escape then no longer closes it (Slack's closes and gives the focus back to the accessory).",
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/SelectDialog.tsx: no focus trap, and an Escape handler that only listens while the focus is inside the dialog.",
-    ],
-    next: "Trap the focus in the dialog, then replay it (bun tools/visual/src/probes.ts contexts/multi_static_select/accessory@dialog-tab).",
-    components: ["select-dialog"],
-  },
-  {
-    id: "select-dialog-field-opens-on-focus",
-    title: "Slack's selection dialog opens its list when Tab reaches the field",
-    evidence: [
-      "contexts/multi_static_select/accessory@dialog-tab: the second Tab focuses the dialog's field and Slack opens its list (a listbox layer with the three options); ours focuses the field and leaves the list closed.",
-    ],
-    suspect: ["packages/block-kit/src/elements/SelectDialog.tsx: the field's focus handler."],
-    next: "Open the list on keyboard focus, then replay the same probe.",
-    components: ["select-dialog"],
-  },
-  {
     id: "select-dialog-count-before-confirm",
     title:
       'Slack\'s accessory reads "1 selected" as soon as an option is picked in its dialog (to compare)',
