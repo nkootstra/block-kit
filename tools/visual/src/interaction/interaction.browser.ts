@@ -2863,6 +2863,34 @@ describe.each(engines)("%s", (engine) => {
       });
     }
 
+    // extra/fidelity/chart-table-modal/many-items@table-focus-tab-2, and measured in a 1440-wide
+    // window: Tab reaches the table's scroll container first (28px in, as wide as the table, drawn
+    // with the browser's own focus outline), then the close button, and wraps.
+    it("tabs through the table modal's table and close button", async () => {
+      const page = await harness.open(await chart(), { viewport: WIDE });
+      await openMenu(page, CHART_TRIGGER);
+      await choose(page, "View as table");
+      await settle(page);
+      const focused = () =>
+        page.evaluate(() => {
+          const el = document.activeElement!;
+          const r = el.getBoundingClientRect();
+          return {
+            name: el.getAttribute("aria-label") ?? el.getAttribute("role"),
+            box: [r.x, r.y, r.width].map(Math.round),
+            outline: getComputedStyle(el).outlineStyle,
+          };
+        });
+      const order = [];
+      for (const key of ["Tab", "Tab", "Tab", "Shift+Tab"]) {
+        await page.keyboard.press(key);
+        order.push(await focused());
+      }
+      const table = { name: "region", box: [108, 98, 1224], outline: "auto" };
+      expect(order.map((f) => f.name)).toEqual(["region", "Close", "region", "Close"]);
+      expect(order[0]).toEqual(table);
+    });
+
     it("closes the table modal with Escape, the close button or the overlay", async () => {
       const page = await harness.open(await chart(), { viewport: WIDE });
       const results: (number | string | null)[] = [];
