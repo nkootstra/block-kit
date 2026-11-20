@@ -26,6 +26,21 @@ describe("<Tooltip>", () => {
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
 
+  // catalog/rich-text/kitchen-sink@poke-copy-1: Escape takes Slack's tooltip away while the
+  // pointer and focus stay where they are.
+  it("hides on Escape without moving the pointer or focus", () => {
+    render(
+      <Tooltip label="Copy">
+        <button type="button">copy</button>
+      </Tooltip>,
+    );
+    fireEvent.mouseEnter(screen.getByRole("button"));
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByRole("tooltip")).toBeTruthy();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("tooltip")).toBeNull();
+  });
+
   it("never shows when the pointer leaves before the delay", () => {
     render(
       <Tooltip label="Copy table">

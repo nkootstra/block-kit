@@ -67,7 +67,7 @@ export function CodeBlock({ language, code }: CodeBlockProps) {
       <div className="sbk-code-block__box">
         <div className="sbk-code-block__header">
           <span className="sbk-code-block__language">{languageLabel(language)}</span>
-          <button type="button" className="sbk-code-block__copy" aria-label="Copy code">
+          <button type="button" className="sbk-code-block__copy" aria-label="Copy">
             <CopyIcon width={16} height={16} />
           </button>
         </div>

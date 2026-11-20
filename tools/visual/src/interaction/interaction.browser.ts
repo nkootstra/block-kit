@@ -1273,6 +1273,34 @@ describe.each(engines)("%s", (engine) => {
       expect(await page.locator(".sbk-select__option-text").allTextContents()).toEqual(["Charlie"]);
       expect(await active()).toEqual(["Charlie"]);
     });
+
+    // extra/fidelity/static-select/many-items@scroll-field-1: Slack starts scrolling when the
+    // ninth option is highlighted, keeping the list's 12px padding below it.
+    it("keeps the list's padding in view as the arrow keys scroll it", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "static_select",
+                action_id: "s",
+                placeholder: plain("Pick one"),
+                options: Array.from({ length: 20 }, (_, i) => option(`Option ${i + 1}`)),
+              },
+            ],
+          },
+        ],
+      });
+      await page.click(".sbk-select__control");
+      await settle(page);
+      const scrollTops: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        await page.keyboard.press("ArrowDown");
+        scrollTops.push(await page.locator(".sbk-select__menu").evaluate((el) => el.scrollTop));
+      }
+      expect(scrollTops).toEqual([0, 0, 0, 0, 0, 0, 0, 12, 40, 68, 96, 124]);
+    });
   });
 
   // Measured in Block Kit Builder (light theme): the states Slack's option lists show as you type.
