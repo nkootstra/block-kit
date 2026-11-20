@@ -231,6 +231,36 @@ describe("capture evidence", () => {
     ]);
   });
 
+  it("covers the dispatch configuration of an input a recording types into and submits", () => {
+    const states = [
+      ...COMPONENTS,
+      {
+        ...component("dispatch_action_config", ["default", "pressed"]),
+        match: (o: Record<string, unknown>) => o.dispatch_action === true,
+      },
+    ];
+    const block = (dispatch: boolean) => ({
+      blocks: [
+        {
+          type: "input",
+          label: { type: "plain_text", text: "Email" },
+          element: { type: "email_text_input", action_id: "email" },
+          ...(dispatch && { dispatch_action: true }),
+        },
+      ],
+    });
+    const recording = {
+      steps: [{ click: "input-1" }, { type: "a@example.com" }, { key: "Enter" }],
+      observations: [],
+    };
+    const dispatch = (payload: unknown) =>
+      behaviourEvidence("x/d@enter", payload, states, recording as never)
+        .filter((e) => e.component === "dispatch_action_config")
+        .map((e) => e.state);
+    expect(dispatch(block(true))).toEqual(["default", "pressed"]);
+    expect(dispatch(block(false))).toEqual([]);
+  });
+
   it("covers the behaviour of the components a recording's steps act on", () => {
     const evidence = behaviourEvidence("x/m@arrows", message, COMPONENTS, {
       steps: [{ click: "field-3" }, { key: "ArrowDown" }, { click: { role: "option", name: "A" } }],
@@ -461,6 +491,15 @@ describe("capture evidence", () => {
         { click: "option-1" },
       ] as never).map((e) => `${e.component} ${e.state}`),
     ).toContain("select-dialog selected");
+    // Its list stays open, showing the pick with its check mark.
+    const withOption = [...states, component("option", ["default", "hover", "selected"], "x")];
+    expect(
+      referenceEvidence("x/m@dialog-pick", accessory, withOption, {}, [
+        { click: "field-1" },
+        { click: { role: "combobox", name: "Pick" } },
+        { click: "option-1" },
+      ] as never).map((e) => `${e.component} ${e.state}`),
+    ).toContain("option selected");
   });
 
   it("covers a chart's table modal, opened from its menu", () => {
@@ -479,6 +518,40 @@ describe("capture evidence", () => {
         { hover: "close-1" },
       ] as never).map((e) => `${e.component} ${e.state}`),
     ).toEqual(["chart-table-modal open", "chart-table-modal hover"]);
+  });
+
+  it("covers the option groups of a list a probe opens", () => {
+    const states = [...COMPONENTS, component("option_group", ["open"], "x")];
+    const grouped = {
+      blocks: [
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "static_select",
+              action_id: "g",
+              option_groups: [{ label: { type: "plain_text", text: "One" }, options: [] }],
+            },
+          ],
+        },
+      ],
+    };
+    const steps = [{ click: "field-1" }, { key: "ArrowDown" }];
+    expect(
+      referenceEvidence("x/g@open-field-1", grouped, states, {}, steps.slice(0, 1) as never).map(
+        (e) => `${e.component} ${e.state}`,
+      ),
+    ).toEqual(["static_select open", "option_group open"]);
+    expect(
+      behaviourEvidence("x/g@open-field-1", grouped, states, {
+        steps,
+        observations: [
+          { focus: null, layers: [{ kind: "popover", role: "listbox", scrollTop: 0 }] },
+        ],
+      } as never)
+        .filter((e) => e.component === "option_group")
+        .map((e) => e.state),
+    ).toEqual(["open"]);
   });
 
   it("covers many items for a block that scrolled itself", () => {

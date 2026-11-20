@@ -421,6 +421,15 @@ export function forecastFocus(
   const kind = typeof opened === "string" ? parseTarget(opened)?.kind : undefined;
   const tabs =
     keys.filter((k) => k === "Tab").length - keys.filter((k) => k === "Shift+Tab").length;
+  // A plan its pill expanded: Tab reaches the first task's list item (no address), its header, then
+  // its source (catalog/agents/plan@expanded-focus-tab-3).
+  if (
+    kind === "pill" &&
+    typeof opened === "string" &&
+    controlComponents(payload).pill?.[parseTarget(opened)!.index - 1] === "plan" &&
+    (tabs === 2 || tabs === 3)
+  )
+    return { target: tabs === 2 ? "task-1" : "source-1", visible: true };
   // A chart's table modal takes the focus too; Tab reaches its table (no address), then its close
   // button, and wraps.
   if (

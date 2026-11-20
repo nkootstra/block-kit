@@ -371,6 +371,14 @@ describe("probes on controls Slack draws only after a click", () => {
   });
 
   it("expands a plan before it hovers a source, and plans no plain capture of one", () => {
+    // catalog/agents/plan@expanded-focus-tab-3: Tab reaches the first task's list item, its
+    // header, then its source.
+    const tabs = (n: number) => [
+      { click: "pill-1" },
+      ...Array.from({ length: n }, () => ({ key: "Tab" })),
+    ];
+    expect(forecastFocus(tabs(3), plan)).toEqual({ target: "source-1", visible: true });
+    expect(forecastFocus(tabs(2), plan)).toEqual({ target: "task-1", visible: true });
     expect(revealSteps(plan, "source-1")).toEqual([{ click: "pill-1" }]);
     expect(revealSteps(plan, "pill-1")).toEqual([]);
     const c = pick("url_source");

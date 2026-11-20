@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "click": "pill-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "snapshot": "expanded-focus-tab-3"
+    }
+  ]
+}
