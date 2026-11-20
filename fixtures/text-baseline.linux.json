@@ -1065,6 +1065,10 @@
   "contexts/multi_static_select/accessory": [],
   "contexts/multi_static_select/accessory@dark": [],
   "contexts/multi_static_select/accessory@dialog": [],
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1": [],
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1+dark": [],
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1+mobile": [],
+  "contexts/multi_static_select/accessory@dialog-hover-confirm-1+mobile+dark": [],
   "contexts/multi_static_select/accessory@dialog+dark": [],
   "contexts/multi_static_select/accessory@mobile": [],
   "contexts/multi_static_select/accessory@mobile+dark": [],
@@ -1076,6 +1080,21 @@
   "contexts/multi_static_select/accessory@open-hover-option-1+dark": [],
   "contexts/multi_static_select/accessory@open-hover-option-1+mobile": [],
   "contexts/multi_static_select/accessory@open-hover-option-1+mobile+dark": [],
+  "contexts/multi_static_select/accessory@open-pick-option-1": [
+    "y|Option 1|1",
+    "y|Option 2|0",
+    "y|Option 3|0"
+  ],
+  "contexts/multi_static_select/accessory@open-pick-option-1+mobile": [
+    "y|Option 1|1",
+    "y|Option 2|0",
+    "y|Option 3|0"
+  ],
+  "contexts/multi_static_select/accessory@open-pick-option-1+mobile+dark": [
+    "y|Option 1|1",
+    "y|Option 2|0",
+    "y|Option 3|0"
+  ],
   "contexts/multi_static_select/accessory@open+dark": [],
   "contexts/multi_static_select/accessory@pick+mobile": [],
   "contexts/multi_static_select/accessory@pick+mobile+dark": [],
