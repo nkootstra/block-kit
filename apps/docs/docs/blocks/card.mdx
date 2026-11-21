@@ -301,6 +301,13 @@ in any preview above and check the action log: `onAction` receives
 
 alongside the full `block_actions` payload your app's request URL would receive.
 
+## Limits
+
+Slack caps a card's `title` and `subtitle` at 150 characters, its `body` and `subtext` at 200, and
+its `actions` at 3 buttons ([Limits](/reference/limits)). Slack's API rejects a card past them; the
+renderer draws whatever it's given, clamping the title and subtitle to one line as Slack does, so
+check the limits on your server before you send.
+
 ## Related
 
 <CardGroup cols={2}>
