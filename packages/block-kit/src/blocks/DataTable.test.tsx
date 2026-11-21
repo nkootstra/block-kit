@@ -142,6 +142,20 @@ describe("<DataTable> sorting", () => {
     expect(screen.queryByRole("menuitem", { name: "Clear Sort" })).toBeNull();
   });
 
+  // catalog/table/basic-data-table@poke-column-1, extra/fidelity/data-table/many-items@tab-column-1:
+  // Slack's menu takes the focus as it opens, with no item highlighted, and keeps it on Tab.
+  it("moves the focus into the Sort menu it opens, and keeps it there on Tab", () => {
+    render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: "Amount" }));
+    const menu = screen.getByRole("menu");
+    expect(document.activeElement).toBe(menu);
+    expect(menu.querySelector("[data-active]")).toBeNull();
+    const tab = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+    menu.dispatchEvent(tab);
+    expect(tab.defaultPrevented).toBe(true);
+    expect(screen.getByRole("menu")).toBe(menu);
+  });
+
   it("closes the menu on Escape without sorting", () => {
     render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);
     const header = screen.getByRole("button", { name: "Amount" });
@@ -168,6 +182,49 @@ describe("<DataTable> pagination", () => {
   const rows: Json[][] = [[rawText("Name")]];
   for (let i = 1; i <= 7; i++) rows.push([rawText(`Row ${i}`)]);
   const paginatedBlock = { type: "data_table", caption: "Data table", rows };
+
+  // extra/fidelity/data-table/many-items@tab-column-1: Slack marks the current page's button.
+  it("marks the current page's button as the current page", () => {
+    render(<DataTable block={asDataTableBlock(paginatedBlock)} blockId="b1" index={0} />);
+    const current = () =>
+      ["1", "2"].map((n) => screen.getByLabelText(n).getAttribute("aria-current"));
+    expect(current()).toEqual(["page", "false"]);
+    fireEvent.click(screen.getByLabelText("2"));
+    expect(current()).toEqual(["false", "page"]);
+  });
+
+  // Measured in Block Kit Builder on extra/fidelity/data-table/many-items (8 pages): five page
+  // buttons, the current one centred once it can be, clamped at both ends.
+  it("shows a window of five page buttons around the current page, as Slack does", () => {
+    const many: Json[][] = [[rawText("Name")]];
+    for (let i = 1; i <= 40; i++) many.push([rawText(`Row ${i}`)]);
+    render(
+      <DataTable
+        block={asDataTableBlock({ type: "data_table", caption: "Data table", rows: many })}
+        blockId="b1"
+        index={0}
+      />,
+    );
+    const shown = () =>
+      [...document.querySelectorAll(".sbk-data-table__page-btn")]
+        .map((b) => b.textContent)
+        .join(" ");
+    const seen = [shown()];
+    for (let i = 0; i < 7; i++) {
+      fireEvent.click(screen.getByLabelText("Next page"));
+      seen.push(shown());
+    }
+    expect(seen).toEqual([
+      "1 2 3 4 5",
+      "1 2 3 4 5",
+      "1 2 3 4 5",
+      "2 3 4 5 6",
+      "3 4 5 6 7",
+      "4 5 6 7 8",
+      "4 5 6 7 8",
+      "4 5 6 7 8",
+    ]);
+  });
 
   it("does not show pagination controls when rows fit on one page", () => {
     render(<DataTable block={asDataTableBlock(numericBlock)} blockId="b1" index={0} />);

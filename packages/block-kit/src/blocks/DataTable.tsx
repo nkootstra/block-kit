@@ -16,6 +16,20 @@ interface DataTableBlock extends Json {
 }
 
 const PAGE_SIZE = 5;
+/** How many page buttons Slack's pager shows at once. */
+const PAGE_BUTTONS = 5;
+
+/**
+ * The pages Slack's pager has buttons for: five, with the current one centred once it can be and
+ * the window clamped at both ends (measured in Block Kit Builder on an 8-page table: page 4 shows
+ * 2 to 6, page 8 shows 4 to 8).
+ */
+export function pageWindow(current: number, total: number): number[] {
+  const count = Math.min(PAGE_BUTTONS, total);
+  const start = Math.max(0, Math.min(current - Math.floor(PAGE_BUTTONS / 2), total - count));
+  return Array.from({ length: count }, (_, i) => start + i);
+}
+
 /** Height of a body row, which Slack uses to pad a short last page up to a full one. */
 const ROW_HEIGHT = 48;
 /** The least a column narrows to; past that the frame scrolls sideways. */
@@ -272,12 +286,14 @@ export function DataTable({ block }: BlockProps<DataTableBlock>) {
             >
               <PageCaretIcon direction="left" />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => (
+            {pageWindow(currentPage, totalPages).map((i) => (
               <button
                 key={i}
                 type="button"
                 className={`sbk-data-table__page-btn${i === currentPage ? " sbk-data-table__page-btn--active" : ""}`}
                 aria-label={String(i + 1)}
+                // Slack marks the current page's button "page" and the others "false".
+                aria-current={i === currentPage ? "page" : "false"}
                 onClick={() => setPage(i)}
               >
                 {i + 1}

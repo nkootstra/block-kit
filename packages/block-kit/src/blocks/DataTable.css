@@ -302,6 +302,12 @@
   box-shadow: var(--sbk-menu-shadow);
 }
 
+/* The menu takes the focus as it opens; its items show where the keyboard is, as the overflow
+   menu's do. */
+.sbk-data-table__sort-menu:focus {
+  outline: none;
+}
+
 .sbk-data-table__sort-heading {
   padding: 4px 24px;
   font: 13px / 18px var(--sbk-font);
