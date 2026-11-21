@@ -11,9 +11,10 @@ const optionId = (option: PlainTextOption) => option.value ?? option.text.text;
 
 /**
  * Slack's selection dialog, which a multi-select in a section accessory opens instead of an inline
- * menu, titled with the select's placeholder. Picks are a draft: the option list stays open while
- * choosing, and nothing is sent until Confirm. Cancel, the close button and Escape discard the
- * draft. Tab stays inside the dialog, and the field opens its list when it takes the focus. A users, conversations or channels select lists its `resolvers.directory` entries, and
+ * menu, titled with the select's placeholder. The option list stays open while choosing, and each
+ * pick reaches the accessory's button at once (`onChange`), as in the Slack client; nothing is sent
+ * until Confirm. Escape and the close button keep the picks (`onClose`); Cancel goes back to what
+ * the dialog opened with (`onCancel`). Tab stays inside the dialog, and the field opens its list when it takes the focus. A users, conversations or channels select lists its `resolvers.directory` entries, and
  * `addTyped` turns a typed id no entry matches into a chip on Enter. `chipLabel` draws a chip's
  * label in place of its option text when it returns one.
  */
@@ -25,6 +26,8 @@ export function SelectDialog({
   chipLabel,
   onConfirm,
   onCancel,
+  onClose,
+  onChange,
 }: {
   options: PlainTextOption[];
   initial: PlainTextOption[];
@@ -34,7 +37,12 @@ export function SelectDialog({
   /** A chip's label, or `undefined` for its option text. */
   chipLabel?: (option: PlainTextOption) => ReactNode;
   onConfirm: (selected: PlainTextOption[]) => void;
+  /** Cancel: back to the picks the dialog opened with. */
   onCancel: () => void;
+  /** Escape or the close button: the picks stay, unsent. */
+  onClose: () => void;
+  /** Every change to the picks, as it happens. */
+  onChange?: (selected: PlainTextOption[]) => void;
 }) {
   const { theme } = useBlockKitConfig();
   const titleId = useId();
@@ -43,6 +51,12 @@ export function SelectDialog({
   const dialogRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  // The latest onChange, so the effect below runs only when the picks change.
+  const changed = useRef(onChange);
+  changed.current = onChange;
+  useEffect(() => {
+    changed.current?.(draft);
+  }, [draft]);
 
   const rows = options.filter((o) => o.text.text.toLowerCase().includes(query.toLowerCase()));
   const chosen = (option: PlainTextOption) => draft.some((d) => optionId(d) === optionId(option));
@@ -120,7 +134,7 @@ export function SelectDialog({
           if (e.key !== "Escape") return;
           e.preventDefault();
           e.stopPropagation();
-          onCancel();
+          onClose();
         }}
       >
         <div className="sbk-select-dialog__header">
@@ -131,7 +145,7 @@ export function SelectDialog({
             type="button"
             className="sbk-select-dialog__close"
             aria-label="Close"
-            onClick={onCancel}
+            onClick={onClose}
           >
             <CloseIcon />
           </button>

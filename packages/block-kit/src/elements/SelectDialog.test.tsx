@@ -67,25 +67,45 @@ describe("a multi_static_select section accessory", () => {
     expect(trigger("2 selected")).toBeTruthy();
   });
 
-  it("discards the picks on Cancel", async () => {
+  // Checked in the Slack client (a section's multi_static_select, sent with Block Kit Builder's
+  // Preview in Slack): picks show on the button at once, Escape and the close button keep them,
+  // Cancel goes back to what the dialog opened with, and nothing is sent until Confirm.
+  it("shows the picks on its button while the dialog is open", async () => {
     const onAction = renderAccessory();
     fireEvent.click(trigger());
     await pick("Bravo");
-    await clickAsync(within(dialog()).getByRole("button", { name: "Cancel" }));
-    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(trigger("1 selected")).toBeTruthy();
     expect(onAction).not.toHaveBeenCalled();
-    expect(trigger()).toBeTruthy();
   });
 
-  it("discards the picks on Escape and with the close button", async () => {
+  it("keeps the picks on Escape and with the close button, without sending them", async () => {
     const onAction = renderAccessory();
     fireEvent.click(trigger());
     await pick("Bravo");
     await keyDownAsync(dialog(), "Escape");
     expect(screen.queryByRole("dialog")).toBeNull();
-    fireEvent.click(trigger());
+    expect(trigger("1 selected")).toBeTruthy();
+    fireEvent.click(trigger("1 selected"));
+    expect(within(dialog()).getByText("Bravo")).toBeTruthy();
+    await pick("Charlie");
     await clickAsync(within(dialog()).getByRole("button", { name: "Close" }));
+    expect(trigger("2 selected")).toBeTruthy();
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
+  it("goes back to the picks it opened with on Cancel", async () => {
+    const onAction = renderAccessory();
+    fireEvent.click(trigger());
+    await pick("Alpha");
+    await keyDownAsync(dialog(), "Escape");
+    fireEvent.click(trigger("1 selected"));
+    await pick("Bravo");
+    expect(trigger("2 selected")).toBeTruthy();
+    await clickAsync(within(dialog()).getByRole("button", { name: "Cancel" }));
     expect(screen.queryByRole("dialog")).toBeNull();
+    expect(trigger("1 selected")).toBeTruthy();
+    fireEvent.click(trigger("1 selected"));
+    expect(within(dialog()).queryByText("Bravo")).toBeNull();
     expect(onAction).not.toHaveBeenCalled();
   });
 

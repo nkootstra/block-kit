@@ -438,6 +438,8 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       value: item.id,
     };
   const [dialogOpen, setDialogOpen] = useState(false);
+  /** The picks the selection dialog opened with, which its Cancel goes back to. */
+  const openedWith = useRef<Item[]>([]);
 
   // Slack's static select without a placeholder reads "Pick an option" (Block Kit Builder,
   // `extra/modal/form@open`); the other selects' defaults aren't recorded yet.
@@ -638,13 +640,21 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
       setDialogOpen(false);
       triggerRef.current?.focus();
     };
+    // A directory item keeps no label, so it's resolved wherever it's shown.
+    const toItems = (selected: PlainTextOption[]) =>
+      selected.map((o) =>
+        directory ? { id: o.value ?? o.text.text, label: "" } : optionToItem(o),
+      );
     return (
       <div className={`sbk-select sbk-select--multi${sizeClass}`} ref={rootRef}>
         <button
           ref={triggerRef}
           type="button"
           className="sbk-select__control"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => {
+            openedWith.current = items;
+            setDialogOpen(true);
+          }}
           aria-haspopup="dialog"
           aria-expanded={dialogOpen}
           {...invalid}
@@ -679,16 +689,21 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
                       : undefined
                 : undefined
             }
-            onCancel={closeDialog}
+            // As in the Slack client: the button shows the picks at once, Escape and the close
+            // button keep them unsent, Cancel goes back to what the dialog opened with.
+            onChange={(selected) => setItems(toItems(selected))}
+            onClose={closeDialog}
+            onCancel={() => {
+              setItems(openedWith.current);
+              closeDialog();
+            }}
             onConfirm={async (selected) => {
               closeDialog();
-              if (!(await ask())) return;
-              // A directory item keeps no label, so it's resolved wherever it's shown.
-              await commit(
-                selected.map((o) =>
-                  directory ? { id: o.value ?? o.text.text, label: "" } : optionToItem(o),
-                ),
-              );
+              if (!(await ask())) {
+                setItems(openedWith.current);
+                return;
+              }
+              await commit(toItems(selected));
             }}
           />
         )}

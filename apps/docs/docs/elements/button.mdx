@@ -220,6 +220,10 @@ and, if `url` is set, opens it in a new tab:
 `state.values`: Slack only tracks state for elements that hold a value across interactions
 (selects, inputs, date pickers, and so on).
 
+A pressed button keeps the keyboard focus. The Slack client moves the focus to the page after a
+button is clicked or pressed with Enter, which loses a keyboard user's place; this one deliberately
+doesn't follow it.
+
 ## Related
 
 <CardGroup cols={2}>
