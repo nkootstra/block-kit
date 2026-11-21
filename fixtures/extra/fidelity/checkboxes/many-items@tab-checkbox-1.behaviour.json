@@ -1,0 +1,323 @@
+{
+  "steps": [
+    {
+      "click": "checkbox-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": true
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        },
+        "checkbox-4": {
+          "checked": false
+        },
+        "checkbox-5": {
+          "checked": false
+        },
+        "checkbox-6": {
+          "checked": false
+        },
+        "checkbox-7": {
+          "checked": false
+        },
+        "checkbox-8": {
+          "checked": false
+        },
+        "checkbox-9": {
+          "checked": false
+        },
+        "checkbox-10": {
+          "checked": false
+        },
+        "radio-1": {
+          "checked": true
+        },
+        "radio-2": {
+          "checked": false
+        },
+        "radio-3": {
+          "checked": false
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "checkbox-1",
+        "role": "checkbox",
+        "name": "Option 1",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        },
+        "checkbox-4": {
+          "checked": false
+        },
+        "checkbox-5": {
+          "checked": false
+        },
+        "checkbox-6": {
+          "checked": false
+        },
+        "checkbox-7": {
+          "checked": false
+        },
+        "checkbox-8": {
+          "checked": false
+        },
+        "checkbox-9": {
+          "checked": false
+        },
+        "checkbox-10": {
+          "checked": false
+        },
+        "radio-1": {
+          "checked": true
+        },
+        "radio-2": {
+          "checked": false
+        },
+        "radio-3": {
+          "checked": false
+        }
+      },
+      "action": {
+        "type": "block_actions",
+        "user": {
+          "id": "U00000000",
+          "username": "user",
+          "name": "user",
+          "team_id": "T00000000"
+        },
+        "api_app_id": "<api_app_id>",
+        "token": "<token>",
+        "container": {
+          "type": "message",
+          "text": "The contents of the original message where the action originated"
+        },
+        "trigger_id": "<trigger_id>",
+        "team": {
+          "id": "T00000000",
+          "domain": "workspace"
+        },
+        "enterprise": null,
+        "is_enterprise_install": false,
+        "state": {
+          "values": {
+            "choices": {
+              "boxes": {
+                "type": "checkboxes",
+                "selected_options": []
+              }
+            }
+          }
+        },
+        "response_url": "<response_url>",
+        "actions": [
+          {
+            "type": "checkboxes",
+            "block_id": "choices",
+            "action_id": "boxes",
+            "selected_options": [],
+            "action_ts": "<action_ts>"
+          }
+        ]
+      }
+    },
+    {
+      "focus": {
+        "target": "checkbox-2",
+        "role": "checkbox",
+        "name": "Option 2",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        },
+        "checkbox-4": {
+          "checked": false
+        },
+        "checkbox-5": {
+          "checked": false
+        },
+        "checkbox-6": {
+          "checked": false
+        },
+        "checkbox-7": {
+          "checked": false
+        },
+        "checkbox-8": {
+          "checked": false
+        },
+        "checkbox-9": {
+          "checked": false
+        },
+        "checkbox-10": {
+          "checked": false
+        },
+        "radio-1": {
+          "checked": true
+        },
+        "radio-2": {
+          "checked": false
+        },
+        "radio-3": {
+          "checked": false
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "checkbox-3",
+        "role": "checkbox",
+        "name": "Option 3",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        },
+        "checkbox-4": {
+          "checked": false
+        },
+        "checkbox-5": {
+          "checked": false
+        },
+        "checkbox-6": {
+          "checked": false
+        },
+        "checkbox-7": {
+          "checked": false
+        },
+        "checkbox-8": {
+          "checked": false
+        },
+        "checkbox-9": {
+          "checked": false
+        },
+        "checkbox-10": {
+          "checked": false
+        },
+        "radio-1": {
+          "checked": true
+        },
+        "radio-2": {
+          "checked": false
+        },
+        "radio-3": {
+          "checked": false
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "checkbox-4",
+        "role": "checkbox",
+        "name": "Option 4",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "checkbox-1": {
+          "checked": false
+        },
+        "checkbox-2": {
+          "checked": false
+        },
+        "checkbox-3": {
+          "checked": false
+        },
+        "checkbox-4": {
+          "checked": false
+        },
+        "checkbox-5": {
+          "checked": false
+        },
+        "checkbox-6": {
+          "checked": false
+        },
+        "checkbox-7": {
+          "checked": false
+        },
+        "checkbox-8": {
+          "checked": false
+        },
+        "checkbox-9": {
+          "checked": false
+        },
+        "checkbox-10": {
+          "checked": false
+        },
+        "radio-1": {
+          "checked": true
+        },
+        "radio-2": {
+          "checked": false
+        },
+        "radio-3": {
+          "checked": false
+        }
+      },
+      "action": null
+    }
+  ]
+}

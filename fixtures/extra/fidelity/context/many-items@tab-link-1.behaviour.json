@@ -1,0 +1,71 @@
+{
+  "steps": [
+    {
+      "click": "link-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {}
+    },
+    {
+      "focus": {
+        "target": "link-1",
+        "role": "link",
+        "name": "2 others",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "link-2",
+        "role": "link",
+        "name": "2 others",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {},
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "button",
+        "name": "Context block options",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": null,
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": "Click for options",
+      "busy": false,
+      "controls": {},
+      "action": null
+    }
+  ]
+}

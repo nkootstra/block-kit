@@ -1,0 +1,81 @@
+{
+  "steps": [
+    {
+      "click": "expand-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "click": "expand-1"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "expand-1": {
+          "expanded": "true"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "expand-1",
+        "role": "button",
+        "name": "image",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "expand-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "expand-1",
+        "role": "button",
+        "name": "image",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "expand-1": {
+          "expanded": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "expand-1",
+        "role": "button",
+        "name": "image",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "expand-1": {
+          "expanded": "true"
+        }
+      },
+      "action": null
+    }
+  ]
+}

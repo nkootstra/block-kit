@@ -538,6 +538,23 @@ export function behaviourEvidence(
     for (const id of withState(payload, components, "validation-error")) ids.add(id);
   }
   const out: Evidence[] = [];
+  // A fixture written to show a component's many items (extra/fidelity/<component>/many-items), and
+  // a recording that moves through them: Tab or the arrow keys pressed more than once.
+  const [extra, fidelity, dir, state] = name.split("@")[0]!.split("/");
+  const moves = steps.filter(
+    (s) => "key" in s && /^(Shift\+)?Tab$|^Arrow(Up|Down|Left|Right)$/.test(s.key),
+  ).length;
+  if (extra === "extra" && fidelity === "fidelity" && state === "many-items" && moves > 1)
+    for (const c of components)
+      if (c.id.replaceAll(".", "-").replaceAll("_", "-") === dir && c.states.includes("many-items"))
+        out.push({
+          component: c.id,
+          state: "many-items",
+          theme: "any",
+          width: "any",
+          fact: "behaviour",
+          what: `behaviour recording ${name}`,
+        });
   for (const id of ids)
     for (const state of states)
       if (components.some((c) => c.id === id && c.states.includes(state)))

@@ -478,4 +478,28 @@ export const FINDINGS: Finding[] = [
     next: "Check in the Slack client (not the Builder) whether Escape keeps an unconfirmed pick before changing ours.",
     components: ["select-dialog", "multi_static_select"],
   },
+  {
+    id: "hover-card-in-tab-order",
+    title: "Tab from a message's last control reaches a link's hover card in ours",
+    evidence: [
+      "extra/fidelity/context/many-items@tab-link-1 and extra/fidelity/rich-text-rich-text-list/many-items@tab-link-1: after a click on a link the pointer rests on it, so our hover card shows; Tab past the message's last control then lands on the card's \"Open in new tab\" button, portalled at the end of the page. Slack's recordings show no card open after the click, and Tab leaves the message for the Builder's block options.",
+    ],
+    suspect: [
+      "packages/block-kit/src/HoverCard.tsx: the card is documented as never taking focus, but its link card's button is in the page's Tab order while the card shows.",
+    ],
+    next: "Keep the card's controls out of the Tab order (or close the card when focus leaves its anchor), then replay both recordings.",
+    components: ["rich_text.link", "context"],
+  },
+  {
+    id: "button-click-drops-focus",
+    title: "Slack's button loses the focus when it's clicked; ours keeps it",
+    evidence: [
+      "extra/fidelity/actions/many-items@tab-button-1: after a click on the first button Slack records no focused element (the button re-renders while its action is sent), ours keeps the focus on the button. Tab then moves on through the buttons on both sides.",
+    ],
+    suspect: [
+      "Possibly the Builder re-rendering the preview for Actions Preview rather than the Slack client. Ours: packages/block-kit/src/elements/Button.tsx keeps the focus as a native button does.",
+    ],
+    next: "Check in the Slack client whether a clicked button keeps the focus before changing ours.",
+    components: ["button"],
+  },
 ];
