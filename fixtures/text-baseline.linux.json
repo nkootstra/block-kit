@@ -196,6 +196,10 @@
   "catalog/agents/plan-error@mobile+dark": [],
   "catalog/agents/plan@dark": [],
   "catalog/agents/plan@expanded": [],
+  "catalog/agents/plan@expanded-focus-tab-3": [],
+  "catalog/agents/plan@expanded-focus-tab-3+dark": [],
+  "catalog/agents/plan@expanded-focus-tab-3+mobile": [],
+  "catalog/agents/plan@expanded-focus-tab-3+mobile+dark": [],
   "catalog/agents/plan@expanded-hover-source-1": [],
   "catalog/agents/plan@expanded-hover-source-1+dark": [],
   "catalog/agents/plan@expanded-hover-source-1+mobile": [],
@@ -1089,6 +1093,11 @@
     "y|Option 2|0",
     "y|Option 3|0"
   ],
+  "contexts/multi_static_select/accessory@open-pick-option-1+dark": [
+    "y|Option 1|1",
+    "y|Option 2|0",
+    "y|Option 3|0"
+  ],
   "contexts/multi_static_select/accessory@open-pick-option-1+mobile": [
     "y|Option 1|1",
     "y|Option 2|0",
@@ -1674,6 +1683,9 @@
   "extra/fidelity/option-group/many-items@mobile": [],
   "extra/fidelity/option-group/many-items@mobile+dark": [],
   "extra/fidelity/option-group/many-items@open": [],
+  "extra/fidelity/option-group/many-items@open-field-1": [],
+  "extra/fidelity/option-group/many-items@open-field-1+mobile": [],
+  "extra/fidelity/option-group/many-items@open-field-1+mobile+dark": [],
   "extra/fidelity/option-group/many-items@open+dark": [],
   "extra/fidelity/option/long-content": [],
   "extra/fidelity/option/long-content@confirm": [],
