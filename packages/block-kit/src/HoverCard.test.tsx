@@ -62,6 +62,28 @@ describe("<HoverCard>", () => {
     expect(card()).toBeNull();
   });
 
+  // extra/fidelity/context/many-items@tab-link-1: Slack shows no card after a click on a link,
+  // though the pointer rests on it.
+  it("shows no card once its anchor is clicked", () => {
+    render(
+      <HoverCard content="About this">
+        <span>anchor</span>
+      </HoverCard>,
+    );
+    const anchor = screen.getByText("anchor");
+    fireEvent.mouseEnter(anchor);
+    fireEvent.click(anchor);
+    act(() => vi.advanceTimersByTime(500));
+    expect(card()).toBeNull();
+    // An open card closes on the click too.
+    fireEvent.mouseLeave(anchor);
+    fireEvent.mouseEnter(anchor);
+    act(() => vi.advanceTimersByTime(300));
+    expect(card()).not.toBeNull();
+    fireEvent.click(anchor);
+    expect(card()).toBeNull();
+  });
+
   it("explains a channel mention it can't resolve, as Slack's hover card does", () => {
     render(
       <Message
@@ -102,6 +124,9 @@ describe("<HoverCard>", () => {
     act(() => vi.advanceTimersByTime(300));
     expect(card()?.querySelector(".sbk-link-card__url")?.textContent).toBe("http://google.com");
     expect(card()?.textContent).toContain("Link");
+    // The card is for the pointer, which it never takes focus from: Tab passes its buttons by.
+    for (const name of ["Open in new tab", "Copy link"])
+      expect(screen.getByRole("button", { name }).tabIndex).toBe(-1);
     // The card has controls of its own, so it doesn't describe the link.
     expect(link.hasAttribute("aria-describedby")).toBe(false);
     expect(link.parentElement?.hasAttribute("aria-describedby")).toBe(false);
