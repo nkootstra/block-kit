@@ -223,6 +223,10 @@ const rich = (
 const SELECT_EVENTS: PayloadEvent[] = ["block_actions", "view_submission"];
 const INPUT_EVENTS: PayloadEvent[] = ["view_submission", "block_actions"];
 
+/** Why the file block's states can't be captured in Block Kit Builder. */
+const FILE_BLOCK =
+  "Block Kit Builder can't render a file block: apps can't post one, and it only appears in messages Slack returns with a remote file";
+
 export const COMPONENTS: Component[] = [
   // Blocks
   blk(
@@ -267,14 +271,18 @@ export const COMPONENTS: Component[] = [
     "scrolled-end",
   ]),
   blk("file", "file-block", ["message"], 3, ["default", "hover", "loading"], {
+    // Slack: "You can't add this block to app surfaces directly, but it will show up when retrieving
+    // messages that contain remote files" (docs.slack.dev, file block). Block Kit Builder renders
+    // nothing for it, even with a remote file registered in its workspace (files.remote.add,
+    // 2026-11-21): a remote file belongs to the app that added it, and the Builder previews as its
+    // own app.
     unobservable: {
       default:
-        "Needs a real remote file in the Builder's workspace (extra/file/remote-file is unverified)",
+        "Apps can't post a file block; it only appears in messages Slack returns with a remote file, so Block Kit Builder renders nothing for it (checked with a registered remote file, 2026-11-21)",
+      hover: FILE_BLOCK,
       loading: NO_BACKEND,
-      empty:
-        "A stylesheet-only state of Slack's file pill; a file block needs a real remote file in the Builder's workspace",
-      mixed:
-        "Its stylesheet variants are file kinds (image, document, slide, remote, external, not found, tombstone), which need real files in the Builder's workspace",
+      empty: FILE_BLOCK,
+      mixed: FILE_BLOCK,
     },
   }),
   blk(
