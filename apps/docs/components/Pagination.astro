@@ -18,10 +18,17 @@ interface Props {
 }
 
 const { prev, next, strings } = Astro.props;
-const neighbours = [prev, next].filter((page) => page !== null);
-const releases =
-  neighbours.length > 0 && neighbours.every((page) => page.route.startsWith("/changelog/"));
-const labels = releases ? { ...strings, next: "Older release", previous: "Newer release" } : strings;
+// A release page is /changelog/<version>; the index at /changelog isn't one.
+const isRelease = (route: string) => /^\/changelog\/[^/]+\/?$/.test(route);
+const releases = isRelease(Astro.url.pathname);
+// Each link says which release it leads to. The newest release's "previous" neighbour is the
+// /changelog index and the index's "next" is the newest release: neither is an older or newer
+// release, so they keep Blume's own labels.
+const labels = {
+  ...strings,
+  ...(releases && next && isRelease(next.route) ? { next: "Older release" } : {}),
+  ...(releases && prev && isRelease(prev.route) ? { previous: "Newer release" } : {}),
+};
 ---
 
 {
