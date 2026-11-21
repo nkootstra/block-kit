@@ -123,10 +123,13 @@ Each cell is one of four shapes, picked by `type`:
 />
 
 :::note
-Sorting isn't configured through the payload. Clicking a header cycles that column through
-ascending, descending, and back to the original order. With keyboard focus, a header shows its sort
-caret and Slack's button focus ring (`--sbk-focus-ring`). Pagination controls appear automatically
-once a table has more than 5 data rows, five rows to a page. Slack's `page_size` field (1 to 100,
+Sorting isn't configured through the payload. Clicking a header opens Slack's **Sort** menu with
+Ascending and Descending, and **Clear Sort** once that column is sorted; the menu takes the focus as
+it opens, the arrow keys move through it and Escape closes it and returns to the header. With
+keyboard focus, a header shows its sort caret and Slack's button focus ring (`--sbk-focus-ring`).
+Pagination controls appear automatically once a table has more than 5 data rows, five rows to a
+page. As in Slack, the pager shows five page buttons at a time, centred on the current page where
+it can, and marks the current one for screen readers (`aria-current="page"`). Slack's `page_size` field (1 to 100,
 default 5) isn't read, so a table always pages by 5. See [Limits](/reference/limits) for the
 row, column and character limits.
 :::
@@ -136,7 +139,7 @@ the caption and toolbar and no columns.
 
 Every control is a button, so the keyboard works as it does for any button: Tab moves between the
 toolbar, the column headers, a cell's **Expand cell** button and the page controls, and Enter or
-Space activates the focused one. A header activated this way cycles its sort like a click.
+Space activates the focused one. A header activated this way opens its Sort menu like a click.
 
 The toolbar's **More actions** button opens Slack's menu with **Copy table**, which copies the
 whole table as tab-separated text that pastes into a spreadsheet, and **Download table**, which

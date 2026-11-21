@@ -13,7 +13,8 @@ const DIRECTIONS = [
 /**
  * A sortable column header. As in Slack, pressing it opens a small "Sort" menu rather than sorting
  * straight away: Ascending and Descending, with the current one checked, and Clear Sort once this
- * column is the sorted one. The header itself shows no sort arrow; its caret only appears on hover.
+ * column is the sorted one. The menu takes the focus as it opens and keeps it on Tab; Escape gives it
+ * back to the header. The header itself shows no sort arrow; its caret only appears on hover.
  */
 export function DataTableColumnHeader({
   label,
@@ -67,8 +68,24 @@ export function DataTableColumnHeader({
         </span>
       </button>
       {open ? (
-        <Popover anchorRef={triggerRef} gap={0} onDismiss={() => setOpen(false)}>
-          <div className="sbk-data-table__sort-menu" role="menu" ref={listRef}>
+        <Popover
+          anchorRef={triggerRef}
+          gap={0}
+          onDismiss={() => setOpen(false)}
+          // Slack's menu takes the focus as it opens (catalog/table/basic-data-table@poke-column-1),
+          // with no item highlighted after a click; the arrow keys then move through it.
+          onPlaced={() => listRef.current?.focus()}
+        >
+          <div
+            className="sbk-data-table__sort-menu"
+            role="menu"
+            ref={listRef}
+            tabIndex={-1}
+            // Tab stays in the open menu, as in Slack's (extra/fidelity/data-table/many-items@tab-column-1).
+            onKeyDown={(e) => {
+              if (e.key === "Tab") e.preventDefault();
+            }}
+          >
             <div className="sbk-data-table__sort-heading" role="presentation">
               Sort
             </div>
