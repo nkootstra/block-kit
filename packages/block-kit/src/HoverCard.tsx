@@ -31,6 +31,7 @@ const EDGE = 8;
 type AnchorProps = {
   onMouseEnter?: (e: MouseEvent) => void;
   onMouseLeave?: (e: MouseEvent) => void;
+  onClick?: (e: MouseEvent) => void;
   "aria-describedby"?: string;
 };
 
@@ -119,6 +120,13 @@ export function HoverCard({ content, children, className, describes = true }: Ho
       props.onMouseLeave?.(e);
       hide();
     },
+    // A click on the anchor (following a link) puts the card away, as Slack's does, though the
+    // pointer still rests on it (extra/fidelity/context/many-items@tab-link-1).
+    onClick: (e: MouseEvent) => {
+      props.onClick?.(e);
+      clearTimeout(timer.current);
+      setOpen(false);
+    },
     "aria-describedby": open && describes ? id : props["aria-describedby"],
   });
 
@@ -185,6 +193,8 @@ function LinkCard({ url, href }: { url: string; href: string }) {
               type="button"
               className="sbk-icon-button sbk-link-card__action"
               aria-label="Open in new tab"
+              // The card is for the pointer and never takes focus, so Tab passes its buttons by.
+              tabIndex={-1}
               onClick={() => window.open(href, "_blank", "noopener,noreferrer")}
             >
               <NewWindowIcon />
@@ -195,6 +205,7 @@ function LinkCard({ url, href }: { url: string; href: string }) {
               type="button"
               className="sbk-icon-button sbk-link-card__action"
               aria-label="Copy link"
+              tabIndex={-1}
               onClick={() => copyText(url)}
             >
               <CopyIcon width={16} height={16} />

@@ -479,18 +479,6 @@ export const FINDINGS: Finding[] = [
     components: ["select-dialog", "multi_static_select"],
   },
   {
-    id: "hover-card-in-tab-order",
-    title: "Tab from a message's last control reaches a link's hover card in ours",
-    evidence: [
-      "extra/fidelity/context/many-items@tab-link-1 and extra/fidelity/rich-text-rich-text-list/many-items@tab-link-1: after a click on a link the pointer rests on it, so our hover card shows; Tab past the message's last control then lands on the card's \"Open in new tab\" button, portalled at the end of the page. Slack's recordings show no card open after the click, and Tab leaves the message for the Builder's block options.",
-    ],
-    suspect: [
-      "packages/block-kit/src/HoverCard.tsx: the card is documented as never taking focus, but its link card's button is in the page's Tab order while the card shows.",
-    ],
-    next: "Keep the card's controls out of the Tab order (or close the card when focus leaves its anchor), then replay both recordings.",
-    components: ["rich_text.link", "context"],
-  },
-  {
     id: "button-click-drops-focus",
     title: "Slack's button loses the focus when it's clicked; ours keeps it",
     evidence: [
