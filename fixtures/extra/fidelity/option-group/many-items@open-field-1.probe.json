@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "click": "field-1"
+    },
+    {
+      "snapshot": "open-field-1"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

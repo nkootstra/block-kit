@@ -312,6 +312,12 @@ const componentAt = (payload: unknown, address: string): string | undefined => {
   return controlComponents(payload)[target.kind]?.[target.index - 1];
 };
 
+/** Whether the field at `address` lists its options in option groups. */
+const groupsOptions = (payload: unknown, address: string) => {
+  const t = parseTarget(address);
+  return Array.isArray(t && controlNodes(payload)[t.kind]?.[t.index - 1]?.node.option_groups);
+};
+
 /** The chart menu item that opens a chart's table modal, in Slack's menu and ours. */
 const TABLE = "View as table";
 
@@ -396,14 +402,22 @@ export function referenceEvidence(
       if (typeof t !== "string") continue;
       const kind = parseTarget(t)?.kind;
       const id = componentAt(payload, t);
-      if ("click" in step && kind && OPENERS.has(kind) && id) opened.add(id);
+      if ("click" in step && kind && OPENERS.has(kind) && id) {
+        opened.add(id);
+        // A list of option groups shows its groups as it opens.
+        if (groupsOptions(payload, t)) opened.add("option_group");
+      }
       // A section accessory's multi-select opens the selection dialog, which shows what's picked
       // in its list until Confirm.
       if ("click" in step && kind === "field" && opensDialog(payload, t)) dialog = true;
       // Picking an option or a menu item closes what it was in, and selects.
       if ("click" in step && (kind === "option" || kind === "menuitem")) {
         for (const o of opened) styles(o, "selected", what);
-        if (dialog) styles("select-dialog", "selected", what);
+        // The dialog's list stays open after a pick, showing the option chosen.
+        if (dialog) {
+          styles("select-dialog", "selected", what);
+          styles("option", "selected", what);
+        }
         opened.clear();
       }
       if ("click" in step && kind && TOGGLERS.has(kind) && id) styles(id, "toggled", what);
@@ -508,6 +522,17 @@ export function behaviourEvidence(
   );
   // A tooltip the steps brought up (observe.js records its text).
   if (observations.some((o) => o.tooltip)) ids.add("tooltip");
+  // A list of option groups the steps opened.
+  if (addressesOf(steps).some((a) => a.startsWith("field-") && groupsOptions(payload, a)))
+    ids.add("option_group");
+  // Typing into an input or rich text field and pressing Enter (or a configured character) is what
+  // an input block's dispatch_action configuration acts on.
+  if (
+    steps.some((s) => "type" in s || ("key" in s && s.key === "Enter")) &&
+    addressesOf(steps).some((a) => /^(input|richtext)-/.test(a)) &&
+    [...objects(payload)].some(([o]) => o.dispatch_action === true)
+  )
+    ids.add("dispatch_action_config");
   if (interaction === "submit-errors") {
     states.push("validation-error");
     for (const id of withState(payload, components, "validation-error")) ids.add(id);

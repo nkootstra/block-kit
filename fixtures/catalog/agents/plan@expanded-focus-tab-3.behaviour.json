@@ -1,0 +1,189 @@
+{
+  "steps": [
+    {
+      "click": "pill-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "snapshot": "expanded-focus-tab-3"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "pill-1": {
+          "expanded": "false",
+          "disabled": "false"
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": "pill-1",
+        "role": "button",
+        "name": "Tasks performed: Demonstrating Plan Block Features...",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "listitem",
+        "name": "Fetching data from Slack API",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "task-1",
+        "role": "button",
+        "name": "Fetching data from Slack API",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "source-1",
+        "role": "link",
+        "name": "Thinking Steps Documentation",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "source-1",
+        "role": "link",
+        "name": "Thinking Steps Documentation",
+        "where": "preview"
+      },
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "pill-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-1": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-2": {
+          "expanded": "true",
+          "disabled": "false"
+        },
+        "task-3": {
+          "expanded": "true",
+          "disabled": "false"
+        }
+      },
+      "action": null
+    }
+  ]
+}
