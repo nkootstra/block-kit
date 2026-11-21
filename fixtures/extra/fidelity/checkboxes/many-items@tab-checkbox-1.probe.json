@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "checkbox-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "click": "expand-1"
+    },
+    {
+      "wait": 300
+    },
+    {
+      "click": "expand-1"
+    }
+  ]
+}

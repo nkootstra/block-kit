@@ -261,6 +261,29 @@ describe("capture evidence", () => {
     expect(dispatch(block(false))).toEqual([]);
   });
 
+  it("covers the many items of the component a many-items fixture was written for", () => {
+    const states = [
+      ...COMPONENTS,
+      component("rich_text.rich_text_list", ["default", "many-items"], "x"),
+    ];
+    // Moving through the items: Tab or the arrow keys, several times.
+    const tabs = {
+      steps: [{ click: "mention-1" }, { key: "Tab" }, { key: "Tab" }],
+      observations: [],
+    };
+    const many = (name: string, recording: unknown = tabs) =>
+      behaviourEvidence(name, { blocks: [] }, states, recording as never)
+        .filter((e) => e.component === "rich_text.rich_text_list")
+        .map((e) => e.state);
+    expect(many("extra/fidelity/rich-text-rich-text-list/many-items@tab")).toEqual(["many-items"]);
+    expect(many("extra/fidelity/rich-text-rich-text-list/mixed@tab")).toEqual([]);
+    // A poke at one item doesn't move through them.
+    const poke = { steps: [{ hover: "mention-2" }, { click: "mention-2" }], observations: [] };
+    expect(many("extra/fidelity/rich-text-rich-text-list/many-items@poke-mention-2", poke)).toEqual(
+      [],
+    );
+  });
+
   it("covers the behaviour of the components a recording's steps act on", () => {
     const evidence = behaviourEvidence("x/m@arrows", message, COMPONENTS, {
       steps: [{ click: "field-3" }, { key: "ArrowDown" }, { click: { role: "option", name: "A" } }],
