@@ -52,7 +52,8 @@ typed, puts the chosen date back and closes the calendar.
     },
     initial_date: {
       type: "string",
-      description: "The date selected when the element loads, as `YYYY-MM-DD`.",
+      description:
+        "The date selected when the element loads, as `YYYY-MM-DD`. Anything else (`1990-13-45`, `tomorrow`) is left out: the field starts empty and the action doesn't echo it.",
     },
     placeholder: {
       type: "PlainTextElement",
@@ -196,6 +197,9 @@ The same shape lands in `state.values[block_id][action_id]` for reading back lat
 When `initial_date` is set, the action carries it too (`"initial_date": "2024-06-01"`), as Slack's
 does; the placeholder isn't sent. The initial value is also reported as state as soon as the
 element mounts. You don't need an interaction first to read it back.
+
+`selected_date` comes from the browser, so check it on your server before you use it: that it's a
+real `YYYY-MM-DD` date, and in the range you accept. See [Untrusted input](/guides/untrusted-input).
 
 ### Time zone
 

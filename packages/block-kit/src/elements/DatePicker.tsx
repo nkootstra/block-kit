@@ -6,7 +6,7 @@ import { asString } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { CalendarPopover } from "./calendar/CalendarPopover";
 import { DateField, useDateField } from "./DateField";
-import { ordinal } from "./dateFormat";
+import { isoDateValue, ordinal } from "./dateFormat";
 import { useInClearableInput, useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -33,7 +33,9 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
   const inInputBlock = useInInputBlock();
   const clearable = useInClearableInput();
   const { ask, dialog } = useConfirm(element.confirm);
-  const [date, setDate] = useState<string | undefined>(asString(element.initial_date));
+  // A malformed initial_date is left out, as any field of the wrong shape is: the field starts empty.
+  const initialDate = isoDateValue(element.initial_date);
+  const [date, setDate] = useState<string | undefined>(initialDate);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useFocusOnLoad<HTMLInputElement>(element);
   const invalid = useInvalidProps();
@@ -74,7 +76,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
       block_id: blockId,
       selected_date: next,
       // Slack echoes the element's initial_date back in the action, but not its placeholder.
-      ...(element.initial_date !== undefined ? { initial_date: element.initial_date } : {}),
+      ...(initialDate !== undefined ? { initial_date: initialDate } : {}),
     });
   }
 
@@ -88,7 +90,7 @@ export function DatePicker({ element, blockId }: ElementProps<Datepicker>) {
       action_id: actionId,
       block_id: blockId,
       selected_date: null,
-      ...(element.initial_date !== undefined ? { initial_date: element.initial_date } : {}),
+      ...(initialDate !== undefined ? { initial_date: initialDate } : {}),
     });
   }
 

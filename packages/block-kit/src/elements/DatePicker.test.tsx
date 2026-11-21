@@ -47,6 +47,33 @@ describe("<DatePicker>", () => {
     expect(screen.getByPlaceholderText("Select a date")).toBeTruthy();
   });
 
+  // Slack only accepts a real YYYY-MM-DD date; a malformed field is left out, as the renderer does
+  // with any field of the wrong shape (guides/untrusted-input).
+  it("leaves out an initial_date that isn't a real YYYY-MM-DD date", () => {
+    for (const initial of ["1990-13-45", "1990-02-30", "tomorrow", "28/04/1990"]) {
+      let state: StateValues = {};
+      const { unmount } = render(
+        <BlockKitProvider onStateChange={(s) => (state = s)}>
+          <DatePicker
+            element={
+              {
+                type: "datepicker",
+                action_id: "a1",
+                initial_date: initial,
+              } as unknown as Datepicker
+            }
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      expect((screen.getByRole("textbox") as HTMLInputElement).value).toBe("");
+      expect(screen.getByPlaceholderText("Select a date")).toBeTruthy();
+      // As with no initial_date: no state until a date is picked.
+      expect(state.b1?.a1).toBeUndefined();
+      unmount();
+    }
+  });
+
   it("formats initial_date like Slack's closed control and reports it as state on mount", () => {
     let state: StateValues = {};
     render(
