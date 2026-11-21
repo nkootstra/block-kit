@@ -465,29 +465,4 @@ export const FINDINGS: Finding[] = [
     next: "Re-record extra/payloads/selects@outside-click, then replay it on ours (bun tools/visual/src/probes.ts extra/payloads/selects).",
     components: ["static_select"],
   },
-  {
-    id: "select-dialog-count-before-confirm",
-    title:
-      'Slack\'s accessory reads "1 selected" as soon as an option is picked in its dialog (to compare)',
-    evidence: [
-      'contexts/multi_static_select/accessory@open-pick-option-1: after the pick, before Confirm, the accessory button behind Slack\'s dialog reads "1 selected", and still does after Escape closes the dialog; no payload was sent. Ours keeps "Select items" until Confirm and drops the pick on Escape.',
-    ],
-    suspect: [
-      "Possibly the Builder keeping element state (builder-carries-element-state) rather than the Slack client's behaviour. Ours: packages/block-kit/src/elements/SelectDialog.tsx, which holds the pick in a draft until Confirm.",
-    ],
-    next: "Check in the Slack client (not the Builder) whether Escape keeps an unconfirmed pick before changing ours.",
-    components: ["select-dialog", "multi_static_select"],
-  },
-  {
-    id: "button-click-drops-focus",
-    title: "Slack's button loses the focus when it's clicked; ours keeps it",
-    evidence: [
-      "extra/fidelity/actions/many-items@tab-button-1: after a click on the first button Slack records no focused element (the button re-renders while its action is sent), ours keeps the focus on the button. Tab then moves on through the buttons on both sides.",
-    ],
-    suspect: [
-      "Possibly the Builder re-rendering the preview for Actions Preview rather than the Slack client. Ours: packages/block-kit/src/elements/Button.tsx keeps the focus as a native button does.",
-    ],
-    next: "Check in the Slack client whether a clicked button keeps the focus before changing ours.",
-    components: ["button"],
-  },
 ];
