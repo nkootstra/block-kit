@@ -82,6 +82,14 @@ URL (or `undefined` to leave the caption out). Return a size you already know ra
 your server download the URL: a payload can point it at an internal address.
 :::
 
+:::note
+An `image_url` makes the viewer's browser load whatever host the payload names, and a relative URL
+loads from your own site with the viewer's cookies. The renderer keeps the link schemes (`http`, `https`,
+`mailto`, `slack`), `blob:`, `data:image/` and relative URLs, and drops the rest. Render images from payloads you don't trust only where
+that's acceptable; [Untrusted input](/guides/untrusted-input#what-the-renderer-checks) covers the
+rest.
+:::
+
 ## Examples
 
 ### Without a title

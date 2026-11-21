@@ -82,7 +82,9 @@ workspace's theme rather than something set per-message.
 ## CSS custom properties
 
 The full set lives in `base.css` and `Message.css`. Override any of them after importing the
-stylesheet to restyle without touching the components. The main tokens:
+stylesheet to restyle without touching the components. If you let people pick colours, check the
+value (a hex colour, say) before you write it into a `--sbk-*` property: a CSS value can carry
+`url(…)`, which makes the browser load another host. The main tokens:
 
 <TypeTable
   type={{
