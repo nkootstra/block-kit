@@ -6,7 +6,7 @@ import { ChevronDownIcon, ClockIcon } from "../icons";
 import { asString } from "../payloadValues";
 import type { ElementProps } from "../types";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
-import { timeZoneLabel } from "./dateFormat";
+import { hhmmValue, timeZoneLabel } from "./dateFormat";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useInClearableInput, useInInputBlock, useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
@@ -60,7 +60,9 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   // Slack draws the small field in messages and the medium one in modals and on App Home.
   const medium = surface !== "message";
   const { ask, dialog } = useConfirm(element.confirm);
-  const [time, setTime] = useState<string | undefined>(asString(element.initial_time));
+  // A malformed initial_time is left out, as any field of the wrong shape is: the field starts empty.
+  const initialTime = hhmmValue(element.initial_time);
+  const [time, setTime] = useState<string | undefined>(initialTime);
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const invalid = useInvalidProps();
@@ -85,7 +87,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
       block_id: blockId,
       selected_time: next,
       // Slack echoes the element's initial_time back in the action, but not its placeholder.
-      ...(element.initial_time !== undefined ? { initial_time: element.initial_time } : {}),
+      ...(initialTime !== undefined ? { initial_time: initialTime } : {}),
     });
   }
 
@@ -100,7 +102,7 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
       action_id: actionId,
       block_id: blockId,
       selected_time: null,
-      ...(element.initial_time !== undefined ? { initial_time: element.initial_time } : {}),
+      ...(initialTime !== undefined ? { initial_time: initialTime } : {}),
     });
   }
 
