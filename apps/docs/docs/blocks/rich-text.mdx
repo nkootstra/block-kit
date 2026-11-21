@@ -316,6 +316,11 @@ not on keyboard focus; clicking the link or pressing Escape closes it, and Tab n
 it. A URL the renderer won't follow (such as `javascript:`)
 gets no card.
 
+A `link` element keeps only `http`, `https`, `mailto`, `slack` and relative URLs; any other scheme
+loses its `href` and shows as plain text. A relative URL resolves against your page, not Slack.
+[Untrusted input](/guides/untrusted-input) lists what the renderer checks and what your server
+still has to.
+
 ### User, channel, and usergroup mentions
 
 <Preview
