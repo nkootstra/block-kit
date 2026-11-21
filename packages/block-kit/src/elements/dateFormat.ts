@@ -95,6 +95,23 @@ function fullYear(year: string): number {
 }
 
 /**
+ * `value` when it's a real date written `YYYY-MM-DD`, the only form Slack accepts for a datepicker's
+ * `initial_date`; undefined for anything else ("1990-13-45", "1990-02-30", "tomorrow").
+ */
+export function isoDateValue(value: unknown): string | undefined {
+  const m = typeof value === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(value) : null;
+  return m ? isoDate(Number(m[1]), Number(m[2]), Number(m[3])) : undefined;
+}
+
+/**
+ * `value` when it's a time written `HH:mm` on a 24-hour clock (00:00 to 23:59), the only form
+ * Slack accepts for a timepicker's `initial_time`; undefined for anything else ("25:99", "9:30").
+ */
+export function hhmmValue(value: unknown): string | undefined {
+  return typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value) ? value : undefined;
+}
+
+/**
  * Reads a date typed into a datepicker field, as Slack's does: "05/01/1990", "5/4/90",
  * "1990-05-02", "May 3, 1990" or the field's own long form, "April 28th, 1990". Returns
  * `YYYY-MM-DD`, or undefined for anything else.

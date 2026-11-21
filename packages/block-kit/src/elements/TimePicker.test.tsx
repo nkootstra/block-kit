@@ -21,6 +21,18 @@ function renderPicker(onAction = vi.fn(), initial_time?: string) {
 }
 
 describe("<TimePicker>", () => {
+  // Slack only accepts HH:mm on a 24-hour clock; a malformed field is left out, as the renderer
+  // does with any field of the wrong shape (guides/untrusted-input).
+  it("leaves out an initial_time that isn't a real HH:mm time", () => {
+    for (const initial of ["25:99", "12:60", "soon", "9:30"]) {
+      const { input } = renderPicker(vi.fn(), initial);
+      expect(input.value).toBe("");
+      cleanup();
+    }
+    const { input } = renderPicker(vi.fn(), "23:59");
+    expect(input.value).toBe("11:59 PM");
+  });
+
   // Measured in Block Kit Builder: Slack labels the field "Time" for screen readers, whatever its
   // placeholder says.
   it("labels the field Time, as Slack does, while keeping its placeholder", () => {

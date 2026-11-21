@@ -58,7 +58,7 @@ time leaves nothing focused, as in Slack, so the field drops its focus ring.
     initial_time: {
       type: "string",
       description:
-        "The time selected when the element loads, as 24-hour `HH:mm`, e.g. `22:25` for 10:25pm.",
+        "The time selected when the element loads, as 24-hour `HH:mm`, e.g. `22:25` for 10:25pm. Anything else (`25:99`, `9:30`) is left out: the field starts empty and the action doesn't echo it.",
     },
     timezone: {
       type: "string",
@@ -240,6 +240,9 @@ The same shape lands in `state.values[block_id][action_id]`:
 
 When `initial_time` is set, the action carries it too (`"initial_time": "13:37"`), as Slack's does.
 It's also reported as state as soon as the element mounts, before any interaction.
+
+`selected_time` comes from the browser, so check it on your server: that it's `HH:mm` and a time
+you accept. See [Untrusted input](/guides/untrusted-input).
 
 :::note
 "Clear selection" only appears where the time may be left empty. In a required input block outside a
