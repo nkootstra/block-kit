@@ -502,4 +502,17 @@ export const FINDINGS: Finding[] = [
     next: "Check in the Slack client whether a clicked button keeps the focus before changing ours.",
     components: ["button"],
   },
+  {
+    id: "data-table-sort-menu",
+    title: "A click on a data table's column header opens Slack's sort menu; ours sorts at once",
+    evidence: [
+      'catalog/table/basic-data-table@poke-column-1 and extra/fidelity/data-table/many-items@tab-column-1: Slack opens a "Sort" menu with Ascending and Descending and moves the focus into it; ours sorts by the column and keeps the focus on the header.',
+      'The same recordings show Slack marking the current page button (aria-current="page", the others "false"); ours marks none.',
+    ],
+    suspect: [
+      "packages/block-kit/src/blocks/DataTable.tsx: the column header's click handler, and the pagination buttons' aria-current.",
+    ],
+    next: "Capture the open sort menu (@open-column-1) to match its look, then replay both recordings.",
+    components: ["data_table"],
+  },
 ];

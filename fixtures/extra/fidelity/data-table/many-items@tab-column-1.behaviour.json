@@ -1,0 +1,336 @@
+{
+  "steps": [
+    {
+      "click": "column-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    }
+  ],
+  "observations": [
+    {
+      "focus": null,
+      "layers": [],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "column-4": {
+          "sort": "none"
+        },
+        "column-5": {
+          "sort": "none"
+        },
+        "column-6": {
+          "sort": "none"
+        },
+        "page-1": {
+          "disabled": "true"
+        },
+        "page-2": {
+          "current": "page"
+        },
+        "page-3": {
+          "current": "false"
+        },
+        "page-4": {
+          "current": "false"
+        },
+        "page-5": {
+          "current": "false"
+        },
+        "page-6": {
+          "current": "false"
+        },
+        "page-7": {
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 728,
+          "clientWidth": 432
+        }
+      }
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "AscendingDescending",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "column-4": {
+          "sort": "none"
+        },
+        "column-5": {
+          "sort": "none"
+        },
+        "column-6": {
+          "sort": "none"
+        },
+        "page-1": {
+          "disabled": "true"
+        },
+        "page-2": {
+          "current": "page"
+        },
+        "page-3": {
+          "current": "false"
+        },
+        "page-4": {
+          "current": "false"
+        },
+        "page-5": {
+          "current": "false"
+        },
+        "page-6": {
+          "current": "false"
+        },
+        "page-7": {
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 728,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "AscendingDescending",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "column-4": {
+          "sort": "none"
+        },
+        "column-5": {
+          "sort": "none"
+        },
+        "column-6": {
+          "sort": "none"
+        },
+        "page-1": {
+          "disabled": "true"
+        },
+        "page-2": {
+          "current": "page"
+        },
+        "page-3": {
+          "current": "false"
+        },
+        "page-4": {
+          "current": "false"
+        },
+        "page-5": {
+          "current": "false"
+        },
+        "page-6": {
+          "current": "false"
+        },
+        "page-7": {
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 728,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "AscendingDescending",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "column-4": {
+          "sort": "none"
+        },
+        "column-5": {
+          "sort": "none"
+        },
+        "column-6": {
+          "sort": "none"
+        },
+        "page-1": {
+          "disabled": "true"
+        },
+        "page-2": {
+          "current": "page"
+        },
+        "page-3": {
+          "current": "false"
+        },
+        "page-4": {
+          "current": "false"
+        },
+        "page-5": {
+          "current": "false"
+        },
+        "page-6": {
+          "current": "false"
+        },
+        "page-7": {
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 728,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": null,
+        "role": "menu",
+        "name": "AscendingDescending",
+        "where": "layer"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "menu",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": null,
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "column-1": {
+          "sort": "none"
+        },
+        "column-2": {
+          "sort": "none"
+        },
+        "column-3": {
+          "sort": "none"
+        },
+        "column-4": {
+          "sort": "none"
+        },
+        "column-5": {
+          "sort": "none"
+        },
+        "column-6": {
+          "sort": "none"
+        },
+        "page-1": {
+          "disabled": "true"
+        },
+        "page-2": {
+          "current": "page"
+        },
+        "page-3": {
+          "current": "false"
+        },
+        "page-4": {
+          "current": "false"
+        },
+        "page-5": {
+          "current": "false"
+        },
+        "page-6": {
+          "current": "false"
+        },
+        "page-7": {
+          "disabled": "false"
+        },
+        "scroller-1": {
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "scrollWidth": 728,
+          "clientWidth": 432
+        }
+      },
+      "action": null
+    }
+  ]
+}

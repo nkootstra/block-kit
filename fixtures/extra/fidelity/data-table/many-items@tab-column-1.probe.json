@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "click": "column-1"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    },
+    {
+      "key": "Tab"
+    }
+  ]
+}
