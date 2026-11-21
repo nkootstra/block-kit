@@ -13,6 +13,36 @@
       "key": "ArrowDown"
     },
     {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
+      "key": "ArrowDown"
+    },
+    {
       "key": "Escape"
     }
   ],
@@ -72,6 +102,42 @@
         },
         "option-7": {
           "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
         }
       },
       "action": null
@@ -117,6 +183,42 @@
           "selected": "false"
         },
         "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
           "selected": "false"
         }
       },
@@ -164,6 +266,42 @@
         },
         "option-7": {
           "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
         }
       },
       "action": null
@@ -209,6 +347,859 @@
           "selected": "false"
         },
         "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Option 4",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Option 5",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 0
+        }
+      ],
+      "activeOption": "Option 6",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 28
+        }
+      ],
+      "activeOption": "Option 7",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        },
+        "option-20": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 56
+        }
+      ],
+      "activeOption": "Option 8",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        },
+        "option-20": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 84
+        }
+      ],
+      "activeOption": "Option 9",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        },
+        "option-20": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 112
+        }
+      ],
+      "activeOption": "Option 10",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        },
+        "option-20": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 140
+        }
+      ],
+      "activeOption": "Option 11",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        },
+        "option-19": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 168
+        }
+      ],
+      "activeOption": "Option 12",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
+          "selected": "false"
+        },
+        "option-16": {
+          "selected": "false"
+        },
+        "option-17": {
+          "selected": "false"
+        },
+        "option-18": {
+          "selected": "false"
+        }
+      },
+      "action": null
+    },
+    {
+      "focus": {
+        "target": "field-1",
+        "role": "combobox",
+        "name": "Select an item",
+        "where": "preview"
+      },
+      "layers": [
+        {
+          "kind": "popover",
+          "role": "listbox",
+          "scrollTop": 240
+        }
+      ],
+      "activeOption": "Option 13",
+      "tooltip": null,
+      "busy": false,
+      "controls": {
+        "field-1": {
+          "expanded": "true",
+          "value": ""
+        },
+        "option-1": {
+          "selected": "false"
+        },
+        "option-2": {
+          "selected": "false"
+        },
+        "option-3": {
+          "selected": "false"
+        },
+        "option-4": {
+          "selected": "false"
+        },
+        "option-5": {
+          "selected": "false"
+        },
+        "option-6": {
+          "selected": "false"
+        },
+        "option-7": {
+          "selected": "false"
+        },
+        "option-8": {
+          "selected": "false"
+        },
+        "option-9": {
+          "selected": "false"
+        },
+        "option-10": {
+          "selected": "false"
+        },
+        "option-11": {
+          "selected": "false"
+        },
+        "option-12": {
+          "selected": "false"
+        },
+        "option-13": {
+          "selected": "false"
+        },
+        "option-14": {
+          "selected": "false"
+        },
+        "option-15": {
           "selected": "false"
         }
       },

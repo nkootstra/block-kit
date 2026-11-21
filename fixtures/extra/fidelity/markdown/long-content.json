@@ -1,0 +1,8 @@
+{
+  "blocks": [
+    {
+      "type": "markdown",
+      "text": "## Quarterly numbers\n\n```\nconst summary = regions.map((region) => `${region.name}: ${region.quarters.map((q) => q.total).join(\" / \")} (${region.change}% change since last year)`).join(\"\\n\");\n```\n\n| Region | Q1 | Q2 | Q3 | Q4 | Total | Change | Owner |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |\n| North | 101 | 102 | 103 | 104 | 400 | +2% | Team A |\n| South | 111 | 112 | 113 | 114 | 440 | +3% | Team B |\n| East | 121 | 122 | 123 | 124 | 480 | +4% | Team C |\n| West | 131 | 132 | 133 | 134 | 520 | +5% | Team D |"
+    }
+  ]
+}
