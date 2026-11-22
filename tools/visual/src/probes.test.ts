@@ -88,6 +88,18 @@ describe("probes", () => {
     expect(diffObservations(steps, slack, slack)).toEqual([]);
   });
 
+  // Slack draws a tooltip in a popover container, which observe.js counts as a layer; ours draws
+  // it in .sbk-tooltip, which it doesn't. The tooltip field compares them.
+  it("doesn't count Slack's tooltip as an open layer", () => {
+    const steps = [{ hover: "copy-1" }];
+    const tip = { ...rest, tooltip: "Copy" };
+    const slack = [rest, { ...tip, layers: [{ kind: "popover", role: null, scrollTop: 0 }] }];
+    expect(diffObservations(steps, slack, [rest, tip])).toEqual([]);
+    expect(diffObservations(steps, slack, [rest, { ...rest, tooltip: null }])).toEqual([
+      'after step 1 (hover copy-1): tooltip: Slack "Copy", ours null',
+    ]);
+  });
+
   it("describes a step for a report line", () => {
     expect(describeStep({ click: { role: "option", name: "Bravo" } })).toBe('click option "Bravo"');
     expect(describeStep({ type: "hi" })).toBe('type "hi"');
