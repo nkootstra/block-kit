@@ -1,4 +1,12 @@
-import { Fragment, type ReactNode, type RefObject, useId, useRef, useState } from "react";
+import {
+  Fragment,
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { Popover } from "../elements/Popover";
 import { useMenuNavigation } from "../elements/useMenuNavigation";
 import {
@@ -126,13 +134,26 @@ export function MenuAction({
     item.onSelect();
   }
 
+  // Escape gives the focus back to the button once the menu has closed, so the button's tooltip
+  // is back too and shows on that focus, as Slack's does
+  // (catalog/data-visualization/area-multi-series@poke-menu-1).
+  const refocus = useRef(false);
+  useEffect(() => {
+    if (open || !refocus.current) return;
+    refocus.current = false;
+    // On the next frame: the Escape that closed the menu is still being dispatched, and the
+    // tooltip, which closes on Escape, would catch it as soon as it opened.
+    const frame = requestAnimationFrame(() => triggerRef.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
+
   const nav = useMenuNavigation({
     open,
     count: items.length,
     onChoose: choose,
     onClose: () => {
       setOpen(false);
-      triggerRef.current?.focus();
+      refocus.current = true;
     },
     onOpen: () => setOpen(true),
     listRef,
