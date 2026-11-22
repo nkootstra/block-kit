@@ -6,7 +6,7 @@ import { asString } from "../payloadValues";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
-import { useInvalidProps } from "./inputBlockContext";
+import { useInputLabelId, useInvalidProps } from "./inputBlockContext";
 
 export interface TextInputElement extends Json {
   type: "plain_text_input" | "email_text_input" | "url_text_input" | "number_input";
@@ -160,6 +160,7 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
   // specify its own, rather than leaving the field visually empty.
   const placeholder = asString(element.placeholder?.text) ?? DEFAULT_PLACEHOLDER[element.type];
 
+  const labelId = useInputLabelId();
   const invalidDescribed = invalid["aria-describedby"];
   const commonProps = {
     className: `sbk-text-input${sizeClass}${remaining !== undefined ? " sbk-text-input--counted" : ""}`,
@@ -167,7 +168,8 @@ export function TextInput({ element, blockId }: ElementProps<TextInputElement>) 
     placeholder,
     onKeyDown,
     ref: focusRef,
-    "aria-label": element.action_id,
+    // In an input block Slack labels the field by the block's label.
+    ...(labelId ? { "aria-labelledby": labelId } : { "aria-label": element.action_id }),
     ...invalid,
     ...(outOfBounds ? { "aria-invalid": true as const } : {}),
     ...(remaining !== undefined

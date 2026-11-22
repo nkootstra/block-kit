@@ -27,6 +27,16 @@ export function useInClearableInput(): boolean {
   return inInput && (optional || surface === "message");
 }
 
+/**
+ * The id of the `input` block's label. Slack labels the block's text fields and time picker by
+ * it (`aria-labelledby`), so a screen reader reads the label the user sees.
+ */
+export const InputLabelContext = createContext<string | undefined>(undefined);
+
+export function useInputLabelId(): string | undefined {
+  return useContext(InputLabelContext);
+}
+
 /** The id of the error shown under an `input` block's element, while it has one. */
 export const InputErrorContext = createContext<string | undefined>(undefined);
 

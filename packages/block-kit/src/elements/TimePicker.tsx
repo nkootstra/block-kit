@@ -8,7 +8,12 @@ import type { ElementProps } from "../types";
 import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { hhmmValue, timeZoneLabel } from "./dateFormat";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { useInClearableInput, useInInputBlock, useInvalidProps } from "./inputBlockContext";
+import {
+  useInClearableInput,
+  useInInputBlock,
+  useInputLabelId,
+  useInvalidProps,
+} from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { MENU_GAP, Popover } from "./Popover";
 
@@ -147,8 +152,11 @@ export function TimePicker({ element, blockId }: ElementProps<Timepicker>) {
   }, [query]);
 
   const display = time ? formatTime(time) : undefined;
-  // Slack names the field "Time" for screen readers, whatever its placeholder.
-  const input = combo.inputProps(display, asString(element.placeholder?.text) ?? "Time", "Time");
+  // Slack names the field by its placeholder ("Time" without one), and in an input block by the
+  // block's label.
+  const labelId = useInputLabelId();
+  const named = combo.inputProps(display, asString(element.placeholder?.text) ?? "Time");
+  const input = labelId ? { ...named, "aria-label": undefined, "aria-labelledby": labelId } : named;
   // Slack keeps the chosen time in the input but draws it in a layer over the field
   // (`c-select_input__content`), hiding the input's own text, until the list opens for typing.
   const overlay = display !== undefined && !combo.open;

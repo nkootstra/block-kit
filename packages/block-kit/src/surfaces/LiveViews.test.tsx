@@ -254,7 +254,7 @@ describe("focus_on_load", () => {
         </BlockKitProvider>,
       );
     });
-    expect(document.activeElement).toBe(screen.getByLabelText("b"));
+    expect(document.activeElement).toBe(screen.getByRole("textbox", { name: "Second" }));
   });
 
   it("is ignored in a message, as in Slack", async () => {
