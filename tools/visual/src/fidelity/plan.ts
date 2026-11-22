@@ -877,7 +877,8 @@ export function capturePlan(
           picked.get(c.fixture) !== cell.component
         ) &&
         // A chart's More actions button sits outside the 400px mobile message, clipped, so no
-        // click reaches it (finding chart-menu-mobile-clipped).
+        // click reaches it in Block Kit Builder. Ours lays it out the same way (the @mobile
+        // references match).
         !(
           c.interaction === "menu" &&
           cell.width === "mobile" &&

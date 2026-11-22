@@ -20,14 +20,14 @@ export interface Finding {
 export const FINDINGS: Finding[] = [
   {
     id: "rich-text-unknown-inline",
-    title: "Unknown rich text elements render nothing",
+    title: "An unknown rich text element renders nothing",
     evidence: [
-      "RichText.tsx's inline switch returns null for a type it doesn't know, so the 12 documented elements the package doesn't implement (citation, canvas, tag…) disappear without a trace, where an unknown block or element shows the visible Unsupported placeholder.",
+      "Every documented inline element now draws as Slack's references show it (tag, citation, canvas, file, the mentions…). A type outside that list still falls to the inline switch's default and renders nothing, where an unknown block or element shows the visible Unsupported placeholder.",
     ],
     suspect: [
       "packages/block-kit/src/blocks/RichText.tsx, the default case of the inline element switch.",
     ],
-    next: "Capture the extra/fidelity/rich-text-* fixtures to see what Slack draws for each.",
+    next: "Find what Slack draws for an inline element type it doesn't know (the Builder may refuse the payload), then match it or show Unsupported.",
     components: ["rich_text"],
   },
   {
@@ -43,23 +43,6 @@ export const FINDINGS: Finding[] = [
     components: ["icon_button", "slack_icon"],
   },
   {
-    id: "chart-many-categories",
-    title: "A bar chart with 20 categories: Slack rotates the labels, ours overlap",
-    evidence: [
-      "extra/fidelity/data-visualization/many-items@mobile+dark: 8.78% of pixels differ, 64 text findings (compare image: test-results/visual/extra/fidelity/data-visualization/many-items@mobile+dark).",
-      "Slack rotates the x-axis category labels about 45° when they don't fit; ours stay horizontal and overlap (D1 is 17.4px wide in ours, 23.6px in Slack's, and starts 4-5px further right).",
-      "Slack's plot area is shorter, leaving room for the rotated labels, so the bars and gridlines don't line up: the y-axis 0 sits at y=357 in Slack's and 409 in ours, 150 at 92 and 84.",
-      "In the dark theme our chart card's background is lighter than Slack's.",
-      "Both sides clip the chart at the right edge of the 400px mobile preview: that's Slack's real behaviour (the card is wider than the preview), not a width bug. The reference's 400px against our 364px is the harness's gutter convention.",
-    ],
-    suspect: [
-      "packages/block-kit/src/charts/CartesianChart.tsx: no label rotation when categories don't fit, and the plot height that follows from it.",
-      "packages/block-kit/src/blocks/DataVisualization.css: the card's dark background.",
-    ],
-    next: "Capture the fixture at desktop width and in light to separate the label rotation from the width and the theme.",
-    components: ["data_visualization"],
-  },
-  {
     id: "chart-mobile-scroll",
     title:
       "To verify: our chart card keeps 400px and scrolls sideways on a narrow width, as Slack's does",
@@ -73,67 +56,6 @@ export const FINDINGS: Finding[] = [
     status: "verified",
   },
   {
-    id: "chart-menu-mobile-clipped",
-    title:
-      "On mobile, Slack's chart More actions button sits outside the message, clipped and unclickable",
-    evidence: [
-      "Dark mobile sitting: in the 400px Mobile preview, catalog/data-visualization/area-multi-series's More actions button (menu-1) is laid out at about CSS x 732, past the message's right edge, so it's clipped and a click can't reach it. area-multi-series@menu+mobile and @menu+mobile+dark both timed out for that reason. The hover state (hover-menu-1 at the card's top-right) was reachable in the light mobile sitting.",
-      "The chart card keeps its 400px minimum width inside a scroller (finding chart-mobile-scroll), so its top-right corner, where the menu sits, is off screen until scrolled.",
-    ],
-    suspect: [
-      "Not a harness bug: Slack's (or the Builder's) layout. Ours: packages/block-kit/src/blocks/DataVisualization.tsx and DataVisualization.css place the menu on the card too; decide whether to match Slack (menu out of reach on mobile) or keep it reachable.",
-    ],
-    next: "The plan no longer asks for @menu+mobile on charts. Compare our mobile render's menu position with Slack's @mobile references and decide.",
-    components: ["data_visualization"],
-  },
-  {
-    id: "markdown-list-spacing",
-    title: "Markdown ordered lists sit further in, and blocks after a list sit higher",
-    evidence: [
-      "extra/fidelity/markdown/mixed@mobile+dark (2.78%): ordered list items start at x=83 in ours vs Slack's 72; everything after the bullet list moves up by 8px, growing to 32px by the table (quote 217 vs 233, code 255 vs 279, table 294 vs 326). Ours is 357px tall, Slack's 389.",
-      'Slack also shows a "Markdown" label ours lacks, already a text-baseline finding of catalog/markdown/code.',
-    ],
-    suspect: [
-      "packages/block-kit/src/blocks/Markdown.css: ordered list padding and the vertical margins between lists, quotes, code and tables.",
-    ],
-    next: "The light and desktop captures of markdown/mixed will show whether the gaps depend on the width.",
-    components: ["markdown"],
-  },
-  {
-    id: "text-input-count-unfocused",
-    title: "The character count shows on an unfocused field",
-    evidence: [
-      'extra/fidelity/plain-text-input/long-content@mobile+dark (1.42%): ours shows "20" ("20 characters remaining") on a multiline field holding 380 of its 400 characters; Slack\'s unfocused field shows no count.',
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/TextInput.tsx: when the remaining-characters count appears (the interaction tests check it focused).",
-    ],
-    next: "Capture the field focused, once focus capture exists, to see when Slack shows the count.",
-    components: ["plain_text_input"],
-  },
-  {
-    id: "rich-text-colour-hex",
-    title: "A rich text colour shows its swatch without the hex value",
-    evidence: [
-      'extra/fidelity/rich-text-rich-text-list/many-items@mobile+dark (2.63%): Slack writes "· colour #1264A3", ours "· colour"; at the mobile width Slack\'s longer line wraps, so everything below sits 22px lower in Slack. Already a text-baseline finding of extra/rich-text/mentions-and-styles.',
-    ],
-    suspect: ["packages/block-kit/src/blocks/RichText.tsx, the color element."],
-    next: "Nothing to capture: the existing references show it.",
-    components: ["rich_text.color"],
-  },
-  {
-    id: "button-long-text-ellipsis",
-    title: "Slack cuts a long button label to one line with an ellipsis; ours wraps",
-    evidence: [
-      'extra/fidelity/button/long-content (verification session, light desktop): 10.2% of pixels differ. Slack keeps the button on one line, ending "This sentence is here to make the text l…", in an 82px message; ours wraps the 75-character label onto several lines, 118px.',
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Button.css: white-space, overflow and text-overflow on the label, and the button's max-width.",
-    ],
-    next: "Read the reference's box model (bun tools/visual/src/inspect.ts extra/fidelity/button/long-content) for the button's max-width and the label's overflow.",
-    components: ["button"],
-  },
-  {
     id: "stale-short-leftovers",
     title: "references:check misses a refused payload whose leftover text is short",
     evidence: [
@@ -144,32 +66,6 @@ export const FINDINGS: Finding[] = [
     ],
     next: "The limits check (limits.ts) now stops such payloads before capture; stale.ts could also compare the reference's payload meta against the Builder's preview hash.",
     components: ["confirm"],
-  },
-  {
-    id: "mrkdwn-short-user-mention",
-    title:
-      "Mentions Slack draws as chips that ours leaves out (a short user ID, the callout's mention)",
-    evidence: [
-      "message/mrkdwn: Slack draws four mention chips for <@U123> <#C123> <!here> <!subteam^S123|@devs> (the unresolved user as a member chip, c-member_slug); ours draws three, leaving <@U123> as plain text (counted by the harness's mention addresses, which shift by one on our side after the first).",
-      "catalog/callout/callout: Slack shows one mention, ours none.",
-    ],
-    suspect: [
-      "packages/block-kit/src/parser (the mrkdwn mention pattern): it likely requires a full-length user ID, while Slack accepts <@U123>.",
-    ],
-    next: "Capture a probe or @hover-mention-1 on message/mrkdwn to see Slack's chip for it.",
-    components: ["rich_text.user"],
-  },
-  {
-    id: "task-card-output-links",
-    title: "An expanded task card shows source links where Slack shows the output's links",
-    evidence: [
-      "catalog/agents/task-card@expanded (counted by the harness's link and source addresses): Slack shows the output's two rich text links (one without the underline class) and no source links; ours shows two source links and no rich text links.",
-    ],
-    suspect: [
-      "packages/block-kit/src/blocks/TaskCard.tsx: what the expanded card renders from output and sources.",
-    ],
-    next: "Compare the @expanded references side by side; a @hover-link-1 capture shows Slack's link styles.",
-    components: ["task_card", "url_source", "rich_text.link"],
   },
   {
     id: "validation-unverifiable-in-builder",
@@ -198,43 +94,6 @@ export const FINDINGS: Finding[] = [
     ],
     next: "Replay the probes on ours (bun tools/visual/src/probes.ts contexts/static_select extra/payloads/selects) after a fix; the external select probes will show whether it shares each one.",
     components: ["static_select", "external_select", "option"],
-  },
-  {
-    id: "select-focus-styles",
-    title: "A focused select's borders and the controls' transitions differ from Slack's",
-    evidence: [
-      "State styles in contexts/static_select/actions@focus-field-1 and the plain verification captures: Slack's focused select has transparent left and bottom borders (field-1 :focus border colours rgba(0, 0, 0, 0)); ours keeps them.",
-      "Motion: ours adds border and box-shadow transitions on selects and pickers that Slack doesn't have; Slack's chart card has a box-shadow transition ours lacks.",
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.css (focus borders and transitions), DataVisualization.css (the card's transition).",
-    ],
-    next: "Compare the stateStyles lines compare.ts prints for every select reference once more are captured.",
-    components: ["static_select", "data_visualization"],
-  },
-  {
-    id: "mrkdwn-link-hover-layout",
-    title: "Hovering a mrkdwn link shifts Slack's message 22px lower than ours (to check)",
-    evidence: [
-      "message/mrkdwn@hover-link-1 (verification session): with the first link hovered, everything after the first section sits 22px lower in Slack's capture than in ours (the quote at y=215 against 193).",
-    ],
-    suspect: [
-      "Unknown: a hover card or hover-induced layout in Slack's preview, or a difference at rest the plain reference doesn't show. Check the plain message/mrkdwn reference for the same offset first.",
-    ],
-    next: "Compare message/mrkdwn and @hover-link-1 side by side (bun tools/visual/src/inspect.ts) to see what grows by 22px.",
-    components: ["rich_text.link", "text_object"],
-  },
-  {
-    id: "accessory-multi-select-count",
-    title: 'Slack labels an accessory multi-select holding a value "1 selected" (to compare)',
-    evidence: [
-      'Light desktop chunks: a section accessory multi-select with an initial value shows a "1 selected" button, not a chip.',
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.tsx and SelectDialog.tsx: the accessory button's label before the dialog opens (the interaction test checks the count after Confirm).",
-    ],
-    next: "Compare extra/fidelity/multi-conversations-select/initial-value and the contexts accessory references with ours.",
-    components: ["select-dialog", "multi_static_select"],
   },
   {
     id: "builder-carries-element-state",
