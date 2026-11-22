@@ -173,15 +173,17 @@ const context = await browser.newContext({
 // load: an init script doesn't reach the document setContent() reuses, and a styled track without
 // a thumb rule paints nothing, so either way one side would draw a native thumb and the other not.
 //
-// A chart's scroller is the exception: Slack leaves it the platform's scrollbar, which the
-// references' macOS captures overlaid, taking no space, so the snapshot froze the scroller at its
-// card's height. Under a 15px track that froze height overflows and draws a second scrollbar. Both
-// sides' chart scrollers (Slack's scrollContainer, our .sbk-dataviz-scroll) get the overlay's
-// footprint instead: none.
+// A chart's and a table's scrollers are the exception: Slack leaves them the platform's scrollbar,
+// which the references' macOS captures overlaid, taking no space, so the snapshot froze each
+// scroller at its content's height. Under a 15px track that froze height overflows and draws a
+// second scrollbar, and our wide table and markdown table stood 15px taller than Slack's
+// (extra/fidelity/table/long-content, extra/fidelity/markdown/long-content). Both sides' chart and
+// table scrollers (Slack's scrollContainer and tableContainerHorizontalOverflow, our
+// .sbk-dataviz-scroll, .sbk-table__scroll and .sbk-markdown__table-wrap) get the overlay's footprint instead: none.
 const SCROLLBAR_CSS = `
 ::-webkit-scrollbar { width: 15px; height: 15px; background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(29, 28, 29, 0.35); border: 4px solid transparent; border-radius: 8px; background-clip: padding-box; }
-[class*="scrollContainer__"]::-webkit-scrollbar, .sbk-dataviz-scroll::-webkit-scrollbar { width: 0; height: 0; }
+[class*="scrollContainer__"]::-webkit-scrollbar, [class*="tableContainerHorizontalOverflow__"]::-webkit-scrollbar, .sbk-dataviz-scroll::-webkit-scrollbar, .sbk-table__scroll::-webkit-scrollbar, .sbk-markdown__table-wrap::-webkit-scrollbar { width: 0; height: 0; }
 `;
 
 /** Selects again the text snapshot.js recorded as selected in the reference's focused field. */
