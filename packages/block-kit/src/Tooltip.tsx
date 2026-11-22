@@ -39,11 +39,6 @@ export interface TooltipProps {
    * anchor's, as Slack's `top-right` tooltips do.
    */
   align?: Align;
-  /**
-   * Whether keyboard focus shows it too (the default). Slack's code-block Copy button shows its
-   * tooltip only on hover (extra/fidelity/rich-text-rich-text-list/many-items@tab-link-1).
-   */
-  focus?: boolean;
 }
 
 /**
@@ -51,13 +46,7 @@ export interface TooltipProps {
  * after a short hover or on keyboard focus. It appears and disappears without animation, as in
  * Slack. Portalled to `<body>` so scroll containers and `overflow: hidden` can't clip it.
  */
-export function Tooltip({
-  label,
-  children,
-  placement = "top",
-  align = "center",
-  focus = true,
-}: TooltipProps) {
+export function Tooltip({ label, children, placement = "top", align = "center" }: TooltipProps) {
   const { theme } = useBlockKitConfig();
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -143,7 +132,7 @@ export function Tooltip({
     },
     onFocus: (e: FocusEvent) => {
       props.onFocus?.(e);
-      if (focus && (e.currentTarget as Element).matches?.(":focus-visible")) show(e, true);
+      if ((e.currentTarget as Element).matches?.(":focus-visible")) show(e, true);
     },
     onBlur: (e: FocusEvent) => {
       props.onBlur?.(e);

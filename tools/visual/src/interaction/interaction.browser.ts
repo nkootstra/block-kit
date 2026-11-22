@@ -1859,19 +1859,6 @@ describe.each(engines)("%s", (engine) => {
         await settle(page);
         expect((await style(page, COPY)).opacity).toBe("1");
       });
-
-      // extra/fidelity/rich-text-rich-text-list/many-items@tab-link-1: Tab reaches Slack's copy
-      // button with no tooltip; a hover shows one (catalog/rich-text/kitchen-sink@poke-copy-1).
-      it("shows its Copy tooltip on hover, not when Tab reaches it", async () => {
-        const page = await harness.open(code);
-        await tabTo(page, COPY);
-        await settle(page);
-        const tips = () => page.$$eval(".sbk-tooltip", (els) => els.map((e) => e.textContent));
-        expect(await tips()).toEqual([]);
-        await page.hover(COPY);
-        await page.waitForTimeout(800);
-        expect(await tips()).toEqual(["Copy"]);
-      });
     });
   });
 
