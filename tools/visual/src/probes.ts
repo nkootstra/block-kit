@@ -328,12 +328,25 @@ export function diffObservations(
     differ("focus.role", s.focus?.role, o.focus?.role);
     if (s.focus && o.focus && !sameName(s.focus.name, o.focus.name))
       differ("focus.name", s.focus.name, o.focus.name);
+    // Slack draws a tooltip in a popover container that observe.js counts as a layer; ours draws
+    // it outside the layers. The tooltip field compares the two, so that layer is left out.
+    const slackLayers =
+      s.tooltip && !o.layers.some((l) => l.kind === "popover" && !l.role)
+        ? s.layers.filter(
+            (l, j, all) =>
+              !(
+                l.kind === "popover" &&
+                !l.role &&
+                j === all.findLastIndex((m) => m.kind === "popover" && !m.role)
+              ),
+          )
+        : s.layers;
     differ(
       "layers",
-      s.layers.map((l) => `${l.kind}${l.role ? ` ${l.role}` : ""}`),
+      slackLayers.map((l) => `${l.kind}${l.role ? ` ${l.role}` : ""}`),
       o.layers.map((l) => `${l.kind}${l.role ? ` ${l.role}` : ""}`),
     );
-    s.layers.forEach((l, j) => {
+    slackLayers.forEach((l, j) => {
       const ol = o.layers[j];
       if (ol) differ(`layers.${j}.scrollTop`, l.scrollTop, ol.scrollTop);
     });
