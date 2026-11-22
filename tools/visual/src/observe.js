@@ -163,7 +163,13 @@
     }
     return clean(el.innerText ?? el.textContent);
   };
-  const IMPLICIT = { button: "button", textarea: "textbox", select: "combobox", a: "link" };
+  const IMPLICIT = {
+    button: "button",
+    textarea: "textbox",
+    select: "combobox",
+    a: "link",
+    li: "listitem",
+  };
   const INPUT_ROLES = { checkbox: "checkbox", radio: "radio", button: "button", submit: "button" };
   const roleOf = (el) =>
     el.getAttribute("role") ||
@@ -296,7 +302,11 @@
     activeOption: highlighted ? text(highlighted) : null,
     // A tooltip showing (after a hover and its delay), and whether anything is loading.
     tooltip: (() => {
-      const tip = [...doc.querySelectorAll('[role="tooltip"], .c-tooltip')].find((el) => shown(el));
+      // Not a tooltip hidden from assistive technology (a chart's data tooltip, which ours keeps in
+      // the page with aria-hidden), which isn't the control's tooltip.
+      const tip = [...doc.querySelectorAll('[role="tooltip"], .c-tooltip')].find(
+        (el) => shown(el) && !el.closest('[aria-hidden="true"]'),
+      );
       return tip ? text(tip) : null;
     })(),
     busy:

@@ -167,7 +167,8 @@ function renderTopLevel(elements: RichTextBlockElement[], ctx: RenderCtx): React
           const pre = (
             <pre key={key++} className="sbk-rich-text__pre">
               {renderPreformattedLines(el.elements)}
-              <Tooltip label="Copy">
+              {/* Slack shows this tooltip on hover only, not when Tab reaches the button. */}
+              <Tooltip label="Copy" focus={false}>
                 <button type="button" className="sbk-rich-text__pre-copy" aria-label="Copy">
                   <CopyIcon width={16} height={16} />
                 </button>

@@ -1859,6 +1859,19 @@ describe.each(engines)("%s", (engine) => {
         await settle(page);
         expect((await style(page, COPY)).opacity).toBe("1");
       });
+
+      // extra/fidelity/rich-text-rich-text-list/many-items@tab-link-1: Tab reaches Slack's copy
+      // button with no tooltip; a hover shows one (catalog/rich-text/kitchen-sink@poke-copy-1).
+      it("shows its Copy tooltip on hover, not when Tab reaches it", async () => {
+        const page = await harness.open(code);
+        await tabTo(page, COPY);
+        await settle(page);
+        const tips = () => page.$$eval(".sbk-tooltip", (els) => els.map((e) => e.textContent));
+        expect(await tips()).toEqual([]);
+        await page.hover(COPY);
+        await page.waitForTimeout(800);
+        expect(await tips()).toEqual(["Copy"]);
+      });
     });
   });
 
@@ -2512,6 +2525,8 @@ describe.each(engines)("%s", (engine) => {
             await page.keyboard.press("ArrowDown");
             const second = await page.locator(`${MENU} [data-active]`).textContent();
             await page.keyboard.press("Escape");
+            // The focus comes back on the next frame, once the menu has closed.
+            await settle(page);
             expect({
               first,
               second,
@@ -2661,6 +2676,20 @@ describe.each(engines)("%s", (engine) => {
       expect(await reachable()).toBe(true);
       await trigger.click({ timeout: 2000 });
       expect(await page.$(MENU)).not.toBeNull();
+    });
+
+    // catalog/data-visualization/area-multi-series@poke-menu-1: Escape closes the menu and gives
+    // the focus back to the button, which shows its "More actions" tooltip again.
+    it("shows the menu button's tooltip again once Escape closes the menu", async () => {
+      const page = await harness.open(await chart());
+      await openMenu(page, CHART_TRIGGER);
+      await page.keyboard.press("Escape");
+      await settle(page);
+      expect(
+        await page.evaluate(() =>
+          [...document.querySelectorAll(".sbk-tooltip")].map((t) => t.textContent),
+        ),
+      ).toEqual(["More actions"]);
     });
 
     it("lists Slack's chart actions, with a separator before a disabled Copy as image", async () => {
