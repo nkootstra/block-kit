@@ -33,9 +33,9 @@ describe("<TimePicker>", () => {
     expect(input.value).toBe("11:59 PM");
   });
 
-  // Measured in Block Kit Builder: Slack labels the field "Time" for screen readers, whatever its
-  // placeholder says.
-  it("labels the field Time, as Slack does, while keeping its placeholder", () => {
+  // Block Kit Builder: catalog/actions/timepicker's field is named by its placeholder ("Select
+  // time"); extra/fidelity/timepicker/empty, with none, is named "Time".
+  it("names the field by its placeholder, as Slack does", () => {
     render(
       <BlockKitProvider>
         <TimePicker
@@ -43,15 +43,26 @@ describe("<TimePicker>", () => {
             {
               type: "timepicker",
               action_id: "a1",
-              placeholder: { type: "plain_text", text: "Select time" },
+              placeholder: { type: "plain_text", text: "Pick a slot" },
             } as unknown as Timepicker
           }
           blockId="b1"
         />
       </BlockKitProvider>,
     );
-    const field = screen.getByRole("combobox", { name: "Time" }) as HTMLInputElement;
-    expect(field.placeholder).toBe("Select time");
+    expect(screen.getByRole("combobox", { name: "Pick a slot" })).toBeTruthy();
+  });
+
+  it("names a field without a placeholder Time", () => {
+    render(
+      <BlockKitProvider>
+        <TimePicker
+          element={{ type: "timepicker", action_id: "a1" } as unknown as Timepicker}
+          blockId="b1"
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByRole("combobox", { name: "Time" })).toBeTruthy();
   });
 
   // Block Kit Builder: `extra/fidelity/timepicker/empty` sets no placeholder, and Slack's field

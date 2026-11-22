@@ -5,6 +5,7 @@ import { Element } from "../elements/Element";
 import { emptyState } from "../elements/emptyState";
 import {
   InputBlockContext,
+  InputLabelContext,
   InputErrorContext,
   InputOptionalContext,
 } from "../elements/inputBlockContext";
@@ -50,6 +51,7 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
   }, [surface, elementType, blockId, actionId, seedValue]);
   const error = own(errors, blockId);
   const errorId = useId();
+  const labelId = useId();
   const showDispatchHint = dispatchHint(block);
   // Slack's Builder preview never shows the "(optional)" suffix on the message-surface preview
   // (an `input` block there only ever appears inside a workflow step, where it's implied); it
@@ -58,23 +60,25 @@ export function Input({ block, blockId }: BlockProps<InputBlock>) {
 
   return (
     <div className={`sbk-input${error ? " sbk-input--error" : ""}`}>
-      <div className="sbk-input__label">
+      <div className="sbk-input__label" id={labelId}>
         <Text text={block.label} />
         {showOptional && <span className="sbk-input__optional"> (optional)</span>}
       </div>
       <div className="sbk-input__element">
         <InputBlockContext.Provider value={true}>
-          <InputOptionalContext.Provider value={block.optional === true}>
-            <InputErrorContext.Provider value={error ? errorId : undefined}>
-              {block.dispatch_action === true ? (
-                <Element element={element} blockId={blockId} />
-              ) : (
-                <SuppressActions>
+          <InputLabelContext.Provider value={labelId}>
+            <InputOptionalContext.Provider value={block.optional === true}>
+              <InputErrorContext.Provider value={error ? errorId : undefined}>
+                {block.dispatch_action === true ? (
                   <Element element={element} blockId={blockId} />
-                </SuppressActions>
-              )}
-            </InputErrorContext.Provider>
-          </InputOptionalContext.Provider>
+                ) : (
+                  <SuppressActions>
+                    <Element element={element} blockId={blockId} />
+                  </SuppressActions>
+                )}
+              </InputErrorContext.Provider>
+            </InputOptionalContext.Provider>
+          </InputLabelContext.Provider>
         </InputBlockContext.Provider>
       </div>
       {(block.hint || showDispatchHint) && (

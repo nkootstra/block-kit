@@ -37,6 +37,52 @@ describe("<Input> block", () => {
     expect(screen.getByText("(optional)")).toBeTruthy();
   });
 
+  // Block Kit Builder: Slack's field in an input block is labelled by the block's label
+  // (catalog/input/* references), not by its action_id or placeholder.
+  it.each([
+    ["plain_text_input", "textbox"],
+    ["email_text_input", "textbox"],
+    ["url_text_input", "textbox"],
+    ["number_input", "textbox"],
+    ["rich_text_input", "textbox"],
+    ["timepicker", "combobox"],
+  ] as const)("names its %s by the block's label", (type, role) => {
+    render(
+      <BlockKitProvider surface="modal">
+        <Input
+          block={block({
+            label: plain("Arrival"),
+            element: {
+              type,
+              action_id: "a1",
+              placeholder: plain("Type here"),
+              is_decimal_allowed: false,
+            },
+          })}
+          blockId="b1"
+          index={0}
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByRole(role, { name: "Arrival" })).toBeTruthy();
+  });
+
+  it("names a multiline field by the block's label", () => {
+    render(
+      <BlockKitProvider surface="modal">
+        <Input
+          block={block({
+            label: plain("Notes"),
+            element: { type: "plain_text_input", action_id: "a1", multiline: true },
+          })}
+          blockId="b1"
+          index={0}
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByRole("textbox", { name: "Notes" })).toBeTruthy();
+  });
+
   it("does not render '(optional)' when the block is required", () => {
     render(
       <BlockKitProvider surface="modal">

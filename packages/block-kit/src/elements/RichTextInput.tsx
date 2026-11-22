@@ -12,7 +12,7 @@ import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { CHARACTER_DISPATCH_DELAY } from "./characterDispatch";
 import { RichTextComposerActions, RichTextToolbar } from "./RichTextToolbar";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { useInvalidProps } from "./inputBlockContext";
+import { useInputLabelId, useInvalidProps } from "./inputBlockContext";
 import { firstText, formatsAt, readRichTextValue, renderRichTextValue } from "./richTextValue";
 
 /** Slack's placeholder when the payload sets none (fixtures/contexts/rich_text_input/modal-input). */
@@ -50,6 +50,7 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
   const ref = useRef<HTMLDivElement>(null);
   useFocusOnLoad(element, ref);
   const invalid = useInvalidProps();
+  const labelId = useInputLabelId();
   const actionId = element.action_id ?? "";
   // Drawn once: after that the editor's DOM is the user's, and the same element keeps React from
   // touching it on a re-render.
@@ -154,7 +155,10 @@ export function RichTextInput({ element, blockId }: ElementProps<RichTextInputEl
           role="textbox"
           aria-multiline="true"
           {...invalid}
-          aria-label={placeholderText ?? actionId}
+          // In an input block Slack labels the field by the block's label.
+          {...(labelId
+            ? { "aria-labelledby": labelId }
+            : { "aria-label": placeholderText ?? actionId })}
           onInput={onInput}
           onKeyDown={onKeyDown}
           style={{

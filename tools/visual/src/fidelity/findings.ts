@@ -349,15 +349,22 @@ export const FINDINGS: Finding[] = [
   },
   {
     id: "input-block-label-name",
-    title: "Our controls in an input block aren't named by the block's label",
+    title: "Our selects in an input block aren't named by the block's label",
     evidence: [
-      'Modal light sitting, the 28 behaviour recordings replayed on ours (bun tools/visual/src/probes.ts): a control focused in an input block is named after the block\'s label in Slack ("Label", "Title", "Priority"); ours is named after its action_id or type ("email", "rich", "title_input", "details_input", "Time", "--Select an item--"). Seen in every */modal-input@poke-input-1, @poke-richtext-1 and @submit, and in extra/modal/form@tab.',
+      'Modal light sitting, the behaviour recordings replayed on ours (bun tools/visual/src/probes.ts): a select focused in an input block is a combobox named after the block\'s label in Slack ("Label", "Priority"); ours is a button named after what it shows ("Select a user", "Medium"). Seen in contexts/*_select/modal-input@submit and extra/modal/form@tab.',
+      "Text fields, rich text inputs and time pickers are labelled by the block's label (aria-labelledby, as Slack's), and their recordings now match.",
     ],
     suspect: [
-      "packages/block-kit/src/blocks/Input.tsx and the elements' aria-label: the label isn't tied to the control (aria-labelledby / <label for>), and an aria-label from the action_id wins.",
+      "packages/block-kit/src/elements/Select.tsx: the trigger is a button whose content names it. Labelling it by the block's label alone would drop the chosen value from what a screen reader announces; Slack keeps that as the combobox's value.",
     ],
-    next: "Label each input block's control by the block's label (Slack's aria-labelledby points at it), then replay the modal recordings again.",
-    components: ["input", "plain_text_input", "email_text_input", "rich_text_input"],
+    next: "Decide with the multi-select-modal-keyboard finding whether the select trigger becomes a combobox, which carries the label as its name and the choice as its value.",
+    components: [
+      "input",
+      "static_select",
+      "users_select",
+      "conversations_select",
+      "channels_select",
+    ],
   },
   {
     id: "builder-modal-block-options",
