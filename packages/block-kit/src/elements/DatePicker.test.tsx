@@ -25,7 +25,10 @@ function open(onAction = vi.fn()) {
     </BlockKitProvider>,
   );
   const input = screen.getByRole("textbox") as HTMLInputElement;
+  fireEvent.mouseDown(input);
   fireEvent.click(input);
+  // A press leaves focus in the field, as Slack's does; ArrowDown moves into the calendar.
+  fireEvent.keyDown(input, { key: "ArrowDown" });
   return input;
 }
 
@@ -261,8 +264,30 @@ describe("<DatePicker>", () => {
       expect(focusedDay()).toBe("28");
     });
 
-    it("focuses the selected day when the calendar opens", () => {
-      open();
+    // Block Kit Builder: contexts/datepicker/actions@keyboard. After a press on the field, Slack's
+    // calendar is open and focus stays on the field.
+    it("keeps focus in the field when a press opens the calendar, as Slack does", () => {
+      render(
+        <BlockKitProvider>
+          <DatePicker
+            element={
+              {
+                type: "datepicker",
+                action_id: "a1",
+                initial_date: "1990-04-28",
+              } as unknown as Datepicker
+            }
+            blockId="b1"
+          />
+        </BlockKitProvider>,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      input.focus();
+      fireEvent.mouseDown(input);
+      fireEvent.click(input);
+      expect(calendarOpen()).toBe(true);
+      expect(document.activeElement).toBe(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
       expect(focusedDay()).toBe("28");
     });
 
