@@ -3619,6 +3619,7 @@ describe.each(engines)("%s", (engine) => {
       const page = await harness.open(datepicker);
       await page.click(".sbk-datepicker__input");
       await page.mouse.move(790, 690);
+      await page.keyboard.press("ArrowDown");
       await page.keyboard.press("ArrowLeft");
       await settle(page);
       expect((await style(page, DAY(27))).boxShadow.startsWith(`${BLUE} 0px 0px 0px 1px`)).toBe(
@@ -3666,6 +3667,7 @@ describe.each(engines)("%s", (engine) => {
       const page = await harness.open(datepicker);
       await page.click(".sbk-datepicker__input");
       await page.mouse.move(790, 690);
+      await page.keyboard.press("ArrowDown");
       await page.keyboard.press("ArrowLeft");
       await settle(page);
       expect(await cell(page, DAY(27))).toEqual({ border: WASH_BORDER, fill: WASH, text: TEXT });
@@ -3721,9 +3723,15 @@ describe.each(engines)("%s", (engine) => {
       ).toBe(BLUE);
     });
 
-    it("focuses the selected day and moves it with the arrow keys", async () => {
+    // contexts/datepicker/actions@keyboard: a press opens Slack's calendar with focus left in the
+    // field. ArrowDown moves ours into the calendar.
+    it("leaves focus in the field on a press; ArrowDown moves to the selected day", async () => {
       const page = await harness.open(datepicker);
       await page.click(".sbk-datepicker__input");
+      expect(await page.evaluate(() => document.activeElement?.className)).toContain(
+        "sbk-datepicker__input",
+      );
+      await page.keyboard.press("ArrowDown");
       expect(await focused(page)).toBe("28");
       await page.keyboard.press("ArrowDown");
       expect(await focused(page)).toBe("5");
@@ -3735,6 +3743,7 @@ describe.each(engines)("%s", (engine) => {
     it("picks with Enter and Escape closes, both returning focus to the field", async () => {
       const page = await harness.open(datepicker);
       await page.click(".sbk-datepicker__input");
+      await page.keyboard.press("ArrowDown");
       await page.keyboard.press("ArrowRight");
       await page.keyboard.press("Enter");
       expect(await page.locator(".sbk-datepicker__input").inputValue()).toBe("04/29/1990");

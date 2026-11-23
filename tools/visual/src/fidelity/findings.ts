@@ -128,16 +128,16 @@ export const FINDINGS: Finding[] = [
   {
     id: "datepicker-calendar-keyboard",
     title:
-      "Arrow keys and Enter in Slack's open calendar don't change the date; ours pick the next day",
+      "How Slack's open calendar is reached by keyboard isn't recorded; ours moves in on ArrowDown",
     evidence: [
-      "contexts/datetimepicker/actions@keyboard (light desktop retry): after a click on the date field, ArrowRight then Enter left Slack's calendar open, focus on the date textbox and the date January 1st, 2026; the final payload's selected_date_time keeps that date.",
-      "Ours, replayed in Chromium: the click moves focus into the calendar grid, ArrowRight moves to January 2nd and Enter picks it, so our payload would carry a day later. The jsdom replay in actionPayloads.test.tsx doesn't reproduce our focus move and passes, so no KNOWN_DIFFERENCES entry shows it.",
-      'Modal light sitting (contexts/datetimepicker/modal-input@submit and datepicker/modal-input@submit, replayed with probes.ts): Slack\'s calendar is a popover with role grid and focus stays on the date input; ours opens a dialog (role "dialog") and moves focus into it.',
+      "contexts/datepicker/actions@keyboard and contexts/datetimepicker/actions@keyboard: after a press on the date field, Slack's calendar is open with focus left in the field, and ArrowRight, ArrowDown and Enter there change nothing. Ours now leaves focus in the field on a press too.",
+      "Ours moves into the calendar on ArrowDown, a shortcut the docs list as ours. No recording shows how Slack's grid is reached from the keyboard.",
+      'Slack\'s calendar is a popover holding a grid; ours is a dialog (role "dialog"), the WAI-ARIA date picker pattern.',
     ],
     suspect: [
-      "packages/block-kit/src/elements/DatePicker.tsx and calendar/Calendar.tsx: focus moves into the grid on open, where Slack keeps it on the input.",
+      "packages/block-kit/src/elements/DateField.tsx: ArrowDown moves focus to the selected day.",
     ],
-    next: "Replay the recording on ours (bun tools/visual/src/probes.ts contexts/datetimepicker) after a fix; check how Slack's calendar is reached by keyboard (Tab into the grid?) with a probe.",
+    next: "Record a probe that Tabs from Slack's open-calendar field (click field-1, Tab, Tab) to see whether the grid takes focus, then match it.",
     components: ["datetimepicker", "datepicker"],
   },
   {

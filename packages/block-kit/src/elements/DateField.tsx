@@ -26,9 +26,9 @@ export function useDateField({ inputRef, focusOnLoad, display, onType }: DateFie
   // Focus given by `focus_on_load`, or handed back as the calendar closes, shouldn't pop the
   // calendar open; a user's focus does.
   const quietFocus = useRef(focusOnLoad === true);
-  // Opened with the pointer or a key, the calendar takes focus on its selected day, as Slack's
-  // does. Opened by tabbing into the field, it leaves focus there so Tab keeps moving through the
-  // form; ArrowDown then moves into the calendar.
+  // A press on the field opens the calendar and leaves focus in the field, as Slack's does
+  // (`contexts/datepicker/actions@keyboard`), so typing keeps going there. ArrowDown and the
+  // Open calendar button move focus to the selected day.
   const focusCalendar = useRef(false);
   const popupRef = useRef<HTMLDivElement>(null);
   // What's typed into the field, while it differs from the chosen date; null shows the date.
@@ -79,15 +79,7 @@ export function useDateField({ inputRef, focusOnLoad, display, onType }: DateFie
       await takeTyped();
       setText(null);
     },
-    // A press focuses the field before its click, so mark the pointer on the way down.
-    onMouseDown: () => {
-      focusCalendar.current = true;
-    },
-    onClick: () => {
-      if (open) focusDay();
-      else focusCalendar.current = true;
-      setOpen(true);
-    },
+    onClick: () => setOpen(true),
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Escape") {
         setText(null);

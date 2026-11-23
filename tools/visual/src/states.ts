@@ -328,12 +328,13 @@ export const OPEN_STATES: Record<keyof typeof OPENERS, State> = {
     ours: async (p, reference) => {
       const opener = p.locator(OPENERS.open).first();
       await opener.click();
-      // Ours is a label, which focuses its input on any click. Slack's time picker field isn't,
-      // and capture.js opens it with scripted events, so most references show it unfocused (no
-      // ring, the time not selected); one opened with a real click shows Slack's ring on its
-      // input. Follow the reference: take the focus off ours (the list stays open) unless the
-      // reference's field has the ring.
-      if (reference && (await opener.evaluate((el) => el.matches(".sbk-timepicker__control"))))
+      // capture.js opens a time picker or date field with scripted events, so most references
+      // show it unfocused (no ring, the text not selected), where a real click focuses ours, as it
+      // does Slack's (contexts/datepicker/actions@keyboard). One opened with a real click shows
+      // Slack's ring on its input. Follow the reference: take the focus off ours (the list or
+      // calendar stays open) unless the reference's field has the ring.
+      const scripted = ".sbk-timepicker__control, .sbk-datepicker__input";
+      if (reference && (await opener.evaluate((el, s) => el.matches(s), scripted)))
         if (!(await referenceFieldFocused(reference)))
           await p.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
     },
