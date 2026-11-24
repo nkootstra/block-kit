@@ -103,6 +103,24 @@ describe("probes", () => {
     ]);
   });
 
+  // Slack marks its confirm dialog role "dialog"; ours keeps "alertdialog" on purpose, the role
+  // WAI-ARIA gives a dialog that interrupts to ask for confirmation.
+  it("treats our alertdialog as Slack's dialog", () => {
+    const steps = [{ click: "button-1" }];
+    const open = (role: string): Observation => ({
+      ...rest,
+      focus: { where: "layer", target: null, role, name: "Are you sure?" },
+      layers: [{ kind: "dialog", role, scrollTop: 0 }],
+    });
+    expect(diffObservations(steps, [rest, open("dialog")], [rest, open("alertdialog")])).toEqual(
+      [],
+    );
+    expect(diffObservations(steps, [rest, open("listbox")], [rest, open("alertdialog")])).toEqual([
+      'after step 1 (click button-1): focus.role: Slack "listbox", ours "alertdialog"',
+      'after step 1 (click button-1): layers: Slack ["dialog listbox"], ours ["dialog alertdialog"]',
+    ]);
+  });
+
   it("describes a step for a report line", () => {
     expect(describeStep({ click: { role: "option", name: "Bravo" } })).toBe('click option "Bravo"');
     expect(describeStep({ type: "hi" })).toBe('type "hi"');

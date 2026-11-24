@@ -325,7 +325,7 @@ export function diffObservations(
     };
     differ("focus.where", s.focus?.where, o.focus?.where);
     differ("focus.target", s.focus?.target, o.focus?.target);
-    differ("focus.role", s.focus?.role, o.focus?.role);
+    differ("focus.role", s.focus?.role, asSlack(s.focus?.role, o.focus?.role));
     if (s.focus && o.focus && !sameName(s.focus.name, o.focus.name))
       differ("focus.name", s.focus.name, o.focus.name);
     // Slack draws a tooltip in a popover container that observe.js counts as a layer; ours draws
@@ -344,7 +344,10 @@ export function diffObservations(
     differ(
       "layers",
       slackLayers.map((l) => `${l.kind}${l.role ? ` ${l.role}` : ""}`),
-      o.layers.map((l) => `${l.kind}${l.role ? ` ${l.role}` : ""}`),
+      o.layers.map((l, j) => {
+        const role = asSlack(slackLayers[j]?.role, l.role);
+        return `${l.kind}${role ? ` ${role}` : ""}`;
+      }),
     );
     slackLayers.forEach((l, j) => {
       const ol = o.layers[j];
@@ -367,6 +370,13 @@ export function diffObservations(
   });
   return lines;
 }
+
+/**
+ * Slack marks its confirm dialog role "dialog"; ours keeps "alertdialog" on purpose, the role
+ * WAI-ARIA gives a dialog that interrupts to ask for confirmation, so it counts as Slack's.
+ */
+const asSlack = (slack: string | null | undefined, ours: string | null | undefined) =>
+  slack === "dialog" && ours === "alertdialog" ? slack : ours;
 
 const show = (v: unknown) => (v === undefined ? "missing" : JSON.stringify(v));
 
