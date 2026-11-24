@@ -467,6 +467,23 @@ describe("our side of real input, state styles and probes", () => {
     });
     expect(observations[3]).toMatchObject({ layers: [] });
   });
+
+  // contexts/datetimepicker/modal-input@submit: Slack's time field reads "Label Time". Ours names
+  // it with aria-labelledby (the block's label, then the field's own aria-label), which observe.js
+  // reads first, as the accessible name is computed.
+  it("names a field by aria-labelledby before its aria-label", async () => {
+    const page = await harness.open({
+      blocks: [
+        {
+          type: "input",
+          label: { type: "plain_text", text: "Label" },
+          element: { type: "datetimepicker", action_id: "datetime" },
+        },
+      ],
+    });
+    const observations = await replay(page, [{ click: "field-2" }]);
+    expect(observations[1]?.focus).toMatchObject({ role: "combobox", name: "Label Time" });
+  });
 });
 
 /**
