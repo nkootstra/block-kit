@@ -22,7 +22,7 @@
         "@fontsource/roboto-mono": "^5.3.0",
         "@nkootstra/block-kit": "workspace:*",
         "@pierre/diffs": "1.5.1",
-        "@slack/types": "^3.1.0",
+        "@slack/types": "^3.3.1",
         "blume": "2.2.0",
         "react": "19.3.0",
         "react-dom": "19.3.0",
@@ -42,7 +42,7 @@
         "@fontsource/roboto-mono": "^5.3.0",
         "@nkootstra/block-kit": "workspace:*",
         "@pierre/diffs": "1.5.1",
-        "@slack/types": "^3.1.0",
+        "@slack/types": "^3.3.1",
         "@stylexjs/stylex": "0.19.1",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
@@ -70,7 +70,7 @@
         "@fontsource/lato": "^5.3.0",
         "@nkootstra/block-kit": "workspace:*",
         "@resvg/resvg-js": "2.6.2",
-        "@slack/types": "^3.1.0",
+        "@slack/types": "^3.3.1",
         "astro": "7.4.7",
         "react": "19.3.0",
         "react-dom": "19.3.0",
@@ -92,8 +92,8 @@
       "version": "0.0.0",
       "dependencies": {
         "@nkootstra/block-kit": "workspace:*",
-        "@slack/types": "^3.1.0",
-        "@slack/web-api": "^8.2.0",
+        "@slack/types": "^3.3.1",
+        "@slack/web-api": "^8.5.0",
         "next": "16.4.5",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
@@ -109,8 +109,8 @@
       "version": "0.0.0",
       "dependencies": {
         "@nkootstra/block-kit": "workspace:*",
-        "@slack/types": "^3.1.0",
-        "@slack/web-api": "^8.2.0",
+        "@slack/types": "^3.3.1",
+        "@slack/web-api": "^8.5.0",
         "hono": "^4.13.13",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
@@ -127,14 +127,14 @@
       "name": "@nkootstra/block-kit",
       "version": "0.0.0",
       "dependencies": {
-        "@slack/types": "3.1.0",
+        "@slack/types": "3.3.1",
         "mdast-util-from-markdown": "^2.0.3",
         "mdast-util-gfm": "^3.1.0",
         "micromark-extension-gfm": "^3.0.0",
       },
       "devDependencies": {
         "@slack/bolt": "^5.1.0",
-        "@slack/web-api": "^8.1.1",
+        "@slack/web-api": "^8.5.0",
         "@testing-library/react": "16.3.3",
         "@types/mdast": "^4.0.4",
         "@types/react": "19.3.0",
@@ -160,7 +160,7 @@
       "devDependencies": {
         "@nkootstra/block-kit": "workspace:*",
         "@slack/bolt": "^5.1.0",
-        "@slack/web-api": "^8.1.1",
+        "@slack/web-api": "^8.5.0",
         "@testing-library/react": "16.3.3",
         "@types/mdast": "^4.0.4",
         "@types/react": "18.3.28",
@@ -820,9 +820,9 @@
 
     "@slack/socket-mode": ["@slack/socket-mode@3.0.1", "", { "dependencies": { "@slack/logger": "^5.0.0", "@slack/web-api": "^8.0.0", "@types/node": ">=20", "eventemitter3": "^5" }, "peerDependencies": { "undici": "^7.0.0" } }, "sha512-7L4adgnJtQvQgo5cfIwqHG1QuR8mdZQ/WdMScNDp6uK644ZqnHDAa4rR+vZYfZFdJ5+obCqZQ66Dad8kcwJ4Jg=="],
 
-    "@slack/types": ["@slack/types@3.2.0", "", {}, "sha512-IN4gdtlzQt8UJoj+1v+qAHeR4TxHO0KMlIs841SFfDQAcFFnsrWaGsEAE4goxVt8O/JOAFaGGdrFTzhNBop/Fg=="],
+    "@slack/types": ["@slack/types@3.3.1", "", {}, "sha512-F4JJd1SY5Nro1O6O4izMrBv0/IOpr+a8GGewr23tnP8zO1t9mWFLBjpNPv6nxuxhhw4JVRM9CPltBnLkZj7Ucw=="],
 
-    "@slack/web-api": ["@slack/web-api@8.2.0", "", { "dependencies": { "@slack/logger": "^5.0.0", "@slack/types": "^3.2.0", "@types/node": ">=20", "@types/retry": "0.12.5", "eventemitter3": "^5.0.1", "p-queue": "^6.6.2", "p-retry": "^4.6.2", "retry": "^0.13.1" } }, "sha512-bIW8/8BLD/HLuHLIA2LfA7AhSokzui4swCbMJuwoRJxn/kzHVla6YEKLvN1nCFHK/DfX7g+4Wj3ess/ZSh/tWQ=="],
+    "@slack/web-api": ["@slack/web-api@8.5.0", "", { "dependencies": { "@slack/logger": "^5.0.0", "@slack/types": "^3.3.1", "@types/node": ">=20", "@types/retry": "0.12.5", "eventemitter3": "^5.0.1", "p-queue": "^6.6.2", "p-retry": "^4.6.2", "retry": "^0.13.1" } }, "sha512-mbqNGN/geNqV4j0VB8pq/HR5RA2KpvwPxuSe3Y0VZtel9b419hZNeIyEx4aluuIaxXSEhEZiFnp0QniBsk8/SA=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
@@ -2481,8 +2481,6 @@
     "@bruits/satteri-wasm32-wasi/@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.2.4", "", { "dependencies": { "@tybys/wasm-util": "^0.10.3" }, "peerDependencies": { "@emnapi/core": "^1.7.1 || ^2.0.0-alpha.4", "@emnapi/runtime": "^1.7.1 || ^2.0.0-alpha.4" } }, "sha512-AJxoUD2/15ESHbvpcyjU274nsAPLuOtPHCk0vKJM5pj//Fg/B1FXNWjPnXTT9PymCYYiHo4zPj0ZomXBKhoy7g=="],
 
     "@modelcontextprotocol/sdk/zod": ["zod@4.6.5", "", {}, "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="],
-
-    "@nkootstra/block-kit/@slack/types": ["@slack/types@3.1.0", "", {}, "sha512-bTzqrO3lxJ5iWedo1eJKNAs1koyEhaTwKLJUkD3KETnPeQvD978AAE4jvWstUws8Gbbc4JR6iYE6F7XjE8UGmw=="],
 
     "@rollup/pluginutils/estree-walker": ["estree-walker@2.0.2", "", {}, "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="],
 
