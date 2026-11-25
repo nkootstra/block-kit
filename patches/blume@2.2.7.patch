@@ -1,8 +1,8 @@
 diff --git a/src/components/layout/RootLayout.astro b/src/components/layout/RootLayout.astro
-index ca01383fd4cd174711fa2b8662a6b4860d6df987..72495b7e8ee6419dc97cc9cb68866195144f3286 100644
+index ff4d6e53a2c22f631c09534ce78ef7774f524164..991d52c9b79332960c41d572dd082f2127e2eed8 100644
 --- a/src/components/layout/RootLayout.astro
 +++ b/src/components/layout/RootLayout.astro
-@@ -1255,6 +1255,11 @@ const localeRedirect = localeTargets
+@@ -1290,6 +1290,11 @@ const localeRedirect = localeTargets
            if (pre.querySelector("[data-blume-copy]")) {
              continue;
            }
