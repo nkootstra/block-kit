@@ -4,7 +4,7 @@
   "private": true,
   "description": "Wrangler for the deploy and preview jobs, outside the workspaces so nothing else installs it",
   "devDependencies": {
-    "wrangler": "4.148.0"
+    "wrangler": "4.168.0"
   },
   "overrides": {
     "sharp": "0.35.5"
