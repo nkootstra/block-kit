@@ -3,6 +3,7 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
 import { describe, expect, it } from "vitest";
+import { cpuTime, expectLinearTime } from "../test-utils";
 import { MAX_MARKDOWN_LENGTH, parseMarkdown } from "./markdownParse";
 
 /** Every node of `tree`, depth first. */
@@ -29,16 +30,12 @@ function fill(pattern: string, length = MAX_MARKDOWN_LENGTH): string {
 }
 
 function timed(text: string): number {
-  const start = performance.now();
-  parseMarkdown(text);
-  return performance.now() - start;
+  return cpuTime(() => parseMarkdown(text));
 }
 
 /** How long micromark with GFM takes to parse `text`, without `parseMarkdown`'s caps. */
 function timedRaw(text: string): number {
-  const start = performance.now();
-  gfmTree(text);
-  return performance.now() - start;
+  return cpuTime(() => gfmTree(text));
 }
 
 /** The fastest of three runs of `run`. */
@@ -47,32 +44,50 @@ function fastest(run: () => number): number {
 }
 
 describe("parseMarkdown on hostile input", () => {
-  // Slack's limit for a markdown block's text is 12,000 characters: each of these is just under it.
+  // Slack's limit for a markdown block's text is 12,000 characters: each of these reaches it, and
+  // is timed against the same shape at a quarter of the length, so the bound holds on a busy
+  // machine while still catching work that grows faster than the text.
+  const half = (n: number) => Math.floor(n / 2);
   it.each([
-    ["a long run of asterisks around a word", `${"*".repeat(5999)}a${"*".repeat(6000)}`],
-    ["a long run of underscores around a word", `${"_".repeat(5999)}a${"_".repeat(6000)}`],
-    ["thousands of nested bullet markers", `${"- ".repeat(5999)}x`],
-    ["thousands of nested ordered markers", `${"1. ".repeat(3999)}x`],
-    ["thousands of nested asterisk bullets", `${"* ".repeat(5999)}x`],
+    [
+      "a long run of asterisks around a word",
+      (n: number) => `${"*".repeat(half(n) - 1)}a${"*".repeat(half(n))}`,
+    ],
+    [
+      "a long run of underscores around a word",
+      (n: number) => `${"_".repeat(half(n) - 1)}a${"_".repeat(half(n))}`,
+    ],
+    ["thousands of nested bullet markers", (n: number) => `${"- ".repeat(half(n) - 1)}x`],
+    [
+      "thousands of nested ordered markers",
+      (n: number) => `${"1. ".repeat(Math.floor(n / 3) - 1)}x`,
+    ],
+    ["thousands of nested asterisk bullets", (n: number) => `${"* ".repeat(half(n) - 1)}x`],
     // Delimiters and brackets that never close, which cost time in how many a paragraph holds.
-    ["unclosed bold and italic", fill("**a*")],
-    ["underscores and asterisks between spaces", fill("_a* ")],
-    ["link ends without a start", fill("](")],
-    ["mixed unclosed emphasis", fill("*a_")],
-    ["unclosed strikethrough", fill("~a~")],
-    ["unclosed brackets on every line", fill("[a\n")],
-  ])("parses %s quickly", (_, text) => {
-    expect(text.length).toBeLessThanOrEqual(MAX_MARKDOWN_LENGTH);
-    expect(timed(text)).toBeLessThan(500);
-  });
+    ["unclosed bold and italic", (n: number) => fill("**a*", n)],
+    ["underscores and asterisks between spaces", (n: number) => fill("_a* ", n)],
+    ["link ends without a start", (n: number) => fill("](", n)],
+    ["mixed unclosed emphasis", (n: number) => fill("*a_", n)],
+    ["unclosed strikethrough", (n: number) => fill("~a~", n)],
+    ["unclosed brackets on every line", (n: number) => fill("[a\n", n)],
+  ])(
+    "parses %s in linear time",
+    (_, text) => {
+      expect(text(MAX_MARKDOWN_LENGTH).length).toBeLessThanOrEqual(MAX_MARKDOWN_LENGTH);
+      expectLinearTime((n) => parseMarkdown(text(n)), MAX_MARKDOWN_LENGTH);
+    },
+    // Six parses: the check is on CPU time, so the clock only has to catch a hang.
+    120_000,
+  );
 
   // Two shapes stay slower than the rest, and a CI runner's speed varies too much for a fixed
-  // bound, so each is timed against another parse in the same run. The fastest of three runs is
-  // the one least slowed by whatever else the machine is doing. Six parses at the limit take
-  // several seconds on a busy CI runner, longer than vitest's default timeout.
+  // bound, so each is timed against another parse in the same run, in CPU time. The fastest of
+  // three runs is the one least slowed by whatever else the machine is doing. Six parses at the
+  // limit take several seconds on a busy CI runner, and far longer on an overloaded laptop, so the
+  // timeout only catches a hang.
   it(
     "parses an opening bracket before long text no slower than micromark",
-    { timeout: 30_000 },
+    { timeout: 120_000 },
     () => {
       // Each word after an unclosed `[` looks back for it: micromark's own cost, about 0.1s at the
       // limit. The cap leaves it alone (one bracket), so it must cost no more than micromark does.
@@ -90,7 +105,7 @@ describe("parseMarkdown on hostile input", () => {
 
   it(
     "parses underscores in a www link in time that doesn't grow with its length",
-    { timeout: 30_000 },
+    { timeout: 120_000 },
     () => {
       // Each `www.` after a `_` reads the domain to its end: over a second in micromark at the
       // limit, about 0.1s past the delimiter cap at any length. Quadratic time would be 16 times

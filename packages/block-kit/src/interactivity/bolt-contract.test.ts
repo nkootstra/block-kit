@@ -33,7 +33,9 @@ describe("sendInteraction against a real @slack/bolt App", () => {
         botUserId: "U00000000",
       }),
     });
-    const server = (await app.start(0)) as Server;
+    // Listen where the tests connect. On the default (every address) another process bound to
+    // 127.0.0.1 on the same free port takes the connection instead: a run once got its 403.
+    const server = (await app.start({ port: 0, host: "127.0.0.1" })) as Server;
     return (server.address() as AddressInfo).port;
   }
 

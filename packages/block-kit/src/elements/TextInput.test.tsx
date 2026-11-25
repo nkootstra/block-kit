@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BlockKitProvider, type StateValues } from "../context";
+import { expectLinearTime } from "../test-utils";
 import { TextInput, type TextInputElement } from "./TextInput";
 
 afterEach(cleanup);
@@ -208,10 +209,13 @@ describe("<TextInput>", () => {
         />
       </BlockKitProvider>,
     );
-    const start = performance.now();
-    // A pasted run of digits that ends in a letter: rejected, and in milliseconds.
-    fireEvent.change(screen.getByRole("textbox"), { target: { value: `${"1".repeat(50_000)}x` } });
-    expect(performance.now() - start).toBeLessThan(500);
+    // A pasted run of digits that ends in a letter: rejected, in time that grows with its length
+    // and no faster.
+    const box = screen.getByRole("textbox") as HTMLInputElement;
+    expectLinearTime((n) => {
+      fireEvent.change(box, { target: { value: `${"1".repeat(n)}x` } });
+    }, 50_000);
+    expect(box.value).toBe("");
   });
 
   it("renders a textarea for multiline plain_text_input", () => {

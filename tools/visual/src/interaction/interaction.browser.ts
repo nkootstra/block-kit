@@ -3286,7 +3286,12 @@ describe.each(engines)("%s", (engine) => {
       const first = await at(0);
       await page.mouse.move(first.x, first.y);
       await page.mouse.move(5, 5);
-      await page.waitForTimeout(700);
+      // The 500ms count starts once the tooltip has closed, which a busy browser can take a while
+      // to get to: wait for that, then well past it.
+      await page
+        .locator(".sbk-chart-tooltip:not(.sbk-chart-tooltip--open)")
+        .waitFor({ state: "attached" });
+      await page.waitForTimeout(1000);
       const next = await at(4);
       await page.mouse.move(next.x, next.y);
       expect(await motion(page)).toEqual({
