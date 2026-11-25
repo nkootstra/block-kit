@@ -703,7 +703,7 @@ describe("<Select> users, conversations and channels from resolvers.directory", 
 
   it("lists only the directory when open, with no group repeating the chosen people", () => {
     renderDirectory("multi_users_select", vi.fn(), { initial_users: ["U0UNKNOWN", "U03"] });
-    fireEvent.click(screen.getByRole("button", { expanded: false }));
+    fireEvent.click(screen.getByRole("combobox"));
     expect(screen.queryByText("Selected")).toBeNull();
     expect(document.querySelector(".sbk-select__group-label")).toBeNull();
     expect(screen.getAllByRole("option").length).toBe(3);
@@ -1039,8 +1039,10 @@ describe("<Select> conversation, user and channel sources", () => {
         <Select element={{ type, action_id: "a1" } as unknown as SelectElement} blockId="b1" />
       </BlockKitProvider>,
     );
-    fireEvent.click(screen.getByRole("button"));
-    const search = screen.getByPlaceholderText(`Search ${source}`);
+    // Typed into the field, as Slack's multi-select is; there's no search box in the list.
+    const search = screen.getByRole("combobox");
+    fireEvent.click(search);
+    expect(screen.queryByPlaceholderText(`Search ${source}`)).toBeNull();
     for (const id of Array.isArray(expected) ? expected : [expected]) {
       fireEvent.change(search, { target: { value: id } });
       await keyDownAsync(search, "Enter");
@@ -1372,6 +1374,18 @@ describe("<Select> in an input block", () => {
     });
     expect(screen.getByRole("combobox", { name: "Priority" })).toBeTruthy();
   });
+
+  // contexts/multi_users_select/modal-input, extra/fidelity/multi-channels-select/empty: Slack's
+  // users, conversations and channels multi-selects are the same typed-into field as its others.
+  it.each(["multi_users_select", "multi_conversations_select", "multi_channels_select"])(
+    "makes a %s a field typed into, named by the block's label",
+    (type) => {
+      renderInput({ type, placeholder: { type: "plain_text", text: "Pick some" } });
+      const field = screen.getByRole("combobox", { name: "Priority" });
+      expect(field.tagName).toBe("INPUT");
+      expect(screen.queryByRole("button", { name: /Pick some/ })).toBeNull();
+    },
+  );
 
   it("keeps naming a select by its placeholder outside an input block", () => {
     render(

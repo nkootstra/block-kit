@@ -277,7 +277,9 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   },
   // Slackbot, redacted to U0000001 (PROVIDER).
   "catalog/input/multi-users-select@pick": async () => {
-    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    fireEvent.click(
+      within(document.querySelector<HTMLElement>(".sbk-input")!).getByRole("combobox"),
+    );
     await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
   },
   // January 14th, 2026 in the calendar, keeping the initial 11:00 AM.
@@ -288,7 +290,9 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
   "contexts/multi_static_select/accessory@pick": () => dialogPick("Select items", /^Option 1$/),
   // The first channel (redacted to C0000001; PROVIDER).
   "extra/fidelity/multi-channels-select/empty@pick": async () => {
-    fireEvent.click(document.querySelector<HTMLElement>(".sbk-input .sbk-select__control")!);
+    fireEvent.click(
+      within(document.querySelector<HTMLElement>(".sbk-input")!).getByRole("combobox"),
+    );
     await clickAsync(screen.getByRole("option", { name: /channel-one/ }));
   },
   // Slackbot (redacted to U0000001; PROVIDER) added next to the initial conversation.

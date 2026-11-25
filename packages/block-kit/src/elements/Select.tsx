@@ -430,11 +430,13 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   const labelled = <T extends object>(props: T) =>
     labelId ? { ...props, "aria-label": undefined, "aria-labelledby": labelId } : props;
   const dialogMode = inAccessory && multi && source !== "external";
-  // Slack's multi-external and multi-static selects are typed into in their field
-  // (`c-multi_select_input`), after the chips: there's no search box in the list, however many
-  // options it has (`extra/fidelity/multi-external-select/open@open`,
-  // `extra/fidelity/multi-static-select/many-items@open`).
-  const fieldTyped = multi && (source === "external" || source === "static") && !inAccessory;
+  // Slack's multi-selects are typed into in their field (`c-multi_select_input`, a combobox), after
+  // the chips: there's no search box in the list, however many options it has
+  // (`extra/fidelity/multi-external-select/open@open`,
+  // `extra/fidelity/multi-static-select/many-items@open`). Its users, conversations and channels
+  // multi-selects are the same field (`contexts/multi_users_select/modal-input`,
+  // `extra/fidelity/multi-channels-select/empty`).
+  const fieldTyped = multi && !inAccessory;
   const directory = source === "users" || source === "conversations" || source === "channels";
   /** An item as a dialog option: a directory id becomes an option labelled as it's shown. */
   const itemToOption = (item: Item): PlainTextOption =>

@@ -212,13 +212,20 @@ export const FINDINGS: Finding[] = [
       "Slack's recordings of multi-selects in an input block name them by placeholder; a browser names them by the block's label",
     evidence: [
       "Our selects in an input block are now named by the block's label (aria-labelledby), as Slack's are. The single select recordings match: contexts/{static,users,conversations,channels}_select/modal-input@submit.",
-      'Slack\'s multi-select field carries aria-labelledby (the block\'s label, present in the reference) and aria-label (the placeholder). The accessible name is the label, but these recordings were made when observe.js read aria-label first, so they say "Select items", "Pick some", "Search tags" or "Select options" where ours now reads the label: contexts/multi_static_select/modal-input@add-remove and @submit, extra/fidelity/multi-external-select/empty@poke-field-1, extra/fidelity/multi-static-select/many-items@scroll-field-1, extra/modal/required-multi-selects@fill-one-submit.',
+      'Slack\'s multi-select field carries aria-labelledby (the block\'s label, present in the reference) and aria-label (the placeholder). The accessible name is the label, but these recordings were made when observe.js read aria-label first, so they say "Select items", "Pick some", "Search tags" or "Select options" where ours now reads the label: contexts/multi_static_select/modal-input@add-remove and @submit, extra/fidelity/multi-external-select/empty@poke-field-1, extra/fidelity/multi-static-select/many-items@scroll-field-1, extra/modal/required-multi-selects@fill-one-submit, and for the users, conversations and channels multi-selects contexts/multi_users_select/modal-input@submit, extra/modal/optional-inputs@submit and extra/fidelity/multi-channels-select/empty@poke-field-1.',
     ],
     suspect: [
       "Not a package bug: the recordings predate observe.js reading aria-labelledby first.",
     ],
-    next: "Re-record those five behaviour recordings with the current observe.js; their focus.name lines should then match.",
-    components: ["input", "multi_static_select", "multi_external_select"],
+    next: "Re-record those eight behaviour recordings with the current observe.js; their focus.name lines should then match.",
+    components: [
+      "input",
+      "multi_static_select",
+      "multi_external_select",
+      "multi_users_select",
+      "multi_conversations_select",
+      "multi_channels_select",
+    ],
   },
   {
     id: "builder-modal-block-options",
@@ -249,16 +256,21 @@ export const FINDINGS: Finding[] = [
   },
   {
     id: "multi-select-modal-keyboard",
-    title:
-      "In a modal, Slack's multi-select field is a typeable combobox; ours is a button whose Enter closes the list",
+    title: "After Enter picks an option, Slack's multi-select clears its highlight; ours keeps it",
     evidence: [
-      "Modal light sitting, contexts/multi_static_select/modal-input@add-remove (click field-1, Enter, ArrowDown, Enter, Escape, Backspace): Slack's field is a combobox; Enter right after opening keeps the list open with nothing highlighted, ArrowDown highlights Option 1, Enter picks it and the list stays open, Escape closes it, and Backspace then removes nothing. Ours is a button: Enter after opening toggles the list shut, and the steps after it land elsewhere.",
+      "Modal light sitting, contexts/multi_static_select/modal-input@add-remove (click field-1, Enter, ArrowDown, Enter, Escape, Backspace), replayed on ours: both fields are typed-into comboboxes, Enter after opening keeps the list open, ArrowDown highlights Option 1 and Enter picks it with the list left open. Then Slack highlights nothing; ours still highlights Option 1.",
+      "Slack's users, conversations and channels multi-selects are the same field, and so are ours (contexts/multi_users_select/modal-input@submit, extra/modal/optional-inputs@submit, extra/fidelity/multi-channels-select/empty@poke-field-1).",
     ],
     suspect: [
-      "packages/block-kit/src/elements/Select.tsx: the multi-select's trigger is a button (toggleFromTrigger), where Slack's is a typeable field.",
+      "packages/block-kit/src/elements/Select.tsx / useCombobox.ts: a pick in a multi-select leaves the active row as it was.",
     ],
-    next: "Replay the recording on ours after a change (bun tools/visual/src/probes.ts contexts/multi_static_select/modal-input).",
-    components: ["multi_static_select"],
+    next: "Clear the highlight after a pick in a multi-select, then replay bun tools/visual/src/probes.ts contexts/multi_static_select/modal-input.",
+    components: [
+      "multi_static_select",
+      "multi_users_select",
+      "multi_conversations_select",
+      "multi_channels_select",
+    ],
   },
   {
     id: "builder-modal-focus-on-load",
