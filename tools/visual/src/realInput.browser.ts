@@ -484,6 +484,24 @@ describe("our side of real input, state styles and probes", () => {
     const observations = await replay(page, [{ click: "field-2" }]);
     expect(observations[1]?.focus).toMatchObject({ role: "combobox", name: "Label Time" });
   });
+
+  it("reads a field's state from the combobox it holds", async () => {
+    const page = await harness.open({
+      blocks: [
+        {
+          type: "input",
+          label: { type: "plain_text", text: "Label" },
+          element: {
+            type: "multi_static_select",
+            action_id: "pick",
+            options: [{ text: { type: "plain_text", text: "One" }, value: "one" }],
+          },
+        },
+      ],
+    });
+    const observations = await replay(page, []);
+    expect(observations[0]?.controls["field-1"]).toMatchObject({ disabled: "false" });
+  });
 });
 
 /**

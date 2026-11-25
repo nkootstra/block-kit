@@ -239,8 +239,14 @@
         ["aria-current", "current"],
         ["aria-selected", "selected"],
         ["aria-disabled", "disabled"],
-      ])
-        if (el.hasAttribute(attr)) state[name] = el.getAttribute(attr);
+      ]) {
+        // A field's state sits on its combobox: Slack's field is one, ours holds one.
+        const from =
+          kind === "field" && !el.hasAttribute(attr)
+            ? (el.querySelector('[role="combobox"]') ?? el)
+            : el;
+        if (from.hasAttribute(attr)) state[name] = from.getAttribute(attr);
+      }
       const sort = el.closest('[role="columnheader"]')?.getAttribute("aria-sort");
       if (sort) state.sort = sort;
       if (kind === "more") state.label = text(el);
