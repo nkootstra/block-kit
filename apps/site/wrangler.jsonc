@@ -14,4 +14,7 @@
     "run_worker_first": ["/*", "!/_astro/*", "!/*.png", "!/*.svg", "!/*.txt", "!/*.xml"],
   },
   "routes": [{ "pattern": "block-kit.dev", "custom_domain": true }],
+  // Workers Logs (free plan): each request's path, status, outcome and wall and CPU time, so a slow
+  // response can be traced to what it asked for.
+  "observability": { "enabled": true },
 }
