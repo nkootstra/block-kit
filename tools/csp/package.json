@@ -1,0 +1,16 @@
+{
+  "name": "@block-kit/csp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./csp.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.0"
+  }
+}

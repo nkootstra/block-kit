@@ -1,5 +1,32 @@
+import { readdir, readFile } from "node:fs/promises";
 import react from "@astrojs/react";
+import { cspProblems, inlineScriptHashes } from "@block-kit/csp";
 import { defineConfig, fontProviders } from "astro/config";
+
+/**
+ * Fails the build when a built page has an inline script that the Content-Security-Policy in the
+ * `_headers` it ships doesn't allow by hash, or the policy allows a hash no page needs, so a deploy
+ * never blocks its own scripts. Astro writes some of those scripts itself (the island loader), so
+ * an Astro upgrade can change them too.
+ */
+const checkCsp = {
+  name: "check-csp",
+  hooks: {
+    "astro:build:done": async ({ dir }) => {
+      const pages = (await readdir(dir)).filter((file) => file.endsWith(".html"));
+      const html = (
+        await Promise.all(pages.map((page) => readFile(new URL(page, dir), "utf8")))
+      ).join("\n");
+      const problems = cspProblems(html, await readFile(new URL("_headers", dir), "utf8"));
+      if (problems.length > 0) {
+        throw new Error(
+          `public/_headers doesn't match the built pages:\n${problems.join("\n")}\n` +
+            `script-src should list 'self' ${[...new Set(inlineScriptHashes(html))].join(" ")}`,
+        );
+      }
+    },
+  },
+};
 
 /** Latin-only files from the installed Fontsource packages: everything on the page is English. */
 const lato = (weight, style) => ({
@@ -12,7 +39,7 @@ const lato = (weight, style) => ({
 // so text doesn't shift when the fonts arrive.
 export default defineConfig({
   site: "https://block-kit.dev",
-  integrations: [react()],
+  integrations: [react(), checkCsp],
   vite: {
     // The package is linked from the workspace, so Vite serves it as source and only finds the
     // dependencies its build imports (mdast, micromark) once a page loads them. It then re-bundles
