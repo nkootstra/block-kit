@@ -3382,6 +3382,33 @@ describe.each(engines)("%s", (engine) => {
       ]).toEqual(["Clear selection", "rgb(69, 68, 71)"]);
     });
 
+    // contexts/datetimepicker/modal-input@submit: Slack opens the time list scrolled so the chosen
+    // time, highlighted, sits above the list's 12px bottom padding (scrollTop 96 for 11:00 AM,
+    // where flush with the edge would be 84), and keeps that gap as ArrowDown moves on.
+    it("keeps the list's bottom padding below the highlighted time", async () => {
+      const page = await harness.open({
+        blocks: [
+          {
+            type: "input",
+            label: plain("Label"),
+            element: { type: "datetimepicker", action_id: "dt", initial_date_time: 1767261600 },
+          },
+        ],
+      });
+      const gap = () =>
+        page.evaluate(() => {
+          const list = document.querySelector(".sbk-timepicker__menu")!.getBoundingClientRect();
+          const row = document.querySelector(".sbk-timepicker__option[data-active]")!;
+          return Math.round(list.bottom - row.getBoundingClientRect().bottom);
+        });
+      await page.click(TIME);
+      await settle(page);
+      expect(await gap()).toBe(12);
+      await page.keyboard.press("ArrowDown");
+      await settle(page);
+      expect(await gap()).toBe(12);
+    });
+
     it("fills the time and sends the action as soon as a day is picked", async () => {
       const page = await harness.open(picker());
       await page.click(DATE);

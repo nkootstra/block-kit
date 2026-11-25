@@ -13,7 +13,9 @@ timestamp together. In a message too narrow for both, such as on a phone, the ti
 under the date field and each takes the full width, as in Slack. The date field is the
 [date picker](/elements/date-picker)'s field: it opens the same calendar, takes a typed date, and
 selects its date when tabbed into. The time field opens the same hourly list as the
-[time picker](/elements/time-picker), typeable for a time off the hour. As in Slack, screen readers
+[time picker](/elements/time-picker), typeable for a time off the hour. Unlike the time picker's,
+it opens with the chosen time highlighted and scrolled into view; reopened, the field holds that
+time as selected text, so typing replaces it. As in Slack, screen readers
 call the time field "Date and time Time", or the input block's label followed by "Time" (for
 example "When to meet Time"). Slack allows it in `actions`
 and `input` blocks, in messages and modals; it isn't available as a section accessory or in App
