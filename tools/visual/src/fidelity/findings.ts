@@ -255,6 +255,18 @@ export const FINDINGS: Finding[] = [
     components: ["file_input"],
   },
   {
+    id: "plan-bare-task-header",
+    title:
+      "Slack draws a plan task with nothing to reveal as a disabled button; ours is a plain header",
+    evidence: [
+      'catalog/agents/plan-error@expanded: none of the three tasks has details, output or sources. Slack draws each header as a button with aria-expanded="true" and aria-disabled="true" (the first in the tab order, the others tabindex=-1); ours draws a div with no caret.',
+      'packages/block-kit/src/blocks/Plan.test.tsx "shows a task with nothing to reveal as a plain header, not a button, like Slack" says the opposite; no behaviour recording covers a bare task.',
+    ],
+    suspect: ["packages/block-kit/src/blocks/Plan.tsx: the non-expandable branch renders a div."],
+    next: "Record a behaviour probe on catalog/agents/plan-error@expanded (Tab through the tasks), then match Slack's button and update the test.",
+    components: ["plan"],
+  },
+  {
     id: "builder-modal-focus-on-load",
     title:
       "Block Kit Builder's modal preview didn't honour focus_on_load; ours focuses the element",

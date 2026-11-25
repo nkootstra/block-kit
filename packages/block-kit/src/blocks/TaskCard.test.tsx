@@ -39,6 +39,11 @@ describe("<TaskCard>", () => {
     expect(screen.getByRole("button").getAttribute("aria-expanded")).toBe("false");
   });
 
+  it('marks a pill that expands aria-disabled="false", as Slack does', () => {
+    render(<TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />);
+    expect(screen.getByRole("button").getAttribute("aria-disabled")).toBe("false");
+  });
+
   it("expands to reveal details, output and every source link", () => {
     render(<TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />);
     fireEvent.click(screen.getByRole("button"));

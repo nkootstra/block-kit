@@ -65,6 +65,7 @@ function TaskRow({ task }: { task: PlanTask }) {
             type="button"
             className="sbk-plan__task-header"
             aria-expanded={open}
+            aria-disabled={false}
             onClick={() => setOpen((value) => !value)}
           >
             <span className="sbk-plan__task-title">{title}</span>
@@ -125,6 +126,8 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
         type="button"
         className="sbk-plan__pill"
         aria-expanded={expanded}
+        // Slack marks the plan's pill and its task headers aria-disabled="false".
+        aria-disabled={false}
         onClick={() => setExpanded((value) => !value)}
       >
         <span className="sbk-plan__pill-content">

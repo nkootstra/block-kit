@@ -66,6 +66,15 @@ describe("<Plan>", () => {
     expect(screen.getByRole("button").getAttribute("aria-expanded")).toBe("false");
   });
 
+  it('marks its pill and expandable task headers aria-disabled="false", as Slack does', () => {
+    render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
+    const pill = screen.getByRole("button", { name: /Demonstrating Plan/ });
+    expect(pill.getAttribute("aria-disabled")).toBe("false");
+    fireEvent.click(pill);
+    const header = screen.getByRole("button", { name: /^Fetching data/ });
+    expect(header.getAttribute("aria-disabled")).toBe("false");
+  });
+
   it("expands to show every task with its details, output and sources", () => {
     render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
     fireEvent.click(screen.getByRole("button", { name: /Demonstrating Plan/ }));
