@@ -325,6 +325,11 @@ describe("<Select> multi-select picks", () => {
     expect(screen.getByRole("option", { name: "A" }).getAttribute("aria-selected")).toBe("true");
   });
 
+  it("marks the field as enabled with aria-disabled, as Slack's does", () => {
+    render(<Select element={element} blockId="b1" />);
+    expect(screen.getByRole("combobox").getAttribute("aria-disabled")).toBe("false");
+  });
+
   it("highlights no option after an Enter pick, and the next ArrowDown highlights the first", async () => {
     render(<Select element={element} blockId="b1" />);
     const trigger = screen.getByRole("combobox");

@@ -795,6 +795,9 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
               <input
                 {...labelled(combo.inputProps(undefined, "", placeholder))}
                 {...invalid}
+                // Slack's multi-select field says it's enabled (`aria-disabled="false"`), in every
+                // behaviour recording of one (contexts/multi_static_select/modal-input).
+                aria-disabled={false}
                 className="sbk-select__input"
                 // Focus arriving from outside, by Tab or a press, opens the list as a click does
                 // (`extra/fidelity/multi-external-select/empty@focus-field-1+mobile`).
