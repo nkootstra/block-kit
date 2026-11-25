@@ -34,12 +34,22 @@ import {
 import type { ColorMode } from "../components/PreviewCode";
 
 // The code views carry `@pierre/diffs` and its highlighter, most of this island's weight. Readers
-// who never open a JSON tab or interact with an action log don't download them.
+// who never open a JSON tab or interact with an action log don't download them. When the chunk
+// can't load (offline, or a page left open across a deploy that replaced it), the JSON shows as
+// plain text instead of the error unmounting the whole preview.
 const JsonEditor = lazy(() =>
-  import("../components/PreviewCode").then((m) => ({ default: m.JsonEditor })),
+  import("../components/PreviewCode").then(
+    (m) => ({ default: m.JsonEditor }),
+    () => ({ default: ({ source }: { source: string }) => <JsonPlaceholder source={source} /> }),
+  ),
 );
 const JsonView = lazy(() =>
-  import("../components/PreviewCode").then((m) => ({ default: m.JsonView })),
+  import("../components/PreviewCode").then(
+    (m) => ({ default: m.JsonView }),
+    () => ({
+      default: ({ contents }: { contents: string }) => <JsonPlaceholder source={contents} />,
+    }),
+  ),
 );
 
 export interface PreviewProps {
