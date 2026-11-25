@@ -23,6 +23,11 @@ function todayISO() {
   return toISO(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
+/** The day the calendar opens on: the selected one, else now. */
+function openingDay(value: string | undefined) {
+  return value ? new Date(`${value}T00:00:00Z`) : new Date();
+}
+
 /** Slack's calendar header icons, 20×20. */
 const NAV_PATHS = {
   "previous-year":
@@ -83,9 +88,8 @@ const ARROW_DAYS: Record<string, number> = {
  * the focused day (the selected one, else today, else the 1st) takes Tab, and the arrow keys move
  * it a day or a week, turning the month when they cross its edge. */
 export function Calendar({ value, onSelect, onClear }: CalendarProps) {
-  const initial = value ? new Date(`${value}T00:00:00Z`) : new Date();
-  const [year, setYear] = useState(initial.getUTCFullYear());
-  const [month, setMonth] = useState(initial.getUTCMonth());
+  const [year, setYear] = useState(() => openingDay(value).getUTCFullYear());
+  const [month, setMonth] = useState(() => openingDay(value).getUTCMonth());
   const [focused, setFocused] = useState(() => {
     if (value) return value;
     const today = todayISO();

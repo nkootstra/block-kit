@@ -37,6 +37,11 @@ function formatDay(date: string, today: string): string {
   return `${month} ${ordinal(d.getUTCDate())}, ${d.getUTCFullYear()}`;
 }
 
+/** The current day and minute in `zone`. */
+function wallClockNow(zone: string): WallClock {
+  return wallClock(Math.floor(Date.now() / 1000), zone);
+}
+
 /** `initial_date_time` when it's a timestamp a `Date` can hold. */
 function initialTimestamp(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(new Date(value * 1000).getTime())
@@ -68,7 +73,7 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   const timeFieldRef = useRef<HTMLLabelElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const actionId = element.action_id ?? "";
-  const now = () => wallClock(Math.floor(Date.now() / 1000), zone);
+  const now = () => wallClockNow(zone);
   // The date half is the datepicker's field (`c-date_picker__select_input`,
   // contexts/datetimepicker/actions.reference.html): typed into, and selected when tabbed into
   // (`contexts/datetimepicker/actions@focus-field-1+dark`).
