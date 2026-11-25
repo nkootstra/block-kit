@@ -215,6 +215,16 @@ describe("<DateTimePicker>", () => {
       expect([rows.length, rows[0], rows[23]]).toEqual([24, "12:00 AM", "11:00 PM"]);
     });
 
+    // contexts/datetimepicker/actions@keyboard: open, Slack's time field still holds the chosen
+    // time ("11:00 AM"), as the timepicker's does, selected so what's typed replaces it.
+    it("keeps the chosen time in the field, selected, when the list opens", () => {
+      renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
+      fireEvent.click(timeInput());
+      const input = timeInput();
+      expect([input.value, input.selectionStart, input.selectionEnd]).toEqual(["11:00 AM", 0, 8]);
+      expect(screen.getAllByRole("option")[0]!.textContent).toBe("Clear selection");
+    });
+
     it("takes a typed time that isn't on the hour", async () => {
       const { onAction } = renderPicker({ initial_date_time: ts("2026-01-01T10:00:00Z") });
       await typeTime("2:15 PM");

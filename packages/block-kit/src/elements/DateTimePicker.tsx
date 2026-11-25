@@ -1,6 +1,7 @@
 import type { DateTimepicker } from "@slack/types";
 import { useEffect, useId, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
+import { useClientLayoutEffect } from "../useClientLayoutEffect";
 import { useBlockKitConfig } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
 import type { ElementProps } from "../types";
@@ -130,7 +131,10 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   }
 
   const [query, setQuery] = useState("");
-  const rows = [...(clearable && value && !query.trim() ? [CLEAR] : []), ...TIMES];
+  // "Clear selection" leads the list once a time is chosen, until something else is typed.
+  const showClear =
+    clearable && value !== undefined && (query === "" || query === formatTime(value.time));
+  const rows = [...(showClear ? [CLEAR] : []), ...TIMES];
   const combo = useCombobox({
     query,
     onQueryChange: setQuery,
@@ -148,6 +152,22 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
     listRef,
     highlightOnType: false,
   });
+
+  // As in the timepicker, the open field holds the chosen time as text, selected, so typing
+  // replaces it (contexts/datetimepicker/actions@keyboard). The text is selected once it's in
+  // the field, a render after the query is set.
+  const selectOnOpen = useRef(false);
+  useEffect(() => {
+    if (!combo.open || !value) return;
+    selectOnOpen.current = true;
+    setQuery(formatTime(value.time));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [combo.open]);
+  useClientLayoutEffect(() => {
+    if (!selectOnOpen.current) return;
+    selectOnOpen.current = false;
+    combo.inputRef.current?.select();
+  }, [query]);
 
   const timeDisplay = value ? formatTime(value.time) : undefined;
   // Slack names the time half after the picker: "Date and time Time" on its own, the input
