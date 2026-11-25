@@ -95,7 +95,7 @@ jobs:
       fail-fast: false
       matrix:
         shard: ${{ fromJSON(github.event_name == 'workflow_dispatch' && '["all"]' || '["1/8","2/8","3/8","4/8","5/8","6/8","7/8","8/8"]') }}
-    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    container: mcr.microsoft.com/playwright:v1.65.1-noble
     permissions:
       contents: read
     steps:
@@ -273,7 +273,7 @@ jobs:
       fail-fast: false
       matrix:
         engine: [chromium, firefox, webkit]
-    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    container: mcr.microsoft.com/playwright:v1.65.1-noble
     # The container runs as root, but GitHub mounts HOME at /github/home owned by another user, and
     # Firefox refuses to start under a HOME it doesn't own. Playwright's documented workaround.
     env:
@@ -301,7 +301,7 @@ jobs:
     runs-on: ubuntu-latest
     # A run takes about 6 minutes; a hang fails fast instead of holding a runner for six hours.
     timeout-minutes: 20
-    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    container: mcr.microsoft.com/playwright:v1.65.1-noble
     permissions:
       contents: read
     steps:
