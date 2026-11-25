@@ -255,24 +255,6 @@ export const FINDINGS: Finding[] = [
     components: ["file_input"],
   },
   {
-    id: "multi-select-modal-keyboard",
-    title: "After Enter picks an option, Slack's multi-select clears its highlight; ours keeps it",
-    evidence: [
-      "Modal light sitting, contexts/multi_static_select/modal-input@add-remove (click field-1, Enter, ArrowDown, Enter, Escape, Backspace), replayed on ours: both fields are typed-into comboboxes, Enter after opening keeps the list open, ArrowDown highlights Option 1 and Enter picks it with the list left open. Then Slack highlights nothing; ours still highlights Option 1.",
-      "Slack's users, conversations and channels multi-selects are the same field, and so are ours (contexts/multi_users_select/modal-input@submit, extra/modal/optional-inputs@submit, extra/fidelity/multi-channels-select/empty@poke-field-1).",
-    ],
-    suspect: [
-      "packages/block-kit/src/elements/Select.tsx / useCombobox.ts: a pick in a multi-select leaves the active row as it was.",
-    ],
-    next: "Clear the highlight after a pick in a multi-select, then replay bun tools/visual/src/probes.ts contexts/multi_static_select/modal-input.",
-    components: [
-      "multi_static_select",
-      "multi_users_select",
-      "multi_conversations_select",
-      "multi_channels_select",
-    ],
-  },
-  {
     id: "builder-modal-focus-on-load",
     title:
       "Block Kit Builder's modal preview didn't honour focus_on_load; ours focuses the element",
