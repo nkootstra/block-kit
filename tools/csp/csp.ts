@@ -1,10 +1,11 @@
 import { createHash } from "node:crypto";
 
 /**
- * The page's inline scripts, as `public/_headers`' Content-Security-Policy allows them: by the
- * SHA-256 of their text. Editing a script changes its hash, so `csp.test.ts` checks `index.html`
- * against `public/_headers`, and the build (vite.config.ts) checks the built page against the
- * `_headers` it ships. Data blocks (`type="application/ld+json"`) never run and need no hash.
+ * A page's inline scripts, as a `_headers` Content-Security-Policy allows them: by the SHA-256 of
+ * their text. Editing a script changes its hash, so the playground's and the landing page's builds
+ * check their built pages against the `_headers` they ship (apps/playground/vite.config.ts,
+ * apps/site/astro.config.mjs). Data blocks (`type="application/ld+json"`) never run and need no
+ * hash.
  */
 export function inlineScriptHashes(html: string): string[] {
   const hashes: string[] = [];

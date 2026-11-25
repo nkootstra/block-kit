@@ -61,6 +61,7 @@ This is a Bun workspace run with Turborepo.
 | `fixtures`           | Block Kit Builder payloads with Slack's reference renders                        |
 | `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference        |
 | `tools/react-18`     | Runs the package's tests and type-check against React 18                         |
+| `tools/csp`          | Hashes a built page's inline scripts for the landing page's and playground's CSP |
 | `tools/deploy`       | Wrangler for the deploy and preview jobs, outside the workspaces (below)         |
 | `examples`           | Runnable apps that keep the Slack bot token on the server (Next.js, Vite + Hono) |
 
@@ -109,6 +110,10 @@ Every page, the home page included, carries a machine-readable date: Blume puts 
 
 Blume's page script gives every `.prose pre` a "Copy code" button when the page loads, including the `<pre>` a preview renders for a preformatted block. Previews are React islands that hydrate later, so the extra button made React discard their server HTML (error #418 on `/blocks/rich-text`). [`patches/blume@2.2.0.patch`](../patches/blume@2.2.0.patch) makes the script skip a `<pre>` inside an island, and `apps/docs/components/blume-copy-buttons.test.ts` fails if an upgrade drops it. Regenerate the patch with `bun patch blume` when upgrading Blume.
 
+Each preview loads its JSON editor (`@pierre/diffs` and its highlighter, in [`apps/docs/components/PreviewCode.tsx`](../apps/docs/components/PreviewCode.tsx)) only when a reader opens the JSON tab or an action log first shows something, so the pages don't all download it; `apps/docs/islands/preview-bundle.test.ts` fails if `Preview.tsx` imports it statically again. The module sits outside `islands/` because Blume makes every file there an MDX component.
+
+[`apps/docs/scripts/headers.ts`](../apps/docs/scripts/headers.ts) appends to Blume's `_headers` after the build: a year's cache for the hashed `/_astro/` files, `noindex` on `llms-full.txt`, and the security headers the landing page and playground send (`X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`). The docs send no Content-Security-Policy: Blume writes its own inline scripts and can change them in any upgrade. The Worker has Workers Logs on (`observability` in `wrangler.jsonc`), so a slow response can be traced to its request.
+
 The docs deploy with releases, never on a plain push to `main`, so they don't describe a package npm doesn't have yet:
 
 1. After publishing, the Release workflow runs [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) on the new `vX.Y.Z` tag with `deploy`. The `check` job builds the whole workspace, docs included (its changelog now shows the release), and uploads `apps/docs/dist` as an artifact.
@@ -119,6 +124,8 @@ For a docs-only fix between releases, run Actions → CI → Run workflow on `ma
 ### Landing page deployment
 
 `block-kit.dev` is the static `astro build` of `apps/site` on Workers Static Assets ([`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc)). A small Worker, [`apps/site/worker/index.ts`](../apps/site/worker/index.ts), runs first on page routes for agents, as the docs' does: `Accept: text/markdown` on the home page gets `/index.md`, and a missing page answers 404 with `/404.md` to Markdown requests and an RFC 9457 problem document (`/404.json`) to JSON ones. All three are built from `src/lib/markdown.ts`. Browsers get the HTML, and every page response varies on `Accept`. Its live demos render with the package, so it deploys with releases too, by the same `deploy` CI run and the same guard, in the `deploy-site` job. It uses the same Cloudflare secrets as the docs.
+
+[`apps/site/public/_headers`](../apps/site/public/_headers) sets the security headers, including a Content-Security-Policy that allows the built pages' inline scripts by hash (the theme script, the page's own and Astro's island loader). The build fails if a built page's inline scripts don't match it, and prints the hashes it needs, so an Astro upgrade that changes its loader is caught too. Workers Logs are on for the Worker, as for the docs'.
 
 ### Playground deployment
 

@@ -35,4 +35,7 @@
   // workers.dev URL, which the Worker marks noindex.
   "preview_urls": true,
   "previews": { "vars": { "ROBOTS": "noindex" } },
+  // Workers Logs (free plan): each request's path, status, outcome and wall and CPU time, so a slow
+  // response can be traced to what it asked for.
+  "observability": { "enabled": true },
 }

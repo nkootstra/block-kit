@@ -6,7 +6,7 @@ import stylex from "@stylexjs/unplugin/vite";
 import react from "@vitejs/plugin-react";
 import { build, defineConfig, loadEnv, type Plugin, type ResolvedConfig } from "vite";
 import { createInteractionRelay } from "../../packages/block-kit/src/interactivity/relay";
-import { cspProblems, inlineScriptHashes } from "./csp";
+import { cspProblems, inlineScriptHashes } from "@block-kit/csp";
 
 const src = (path: string) =>
   fileURLToPath(new URL(`../../packages/block-kit/src/${path}`, import.meta.url));
@@ -121,7 +121,7 @@ function prerender(): Plugin {
 
 /**
  * Fails the build when the built page has an inline script that the Content-Security-Policy in
- * the `_headers` it ships doesn't allow by hash (see csp.ts), so a deploy never blocks its own
+ * the `_headers` it ships doesn't allow by hash (see tools/csp), so a deploy never blocks its own
  * theme script. Runs after `prerender`, on the page that deploys.
  */
 function checkCsp(): Plugin {

@@ -25,6 +25,7 @@
     "shiki": "4.4.3"
   },
   "devDependencies": {
+    "@block-kit/csp": "workspace:*",
     "@stylexjs/unplugin": "0.19.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
