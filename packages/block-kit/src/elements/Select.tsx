@@ -467,9 +467,13 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
     clickedIndex: multi ? -1 : undefined,
     // Opened on a chosen option, Slack's first arrow key moves on from it (Block Kit Builder).
     holdFirstArrow: flatOptions.findIndex(isSelected) < 0 || query.trim() !== "",
-    onChoose: (i) => {
+    onChoose: async (i) => {
       const option = flatOptions[i];
-      if (option) selectItem(optionToItem(option));
+      if (!option) return;
+      await selectItem(optionToItem(option));
+      // After Enter picks an option, Slack's multi-select list stays open with no row highlighted;
+      // the next arrow key starts again from the first (contexts/multi_static_select/modal-input).
+      if (multi) combo.clearHighlight();
     },
     // No live directory to search against: typing an id/value and pressing Enter selects it
     // directly, our approximation for external/users/conversations/channels selects.

@@ -231,6 +231,8 @@ export function useCombobox({
     inputProps,
     optionProps,
     active: nav.active,
+    /** Leaves no row highlighted, as Slack's multi-select list does after Enter picks one. */
+    clearHighlight: () => nav.setActive(-1),
     /** Whether the highlighted row is the typed highlight (with `typedHighlight`). */
     typed: typedHighlight && typed,
   };

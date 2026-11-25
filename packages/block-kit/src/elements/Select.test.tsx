@@ -324,6 +324,19 @@ describe("<Select> multi-select picks", () => {
     expect(screen.getByRole("listbox")).toBeTruthy();
     expect(screen.getByRole("option", { name: "A" }).getAttribute("aria-selected")).toBe("true");
   });
+
+  it("highlights no option after an Enter pick, and the next ArrowDown highlights the first", async () => {
+    render(<Select element={element} blockId="b1" />);
+    const trigger = screen.getByRole("combobox");
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    await keyDownAsync(trigger, "Enter");
+    expect(trigger.getAttribute("aria-activedescendant")).toBeNull();
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    expect(trigger.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "A" }).id,
+    );
+  });
 });
 
 describe("<Select> users_select / channels_select", () => {
