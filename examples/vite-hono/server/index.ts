@@ -19,7 +19,7 @@ const app = new Hono();
 app.post("/api/slack/resolve", (c) => relay(c.req.raw));
 
 // What `resolvers.slackFile` points the page at: the file, downloaded here with the bot token.
-app.get("/api/slack/files/:id", (c) => {
+app.get("/api/slack/files/:id", async (c) => {
   if (!fromOwnPage(c.req.raw)) return c.text("Forbidden", 403);
   return downloadFile(c.req.param("id"));
 });
