@@ -45,6 +45,6 @@
   },
   "packageManager": "bun@1.4.2",
   "patchedDependencies": {
-    "blume@2.2.0": "patches/blume@2.2.0.patch"
+    "blume@2.2.7": "patches/blume@2.2.7.patch"
   }
 }

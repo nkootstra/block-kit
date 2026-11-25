@@ -11,22 +11,22 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@base-ui/react": "1.8.0",
+    "@base-ui/react": "1.9.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@fontsource/lato": "^5.3.0",
     "@fontsource/roboto-mono": "^5.3.0",
     "@nkootstra/block-kit": "workspace:*",
-    "@pierre/diffs": "1.5.1",
+    "@pierre/diffs": "1.7.1",
     "@slack/types": "^3.3.1",
-    "@stylexjs/stylex": "0.19.1",
+    "@stylexjs/stylex": "0.19.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "shiki": "4.4.3"
+    "shiki": "4.6.0"
   },
   "devDependencies": {
     "@block-kit/csp": "workspace:*",
-    "@stylexjs/unplugin": "0.19.1",
+    "@stylexjs/unplugin": "0.19.2",
     "@types/react": "^19.3.2",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
