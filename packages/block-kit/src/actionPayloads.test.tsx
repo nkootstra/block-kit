@@ -272,7 +272,7 @@ const INTERACTIONS: Record<string, () => Promise<void>> = {
     dialogPick("Select options", /plain_text option 0/),
   // Slackbot, redacted to U0000001 (PROVIDER), in the conversations select.
   "extra/input/more-selects@pick": async () => {
-    fireEvent.click(screen.getByRole("combobox", { name: "Select a conversation" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "Conversation" }));
     await clickAsync(screen.getByRole("option", { name: /Slackbot/ }));
   },
   // Slackbot, redacted to U0000001 (PROVIDER).

@@ -208,22 +208,17 @@ export const FINDINGS: Finding[] = [
   },
   {
     id: "input-block-label-name",
-    title: "Our selects in an input block aren't named by the block's label",
+    title:
+      "Slack's recordings of multi-selects in an input block name them by placeholder; a browser names them by the block's label",
     evidence: [
-      'Modal light sitting, the behaviour recordings replayed on ours (bun tools/visual/src/probes.ts): a select focused in an input block is a combobox named after the block\'s label in Slack ("Label", "Priority"); ours is a button named after what it shows ("Select a user", "Medium"). Seen in contexts/*_select/modal-input@submit and extra/modal/form@tab.',
-      "Text fields, rich text inputs and time pickers are labelled by the block's label (aria-labelledby, as Slack's), and their recordings now match.",
+      "Our selects in an input block are now named by the block's label (aria-labelledby), as Slack's are. The single select recordings match: contexts/{static,users,conversations,channels}_select/modal-input@submit.",
+      'Slack\'s multi-select field carries aria-labelledby (the block\'s label, present in the reference) and aria-label (the placeholder). The accessible name is the label, but these recordings were made when observe.js read aria-label first, so they say "Select items", "Pick some", "Search tags" or "Select options" where ours now reads the label: contexts/multi_static_select/modal-input@add-remove and @submit, extra/fidelity/multi-external-select/empty@poke-field-1, extra/fidelity/multi-static-select/many-items@scroll-field-1, extra/modal/required-multi-selects@fill-one-submit.',
     ],
     suspect: [
-      "packages/block-kit/src/elements/Select.tsx: the trigger is a button whose content names it. Labelling it by the block's label alone would drop the chosen value from what a screen reader announces; Slack keeps that as the combobox's value.",
+      "Not a package bug: the recordings predate observe.js reading aria-labelledby first.",
     ],
-    next: "Decide with the multi-select-modal-keyboard finding whether the select trigger becomes a combobox, which carries the label as its name and the choice as its value.",
-    components: [
-      "input",
-      "static_select",
-      "users_select",
-      "conversations_select",
-      "channels_select",
-    ],
+    next: "Re-record those five behaviour recordings with the current observe.js; their focus.name lines should then match.",
+    components: ["input", "multi_static_select", "multi_external_select"],
   },
   {
     id: "builder-modal-block-options",

@@ -1326,3 +1326,75 @@ describe("<Select> multi-select chips", () => {
     );
   });
 });
+
+// contexts/*_select/modal-input@submit: in an input block Slack's select is named by the block's
+// label ("Label"), not its placeholder; the chosen option stays the field's value.
+describe("<Select> in an input block", () => {
+  const options = [
+    { text: { type: "plain_text" as const, text: "Low" }, value: "low" },
+    { text: { type: "plain_text" as const, text: "Medium" }, value: "medium" },
+  ];
+  function renderInput(element: Record<string, unknown>) {
+    render(
+      <BlockKitProvider surface="modal">
+        <Message
+          blocks={
+            [
+              {
+                type: "input",
+                block_id: "b1",
+                label: { type: "plain_text", text: "Priority" },
+                element: { action_id: "a1", ...element },
+              },
+            ] as AnyBlock[]
+          }
+        />
+      </BlockKitProvider>,
+    );
+  }
+
+  it("names a single select by the block's label, with the chosen option as its value", () => {
+    renderInput({
+      type: "static_select",
+      placeholder: { type: "plain_text", text: "Pick one" },
+      options,
+      initial_option: options[1],
+    });
+    const field = screen.getByRole("combobox", { name: "Priority" }) as HTMLInputElement;
+    expect(field.value).toBe("Medium");
+  });
+
+  it("names a typed-into multi-select by the block's label", () => {
+    renderInput({
+      type: "multi_static_select",
+      placeholder: { type: "plain_text", text: "Pick some" },
+      options,
+    });
+    expect(screen.getByRole("combobox", { name: "Priority" })).toBeTruthy();
+  });
+
+  it("keeps naming a select by its placeholder outside an input block", () => {
+    render(
+      <BlockKitProvider>
+        <Message
+          blocks={
+            [
+              {
+                type: "actions",
+                elements: [
+                  {
+                    type: "static_select",
+                    action_id: "a1",
+                    placeholder: { type: "plain_text", text: "Pick one" },
+                    options,
+                  },
+                ],
+              },
+            ] as AnyBlock[]
+          }
+        />
+      </BlockKitProvider>,
+    );
+    expect(screen.getByRole("combobox", { name: "Pick one" })).toBeTruthy();
+  });
+});
