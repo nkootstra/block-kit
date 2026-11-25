@@ -16,7 +16,7 @@
     "@fontsource/roboto-mono": "^5.3.0",
     "@nkootstra/block-kit": "workspace:*",
     "@pierre/diffs": "1.5.1",
-    "@slack/types": "^3.1.0",
+    "@slack/types": "^3.3.1",
     "blume": "2.2.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"

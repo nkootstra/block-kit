@@ -10,7 +10,7 @@
   "devDependencies": {
     "@nkootstra/block-kit": "workspace:*",
     "@slack/bolt": "^5.1.0",
-    "@slack/web-api": "^8.1.1",
+    "@slack/web-api": "^8.5.0",
     "@testing-library/react": "16.3.3",
     "@types/mdast": "^4.0.4",
     "@types/react": "18.3.28",
