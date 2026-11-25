@@ -29,9 +29,9 @@
     "emoji-datasource": "16.0.0",
     "oxfmt": "0.70.0",
     "oxlint": "1.85.0",
-    "turbo": "2.11.4",
+    "turbo": "2.11.13",
     "typescript": "7.0.2",
-    "vitest": "5.0.2"
+    "vitest": "5.1.2"
   },
   "overrides": {
     "@emnapi/core": "1.11.3",
