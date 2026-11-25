@@ -180,7 +180,7 @@ export const STATES: Record<string, State> = {
     { option: /User One/ },
   ),
   "extra/input/more-selects@pick": pick(
-    (p) => p.getByRole("combobox", { name: "Select a conversation", exact: true }),
+    (p) => p.getByRole("combobox", { name: "Conversation", exact: true }),
     { option: /User One/ },
   ),
   "extra/modal/required-multi-selects@pick": pick(
