@@ -135,10 +135,10 @@ typed-into select, either highlight makes the row the field's `aria-activedescen
 reader announces it as it moves. Option groups get a heading each, with their options indented under it and a rule between
 groups.
 
-The single users, conversations and channels selects are typed into the same way. The
-multi-selects open from a button, with a search box where there's something to search, except
-`multi_external_select`: as in Slack, you type into its field after the chosen options, and its list
-shows only the app's options or the minimum-query hint. A
+The single users, conversations and channels selects are typed into the same way. Outside a
+section accessory, so are the multi-selects: as in Slack, you type into the field after the chosen
+options, and the list has no search box of its own. A `multi_external_select`'s list shows only the
+app's options or the minimum-query hint. A
 multi-select ticks the options it already has, in place; like Slack's, its list doesn't repeat them
 in a separate "Selected" group. In an `input` block its list is a little wider than
 the field. Tabbing into a multi-select in an `input` block opens its list, as Slack's does. Picking
