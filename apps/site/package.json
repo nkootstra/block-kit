@@ -12,7 +12,7 @@
     "test:browser": "astro build && bun test ./src/compare.browser.ts"
   },
   "dependencies": {
-    "@astrojs/react": "7.0.0",
+    "@astrojs/react": "7.1.9",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@fontsource/geist": "^5.3.0",
@@ -21,14 +21,14 @@
     "@nkootstra/block-kit": "workspace:*",
     "@resvg/resvg-js": "2.6.2",
     "@slack/types": "^3.3.1",
-    "astro": "7.4.7",
+    "astro": "7.4.13",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "satori": "0.35.0",
     "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
+    "@astrojs/check": "0.9.12",
     "@block-kit/csp": "workspace:*",
     "@types/bun": "^1.4.5",
     "@types/react": "19.3.2",
