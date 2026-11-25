@@ -20,10 +20,27 @@ import {
   type UserProfile,
   View,
 } from "@nkootstra/block-kit";
-import { Editor } from "@pierre/diffs/edit";
-import { File as DiffsFile, type EditorFactory, EditProvider } from "@pierre/diffs/react";
 import type { AnyBlock } from "@slack/types";
-import { createContext, useContext, useId, useRef, useState, useSyncExternalStore } from "react";
+import {
+  createContext,
+  lazy,
+  Suspense,
+  useContext,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import type { ColorMode } from "../components/PreviewCode";
+
+// The code views carry `@pierre/diffs` and its highlighter, most of this island's weight. Readers
+// who never open a JSON tab or interact with an action log don't download them.
+const JsonEditor = lazy(() =>
+  import("../components/PreviewCode").then((m) => ({ default: m.JsonEditor })),
+);
+const JsonView = lazy(() =>
+  import("../components/PreviewCode").then((m) => ({ default: m.JsonView })),
+);
 
 export interface PreviewProps {
   /** What Block Kit Builder accepts: `{ blocks }`, a bare array of blocks, or a modal/home view. */
@@ -273,24 +290,11 @@ export default function Preview({
       ) : (
         <div className="bkd-preview__json">
           {mounted ? (
-            <EditProvider createEditor={createEditor}>
-              <DiffsFile
-                file={{ name: "payload.json", contents: source }}
-                edit
-                editStateKey={editKey}
-                onEditChange={(event) => edit(event.file.contents)}
-                options={{
-                  theme: CODE_THEME,
-                  themeType: colorMode,
-                  overflow: "scroll",
-                  disableFileHeader: true,
-                }}
-              />
-            </EditProvider>
+            <Suspense fallback={<JsonPlaceholder source={source} />}>
+              <JsonEditor source={source} editKey={editKey} colorMode={colorMode} onChange={edit} />
+            </Suspense>
           ) : (
-            // Not a <pre>: Blume adds a copy button to every server-rendered <pre>, which would no
-            // longer match on hydration.
-            <div className="bkd-preview__json-placeholder">{source}</div>
+            <JsonPlaceholder source={source} />
           )}
           {(error || edited) && (
             <div className="bkd-preview__json-status">
@@ -356,22 +360,17 @@ export default function Preview({
             </span>
           )}
           {last ? (
-            <DiffsFile
-              file={{
-                name: last.kind === "state" ? "state.json" : "action.json",
-                contents: JSON.stringify(
+            <Suspense fallback={null}>
+              <JsonView
+                name={last.kind === "state" ? "state.json" : "action.json"}
+                contents={JSON.stringify(
                   last.kind === "state" ? last.values : summarize(last.action),
                   null,
                   2,
-                ),
-              }}
-              options={{
-                theme: CODE_THEME,
-                themeType: colorMode,
-                overflow: "wrap",
-                disableFileHeader: true,
-              }}
-            />
+                )}
+                colorMode={colorMode}
+              />
+            </Suspense>
           ) : (
             <span className="bkd-preview__log-empty">Interact with the preview.</span>
           )}
@@ -381,9 +380,14 @@ export default function Preview({
   );
 }
 
-/** Diffs' editor, for the editable JSON tab. */
-const createEditor: EditorFactory<undefined, undefined> = (type, options, editStateKey) =>
-  new Editor(type, options, editStateKey);
+/**
+ * The payload as plain text: the server's render of the JSON tab, and what it shows while the
+ * editor loads. Not a <pre>: Blume adds a copy button to every server-rendered <pre>, which would no
+ * longer match on hydration.
+ */
+function JsonPlaceholder({ source }: { source: string }) {
+  return <div className="bkd-preview__json-placeholder">{source}</div>;
+}
 
 /** Nothing to subscribe to: whether we're on the client never changes after hydration. */
 const noSubscription = () => () => {};
@@ -399,11 +403,6 @@ function useMounted(): boolean {
     () => false,
   );
 }
-
-/** Blume's own code themes, so the action reads like the page's other code blocks. */
-const CODE_THEME = { light: "github-light", dark: "github-dark" } as const;
-
-type ColorMode = "light" | "dark";
 
 const readColorMode = (): ColorMode =>
   document.documentElement.dataset.theme === "dark" ? "dark" : "light";
