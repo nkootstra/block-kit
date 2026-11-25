@@ -9,7 +9,7 @@ import { imageUrl } from "../safeUrl";
 import { Text } from "../Text";
 import type { ElementProps, Json } from "../types";
 import { useFocusOnLoad } from "./useFocusOnLoad";
-import { useInInputBlock, useInvalidProps } from "./inputBlockContext";
+import { useInInputBlock, useInputLabelId, useInvalidProps } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { MENU_GAP, Popover } from "./Popover";
 import { SectionAccessoryContext } from "./accessoryContext";
@@ -424,6 +424,11 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
   // list until Slack's is measured.
   const inAccessory = useContext(SectionAccessoryContext);
   const inInputBlock = useInInputBlock();
+  // In an input block Slack names the field by the block's label, not its placeholder
+  // (contexts/*_select/modal-input@submit); the chosen option stays the field's value.
+  const labelId = useInputLabelId();
+  const labelled = <T extends object>(props: T) =>
+    labelId ? { ...props, "aria-label": undefined, "aria-labelledby": labelId } : props;
   const dialogMode = inAccessory && multi && source !== "external";
   // Slack's multi-external and multi-static selects are typed into in their field
   // (`c-multi_select_input`), after the chips: there's no search box in the list, however many
@@ -726,7 +731,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
         {/* A label, so a press on the chevron or padding lands in the input as on Slack's field. */}
         <label className="sbk-select__control">
           <input
-            {...combo.inputProps(display, placeholder)}
+            {...labelled(combo.inputProps(display, placeholder))}
             // Behind the skeleton or pill, the input holds the ID, so a screen reader hears that a
             // value is chosen and which; its text is transparent, and it's never the placeholder.
             {...(unresolved && overlay && items[0] ? { value: items[0].id } : {})}
@@ -782,7 +787,7 @@ export function Select({ element, blockId }: ElementProps<SelectElement>) {
             {chips}
             <span className="sbk-select__typed">
               <input
-                {...combo.inputProps(undefined, "", placeholder)}
+                {...labelled(combo.inputProps(undefined, "", placeholder))}
                 {...invalid}
                 className="sbk-select__input"
                 // Focus arriving from outside, by Tab or a press, opens the list as a click does

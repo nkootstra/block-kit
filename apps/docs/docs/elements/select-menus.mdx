@@ -120,7 +120,8 @@ input (`role="combobox"`) that shows the chosen option. Clicking it opens the li
 with the chosen option highlighted, or the first one, with or without `option_groups`. A chosen
 option is marked with a check and `aria-selected`, and the field
 shows the placeholder while the list is open. In an `input` block the list is a little wider than
-the field. Typing narrows the list to the options with a word that starts with what you typed
+the field, and screen readers name the field by the block's label, as in Slack, rather than its
+placeholder; a multi-select you type into is named the same way. Typing narrows the list to the options with a word that starts with what you typed
 ("york" finds "New York", "ork" finds nothing), so there's no separate search box; an
 `external_select` searches the app instead. When nothing matches, the list says "😕 Nothing could
 be found.", Slack's wording, emoji included, so a screen reader reads the emoji's name too. Escape
