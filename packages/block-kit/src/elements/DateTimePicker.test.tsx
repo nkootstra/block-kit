@@ -295,6 +295,38 @@ describe("<DateTimePicker>", () => {
     });
   });
 
+  // Slack names the time half after the picker: "Date and time Time" on its own
+  // (contexts/datetimepicker/actions), the input block's label then "Time" in an input block
+  // (contexts/datetimepicker/modal-input). The date half is "Date" in both.
+  describe("names the time field as Slack does", () => {
+    it('reads "Date and time Time" outside an input block', () => {
+      renderPicker();
+      expect(screen.getByRole("combobox", { name: "Date and time Time" })).toBe(timeInput());
+      expect(dateInput()).toBeTruthy();
+    });
+
+    it("reads the input block's label, then Time", () => {
+      render(
+        <BlockKitProvider surface="modal" timeZone="Europe/Amsterdam">
+          <Input
+            block={
+              {
+                type: "input",
+                block_id: "b1",
+                label: { type: "plain_text", text: "When to meet" },
+                element: { type: "datetimepicker", action_id: "a1" },
+              } as never
+            }
+            blockId="b1"
+            index={0}
+          />
+        </BlockKitProvider>,
+      );
+      expect(screen.getByRole("combobox", { name: "When to meet Time" })).toBe(timeInput());
+      expect(dateInput()).toBeTruthy();
+    });
+  });
+
   it("asks the element's confirm dialog before a change takes effect", async () => {
     const { onAction } = renderPicker({
       confirm: {

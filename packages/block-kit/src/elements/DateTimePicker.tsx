@@ -1,5 +1,5 @@
 import type { DateTimepicker } from "@slack/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useConfirm } from "../confirm/useConfirm";
 import { useBlockKitConfig } from "../context";
 import { ChevronDownIcon, ClockIcon } from "../icons";
@@ -9,7 +9,7 @@ import { DateField, useDateField } from "./DateField";
 import { fromWallClock, ordinal, timeZoneLabel, wallClock } from "./dateFormat";
 import { MENU_GAP, Popover } from "./Popover";
 import { formatTime, parseTime, TIMES } from "./TimePicker";
-import { useInClearableInput, useInInputBlock } from "./inputBlockContext";
+import { useInClearableInput, useInInputBlock, useInputLabelId } from "./inputBlockContext";
 import { useCombobox } from "./useCombobox";
 import { useFocusOnLoad } from "./useFocusOnLoad";
 
@@ -150,7 +150,16 @@ export function DateTimePicker({ element, blockId }: ElementProps<DateTimepicker
   });
 
   const timeDisplay = value ? formatTime(value.time) : undefined;
-  const input = combo.inputProps(timeDisplay, "Time");
+  // Slack names the time half after the picker: "Date and time Time" on its own, the input
+  // block's label then "Time" in an input block (contexts/datetimepicker/actions and
+  // modal-input). In a block, the label is read from the element that shows it, as the
+  // timepicker's is, with the field's own "Time" after it.
+  const labelId = useInputLabelId();
+  const timeId = useId();
+  const named = combo.inputProps(timeDisplay, "Time", labelId ? "Time" : "Date and time Time");
+  const input = labelId
+    ? { ...named, id: timeId, "aria-labelledby": `${labelId} ${timeId}` }
+    : named;
   // As in the timepicker, the chosen time is drawn in a layer over the field (Slack's
   // `c-select_input__content`) until the list opens for typing.
   const overlay = timeDisplay !== undefined && !combo.open;

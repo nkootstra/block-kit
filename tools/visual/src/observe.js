@@ -178,19 +178,23 @@
       : el.localName === "a" && !el.hasAttribute("href")
         ? null
         : (IMPLICIT[el.localName] ?? null));
+  // As the accessible name is computed: aria-labelledby first, where an element naming itself
+  // contributes its aria-label ("<label> Time"), then aria-label.
   const nameOf = (el) => {
     const label = el.getAttribute("aria-label");
-    if (label) return clean(label);
     const ids = el.getAttribute("aria-labelledby");
-    if (ids)
-      return clean(
+    if (ids) {
+      const name = clean(
         ids
           .split(/\s+/)
           .map((id) => doc.getElementById(id))
           .filter(Boolean)
-          .map(text)
+          .map((ref) => (ref === el ? (label ?? "") : text(ref)))
           .join(" "),
       );
+      if (name) return name;
+    }
+    if (label) return clean(label);
     const wrapping = el.closest("label") ?? (el.id && doc.querySelector(`label[for="${el.id}"]`));
     if (wrapping && wrapping !== el) return text(wrapping);
     return text(el) || clean(el.getAttribute("placeholder"));
