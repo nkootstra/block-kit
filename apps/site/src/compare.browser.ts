@@ -2,7 +2,9 @@
 // site; run with `bun run --cwd apps/site test:browser`, which builds it first.
 //
 // The "Check it against Slack" comparison: the Divider slider's thumb must sit under the image's
-// divider line at every position, so dragging either one reads as dragging the same thing.
+// divider line at every position, so dragging either one reads as dragging the same thing. Its
+// intro (islands/CompareDemo.tsx) must stay out of the way: it doesn't play with reduced motion,
+// and the reader's input stops it for good.
 import { afterAll, beforeAll, describe, expect, it, setDefaultTimeout } from "bun:test";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -108,6 +110,39 @@ for (const [name, engine] of Object.entries(ENGINES)) {
           `${name} ${width}px thumb − divider at ${VALUES.join("/")}%: ${offsets.join(", ")}`,
         );
         expect(Math.max(...offsets.map(Math.abs))).toBeLessThanOrEqual(1);
+        await page.close();
+      });
+
+      it(`doesn't play the intro with reduced motion at ${width}px`, async () => {
+        const page = await browser.newPage({
+          viewport: { width, height: 900 },
+          reducedMotion: "reduce",
+        });
+        await page.goto(`${server.url}`);
+        await page.locator("#compare").scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        const state = await page.locator("[data-compare]").evaluate((el) => ({
+          intro: el.classList.contains("compare--intro"),
+          split: (document.querySelector("[data-compare-range]") as HTMLInputElement).value,
+        }));
+        expect(state).toEqual({ intro: false, split: "50" });
+        await page.close();
+      });
+
+      it(`stops the intro for the reader's input at ${width}px`, async () => {
+        const page = await browser.newPage({ viewport: { width, height: 900 } });
+        await page.goto(`${server.url}`);
+        await page.locator("#compare").scrollIntoViewIfNeeded();
+        await page.waitForSelector(".compare--intro");
+        await dividerAt(page, 20);
+        // Longer than the whole intro: nothing may move the divider back.
+        await page.waitForTimeout(5500);
+        const after = await page.locator("[data-compare]").evaluate((el) => ({
+          intro: el.classList.contains("compare--intro"),
+          split: (document.querySelector("[data-compare-range]") as HTMLInputElement).value,
+          line: getComputedStyle(el).getPropertyValue("--split").trim(),
+        }));
+        expect(after).toEqual({ intro: false, split: "20", line: "20%" });
         await page.close();
       });
 

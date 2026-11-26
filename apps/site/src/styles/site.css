@@ -10,6 +10,12 @@
   --body: #404040;
   --muted: #6b6b6b;
   --accent: #2f5be0;
+  /* Success: the comparison's badge and scan. */
+  --ok: #007a5a;
+  /* JSON in the code panels: keys, strings and punctuation. */
+  --code-key: #2f5be0;
+  --code-string: #0f7b4f;
+  --code-punct: #6b6b6b;
   --frame-bg: #fff;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
   --gutter: 20px;
@@ -29,6 +35,10 @@
   --body: #d4d4d4;
   --muted: #a3a3a3;
   --accent: #8aa5ff;
+  --ok: #2bac76;
+  --code-key: #8aa5ff;
+  --code-string: #a7e3b8;
+  --code-punct: #8a8a8a;
   /* Slack's dark message background, so the messages sit on what they'd sit on in Slack. */
   --frame-bg: #1a1d21;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
@@ -712,11 +722,11 @@ h2 {
 
 /* Compare */
 
+/* As wide as its frame. The captures stay at their own 512px (scaling them would blur the pixels
+   this is about); the rest is the background they were captured on, which the frame's matches:
+   white, and Slack's dark message background. */
 .compare {
   position: relative;
-  max-width: 512px;
-  margin: 0 auto;
-  /* What each capture was taken on: white, and Slack's dark message background. */
   background: var(--frame-bg);
   touch-action: pan-y;
   cursor: ew-resize;
@@ -726,6 +736,7 @@ h2 {
 .compare img {
   display: block;
   width: 100%;
+  max-width: 512px;
   height: auto;
   pointer-events: none;
 }
@@ -734,9 +745,12 @@ h2 {
   display: none;
 }
 
-/* One set of captures per Slack theme, each shown with the page's theme (the caption too). */
+/* One set of captures per Slack theme, each shown with the page's theme (the caption too). The set
+   clips to the rounded corners, so the divider's handle can stand out past either edge. */
 .compare__set {
   position: relative;
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 [data-compare-theme="dark"],
@@ -805,29 +819,33 @@ h2 {
   transform: translateY(-50%) rotate(-135deg);
 }
 
-/* The captures are 512px wide, shown at that size inside a frame that follows the page's theme. */
+/* The captures are 512px wide, shown at that size inside a frame that follows the page's theme,
+   from its left edge with the same padding as the demos' frames, so the messages line up. */
 .compare__frame {
   padding: 12px;
 }
 
+@media (min-width: 480px) {
+  .compare__frame {
+    padding: 16px;
+  }
+}
+
 .compare__frame .compare {
   border-radius: 6px;
-  overflow: hidden;
   outline: 1px solid var(--line);
 }
 
 .compare__legend {
   display: flex;
   justify-content: space-between;
-  max-width: 512px;
-  margin: 0 auto 8px;
+  margin: 0 0 8px;
   font: 12px/1.4 var(--font-mono);
   color: var(--muted);
 }
 
 .compare__caption {
-  max-width: 512px;
-  margin: 8px auto 0;
+  margin: 8px 0 0;
   font-size: 12px;
   color: var(--muted);
 }
@@ -841,17 +859,16 @@ h2 {
   color: var(--muted);
 }
 
-/* The Divider slider, as wide as the image so its thumb sits under the divider line. A range
+/* The Divider slider, as wide as the comparison so its thumb sits under the divider line. A range
    input's thumb centre travels from half a thumb in from each end, so the input is one thumb
    wider than the image and pulled half a thumb out on each side: the centre then runs from the
    image's left edge to its right edge. The thumb has a fixed size in every engine for that, and
-   the frame's 12px padding holds the half thumb that sticks out. The visible track is drawn on
+   the frame's padding (12px, 16px from 480px) holds the half thumb that sticks out. The visible track is drawn on
    the wrapper, so it spans exactly the image. */
 .compare__slider {
   --thumb: 20px;
   position: relative;
-  max-width: 512px;
-  margin: 6px auto 0;
+  margin: 6px 0 0;
 }
 
 .compare__slider::before {
@@ -928,6 +945,154 @@ h2 {
   margin: 10px 0 0;
   font-size: 13px;
   color: var(--muted);
+}
+
+/* The comparison's intro (islands/CompareDemo.tsx) draws from custom properties on .compare; their
+   defaults are the finished comparison, which is also what the server renders. */
+.compare__slack {
+  opacity: var(--slack, 1);
+}
+
+.compare__line {
+  opacity: var(--line, 1);
+}
+
+/* While the message builds, block-kit's capture shows down to --reveal, with a short soft edge. */
+.compare--intro .compare__top img[data-compare-ours] {
+  --edge: calc(var(--reveal, 1) * 100%);
+  mask-image: linear-gradient(
+    #000 var(--edge),
+    transparent calc(var(--edge) + var(--feather, 0) * 100%)
+  );
+}
+
+/* The scan: the diff over what's been scanned, and the line scanning. */
+.compare img.compare__scanned {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: var(--diff, 0);
+  clip-path: inset(0 0 calc((1 - var(--scan, 0)) * 100%) 0);
+}
+
+.compare:not(.compare--intro) .compare__scanned,
+.compare:not(.compare--intro) .compare__scan {
+  display: none;
+}
+
+.compare__scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--scan, 0) * 100%);
+  height: 2px;
+  margin-top: -1px;
+  background: var(--ok);
+  opacity: var(--scan-line, 0);
+  pointer-events: none;
+}
+
+.compare__scan::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 28px;
+  background: linear-gradient(to top, color-mix(in srgb, var(--ok) 14%, transparent), transparent);
+}
+
+.compare__scan span {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--ok);
+  color: #fff;
+  font: 11px/1.4 var(--font-mono);
+}
+
+/* The count of matching pixels, beside the controls. */
+.compare__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.compare__badge svg {
+  flex: none;
+  color: var(--ok);
+}
+
+.compare__badge b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* The message's payload, typed in by the intro: a code panel like the install box above it,
+   as wide as the comparison below. */
+.proof-code {
+  --proof-line: 20px;
+  margin: 0 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.proof-code__bar {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  font: 500 12px/1 var(--font-mono);
+  color: var(--muted);
+}
+
+.proof-code__body {
+  position: relative;
+  height: calc(8 * var(--proof-line) + 24px);
+  padding: 12px 16px;
+  overflow: hidden;
+  mask-image: linear-gradient(transparent 0, #000 14px);
+}
+
+.proof-code__pre {
+  margin: 0;
+  font: 12.5px / var(--proof-line) var(--font-mono);
+  color: var(--body);
+  white-space: pre;
+}
+
+.proof-code__caret {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  margin-left: 1px;
+  vertical-align: -2px;
+  background: var(--accent);
+}
+
+/* JSON in the code panels: the payload editor and onPayload's log. */
+.tok-key {
+  color: var(--code-key);
+}
+
+.tok-string {
+  color: var(--code-string);
+}
+
+.tok-punct {
+  color: var(--code-punct);
 }
 
 /* Block list */

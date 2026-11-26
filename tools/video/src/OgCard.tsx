@@ -16,8 +16,15 @@ import logo from "../../../apps/site/public/icon.svg";
 import proofOurs from "../../../apps/site/src/assets/proof/deploy-approval.actual.png";
 import proofDiff from "../../../apps/site/src/assets/proof/deploy-approval.diff.png";
 import proofSlack from "../../../apps/site/src/assets/proof/deploy-approval.reference.png";
+import {
+  BLOCK_ENDS,
+  FEATHER as FEATHER_FRACTION,
+  PIXELS,
+  REVEAL as REVEAL_FRACTIONS,
+  SOURCE,
+  TOKENS,
+} from "../../../apps/site/src/lib/proof";
 import { headline } from "../../../apps/site/src/lib/site";
-import fixture from "../../../fixtures/message/deploy-approval.json";
 // oxlint-disable-next-line import/no-unassigned-import -- the card's stylesheet
 import "./og.css";
 
@@ -28,12 +35,6 @@ import "./og.css";
  * pure function of the frame number. Frame 0 is the finished card, so anything that shows only the
  * first frame still gets the whole story, and the loop ends where it starts.
  */
-
-/** The same claim the page makes in its "Check it against Slack" section. */
-const PIXELS = 653_312;
-
-/** The message the proof images were captured from (`message/deploy-approval`). */
-const BLOCKS = fixture.blocks;
 
 // The timeline, in ms. Each phase starts where the previous one ends.
 const HOLD = 1800;
@@ -59,58 +60,7 @@ const progress = (t: number, start: number, length: number) => clamp((t - start)
 const easeOut = (x: number) => 1 - (1 - x) ** 3;
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2);
 
-/** JSON in an editor's shape: an object or array goes on one line when it fits in `width`. */
-function format(value: unknown, indent = 0, used = indent, width = 58): string {
-  const inline = JSON.stringify(value, null, 1).replace(/\n\s*/g, " ");
-  if (typeof value !== "object" || value === null || used + inline.length <= width) {
-    return inline.replace(/([[{]) /g, "$1").replace(/ ([\]}])/g, "$1");
-  }
-  const pad = " ".repeat(indent + 2);
-  const end = " ".repeat(indent);
-  if (Array.isArray(value)) {
-    return `[\n${value.map((v) => pad + format(v, indent + 2)).join(",\n")}\n${end}]`;
-  }
-  const entries = Object.entries(value).map(
-    ([k, v]) =>
-      `${pad}${JSON.stringify(k)}: ${format(v, indent + 2, indent + 2 + k.length + 4, width)}`,
-  );
-  return `{\n${entries.join(",\n")}\n${end}}`;
-}
-
-type Token = { text: string; kind: "key" | "string" | "punct" | "other"; start: number };
-
-function tokenize(source: string): Token[] {
-  const tokens: Token[] = [];
-  const re = /("(?:[^"\\]|\\.)*")(\s*:)?|([{}[\],:])|([^"{}[\],:]+)/g;
-  for (const m of source.matchAll(re)) {
-    const start = m.index ?? 0;
-    if (m[1] !== undefined) {
-      tokens.push({ text: m[1], kind: m[2] ? "key" : "string", start });
-      if (m[2]) tokens.push({ text: m[2], kind: "punct", start: start + m[1].length });
-    } else if (m[3] !== undefined) tokens.push({ text: m[3], kind: "punct", start });
-    else tokens.push({ text: m[0], kind: "other", start });
-  }
-  return tokens;
-}
-
-const SOURCE = `const blocks = ${format(BLOCKS, 0)};`;
-const TOKENS = tokenize(SOURCE);
 const LINES = SOURCE.split("\n").length;
-
-/** Where in the source each top-level block closes: the block appears once that's typed. */
-const BLOCK_ENDS = (() => {
-  const ends: number[] = [];
-  let depth = 0;
-  for (let i = 0; i < SOURCE.length; i++) {
-    const c = SOURCE[i];
-    if (c === "{" || c === "[") depth++;
-    if (c === "}" || c === "]") {
-      depth--;
-      if (depth === 1 && c === "}") ends.push(i + 1);
-    }
-  }
-  return ends;
-})();
 
 /** Characters typed at time `t`. */
 function typedAt(t: number) {
@@ -174,17 +124,11 @@ function Code({ t }: { t: number }) {
   );
 }
 
-/**
- * Where each part of the message ends in the captures, in CSS px: the header, then each of the five
- * blocks, measured between the text rows of `deploy-approval.actual.png`. The stage reveals
- * block-kit's capture down to these lines, so the message the wipe compares is the one that was
- * built, and nothing moves when the comparison starts.
- */
-const REVEAL = [26, 63, 123, 225, 264, 319];
-const HEADER = 26;
+/** The proof images' height in CSS px, and where each part of the message ends in them (proof.ts). */
 const FULL = 319;
-/** The soft edge below the revealed part; less than the gap to the next block's first line. */
-const FEATHER = 6;
+const REVEAL = REVEAL_FRACTIONS.map((f) => f * FULL);
+const HEADER = REVEAL[0] ?? 0;
+const FEATHER = FEATHER_FRACTION * FULL;
 const REVEAL_MS = 380;
 
 /** How far down block-kit's capture is revealed at time `t`. */

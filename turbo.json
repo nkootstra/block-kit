@@ -6,7 +6,8 @@
     "tsconfig.base.json",
     "fixtures/**/*.actions.json",
     "fixtures/**/*.probe.json",
-    "fixtures/assets/samples/**"
+    "fixtures/assets/samples/**",
+    "fixtures/message/deploy-approval.json"
   ],
   "tasks": {
     "build": {
