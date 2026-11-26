@@ -722,10 +722,11 @@ h2 {
 
 /* Compare */
 
+/* As wide as its frame. The captures stay at their own 512px (scaling them would blur the pixels
+   this is about); the rest is the background they were captured on, which the frame's matches:
+   white, and Slack's dark message background. */
 .compare {
   position: relative;
-  max-width: 512px;
-  /* What each capture was taken on: white, and Slack's dark message background. */
   background: var(--frame-bg);
   touch-action: pan-y;
   cursor: ew-resize;
@@ -735,6 +736,7 @@ h2 {
 .compare img {
   display: block;
   width: 100%;
+  max-width: 512px;
   height: auto;
   pointer-events: none;
 }
@@ -743,9 +745,12 @@ h2 {
   display: none;
 }
 
-/* One set of captures per Slack theme, each shown with the page's theme (the caption too). */
+/* One set of captures per Slack theme, each shown with the page's theme (the caption too). The set
+   clips to the rounded corners, so the divider's handle can stand out past either edge. */
 .compare__set {
   position: relative;
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 [data-compare-theme="dark"],
@@ -828,21 +833,18 @@ h2 {
 
 .compare__frame .compare {
   border-radius: 6px;
-  overflow: hidden;
   outline: 1px solid var(--line);
 }
 
 .compare__legend {
   display: flex;
   justify-content: space-between;
-  max-width: 512px;
   margin: 0 0 8px;
   font: 12px/1.4 var(--font-mono);
   color: var(--muted);
 }
 
 .compare__caption {
-  max-width: 512px;
   margin: 8px 0 0;
   font-size: 12px;
   color: var(--muted);
@@ -857,7 +859,7 @@ h2 {
   color: var(--muted);
 }
 
-/* The Divider slider, as wide as the image so its thumb sits under the divider line. A range
+/* The Divider slider, as wide as the comparison so its thumb sits under the divider line. A range
    input's thumb centre travels from half a thumb in from each end, so the input is one thumb
    wider than the image and pulled half a thumb out on each side: the centre then runs from the
    image's left edge to its right edge. The thumb has a fixed size in every engine for that, and
@@ -866,7 +868,6 @@ h2 {
 .compare__slider {
   --thumb: 20px;
   position: relative;
-  max-width: 512px;
   margin: 6px 0 0;
 }
 
@@ -968,7 +969,8 @@ h2 {
 /* The scan: the diff over what's been scanned, and the line scanning. */
 .compare img.compare__scanned {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   opacity: var(--diff, 0);
   clip-path: inset(0 0 calc((1 - var(--scan, 0)) * 100%) 0);
 }

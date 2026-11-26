@@ -349,7 +349,7 @@ export default function CompareDemo({ light, dark }: { light: ProofSet; dark: Pr
             <span>0 px different</span>
           </div>
         </div>
-        {/* Directly under the image and as wide, so the thumb sits under the divider. */}
+        {/* Directly under the comparison and as wide, so the thumb sits under the divider. */}
         <div className="compare__slider">
           <label htmlFor="split" className="sr-only">
             Divider
