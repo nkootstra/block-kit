@@ -1,0 +1,60 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": { "type": "plain_text", "text": "Deploy web v2.4.0 to production?" }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Ada Lovelace* wants to ship *12 commits* from `main`. All checks passed on the release branch."
+      }
+    },
+    {
+      "type": "section",
+      "fields": [
+        { "type": "mrkdwn", "text": "*Environment*\nProduction" },
+        { "type": "mrkdwn", "text": "*Checks*\n412 passed, 0 failed" },
+        { "type": "mrkdwn", "text": "*Changes*\n12 commits by 3 people" },
+        { "type": "mrkdwn", "text": "*Rollout*\n10%, then everyone" }
+      ]
+    },
+    {
+      "type": "context",
+      "elements": [
+        {
+          "type": "image",
+          "image_url": "https://cdn.block-kit.dev/samples/portrait.ab6c68cb.jpg",
+          "alt_text": "Ada Lovelace"
+        },
+        { "type": "mrkdwn", "text": "Requested by Ada Lovelace" }
+      ]
+    },
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": { "type": "plain_text", "text": "Approve" },
+          "style": "primary",
+          "value": "approve",
+          "action_id": "approve"
+        },
+        {
+          "type": "button",
+          "text": { "type": "plain_text", "text": "Reject" },
+          "style": "danger",
+          "value": "reject",
+          "action_id": "reject"
+        },
+        {
+          "type": "button",
+          "text": { "type": "plain_text", "text": "View changes" },
+          "url": "https://example.com",
+          "action_id": "view_changes"
+        }
+      ]
+    }
+  ]
+}

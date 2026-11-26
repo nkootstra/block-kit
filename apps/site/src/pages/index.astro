@@ -5,16 +5,17 @@ import "@nkootstra/block-kit/styles.css";
 import "../styles/site.css";
 import ActionDemo from "../islands/ActionDemo";
 import AgentDemo from "../islands/AgentDemo";
-// `bun run compare -- message/approval --scale=2`: Slack's capture, ours and their pixel diff, at 2x
-// so they're sharp on high-density screens, in Slack's light theme (`message/approval`) and its dark
-// one (`message/approval@dark`), shown with the page's theme. The copy below quotes their
-// difference; recount it if they're recaptured.
-import proofOurs from "../assets/proof/approval.actual.png";
-import proofDiff from "../assets/proof/approval.diff.png";
-import proofSlack from "../assets/proof/approval.reference.png";
-import proofOursDark from "../assets/proof/approval-dark.actual.png";
-import proofDiffDark from "../assets/proof/approval-dark.diff.png";
-import proofSlackDark from "../assets/proof/approval-dark.reference.png";
+// `bun run compare -- message/deploy-approval --scale=2`: Slack's capture, ours and their pixel diff,
+// at 2x so they're sharp on high-density screens, in Slack's light theme (`message/deploy-approval`)
+// and its dark one (`message/deploy-approval@dark`), shown with the page's theme. Each is the top
+// left 1024x638 of compare's output, ours padded the way compare pads it (pad.ts). The copy below
+// quotes their difference; recount it if they're recaptured.
+import proofOurs from "../assets/proof/deploy-approval.actual.png";
+import proofDiff from "../assets/proof/deploy-approval.diff.png";
+import proofSlack from "../assets/proof/deploy-approval.reference.png";
+import proofOursDark from "../assets/proof/deploy-approval-dark.actual.png";
+import proofDiffDark from "../assets/proof/deploy-approval-dark.diff.png";
+import proofSlackDark from "../assets/proof/deploy-approval-dark.reference.png";
 import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, PLAYGROUND, SITE_NAME, description, headline, title } from "../lib/site";
 
 // The social card, drawn at build time by pages/og.png.ts.
@@ -234,7 +235,7 @@ const structuredData = {
         <h2 id="compare-title">Check it against Slack</h2>
         <p class="section__text">
           Each block is checked, pixel by pixel, against a capture of Slack's own rendering. This one
-          matches in all of its 684,032 pixels, in Slack's light theme and its dark one. Drag across
+          matches in all of its 653,312 pixels, in Slack's light theme and its dark one. Drag across
           it, or show the difference.
         </p>
         <div class="section__body">
@@ -244,14 +245,14 @@ const structuredData = {
               <!-- PNG, never a lossy format: this section is about matching pixels. One set per
                    Slack theme; the stylesheet shows the one matching the page's theme. -->
               <div class="compare__set" data-compare-theme="light">
-                <Image src={proofSlack} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a device request approval message, in its light theme" />
+                <Image src={proofSlack} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a deploy approval message, in its light theme" />
                 <div class="compare__top">
                   <Image src={proofOurs} width={512} densities={[1, 2]} format="png" alt="The same message rendered by block-kit" data-compare-ours />
                   <Image src={proofDiff} width={512} densities={[1, 2]} format="png" alt="Pixel difference between the two renderings" data-compare-diff-image hidden />
                 </div>
               </div>
               <div class="compare__set" data-compare-theme="dark">
-                <Image src={proofSlackDark} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a device request approval message, in its dark theme" />
+                <Image src={proofSlackDark} width={512} densities={[1, 2]} format="png" alt="Slack's own rendering of a deploy approval message, in its dark theme" />
                 <div class="compare__top">
                   <Image src={proofOursDark} width={512} densities={[1, 2]} format="png" alt="The same message rendered by block-kit" data-compare-ours />
                   <Image src={proofDiffDark} width={512} densities={[1, 2]} format="png" alt="Pixel difference between the two renderings" data-compare-diff-image hidden />
