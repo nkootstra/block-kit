@@ -62,6 +62,7 @@ This is a Bun workspace run with Turborepo.
 | `tools/visual`       | The harness that pixel-compares every fixture against its Slack reference        |
 | `tools/react-18`     | Runs the package's tests and type-check against React 18                         |
 | `tools/csp`          | Hashes a built page's inline scripts for the landing page's and playground's CSP |
+| `tools/video`        | Remotion videos: the landing page's animated social card (`bun run studio`)      |
 | `tools/deploy`       | Wrangler for the deploy and preview jobs, outside the workspaces (below)         |
 | `examples`           | Runnable apps that keep the Slack bot token on the server (Next.js, Vite + Hono) |
 
@@ -84,7 +85,7 @@ bunx turbo run build --filter=@nkootstra/block-kit
 cd apps/site && bun run dev
 ```
 
-Its live demos render with the package, and its theme toggle sets `data-theme` on `<html>`, which the package's stylesheet follows too. The "Check it against Slack" images in `apps/site/src/assets/proof` are the `message/deploy-approval` output of `bun run compare -- message/deploy-approval --scale=2`, cut to the message's 1024x638 with ours padded the way compare pads it; the page quotes how many pixels match, so recount it when they're recaptured. Its social card, `/og.png`, is drawn at build time by `src/pages/og.png.ts` (Satori and resvg) from the same headline and description as the page, in `src/lib/site.ts`; open it in the dev server to preview it.
+Its live demos render with the package, and its theme toggle sets `data-theme` on `<html>`, which the package's stylesheet follows too. The "Check it against Slack" images in `apps/site/src/assets/proof` are the `message/deploy-approval` output of `bun run compare -- message/deploy-approval --scale=2`, cut to the message's 1024x638 with ours padded the way compare pads it; the page quotes how many pixels match, so recount it when they're recaptured. Its social card is a video made with Remotion in `tools/video`, from the page's headline (`src/lib/site.ts`) and the proof images: `bun run --cwd tools/video render` writes `public/social/card.mp4` (`og:video`), `card.gif` (an animated `og:image`) and `card.png` (its first frame, for `twitter:image`). Rerun it when the headline or the proof images change, and preview it with `bun run --cwd tools/video studio`.
 
 To work on the docs, build the package once and start Blume's dev server:
 

@@ -1,4 +1,4 @@
-/** The page's words, shared by its <head>, its <h1> and the social card (pages/og.png.ts). */
+/** The page's words, shared by its <head>, its <h1> and the social card (tools/video). */
 /** What a search result shows: who it's for and what it does, in the 50-60 characters it has room for. */
 export const title = "Slack Block Kit for React: render and preview Slack messages";
 export const headline = "Slack Block Kit messages, rendered in React.";

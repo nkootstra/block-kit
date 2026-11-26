@@ -18,8 +18,10 @@ import proofDiffDark from "../assets/proof/deploy-approval-dark.diff.png";
 import proofSlackDark from "../assets/proof/deploy-approval-dark.reference.png";
 import { BLOCKS, blockDocs, DOCS, GITHUB, INSTALL, NPM, PLAYGROUND, SITE_NAME, description, headline, title } from "../lib/site";
 
-// The social card, drawn at build time by pages/og.png.ts.
-const ogImage = new URL("/og.png", Astro.site).toString();
+// The social card, rendered by tools/video (`bun run --cwd tools/video render`): an animated GIF
+// for platforms that animate og:image, an MP4 for those that play og:video, and the GIF's first
+// frame, the finished card, for X. Every frame shows the page's headline.
+const card = (file: string) => new URL(`/social/${file}`, Astro.site).toString();
 
 /**
  * When the page's content last changed: the last commit to the site's source. The demo messages
@@ -92,13 +94,20 @@ const structuredData = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={Astro.site} />
-    <!-- The only place the social image is set; the card is drawn by pages/og.png.ts. -->
-    <meta property="og:image" content={ogImage} />
+    <!-- The only place the social card is set; tools/video renders it. -->
+    <meta property="og:image" content={card("card.gif")} />
+    <meta property="og:image:type" content="image/gif" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={headline} />
+    <meta property="og:video" content={card("card.mp4")} />
+    <meta property="og:video:secure_url" content={card("card.mp4")} />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="2400" />
+    <meta property="og:video:height" content="1260" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={card("card.png")} />
+    <meta name="twitter:image:alt" content={headline} />
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <!-- Emoji in the messages load from here. -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
