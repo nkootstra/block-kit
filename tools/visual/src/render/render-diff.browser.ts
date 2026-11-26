@@ -12,7 +12,8 @@ describe("renderDiff", () => {
   it("reports no changes when both sides are the same build", async () => {
     const out = await mkdtemp(join(tmpdir(), "render-diff-"));
     const manifest = await renderDiff({ base: LIB, head: LIB, out, only: ["message/"] });
-    expect(manifest).toEqual({ rendered: 6, changed: [], failed: [] });
+    // Four message fixtures (approval, deploy-approval, mrkdwn, section-accessory), light and dark.
+    expect(manifest).toEqual({ rendered: 8, changed: [], failed: [] });
     expect(await readdir(out)).toEqual(["manifest.json"]);
   }, 60_000);
 });
