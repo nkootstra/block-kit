@@ -1,6 +1,7 @@
 import { BlockKitProvider, Message } from "@nkootstra/block-kit";
 import type { AnyBlock } from "@slack/types";
 import { useState } from "react";
+import { tokenize } from "../lib/highlight";
 
 /** 2026-10-01 09:03 UTC, fixed so the server-rendered time matches the hydrated one. */
 const TS = 1_790_845_380;
@@ -68,7 +69,13 @@ export default function ActionDemo() {
       {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be reachable by keyboard */}
       <pre className="log" tabIndex={0} role="region" aria-label="onPayload output">
         <span className="log__title">{payload ? "onPayload received" : "onPayload"}</span>
-        {payload?.json ?? "Click Approve or Deny."}
+        {payload
+          ? tokenize(payload.json).map((tok) => (
+              <span key={tok.start} className={`tok-${tok.kind}`}>
+                {tok.text}
+              </span>
+            ))
+          : "Click Approve or Deny."}
       </pre>
     </div>
   );

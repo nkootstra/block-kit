@@ -4,6 +4,7 @@
  * in `src/assets/proof/` measure. Recount these when the proof images are recaptured.
  */
 import fixture from "../../../../fixtures/message/deploy-approval.json";
+import { tokenize } from "./highlight";
 
 /** The fixture the proof images were captured from. */
 export const BLOCKS = fixture.blocks;
@@ -42,22 +43,8 @@ function format(value: unknown, indent = 0, used = indent, width = 58): string {
 /** The payload as source: `const blocks = [...]`. */
 export const SOURCE = `const blocks = ${format(BLOCKS)};`;
 
-export type Token = { text: string; kind: "key" | "string" | "punct" | "other"; start: number };
-
-/** SOURCE split for highlighting: keys, strings, punctuation and the rest, with their offsets. */
-export const TOKENS: Token[] = (() => {
-  const tokens: Token[] = [];
-  const re = /("(?:[^"\\]|\\.)*")(\s*:)?|([{}[\],:])|([^"{}[\],:]+)/g;
-  for (const m of SOURCE.matchAll(re)) {
-    const start = m.index ?? 0;
-    if (m[1] !== undefined) {
-      tokens.push({ text: m[1], kind: m[2] ? "key" : "string", start });
-      if (m[2]) tokens.push({ text: m[2], kind: "punct", start: start + m[1].length });
-    } else if (m[3] !== undefined) tokens.push({ text: m[3], kind: "punct", start });
-    else tokens.push({ text: m[0], kind: "other", start });
-  }
-  return tokens;
-})();
+/** SOURCE split for highlighting, with each token's offset. */
+export const TOKENS = tokenize(SOURCE);
 
 /** Where in SOURCE each top-level block closes: a block shows once its source is typed. */
 export const BLOCK_ENDS: number[] = (() => {

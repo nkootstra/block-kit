@@ -10,6 +10,12 @@
   --body: #404040;
   --muted: #6b6b6b;
   --accent: #2f5be0;
+  /* Success: the comparison's badge and scan. */
+  --ok: #007a5a;
+  /* JSON in the code panels: keys, strings and punctuation. */
+  --code-key: #2f5be0;
+  --code-string: #0f7b4f;
+  --code-punct: #6b6b6b;
   --frame-bg: #fff;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
   --gutter: 20px;
@@ -29,6 +35,10 @@
   --body: #d4d4d4;
   --muted: #a3a3a3;
   --accent: #8aa5ff;
+  --ok: #2bac76;
+  --code-key: #8aa5ff;
+  --code-string: #a7e3b8;
+  --code-punct: #8a8a8a;
   /* Slack's dark message background, so the messages sit on what they'd sit on in Slack. */
   --frame-bg: #1a1d21;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
@@ -963,7 +973,6 @@ h2 {
 }
 
 .compare__scan {
-  --ok: #007a5a;
   position: absolute;
   left: 0;
   right: 0;
@@ -996,10 +1005,6 @@ h2 {
   font: 11px/1.4 var(--font-mono);
 }
 
-:root[data-theme="dark"] .compare__scan {
-  --ok: #2bac76;
-}
-
 /* The count of matching pixels, beside the controls. */
 .compare__badge {
   display: inline-flex;
@@ -1011,11 +1016,7 @@ h2 {
 
 .compare__badge svg {
   flex: none;
-  color: #007a5a;
-}
-
-:root[data-theme="dark"] .compare__badge svg {
-  color: #2bac76;
+  color: var(--ok);
 }
 
 .compare__badge b {
@@ -1028,36 +1029,39 @@ h2 {
   cursor: default;
 }
 
-/* The message's payload, typed in by the intro: an editor, dark in both themes. */
+/* The message's payload, typed in by the intro: a code panel like the install box above it,
+   as wide as the comparison below. */
 .proof-code {
   --proof-line: 20px;
-  max-width: calc(512px + 24px);
-  margin: 0 auto 12px;
+  margin: 0 0 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #0d0d0f;
+  background: var(--surface);
   overflow: hidden;
 }
 
 .proof-code__bar {
-  padding: 8px 12px;
-  border-bottom: 1px solid #1f1f23;
-  font: 12px/1.4 var(--font-mono);
-  color: #8b8b95;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  font: 500 12px/1 var(--font-mono);
+  color: var(--muted);
 }
 
 .proof-code__body {
   position: relative;
-  height: calc(8 * var(--proof-line) + 20px);
-  padding: 10px 12px;
+  height: calc(8 * var(--proof-line) + 24px);
+  padding: 12px 16px;
   overflow: hidden;
   mask-image: linear-gradient(transparent 0, #000 14px);
 }
 
 .proof-code__pre {
   margin: 0;
-  font: 12px / var(--proof-line) var(--font-mono);
-  color: #d4d4d8;
+  font: 12.5px / var(--proof-line) var(--font-mono);
+  color: var(--body);
   white-space: pre;
 }
 
@@ -1067,19 +1071,20 @@ h2 {
   height: 14px;
   margin-left: 1px;
   vertical-align: -2px;
-  background: #8aa5ff;
+  background: var(--accent);
 }
 
-.proof-code .tok-key {
-  color: #8aa5ff;
+/* JSON in the code panels: the payload editor and onPayload's log. */
+.tok-key {
+  color: var(--code-key);
 }
 
-.proof-code .tok-string {
-  color: #a7e3b8;
+.tok-string {
+  color: var(--code-string);
 }
 
-.proof-code .tok-punct {
-  color: #6e6e78;
+.tok-punct {
+  color: var(--code-punct);
 }
 
 /* Block list */
