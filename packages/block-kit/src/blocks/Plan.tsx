@@ -54,10 +54,10 @@ function TaskRow({ task }: { task: PlanTask }) {
 
   return (
     // Slack makes each task a focusable list item, so the keyboard can step through a long plan.
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- deliberate, matching Slack
-    // Named by its title, as Slack's is, and described by its status and what it holds.
+    // It's named by its title, as Slack's is, and described by its status and what it holds.
     <li
       className="sbk-plan__task"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- deliberate, matching Slack
       tabIndex={0}
       aria-label={title}
       aria-describedby={[
