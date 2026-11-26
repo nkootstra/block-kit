@@ -93,9 +93,15 @@ const STATUS_LABELS: Record<string, string> = {
  * A status as text that only screen readers get, set after a title (", in progress"), so a toggle
  * or task header is announced with the state its icon shows. An unknown status says nothing.
  */
-export function StatusText({ status }: { status: TaskStatus }) {
+export function StatusText({ status, id }: { status: TaskStatus; id?: string }) {
   const label = own(STATUS_LABELS, status);
-  return label ? <span className="sbk-visually-hidden">{`, ${label}`}</span> : null;
+  if (!label) return null;
+  // With an `id`, it's the description a control points at (aria-describedby), not part of a name.
+  return (
+    <span className="sbk-visually-hidden" id={id}>
+      {id ? label : `, ${label}`}
+    </span>
+  );
 }
 
 /** The glyph on a toggle bar (the plan's or a task_card's): check, warning or spinner. */

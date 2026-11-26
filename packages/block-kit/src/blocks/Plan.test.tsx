@@ -52,10 +52,6 @@ const block = {
 };
 
 /** The text of the header holding a task's title, hidden status text included. */
-function headerText(title: string) {
-  return screen.getByText(title).closest(".sbk-plan__task-header")!.textContent;
-}
-
 afterEach(cleanup);
 
 describe("<Plan>", () => {
@@ -157,29 +153,48 @@ describe("<Plan>", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Demonstrating Plan/ }));
-    expect(screen.getByRole("button", { name: "Fetching data, complete" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Publish, failed" })).toBeTruthy();
-    expect(headerText("Organizing tasks")).toBe("Organizing tasks, in progress");
-    expect(headerText("Display progress")).toBe("Display progress, pending");
+    expect(
+      screen.getByRole("button", { name: "Fetching data", description: "complete" }),
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Publish", description: "failed" })).toBeTruthy();
+    // A task with nothing to reveal has no button; its list item carries the status.
+    expect(
+      screen.getByRole("listitem", { name: "Organizing tasks", description: "in progress" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("listitem", { name: "Display progress", description: "pending" }),
+    ).toBeTruthy();
   });
 
-  it("announces the plan's overall status on its pill", () => {
+  it("names each task by its title and describes it by its status and what it holds, as Slack does", () => {
+    render(<Plan block={asPlanBlock(block)} blockId="b1" index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: /Demonstrating Plan/ }));
+    expect(
+      screen.getByRole("listitem", {
+        name: "Fetching data",
+        description: "complete Retrieving data Retrieved data Docs",
+      }),
+    ).toBeTruthy();
+    expect(screen.getByRole("listitem", { name: "Organizing tasks" })).toBeTruthy();
+  });
+
+  it("names its pill as Slack does and describes it by the plan's overall status", () => {
     render(<Plan block={planOf("complete", "error")} blockId="b1" index={0} />);
-    expect(screen.getByRole("button", { name: "Plan, failed" })).toBeTruthy();
+    const name = "Tasks performed: Plan";
+    expect(screen.getByRole("button", { name, description: "failed" })).toBeTruthy();
     cleanup();
     render(<Plan block={planOf("complete", "pending")} blockId="b1" index={0} />);
-    expect(screen.getByRole("button", { name: "Plan, in progress" })).toBeTruthy();
+    expect(screen.getByRole("button", { name, description: "in progress" })).toBeTruthy();
     cleanup();
     render(<Plan block={planOf("complete")} blockId="b1" index={0} />);
-    expect(screen.getByRole("button", { name: "Plan, complete" })).toBeTruthy();
+    expect(screen.getByRole("button", { name, description: "complete" })).toBeTruthy();
   });
 
   it("keeps the status text out of sight, so the plan looks the same", () => {
     const { container } = render(<Plan block={planOf("complete")} blockId="b1" index={0} />);
     fireEvent.click(screen.getByRole("button", { name: /Plan/ }));
     const hidden = container.querySelectorAll(".sbk-visually-hidden");
-    expect(hidden).toHaveLength(2);
-    for (const el of hidden) expect(el.textContent).toBe(", complete");
+    expect([...hidden].map((el) => el.textContent)).toEqual(["complete", "complete"]);
   });
 
   it("treats the plan as in progress overall when any task is still running", () => {
