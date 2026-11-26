@@ -9219,6 +9219,26 @@
     "reference": "99a2602204dc33b51855066b6a0fa5751f251b55f845830033346934be2d8361",
     "captured": "2026-11-14"
   },
+  "message/deploy-approval": {
+    "payload": "5a91d0acc9ef8b688d5b6ebe3f68f1174f3af9244a54b736908109137bd03bc0",
+    "reference": "0709c072014e76cf09c93221b04579cb667570f46d35bdd612ce5e053ae5ace2",
+    "captured": "2026-11-26"
+  },
+  "message/deploy-approval@dark": {
+    "payload": "5a91d0acc9ef8b688d5b6ebe3f68f1174f3af9244a54b736908109137bd03bc0",
+    "reference": "1fbaf24a2ef16c683891e046088f6203adf29c27ac2a8a4bfb0b2720fb9a1be2",
+    "captured": "2026-11-26"
+  },
+  "message/deploy-approval@mobile": {
+    "payload": "5a91d0acc9ef8b688d5b6ebe3f68f1174f3af9244a54b736908109137bd03bc0",
+    "reference": "70c73264aae8e470a19f687573b44334d8c26eb623dcc422dc336ca666e76640",
+    "captured": "2026-11-26"
+  },
+  "message/deploy-approval@mobile+dark": {
+    "payload": "5a91d0acc9ef8b688d5b6ebe3f68f1174f3af9244a54b736908109137bd03bc0",
+    "reference": "c9b93605a58c8f5ceeff92f26906550df2951af29df29ed8d885f8ab902638d1",
+    "captured": "2026-11-26"
+  },
   "message/mrkdwn": {
     "payload": "35715c6f3f0d7551c2168b3bb073af008682339dd647c38b13098b2d4140d412",
     "reference": "42802294576748cb9bdd0de945f86cbaf6e31cbca13750659a96b41026b2bdec",
