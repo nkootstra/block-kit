@@ -725,7 +725,6 @@ h2 {
 .compare {
   position: relative;
   max-width: 512px;
-  margin: 0 auto;
   /* What each capture was taken on: white, and Slack's dark message background. */
   background: var(--frame-bg);
   touch-action: pan-y;
@@ -815,9 +814,16 @@ h2 {
   transform: translateY(-50%) rotate(-135deg);
 }
 
-/* The captures are 512px wide, shown at that size inside a frame that follows the page's theme. */
+/* The captures are 512px wide, shown at that size inside a frame that follows the page's theme,
+   from its left edge with the same padding as the demos' frames, so the messages line up. */
 .compare__frame {
   padding: 12px;
+}
+
+@media (min-width: 480px) {
+  .compare__frame {
+    padding: 16px;
+  }
 }
 
 .compare__frame .compare {
@@ -830,14 +836,14 @@ h2 {
   display: flex;
   justify-content: space-between;
   max-width: 512px;
-  margin: 0 auto 8px;
+  margin: 0 0 8px;
   font: 12px/1.4 var(--font-mono);
   color: var(--muted);
 }
 
 .compare__caption {
   max-width: 512px;
-  margin: 8px auto 0;
+  margin: 8px 0 0;
   font-size: 12px;
   color: var(--muted);
 }
@@ -855,13 +861,13 @@ h2 {
    input's thumb centre travels from half a thumb in from each end, so the input is one thumb
    wider than the image and pulled half a thumb out on each side: the centre then runs from the
    image's left edge to its right edge. The thumb has a fixed size in every engine for that, and
-   the frame's 12px padding holds the half thumb that sticks out. The visible track is drawn on
+   the frame's padding (12px, 16px from 480px) holds the half thumb that sticks out. The visible track is drawn on
    the wrapper, so it spans exactly the image. */
 .compare__slider {
   --thumb: 20px;
   position: relative;
   max-width: 512px;
-  margin: 6px auto 0;
+  margin: 6px 0 0;
 }
 
 .compare__slider::before {
