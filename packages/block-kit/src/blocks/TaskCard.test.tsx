@@ -65,25 +65,28 @@ describe("<TaskCard>", () => {
     expect(pill.hasAttribute("disabled")).toBe(false);
     expect(pill.getAttribute("aria-expanded")).toBe("false");
     expect(pill.getAttribute("aria-disabled")).toBe("true");
-    expect(pill.textContent).toBe("Bare task, complete");
+    expect(pill.getAttribute("aria-label")).toBe("Tasks performed: Bare task");
     expect(container.querySelector(".sbk-task-card__pill-chevron")).toBeNull();
   });
 
-  it("announces the task's status, which the pill only shows as an icon", () => {
+  it("names its pill as Slack does and describes it by the task's status, which it only shows as an icon", () => {
     render(<TaskCard block={asTaskCardBlock(block)} blockId="b1" index={0} />);
     expect(
-      screen.getByRole("button", { name: "Demonstrating Task Card Block Features, in progress" }),
+      screen.getByRole("button", {
+        name: "Tasks performed: Demonstrating Task Card Block Features",
+        description: "in progress",
+      }),
     ).toBeTruthy();
     cleanup();
     render(
       <TaskCard block={asTaskCardBlock({ ...block, status: "error" })} blockId="b1" index={0} />,
     );
-    expect(screen.getByRole("button", { name: /, failed$/ })).toBeTruthy();
+    expect(screen.getByRole("button", { description: "failed" })).toBeTruthy();
     cleanup();
     render(
       <TaskCard block={asTaskCardBlock({ ...block, status: "pending" })} blockId="b1" index={0} />,
     );
-    expect(screen.getByRole("button", { name: /, pending$/ })).toBeTruthy();
+    expect(screen.getByRole("button", { description: "pending" })).toBeTruthy();
   });
 
   it("shows a spinner icon while the task is in progress", () => {

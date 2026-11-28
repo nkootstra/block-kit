@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
@@ -42,16 +42,33 @@ interface PlanBlock extends Json {
  */
 function TaskRow({ task }: { task: PlanTask }) {
   const [open, setOpen] = useState(true);
+  const statusId = useId();
+  const titleId = useId();
   const sources = objectsIn<PlanSource>(task.sources);
   const title = asString(task.title);
   const details = asObject<Json>(task.details);
   const output = asObject<Json>(task.output);
   const expandable = Boolean(details || output || sources.length > 0);
+  const bodyId = useId();
+  const part = (name: string, shown: unknown) => (shown ? `${bodyId}-${name}` : undefined);
 
   return (
     // Slack makes each task a focusable list item, so the keyboard can step through a long plan.
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- deliberate, matching Slack
-    <li className="sbk-plan__task" tabIndex={0}>
+    // It's named by its title, as Slack's is, and described by its status and what it holds.
+    <li
+      className="sbk-plan__task"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- deliberate, matching Slack
+      tabIndex={0}
+      aria-label={title}
+      aria-describedby={[
+        statusId,
+        part("details", open && details),
+        part("output", open && output),
+        part("sources", open && sources.length > 0),
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <span className="sbk-plan__step" aria-hidden="true">
         <span className="sbk-plan__line sbk-plan__line--top" />
         <span className="sbk-plan__task-icon">
@@ -66,10 +83,15 @@ function TaskRow({ task }: { task: PlanTask }) {
             className="sbk-plan__task-header"
             aria-expanded={open}
             aria-disabled={false}
+            // Named by its title, as Slack's is; the status, shown only as an icon, describes it.
+            aria-labelledby={titleId}
+            aria-describedby={statusId}
             onClick={() => setOpen((value) => !value)}
           >
-            <span className="sbk-plan__task-title">{title}</span>
-            <StatusText status={task.status} />
+            <span className="sbk-plan__task-title" id={titleId}>
+              {title}
+            </span>
+            <StatusText status={task.status} id={statusId} />
             <span className="sbk-plan__task-caret">
               <CaretIcon direction={open ? "down" : "right"} />
             </span>
@@ -77,23 +99,23 @@ function TaskRow({ task }: { task: PlanTask }) {
         ) : (
           <div className="sbk-plan__task-header">
             <span className="sbk-plan__task-title">{title}</span>
-            <StatusText status={task.status} />
+            <StatusText status={task.status} id={statusId} />
           </div>
         )}
         {open && expandable ? (
           <div className="sbk-plan__task-body">
             {details ? (
-              <div className="sbk-plan__task-details">
+              <div className="sbk-plan__task-details" id={part("details", true)}>
                 <RichTextMini value={details} />
               </div>
             ) : null}
             {output ? (
-              <div className="sbk-plan__task-output">
+              <div className="sbk-plan__task-output" id={part("output", true)}>
                 <RichTextMini value={output} />
               </div>
             ) : null}
             {sources.length > 0 ? (
-              <ul className="sbk-plan__task-sources">
+              <ul className="sbk-plan__task-sources" id={part("sources", true)}>
                 {sources.map((source, i) => (
                   <li key={asString(source.url) ?? i}>
                     <Link
@@ -117,6 +139,7 @@ function TaskRow({ task }: { task: PlanTask }) {
 
 export function Plan({ block }: BlockProps<PlanBlock>) {
   const [expanded, setExpanded] = useState(false);
+  const statusId = useId();
   const tasks = objectsIn<PlanTask>(block.tasks);
   const status = aggregateStatus(tasks.map((t) => t.status));
 
@@ -128,6 +151,9 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
         aria-expanded={expanded}
         // Slack marks the plan's pill and its task headers aria-disabled="false".
         aria-disabled={false}
+        // Slack's name for the pill; the status, which the pill shows only as an icon, describes it.
+        aria-label={`Tasks performed: ${asString(block.title) ?? ""}`}
+        aria-describedby={statusId}
         onClick={() => setExpanded((value) => !value)}
       >
         <span className="sbk-plan__pill-content">
@@ -135,7 +161,7 @@ export function Plan({ block }: BlockProps<PlanBlock>) {
             <StatusIcon status={status} />
           </span>
           <span className="sbk-plan__pill-title">{asString(block.title)}</span>
-          <StatusText status={status} />
+          <StatusText status={status} id={statusId} />
           <span className="sbk-plan__pill-chevron">
             <CaretIcon direction={expanded ? "down" : "right"} />
           </span>

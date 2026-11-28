@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Collapse } from "../data/Collapse";
 import { CaretIcon } from "../data/icons";
 import { RichTextMini } from "../data/richTextMini";
@@ -25,6 +25,7 @@ interface TaskCardBlock extends Json {
 
 export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
   const [expanded, setExpanded] = useState(false);
+  const statusId = useId();
   const sources = objectsIn<TaskCardSource>(block.sources);
   // Slack disables the toggle, and drops its caret, when the card has nothing to reveal. Here it is
   // plain text then, so it isn't a tab stop that controls nothing.
@@ -35,7 +36,7 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
         <StatusIcon status={block.status} />
       </span>
       <span className="sbk-task-card__pill-title">{asString(block.title)}</span>
-      <StatusText status={block.status} />
+      <StatusText status={block.status} id={statusId} />
       {expandable ? (
         <span className="sbk-task-card__pill-chevron">
           <CaretIcon direction={expanded ? "down" : "right"} />
@@ -53,6 +54,9 @@ export function TaskCard({ block }: BlockProps<TaskCardBlock>) {
         className="sbk-task-card__pill"
         aria-expanded={expanded}
         aria-disabled={!expandable}
+        // Slack's name for the pill; the status, which the pill shows only as an icon, describes it.
+        aria-label={`Tasks performed: ${asString(block.title) ?? ""}`}
+        aria-describedby={statusId}
         onClick={expandable ? () => setExpanded((value) => !value) : undefined}
       >
         {pillContent}
