@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { imageUrl, safeUrl } from "./safeUrl";
+import { expectLinearTime } from "./test-utils";
 
 describe("safeUrl", () => {
   it.each([
@@ -59,10 +60,10 @@ describe("safeUrl", () => {
     expect(safeUrl("javascript:alert(1)", { image: true })).toBeUndefined();
   });
 
-  it("stays fast on a long run of control characters", () => {
-    const start = performance.now();
-    expect(safeUrl(`${"\u0000".repeat(100_000)}x${"\u0000".repeat(100_000)}`)).toBe("x");
-    expect(performance.now() - start).toBeLessThan(100);
+  it("takes linear time on a long run of control characters", () => {
+    const controls = (n: number) => `${"\u0000".repeat(n)}x${"\u0000".repeat(n)}`;
+    expect(safeUrl(controls(100_000))).toBe("x");
+    expectLinearTime((n) => safeUrl(controls(n)), 100_000);
   });
 
   it("drops a missing url", () => {

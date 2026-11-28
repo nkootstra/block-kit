@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { expectCappedTime } from "../test-utils";
 import { DataVisualization } from "./DataVisualization";
 
 /** DataVisualization's block prop is narrowed beyond `Json`; tests build plain JSON fixtures and cast in. */
@@ -126,26 +127,31 @@ describe("<DataVisualization>", () => {
   });
 
   it("draws at most Slack's 20 points of a series, however many the payload holds", () => {
+    const bars = (n: number) =>
+      asDataVizBlock({
+        type: "data_visualization",
+        chart: {
+          type: "bar",
+          axis_config: { categories: Array.from({ length: n }, (_, i) => String(i)) },
+          series: [
+            {
+              name: "s",
+              data: Array.from({ length: n }, (_, i) => ({ label: String(i), value: i })),
+            },
+          ],
+        },
+      });
     const n = 40_000;
-    const block = {
-      type: "data_visualization",
-      chart: {
-        type: "bar",
-        axis_config: { categories: Array.from({ length: n }, (_, i) => String(i)) },
-        series: [
-          {
-            name: "s",
-            data: Array.from({ length: n }, (_, i) => ({ label: String(i), value: i })),
-          },
-        ],
-      },
-    };
-    const start = performance.now();
+    // Built before the clock starts: only the drawing is timed, and it shouldn't grow with n.
+    const blocks = new Map([n / 4, n].map((size) => [size, bars(size)]));
     const { container } = render(
-      <DataVisualization block={asDataVizBlock(block)} blockId="b1" index={0} />,
+      <DataVisualization block={blocks.get(n)!} blockId="b1" index={0} />,
     );
-    expect(performance.now() - start).toBeLessThan(1000);
     expect(container.querySelectorAll(".sbk-dataviz__body svg path").length).toBe(20);
+    cleanup();
+    expectCappedTime((size) => {
+      render(<DataVisualization block={blocks.get(size)!} blockId="b1" index={0} />).unmount();
+    }, n);
   });
 
   it("draws at most Slack's 12 series and 12 pie segments", () => {

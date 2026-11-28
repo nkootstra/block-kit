@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { formatSlackDate } from "./date";
 
 // 2014-02-18T14:39:42Z, the example from Slack's docs.
@@ -34,13 +34,21 @@ describe("formatSlackDate", () => {
 });
 
 describe("formatSlackDate on hostile input", () => {
-  // Each token built new Intl formatters, so a format repeating its tokens took seconds. The bound
-  // only catches a return to that.
-  it("formats a format string of thousands of tokens quickly", () => {
-    const format = "{date_long_pretty} {date} {time}".repeat(3_000);
-    const start = performance.now();
-    const out = formatSlackDate(1392734382, format, { timeZone: "UTC", now: 0 });
-    expect(performance.now() - start).toBeLessThan(500);
-    expect(out.startsWith("Tuesday, February 18th, 2014 February 18th, 2014 2:39 PM")).toBe(true);
+  // Each token built new Intl formatters, so a format repeating its tokens took seconds. Counting
+  // the formatters catches a return to that on any machine, where a bound in milliseconds can't
+  // tell it from a busy one.
+  it("builds the formatters for a format's tokens once, however often they repeat", () => {
+    const format = "{date_long_pretty} {date} {time}";
+    const formatters = vi.spyOn(Intl, "DateTimeFormat");
+    try {
+      formatSlackDate(1392734382, format, { timeZone: "UTC", now: 0 });
+      const once = formatters.mock.calls.length;
+      formatters.mockClear();
+      const out = formatSlackDate(1392734382, format.repeat(3_000), { timeZone: "UTC", now: 0 });
+      expect(out.startsWith("Tuesday, February 18th, 2014 February 18th, 2014 2:39 PM")).toBe(true);
+      expect(formatters.mock.calls.length).toBe(once);
+    } finally {
+      formatters.mockRestore();
+    }
   });
 });

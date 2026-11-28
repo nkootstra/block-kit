@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { expectLinearTime } from "../test-utils";
 import { parse } from "./parse";
 
 const inline = (text: string, verbatim = false) => parse(text, { verbatim }).children;
@@ -128,21 +129,20 @@ describe("parse", () => {
 
 describe("parse on hostile input", () => {
   // Each of these took seconds to minutes before the parser stopped rescanning the line for every
-  // marker and every unclosed `<` or backtick. 100 KB is far past any Slack text limit; linear
-  // parsing does it in milliseconds, so the bound only catches a return to quadratic time.
-  const cases: Record<string, string> = {
-    "markers before unclosed <": "*a <".repeat(25_000),
-    "italics before unclosed <": "_a <".repeat(25_000),
-    "markers before an unclosed backtick": "*a `".repeat(25_000),
-    "markers with no closer": "*a ".repeat(33_000),
-    "unclosed <": "<".repeat(100_000),
-    "a bare URL with punctuation before its end": `http://a${"!".repeat(100_000)}a`,
+  // marker and every unclosed `<` or backtick. 100 KB is far past any Slack text limit; each is
+  // timed against a quarter of its length, so the bound only catches a return to quadratic time.
+  const cases: Record<string, (n: number) => string> = {
+    "markers before unclosed <": (n) => "*a <".repeat(n / 4),
+    "italics before unclosed <": (n) => "_a <".repeat(n / 4),
+    "markers before an unclosed backtick": (n) => "*a `".repeat(n / 4),
+    "markers with no closer": (n) => "*a ".repeat(Math.floor(n / 3)),
+    "unclosed <": (n) => "<".repeat(n),
+    "a bare URL with punctuation before its end": (n) => `http://a${"!".repeat(n)}a`,
   };
 
   it.each(Object.entries(cases))("parses %s in linear time", (_, text) => {
-    const start = performance.now();
-    const root = parse(text);
-    expect(performance.now() - start).toBeLessThan(500);
+    expectLinearTime((n) => parse(text(n)), 100_000);
+    const root = parse(text(100_000));
     expect(root.children.length).toBeGreaterThan(0);
   });
 });
